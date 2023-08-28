@@ -1,0 +1,88 @@
+{% extends 'header.html' %}
+
+{% block title %} Welcom€ to{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
+{% endblock %}
+
+{% block content %}
+
+{{ writing_text_form.csrf_token }}
+
+<div class="container">
+    <h1 class="mb-5">DBT OpenAI Speech Generation ¡!¡</h1>
+</div>
+
+<div class="container">
+    <form id="prompt-form" method="POST">
+        {% if error_message %}
+            <div class="alert alert-info">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <div class="text-center">
+            <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
+            <div class="mb-3">
+                <button id="start-button" type="button" class="btn"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1.9rem; --bs-btn-font-size: 1.3rem;">
+                    Click to Start Writing ¡!¡
+                </button>
+            </div>
+        </div>
+        <!--<label for="userInput" class="label_">Write Your Text, below:</label>-->
+        <div class="mb-1" id="textarea-container" style="display: none;">
+            <textarea class="form-control" id="userInput" name="writing_text"
+                      placeholder="T😎 ASK M€, WRITE  HERE¡!¡:" oninput="capitalizeSentences(this)"></textarea>
+        </div>
+
+        <hr>
+
+        <div class="text-center">
+            <button id="generateButton" class="mb-1 btn generate-text" type="submit"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1.9rem; --bs-btn-font-size: 1.3rem;">
+            Click for Response ¡!¡
+        </button>
+        </div>
+    </form>
+
+    <div class="mb-4">
+        <textarea id="generatedText" class="mb-1 form-control result" style="display: none;"></textarea>
+
+        {% if answer %}
+        <!-- Display the text response -->
+        <div id="response-text">{{ answer|safe }}</div>
+        {% endif %}
+
+        {% if answer %}
+        <!-- Play the audio response -->
+        <audio id="response-audio" controls style="display: none;"></audio>
+        {% endif %}
+
+        <!-- Button to start audio recording -->
+        <button id="start-recording" class="btn" style="display: none;">
+            Start Recording
+        </button>
+    </div>
+
+<hr>
+
+</div>
+
+<div class="container">
+    <h3 class="mb-4 h3_result"></h3>
+    <div class="container">
+        <div class="mb-3 text-center">
+            <button id="final_result" type="button" class="btn"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1.9rem; --bs-btn-font-size: 1.3rem;">
+                Click for see prompt ¡!¡
+            </button>
+        </div>
+        <textarea class="form-control result" id="final-result-content" style="display: none;"></textarea>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %} {% endblock %}

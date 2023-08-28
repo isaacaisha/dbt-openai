@@ -1,0 +1,140 @@
+body {
+    padding: 0.5rem;
+}
+
+h1 {
+    color: #9126E8;
+    text-align: center;
+    text-decoration: underline;
+}
+
+
+#userInput, #generatedText, #final-result-content.form-control.result {
+    border: 0.1rem solid #1295FA;
+    border-radius: 0.9rem;
+    color:#0041F6;
+    height: 91px;
+    min-height: 55px;
+    width: 100%;
+}
+
+#generatedText {
+    color: #096752;
+}
+
+.generate-text {
+    color: #fff;
+    background-color: #1295FA;
+    border: 0.1rem solid #AEFAFC;
+}
+
+.generate-text:hover {
+    background-color: #1295FA;
+    border: 0.1rem solid #73DD7E;
+    color: #73DD7E;
+}
+
+.h3_generatedText {
+    background-color: #AEFAFC;
+    border: 0.1rem solid #1295FA;
+    border-radius: 0.9rem;
+    color: #9126E8;
+    padding: 0.3rem;
+    text-align: center;
+}
+*/
+
+# --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
+.label_ {
+    background-color: #fff;
+    border-radius: 19%;
+    color: #096752;
+    font-size: 0.7rem;
+    padding: 0.1rem;
+}
+
+#start-button, #final_result {
+    color: #fff;
+    background-color: #1295FA;
+    border: 0.1rem solid #AEFAFC;
+}
+
+#start-button:hover, #final_result:hover {
+    color: #73DD7E;
+}
+
+.generate-text {
+    color: #fff;
+    background-color:#9A30F3;
+    border: 0.1rem solid #AEFAFC;
+    margin-top: 1.5rem;
+}
+
+.generate-text:hover {
+    background-color:#9A30F3;
+    color: #73DD7E;
+}
+/*
+#writing_text {
+    color: #9A30F3;
+}
+*/
+#final-result-content {
+    color: #1295FA;
+}
+
+textarea#writing_text.form-control, #final-result-content {
+    min-height: 55px;
+    height: 55px;
+}
+
+#final-result-content {
+    margin: 0 0 1rem;
+    background-color: #fff;
+    padding: 0.5rem;
+}
+
+.error {
+    color: crimson;
+    background-color: #fff;
+    margin: 1rem 1rem 0;
+    padding: 0.1rem;
+    text-align: center;
+    white-space: pre-line;
+
+}
+
+hr {
+    margin: 0 3rem;
+    margin-top: 1.9rem;
+}
+
+#footer {
+    margin-top: 15rem;
+    text-align: center;
+}
+
+.fa-inverse {
+    background-color: #9126E8;
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 55%;
+    color: #fff;
+}
+
+.fa-inverse:hover {
+    color: #6ABFA6;
+    width: 3.7rem;
+}
+
+.fas {
+    color: transparent !important;
+}
+
+.copyright {
+    background-color: #AEFAFC;
+    border: 0.1rem solid #1295FA;
+    border-radius: 0.5rem;
+    color: #9A30F3;
+    padding: 0.3rem;
+}
+# --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
