@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.secret_key = "any-string-you-want-just-keep-it-secret"
 
 # Set up OpenAI API credentials
-openai.api_key = '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'
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 # Initialize an empty conversation list
 conversation = []
