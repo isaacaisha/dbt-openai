@@ -18,6 +18,15 @@ h1 {
     width: 100%;
 }
 
+#userInput::placeholder {
+    /* Center the placeholder text horizontally */
+    text-align: center;
+
+    /* Optionally, you can style the placeholder text further */
+    font-style: italic;
+    color: #999; /* Placeholder text color */
+    }
+
 #generatedText {
     color: #096752;
 }
