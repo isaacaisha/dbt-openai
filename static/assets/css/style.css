@@ -3,11 +3,31 @@ body {
 }
 
 h1 {
+    background-color: #fff;
     color: #9126E8;
     text-align: center;
     text-decoration: underline;
 }
 
+
+.jumbotron {
+  background-color: #47FFAC;
+  animation: color-change 10s linear infinite;
+}
+
+@keyframes color-change {
+  25% {
+    background-color: #FC5378;
+  }
+
+  50% {
+    background-color: #4044E6;
+  }
+
+  100% {
+    background-color: #47FFAC;
+  }
+}
 
 #userInput, #generatedText, #final-result-content.form-control.result {
     border: 0.1rem solid #1295FA;
