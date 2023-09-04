@@ -5,6 +5,7 @@ body {
 h1 {
     background-color: #fff;
     color: #9126E8;
+    margin: 0;
     text-align: center;
     text-decoration: underline;
 }
@@ -12,6 +13,7 @@ h1 {
 
 .jumbotron {
   background-color: #47FFAC;
+  border: 0.1rem solid #AEFAFC;
   animation: color-change 10s linear infinite;
 }
 
