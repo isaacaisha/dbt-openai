@@ -34,6 +34,11 @@
                     Click to Start Writing ¡!¡
                 </button>
             </div>
+            <!-- Add a button for speech recognition -->
+            <button id="speechRecognitionButton" type="button" class="btn mb-3"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1.9rem; --bs-btn-font-size: 1.3rem;">
+                Start Speech Recognition
+            </button>
         </div>
         <!--<label for="userInput" class="label_">Write Your Text, below:</label>-->
         <div class="mb-1" id="textarea-container" style="display: none;">
@@ -81,6 +86,55 @@
         <textarea class="form-control result" id="final-result-content" style="display: none;"></textarea>
     </div>
 </div>
+
+
+<script>
+    const speechRecognitionButton = document.getElementById('speechRecognitionButton');
+    const userInput = document.getElementById('userInput');
+    let recognition;
+
+    // Check if speech recognition is supported in the browser
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+
+        recognition.onstart = function () {
+            // Speech recognition started
+            speechRecognitionButton.textContent = 'Listening...';
+        };
+
+        recognition.onresult = function (event) {
+            // Speech recognition result
+            const transcript = event.results[0][0].transcript;
+            userInput.value = transcript;
+        };
+
+        recognition.onend = function () {
+            // Speech recognition ended
+            speechRecognitionButton.textContent = 'Start Speech Recognition';
+        };
+
+        recognition.onerror = function (event) {
+            // Speech recognition error
+            console.error('Speech recognition error:', event.error);
+        };
+
+        // Add a click event listener to start or stop speech recognition
+        speechRecognitionButton.addEventListener('click', function () {
+            if (recognition && recognition.state === 'listening') {
+                // If recognition is already running, stop it
+                recognition.stop();
+            } else {
+                // If recognition is not running, start it
+                recognition.start();
+            }
+        });
+    } else {
+        // Speech recognition not supported in this browser
+        speechRecognitionButton.disabled = true;
+        speechRecognitionButton.textContent = 'Speech Recognition Not Supported';
+    }
+</script>
+
 
 {% endblock %}
 

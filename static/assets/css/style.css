@@ -65,6 +65,18 @@ h1 {
     color: #73DD7E;
 }
 
+#speechRecognitionButton {
+    color: #fff;
+    background-color: #9A30F3;
+    border: 0.1rem solid #AEFAFC;
+}
+
+#speechRecognitionButton:hover {
+    background-color: 9A30F3;
+    border: 0.1rem solid #73DD7E;
+    color: #73DD7E;
+}
+
 .h3_generatedText {
     background-color: #AEFAFC;
     border: 0.1rem solid #1295FA;
