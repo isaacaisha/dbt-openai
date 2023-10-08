@@ -40,25 +40,6 @@
             {% block favicon %} {% endblock %}
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='assets/css/style.css') }}" />
 
-            <style>
-                body {
-                    <!--font-family: Arial, sans-serif;-->
-                    text-align: center;
-                    color: white;
-                    background-image: url("{{ url_for('static', filename='assets/images/logo1.jpg') }}");
-                    background-size: cover;
-                    background-position: center;
-                }
-
-                .large-image {
-                    width: 100%;
-                    max-width: 600px;
-                }
-
-                .completed {
-                    text-decoration: 0.3rem line-through green;
-                }
-            </style>
         {% endblock %}
     </head>
 

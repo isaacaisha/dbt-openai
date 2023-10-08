@@ -1,6 +1,21 @@
-body {
+ body {
+     <!--font-family: Arial, sans-serif;-->
+     text-align: center;
+     color: white;
+     background-image: url('../images/space.jpg');
+     background-size: cover;
+     background-position: center;
     padding: 1rem;
-}
+ }
+
+large-image {
+     width: 100%;
+     max-width: 600px;
+ }
+
+.completed {
+     text-decoration: 0.3rem line-through green;
+ }
 
 #content > div.container-fluid.mb-5 > div > div {
     padding: 0.3rem;
@@ -71,9 +86,10 @@ h1 {
 }
 
 
-#generatedText {
+textarea#generatedText {
     color: #096752;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin-bottom: 1rem;
 }
 
 .generate-text {
@@ -100,7 +116,7 @@ h1 {
 }
 
 #start-button, #final_result {
-    color: crimson;
+    color: #fff;
     background-color: #1295FA;
     border: 0.1rem solid #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
@@ -111,7 +127,7 @@ h1 {
 }
 
 #speechRecognitionButton, #final_result_speech {
-    color: yellow;
+    color: #fff;
     background-color: #30ABB7;
     border: 0.1rem solid #AEFAFC;
     font-family: 'Cardo';
@@ -143,6 +159,7 @@ h1 {
     background-color:#9A30F3;
     color: #73DD7E;
 }
+
 /*
 #writing_text {
     color: #9A30F3;
