@@ -1,5 +1,7 @@
 const speechRecognitionButton = document.getElementById('speechRecognitionButton');
 const userInput = document.getElementById('userInput');
+// Initialize variables
+let userSpeechData = ""; // Initialize a variable to store the speech data
 let recognition;
 
 // Check if speech recognition is supported in the browser
@@ -14,7 +16,8 @@ if ('webkitSpeechRecognition' in window) {
     recognition.onresult = function (event) {
         // Speech recognition result
         const transcript = event.results[0][0].transcript;
-        userInput.value = transcript;
+        userSpeechData = transcript; // Update userSpeechData
+        userInput.value = transcript; // Update the userInput element
     };
 
     recognition.onend = function () {
@@ -26,19 +29,40 @@ if ('webkitSpeechRecognition' in window) {
         // Speech recognition error
         console.error('Speech recognition error:', event.error);
     };
-
-    // Add a click event listener to start or stop speech recognition
-    speechRecognitionButton.addEventListener('click', function () {
-        if (recognition && recognition.state === 'listening') {
-            // If recognition is already running, stop it
-            recognition.stop();
-        } else {
-            // If recognition is not running, start it
-            recognition.start();
-        }
-    });
 } else {
     // Speech recognition not supported in this browser
     speechRecognitionButton.disabled = true;
     speechRecognitionButton.textContent = 'Speech Recognition Not Supported';
 }
+
+// Add a click event listener to start or stop speech recognition
+speechRecognitionButton.addEventListener('click', function () {
+    if (recognition && recognition.state === 'listening') {
+        // If recognition is already running, stop it
+        recognition.stop();
+    } else {
+        // If recognition is not running, start it
+        recognition.start();
+    }
+});
+
+// Add an event listener to the "Final Result" button
+document.getElementById('final_result_speech').addEventListener('click', function () {
+    // Check if the userSpeechData variable contains recognized speech
+    if (userSpeechData.trim() === "") {
+        // Display an error message if there's no recognized speech
+        document.getElementById('error-message').textContent = "Please,\nYou Have To Speech\nFirst 😝";
+        document.getElementById('error-message').style.display = 'block';
+
+        // Hide the "Final Result" content since there's no recognized speech
+        document.getElementById('final-result-speech-content').style.display = 'none';
+    } else {
+        // Clear any previous error message
+        document.getElementById('error-message').textContent = "";
+        document.getElementById('error-message').style.display = 'none';
+
+        // Display the recognized speech in the "Final Result" section
+        document.getElementById('final-result-content').textContent = userSpeechData;
+        document.getElementById('final-result-content').style.display = 'block';
+    }
+});

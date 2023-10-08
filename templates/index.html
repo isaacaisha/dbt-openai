@@ -11,8 +11,8 @@
 
 {{ writing_text_form.csrf_token }}
 
-<div class="container mb-5">
-    <div class="p-2 rounded-3 jumbotron">
+<div class="container-fluid mb-5">
+    <div class="p-1 rounded-3 jumbotron">
         <div class="container-fluid py-1">
             <h1 class="">DBT OpenAI Speech Generation ¡!¡</h1>
         </div>
@@ -30,7 +30,7 @@
             <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
             <div class="mb-3">
                 <button id="start-button" type="button" class="btn mb-3"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1.9rem; --bs-btn-font-size: 1.3rem;">
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
                     Click to Start Writing ¡!¡
                 </button>
                 <hr style="color:green;">
@@ -38,7 +38,7 @@
 
             <!-- Add a button for speech recognition -->
             <button id="speechRecognitionButton" type="button" class="btn mb-3"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1.9rem; --bs-btn-font-size: 1.3rem;">
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
                 Start Speech Recognition ¡!¡
             </button>
         </div>
@@ -48,11 +48,11 @@
                       placeholder="T😎 ASK M€, WRITE  HERE¡!¡:" oninput="capitalizeSentences(this)"></textarea>
         </div>
 
-        <hr style="color:gold">
+        <hr style="color:yellow">
 
         <div class="text-center">
             <button id="generateButton" class="mb-3 btn generate-text" type="submit"
-                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1.9rem; --bs-btn-font-size: 1.3rem;">
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
             Click for Response ¡!¡
         </button>
         </div>
@@ -81,13 +81,29 @@
     <div class="container">
         <div class="mb-3 text-center">
             <button id="final_result" type="button" class="btn"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1.9rem; --bs-btn-font-size: 1.3rem;">
-                Click for see prompt ¡!¡
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                Click for Writing prompt ¡!¡
             </button>
         </div>
         <textarea class="form-control result" id="final-result-content" style="display: none;"></textarea>
     </div>
+    <hr style="color:yellow">
 </div>
+
+<div class="container">
+    <h3 class="mb-3 h3_result"></h3>
+    <div class="container">
+        <div class="mb-3 text-center">
+            <button id="final_result_speech" type="button" class="btn"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                Click for Speech prompt ¡!¡
+            </button>
+        </div>
+        <textarea class="form-control result" id="final-result-speech-content" style="display: none;"></textarea>
+    </div>
+    <hr style="color:green">
+</div>
+
 
 {% endblock %}
 

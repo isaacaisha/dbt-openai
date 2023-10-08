@@ -96,7 +96,7 @@ document.getElementById('final_result').addEventListener('click', function () {
     // Check if the textarea is empty
     if (userTextData.trim() === "") {
         // Display an error message
-        document.getElementById('error-message').textContent = "Please,\nYou Have To Write\nFirst ";
+        document.getElementById('error-message').textContent = "Please,\nYou Have To Write\nFirst 😝";
         document.getElementById('error-message').style.display = 'block';
 
         // Hide the "Final Result" content since there's no text

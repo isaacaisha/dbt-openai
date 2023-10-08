@@ -2,9 +2,18 @@ body {
     padding: 0.5rem;
 }
 
+#content > div.container-fluid.mb-5 > div > div {
+    padding: 0.3rem;
+}
+
 h1 {
     background-color: #fff;
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 0.3rem;
     color: #9126E8;
+    font-family: 'Merriweather', sans-serif;
+    font-display: swap;
+    font-weight: 900;
     margin: 0;
     text-align: center;
     text-decoration: underline;
@@ -12,29 +21,31 @@ h1 {
 
 
 .jumbotron {
-  background-color: #47FFAC;
-  border: 0.1rem solid #AEFAFC;
-  animation: color-change 10s linear infinite;
+    background-color: #47FFAC;
+    border: 0.1rem solid #AEFAFC;
+    animation: color-change 10s linear infinite;
 }
 
 @keyframes color-change {
-  25% {
-    background-color: #FC5378;
-  }
+    25% {
+      background-color: #FC5378;
+    }
 
-  50% {
-    background-color: #4044E6;
-  }
+    50% {
+      background-color: #4044E6;
+    }
 
-  100% {
-    background-color: #47FFAC;
-  }
+    100% {
+      background-color: #47FFAC;
+    }
 }
 
 #userInput, #generatedText, #final-result-content.form-control.result {
     border: 0.1rem solid #1295FA;
     border-radius: 0.9rem;
     color:#0041F6;
+    font-family: 'Montserrat', sans-serif;
+    font-display: swap;
     height: 91px;
     min-height: 55px;
     width: 100%;
@@ -51,6 +62,7 @@ h1 {
 
 #generatedText {
     color: #096752;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .generate-text {
@@ -65,14 +77,6 @@ h1 {
     color: #73DD7E;
 }
 
-.h3_generatedText {
-    background-color: #AEFAFC;
-    border: 0.1rem solid #1295FA;
-    border-radius: 0.9rem;
-    color: #9126E8;
-    padding: 0.3rem;
-    text-align: center;
-}
 */
 
 # --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
@@ -88,19 +92,21 @@ h1 {
     color: #fff;
     background-color: #1295FA;
     border: 0.1rem solid #AEFAFC;
+    font-family: 'Lora', 'Times New Roman', serif;
 }
 
 #start-button:hover, #final_result:hover {
     color: #73DD7E;
 }
 
-#speechRecognitionButton {
+#speechRecognitionButton, #final_result_speech {
     color: #fff;
     background-color: #30ABB7;
     border: 0.1rem solid #AEFAFC;
+    font-family: 'Cardo';
 }
 
-#speechRecognitionButton:hover {
+#speechRecognitionButton:hover, #final_result_speech:hover {
     background-color: 9A30F3;
     border: 0.1rem solid #73DD7E;
     color: #73DD7E;
@@ -111,6 +117,7 @@ h1 {
     background-color:#9A30F3;
     border: 0.1rem solid #AEFAFC;
     margin-top: 1.5rem;
+    font-family: 'Merriweather', sans-serif;
 }
 
 .generate-text:hover {
@@ -128,6 +135,7 @@ h1 {
 
 textarea#writing_text.form-control, #final-result-content {
     min-height: 55px;
+    font-family: 'Merriweather', sans-serif;
     height: 55px;
 }
 
@@ -140,6 +148,7 @@ textarea#writing_text.form-control, #final-result-content {
 .error {
     color: crimson;
     background-color: #fff;
+    font-family: 'Cardo';
     margin: 1rem 1rem 0;
     padding: 0.1rem;
     text-align: center;
@@ -181,6 +190,7 @@ hr {
     border: 0.1rem solid #1295FA;
     border-radius: 0.5rem;
     color: #9A30F3;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     padding: 0.3rem;
 }
 # --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
