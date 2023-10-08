@@ -23,7 +23,7 @@ conversation = []
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 # Set the maximum number of messages to retain
-MAX_CONVERSATION_LENGTH = 5
+MAX_CONVERSATION_HISTORY_MINUTES = 1
 
 # ------------------------------------------------------ VARIABLES ----------------------------------------------------#
 time_sec = time.localtime()
@@ -67,18 +67,36 @@ def home():
 # Function to remove older messages from the conversation
 def trim_conversation():
     global conversation
-    if len(conversation) > MAX_CONVERSATION_LENGTH:
-        # Calculate the timestamp threshold to retain only recent messages
-        timestamp_threshold = datetime.now() - timedelta(minutes=7)  # Adjust the time threshold as needed
+    if conversation:
+        # Get the current timestamp
+        current_timestamp = datetime.now()
 
-        # Filter out messages that are older than the threshold
-        conversation = [
-            msg for msg in conversation if  datetime.fromisoformat(msg.get('timestamp')) > timestamp_threshold
-        ]
+        # Calculate the timestamp threshold to retain recent messages
+        timestamp_threshold = current_timestamp - timedelta(minutes=MAX_CONVERSATION_HISTORY_MINUTES)
+
+        # Initialize a new conversation list to store the filtered messages
+        filtered_conversation = []
+
+        # Iterate through the conversation and retain only recent messages
+        for msg in conversation:
+            msg_timestamp_str = msg.get('timestamp')
+
+            # Check if msg_timestamp_str is not None and is a string
+            if msg_timestamp_str and isinstance(msg_timestamp_str, str):
+                msg_timestamp = datetime.fromisoformat(msg_timestamp_str)
+                if msg_timestamp >= timestamp_threshold:
+                    filtered_conversation.append(msg)
+            else:
+                # Handle the case where timestamp is not in the expected format
+                # You can log an error or take other appropriate action here
+                print("Skipping message with invalid timestamp:", msg)
+
+        # Update the conversation with the filtered messages
+        conversation = filtered_conversation
 
 
 @app.route('/answer', methods=['POST'])
-@cache.cached(timeout=19)  # Cache the response for 19 seconds
+@cache.cached(timeout=91)  # Cache the response for 19 seconds
 def answer():
     user_message = request.form['prompt']
 

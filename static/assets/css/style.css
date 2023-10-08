@@ -148,8 +148,10 @@ textarea#writing_text.form-control, #final-result-content {
 }
 
 hr {
+    border: 0.1rem solid;
+    border-radius: 0.5rem;
     margin: 0 3rem;
-    margin-top: 1.9rem;
+    #margin-top: 1.9rem;
 }
 
 #footer {
