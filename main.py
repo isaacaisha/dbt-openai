@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request, jsonify, send_file
-import openai
-from gtts import gTTS
-import os
 from flask_wtf import FlaskForm
+from flask_caching import Cache
 from wtforms import SubmitField, TextAreaField, validators
 from openai.error import RateLimitError
+from datetime import datetime, timedelta
+import os
 import re
 import time
-from datetime import datetime
+import openai
+from gtts import gTTS
 
 app = Flask(__name__)
 app.secret_key = "any-string-you-want-just-keep-it-secret"
@@ -18,6 +19,11 @@ openai.api_key = os.environ.get("OPENAI_API_KEY")
 # Initialize an empty conversation list
 conversation = []
 
+# Configure caching
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+# Set the maximum number of messages to retain
+MAX_CONVERSATION_LENGTH = 5
 
 # ------------------------------------------------------ VARIABLES ----------------------------------------------------#
 time_sec = time.localtime()
@@ -58,12 +64,36 @@ def home():
                            error_message=error_message)  # Pass the error message if needed
 
 
+# Function to remove older messages from the conversation
+def trim_conversation():
+    global conversation
+    if len(conversation) > MAX_CONVERSATION_LENGTH:
+        # Calculate the timestamp threshold to retain only recent messages
+        timestamp_threshold = datetime.now() - timedelta(minutes=7)  # Adjust the time threshold as needed
+
+        # Filter out messages that are older than the threshold
+        conversation = [
+            msg for msg in conversation if  datetime.fromisoformat(msg.get('timestamp')) > timestamp_threshold
+        ]
+
+
 @app.route('/answer', methods=['POST'])
+@cache.cached(timeout=19)  # Cache the response for 19 seconds
 def answer():
     user_message = request.form['prompt']
 
+    # Trim the conversation history before adding a new message
+    trim_conversation()
+
+    # Get the current timestamp as a string
+    timestamp = datetime.now().isoformat()
+
     # Extend the conversation with the user's message
-    conversation.append({"role": "user", "content": user_message})
+    # Append the user's message to the conversation with a timestamp
+    conversation.append({
+        "role": "user",
+        "content": user_message
+    })
 
     # Use OpenAI's GPT to generate the answer based on the conversation
     response = openai.ChatCompletion.create(
@@ -87,7 +117,8 @@ def answer():
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
-        "answer_audio_path": audio_file_path
+        "answer_audio_path": audio_file_path,
+        "timestamp": timestamp
     })
 
 
