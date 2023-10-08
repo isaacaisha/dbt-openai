@@ -62,7 +62,7 @@ document.getElementById('final_result_speech').addEventListener('click', functio
         document.getElementById('error-message').style.display = 'none';
 
         // Display the recognized speech in the "Final Result" section
-        document.getElementById('final-result-content').textContent = userSpeechData;
-        document.getElementById('final-result-content').style.display = 'block';
+        document.getElementById('final-result-speech-content').textContent = userSpeechData;
+        document.getElementById('final-result-speech-content').style.display = 'block';
     }
 });

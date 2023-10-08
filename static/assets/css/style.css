@@ -1,5 +1,5 @@
 body {
-    padding: 0.5rem;
+    padding: 1rem;
 }
 
 #content > div.container-fluid.mb-5 > div > div {
@@ -51,6 +51,16 @@ h1 {
     width: 100%;
 }
 
+#final-result-speech-content {
+    border: 0.1rem solid #1295FA;
+    border-radius: 0.9rem;
+    color:purple;
+    font-family: 'Merriweather', sans-serif;
+    font-display: swap;
+    height: 91px;
+    min-height: 55px;
+}
+
 #userInput::placeholder {
     /* Center the placeholder text horizontally */
     text-align: center;
@@ -58,7 +68,8 @@ h1 {
     /* Optionally, you can style the placeholder text further */
     font-style: italic;
     color: #999; /* Placeholder text color */
-    }
+}
+
 
 #generatedText {
     color: #096752;
@@ -89,7 +100,7 @@ h1 {
 }
 
 #start-button, #final_result {
-    color: #fff;
+    color: crimson;
     background-color: #1295FA;
     border: 0.1rem solid #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
@@ -100,7 +111,7 @@ h1 {
 }
 
 #speechRecognitionButton, #final_result_speech {
-    color: #fff;
+    color: yellow;
     background-color: #30ABB7;
     border: 0.1rem solid #AEFAFC;
     font-family: 'Cardo';
@@ -109,14 +120,22 @@ h1 {
 #speechRecognitionButton:hover, #final_result_speech:hover {
     background-color: 9A30F3;
     border: 0.1rem solid #73DD7E;
-    color: #73DD7E;
+    color: #fff;
+}
+
+#generateButton {
+    color: #37EC37;
+}
+
+#generateButton:hover {
+    color: #fff;
 }
 
 .generate-text {
     color: #fff;
     background-color:#9A30F3;
     border: 0.1rem solid #AEFAFC;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     font-family: 'Merriweather', sans-serif;
 }
 
