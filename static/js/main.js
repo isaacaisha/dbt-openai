@@ -7,9 +7,6 @@ $(document).ready(function () {
             data: { writing_text: userInput },
             success: function (data) {
                 $("#generatedText").val(data.generated_text);
-
-                // Clear user input after receiving a response
-                $("#userInput").val("");
             },
             error: function (xhr, status, error) {
                 console.error("Error:", error);
@@ -112,9 +109,6 @@ document.getElementById('final_result').addEventListener('click', function () {
         // Display the content in the "Final Result" section
         document.getElementById('final-result-content').textContent = userTextData;
         document.getElementById('final-result-content').style.display = 'block';
-
-        // Clear user input after displaying the result
-        document.getElementById('userInput').value = "";
     }
 });
 

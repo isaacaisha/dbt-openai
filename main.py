@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_wtf import FlaskForm
-from flask_caching import Cache
 from wtforms import SubmitField, TextAreaField, validators
 from openai.error import RateLimitError
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 import re
 import time
@@ -19,11 +18,6 @@ openai.api_key = os.environ.get("OPENAI_API_KEY")
 # Initialize an empty conversation list
 conversation = []
 
-# Configure caching
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
-
-# Set the maximum number of messages to retain
-MAX_CONVERSATION_HISTORY_MINUTES = 1
 
 # ------------------------------------------------------ VARIABLES ----------------------------------------------------#
 time_sec = time.localtime()
@@ -64,50 +58,11 @@ def home():
                            error_message=error_message)  # Pass the error message if needed
 
 
-# Function to remove older messages from the conversation
-def trim_conversation():
-    global conversation
-    if conversation:
-        # Get the current timestamp
-        current_timestamp = datetime.now()
-
-        # Calculate the timestamp threshold to retain recent messages
-        timestamp_threshold = current_timestamp - timedelta(minutes=MAX_CONVERSATION_HISTORY_MINUTES)
-
-        # Initialize a new conversation list to store the filtered messages
-        filtered_conversation = []
-
-        # Iterate through the conversation and retain only recent messages
-        for msg in conversation:
-            msg_timestamp_str = msg.get('timestamp')
-
-            # Check if msg_timestamp_str is not None and is a string
-            if msg_timestamp_str and isinstance(msg_timestamp_str, str):
-                msg_timestamp = datetime.fromisoformat(msg_timestamp_str)
-                if msg_timestamp >= timestamp_threshold:
-                    filtered_conversation.append(msg)
-            else:
-                # Handle the case where timestamp is not in the expected format
-                # You can log an error or take other appropriate action here
-                print("Skipping message with invalid timestamp:", msg)
-
-        # Update the conversation with the filtered messages
-        conversation = filtered_conversation
-
-
 @app.route('/answer', methods=['POST'])
-@cache.cached(timeout=91)  # Cache the response for 19 seconds
 def answer():
     user_message = request.form['prompt']
 
-    # Trim the conversation history before adding a new message
-    trim_conversation()
-
-    # Get the current timestamp as a string
-    timestamp = datetime.now().isoformat()
-
     # Extend the conversation with the user's message
-    # Append the user's message to the conversation with a timestamp
     conversation.append({
         "role": "user",
         "content": user_message
@@ -136,7 +91,6 @@ def answer():
     return jsonify({
         "answer_text": assistant_reply,
         "answer_audio_path": audio_file_path,
-        "timestamp": timestamp
     })
 
 
