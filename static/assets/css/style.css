@@ -58,18 +58,39 @@ h3 {
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
+.crown {
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 2.3rem;
+    padding: 0.3rem;
+    width: 2.7rem;
+}
+
 .language-btn {
-    background-color:#9A30F3;
+    background-color: #9A30F3;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
-    margin: 1rem;
+    color: #fff;
     font-family: 'Merriweather', sans-serif;
+    font-size: 1.3rem;
     text-decoration: None;
-    color: #37EC37;
 }
 
 .language-btn:hover {
-    color: #fff;
+    color: #000;
+}
+
+#langEn {
+    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
+    transform: rotate(-45deg);
+}
+
+#langEs {
+    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
+    transform: rotate(45deg);
+}
+
+#langFr {
+    background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
 }
 
 #userInput, #generatedText, #final-result-content.form-control.result {
@@ -102,7 +123,6 @@ h3 {
     color: #999; /* Placeholder text color */
 }
 
-
 textarea#generatedText {
     color: #096752;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -120,8 +140,6 @@ textarea#generatedText {
     border: 0.1rem solid #73DD7E;
     color: #73DD7E;
 }
-
-*/
 
 # --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
 .label_ {
@@ -153,7 +171,7 @@ textarea#generatedText {
 #speechRecognitionButton:hover, #final_result_speech:hover {
     background-color: 9A30F3;
     border: 0.1rem solid #73DD7E;
-    color: blue;
+    color: #9A30F3;
 }
 
 #generateButton {
@@ -177,11 +195,6 @@ textarea#generatedText {
     color: #73DD7E;
 }
 
-/*
-#writing_text {
-    color: #9A30F3;
-}
-*/
 #final-result-content {
     color: #1295FA;
 }
@@ -206,7 +219,6 @@ textarea#writing_text.form-control, #final-result-content {
     padding: 0.1rem;
     text-align: center;
     white-space: pre-line;
-
 }
 
 hr {
