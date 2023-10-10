@@ -1,3 +1,29 @@
+// Disable all buttons with the class "btn" except language selection buttons
+document.querySelectorAll('.btn:not(.language-btn)').forEach(function(btn) {
+    btn.disabled = true;
+});
+
+// Add click event listeners to language buttons
+var languageButtons = document.querySelectorAll('.language-btn');
+languageButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+        // Remove the 'active' class from all buttons
+        languageButtons.forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        // Add the 'active' class to the clicked button
+        button.classList.add('active');
+
+        // Enable all buttons with the class "btn"
+        document.querySelectorAll('.btn').forEach(function(btn) {
+            btn.disabled = false;
+        });
+    });
+});
+
+
+
+
 $(document).ready(function () {
     $("#generateButton").click(function () {
         var userInput = $("#userInput").val();
