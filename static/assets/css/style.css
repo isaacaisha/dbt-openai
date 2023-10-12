@@ -79,6 +79,10 @@ h3 {
     color: #000;
 }
 
+#langAr {
+    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
+}
+
 #langEn {
     background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
     transform: rotate(-45deg);
