@@ -18,6 +18,9 @@ if ('webkitSpeechRecognition' in window) {
         const transcript = event.results[0][0].transcript;
         userSpeechData = transcript; // Update userSpeechData
         userInput.value = transcript; // Update the userInput element
+
+        // Print the speech content to the console
+        console.log(userSpeechData);
     };
 
     recognition.onend = function () {

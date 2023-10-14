@@ -5,9 +5,9 @@ from openai.error import RateLimitError
 from datetime import datetime
 import os
 import re
-import time
 import openai
 from gtts import gTTS
+
 
 app = Flask(__name__)
 app.secret_key = "any-string-you-want-just-keep-it-secret"
@@ -15,17 +15,9 @@ app.secret_key = "any-string-you-want-just-keep-it-secret"
 # Set up OpenAI API credentials
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
+# ------------------------------------------------------ VARIABLES ----------------------------------------------------#
 # Initialize an empty conversation list
 conversation = []
-
-
-# ------------------------------------------------------ VARIABLES ----------------------------------------------------#
-time_sec = time.localtime()
-current_year = time_sec.tm_year
-# getting the current date and time
-current_datetime = datetime.now()
-# getting the time from the current date and time in the given format
-current_time = current_datetime.strftime("%a %d %B")
 
 
 # -------------------------------------------------------- CLASS ------------------------------------------------------#
@@ -42,25 +34,22 @@ def home():
     answer = None  # Initialize the generated text variable
 
     if request.method == "POST" and writing_text_form.validate_on_submit():
-        writing_text_data = request.form['writing_text']  # Get the input from the textarea
+        # writing_text_data = request.form['writing_text']  # Get the input from the textarea
 
         try:
-            # Use the get_completion function to generate text
-            answer = answer(writing_text_data)
             # Process the answer before passing it to the template
             answer = post_process_answer(answer)
         except RateLimitError:
             error_message = "You exceeded your current quota, please check your plan and billing details."
 
-    return render_template('index.html', year=current_year, date=current_time,
-                           writing_text_form=writing_text_form,
-                           answer=answer,  # Pass the generated text to the template
-                           error_message=error_message)  # Pass the error message if needed
+    return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
+                           date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message)
 
 
 @app.route('/answer', methods=['POST'])
 def answer():
     user_message = request.form['prompt']
+    print(f'User Input:\n{user_message} 😎\n')
 
     # Extend the conversation with the user's message
     conversation.append({
@@ -71,7 +60,8 @@ def answer():
     # Use OpenAI's GPT to generate the answer based on the conversation
     response = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
-        messages=conversation
+        messages=conversation,
+        temperature=0  # this is the degree of randomness model's output
     )
 
     # Get the assistant's reply
@@ -86,6 +76,7 @@ def answer():
     # Create a temporary audio file
     audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
+    print(f'Chat GPT Response:\n{assistant_reply} 😝\n')
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
@@ -103,7 +94,7 @@ def serve_audio():
 
 # Define a function for post-processing the answer
 def post_process_answer(answer):
-    # You can add your post-processing logic here
+    # You can add your post-processing logic here,
     # For example, you can filter out unwanted content or format the answer
     # Example post-processing:
 
