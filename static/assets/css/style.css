@@ -65,7 +65,7 @@ h3 {
     width: 2.7rem;
 }
 
-.language-btn {
+.language-btn, .btn-story {
     background-color: #9A30F3;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
@@ -75,7 +75,7 @@ h3 {
     text-decoration: None;
 }
 
-.language-btn:hover {
+.language-btn:hover, .btn-story:hover {
     color: #000;
 }
 
@@ -97,11 +97,11 @@ h3 {
     background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
 }
 
-#langFr {
+#langFr, .btn-story {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
 }
 
-#userInput, #generatedText, #final-result-content.form-control.result {
+#userInput, #generatedText, #final-result-content.form-control.result, .textarea-memory {
     border: 0.1rem solid #1295FA;
     border-radius: 0.9rem;
     color:#0041F6;
@@ -238,7 +238,7 @@ hr {
 
 #footer {
     margin-bottom: 1.09rem;
-    margin-top: 3rem;
+    margin-top: 1.09rem;
     text-align: center;
 }
 
