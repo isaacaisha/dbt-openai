@@ -1,46 +1,44 @@
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, validators
-from openai.error import RateLimitError
+import openai
 from datetime import datetime
 import os
-import re
-import openai
+from dotenv import load_dotenv, find_dotenv
 from gtts import gTTS
-
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import ConversationChain
+from langchain.memory import ConversationBufferMemory
 
 app = Flask(__name__)
+_ = load_dotenv(find_dotenv())  # read local .env file
+openai.api_key = os.environ['OPENAI_API_KEY']
 app.secret_key = "any-string-you-want-just-keep-it-secret"
 
-# Set up OpenAI API credentials
-openai.api_key = os.environ.get("OPENAI_API_KEY")
-
-# ------------------------------------------------------ VARIABLES ----------------------------------------------------#
-# Initialize an empty conversation list
-conversation = []
+# Initialize an empty conversation chain
+llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo")  # Set your desired LLM model here
+memory = ConversationBufferMemory()
+conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
 
-# -------------------------------------------------------- CLASS ------------------------------------------------------#
+# Define a Flask form
 class TextAreaForm(FlaskForm):
     writing_text = TextAreaField('Start Writing', [validators.InputRequired(message="Please enter text.")])
     submit = SubmitField()
 
 
-# ------------------------------------------------------- FUNCTION ----------------------------------------------------#
 @app.route("/", methods=["GET", "POST"])
 def home():
     writing_text_form = TextAreaForm()
-    error_message = None  # Initialize an error message variable
-    answer = None  # Initialize the generated text variable
+    error_message = None
+    answer = None
 
     if request.method == "POST" and writing_text_form.validate_on_submit():
-        # writing_text_data = request.form['writing_text']  # Get the input from the textarea
+        user_input = request.form['writing_text']
 
-        try:
-            # Process the answer before passing it to the template
-            answer = post_process_answer(answer)
-        except RateLimitError:
-            error_message = "You exceeded your current quota, please check your plan and billing details."
+        # Use the LLM to generate a response based on user input
+        response = conversation.predict(input=user_input)
+        answer = response['output']
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
                            date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message)
@@ -52,23 +50,14 @@ def answer():
     print(f'User Input:\n{user_message} 😎\n')
 
     # Extend the conversation with the user's message
-    conversation.append({
-        "role": "user",
-        "content": user_message
-    })
+    response = conversation.predict(input=user_message)
 
-    # Use OpenAI's GPT to generate the answer based on the conversation
-    response = openai.ChatCompletion.create(
-        model='gpt-3.5-turbo',
-        messages=conversation,
-        temperature=0  # this is the degree of randomness model's output
-    )
-
-    # Get the assistant's reply
-    assistant_reply = response.choices[0].message['content']
-
-    # Post-process the answer for readability (if needed)
-    assistant_reply = post_process_answer(assistant_reply)
+    # Check if the response is a string, and if so, use it as the assistant's reply
+    if isinstance(response, str):
+        assistant_reply = response
+    else:
+        # If it's not a string, access the assistant's reply as you previously did
+        assistant_reply = response.choices[0].message['content']
 
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply)
@@ -76,7 +65,7 @@ def answer():
     # Create a temporary audio file
     audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
-    print(f'Chat GPT Response:\n{assistant_reply} 😝\n')
+    print(f'LLM Response:\n{assistant_reply} 😝\n')
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
@@ -85,25 +74,10 @@ def answer():
     })
 
 
-# Serve the audio file
 @app.route('/audio')
 def serve_audio():
     audio_file_path = 'temp_audio.mp3'
     return send_file(audio_file_path, as_attachment=True)
-
-
-# Define a function for post-processing the answer
-def post_process_answer(answer):
-    # You can add your post-processing logic here,
-    # For example, you can filter out unwanted content or format the answer
-    # Example post-processing:
-
-    # Convert newlines to HTML line breaks
-    answer = answer.replace('\n', '<br>')
-
-    # Remove HTML tags
-    answer = re.sub('<.*?>', '', answer)
-    return answer
 
 
 if __name__ == '__main__':
