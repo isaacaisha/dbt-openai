@@ -75,7 +75,7 @@ h3 {
     text-decoration: None;
 }
 
-.language-btn:hover, .btn-story:hover {
+.language-btn:hover {
     color: #000;
 }
 
@@ -182,7 +182,7 @@ textarea#generatedText {
     color: #9A30F3;
 }
 
-#generateButton {
+#generateButton, .btn-story:hover {
     color: #37EC37;
 }
 
