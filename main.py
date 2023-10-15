@@ -1,19 +1,27 @@
+import os
+import openai
+from dotenv import load_dotenv, find_dotenv
+import secrets
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, validators
-import openai
 from datetime import datetime
-import os
-from dotenv import load_dotenv, find_dotenv
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
+import warnings
+
+warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
 _ = load_dotenv(find_dotenv())  # read local .env file
 openai.api_key = os.environ['OPENAI_API_KEY']
-app.secret_key = "any-string-you-want-just-keep-it-secret"
+# Generate a random secret key
+secret_key = secrets.token_hex(16)
+
+# Set it as the Flask application's secret key
+app.secret_key = secret_key
 
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo")  # Set your desired LLM model here
@@ -30,18 +38,27 @@ class TextAreaForm(FlaskForm):
 @app.route("/", methods=["GET", "POST"])
 def home():
     writing_text_form = TextAreaForm()
+    response = None
     error_message = None
     answer = None
+    memory_save = None  # Initialize memory_save with None
 
     if request.method == "POST" and writing_text_form.validate_on_submit():
         user_input = request.form['writing_text']
 
         # Use the LLM to generate a response based on user input
         response = conversation.predict(input=user_input)
-        answer = response['output']
+
+        answer = response['output'] if response else None
+
+        memory_save = memory.save_context({"input": user_input}, {"output": response['output']})
+    # Initialize memory_buffer as an empty list or retrieve it from your memory object
+    memory_load = memory.load_memory_variables({})
+    memory.buffer
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
-                           date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message)
+                           memory_load=memory_load, memory_save=memory_save, date=datetime.now().strftime("%a %d %B %Y"),
+                           error_message=error_message)
 
 
 @app.route('/answer', methods=['POST'])

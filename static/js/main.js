@@ -117,3 +117,13 @@ document.getElementById('userInput').addEventListener('input', function () {
 // Initially, hide the "Final Result" content and error message
 document.getElementById('final-result-content').style.display = 'none';
 document.getElementById('error-message').style.display = 'none';
+
+// JavaScript to toggle the visibility of the memory-load btn
+document.getElementById("showResultButton").addEventListener("click", function() {
+    var resultDiv = document.getElementById("resultDiv");
+    if (resultDiv.style.display === "none") {
+        resultDiv.style.display = "block";
+    } else {
+        resultDiv.style.display = "none";
+    }
+});

@@ -132,7 +132,18 @@
         </div>
         <textarea class="form-control result" id="final-result-speech-content" style="display: none;"></textarea>
     </div>
-    <hr style="color:green">
+    <hr class="mb-3" style="color:green">
+</div>
+
+<!-- Add a button to show the history -->
+<div class="text-center">
+    <button id="showResultButton" type="button" class="btn text-center btn-story mb-3">Show Load History</button>
+</div>
+<!-- Add a div to display the history -->
+<div id="resultDiv" style="display: none;" class="text-center">
+    {% for messages in memory_load %}
+        <textarea style="color:green;" class="textarea-memory">{{ memory_load }}</textarea>
+    {% endfor %}
 </div>
 
 {% endblock %}
