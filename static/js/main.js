@@ -118,12 +118,20 @@ document.getElementById('userInput').addEventListener('input', function () {
 document.getElementById('final-result-content').style.display = 'none';
 document.getElementById('error-message').style.display = 'none';
 
+
 // JavaScript to toggle the visibility of the memory-load btn
-document.getElementById("showResultButton").addEventListener("click", function() {
-    var resultDiv = document.getElementById("resultDiv");
-    if (resultDiv.style.display === "none") {
-        resultDiv.style.display = "block";
+function toggleResultMemo() {
+    var resultDiv = document.getElementById("resultMemo");
+    var memoryTextarea = document.getElementById("memoryTextarea");
+
+    if (memoryTextarea.value.trim() !== "") {
+        if (resultDiv.style.display === "none" || resultDiv.style.display === "") {
+            resultDiv.style.display = "block";
+        } else {
+            resultDiv.style.display = "none";
+        }
     } else {
-        resultDiv.style.display = "none";
+        errorMessage.style.display = "block"; // Show the error message
+        /* alert("No data in memory_buffer to display."); */
     }
-});
+}

@@ -18,13 +18,13 @@ app = Flask(__name__)
 _ = load_dotenv(find_dotenv())  # read local .env file
 openai.api_key = os.environ['OPENAI_API_KEY']
 # Generate a random secret key
-secret_key = secrets.token_hex(16)
+secret_key = secrets.token_hex(19)
 
 # Set it as the Flask application's secret key
 app.secret_key = secret_key
 
 # Initialize an empty conversation chain
-llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo")  # Set your desired LLM model here
+llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")  # Set your desired LLM model here
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
@@ -38,7 +38,6 @@ class TextAreaForm(FlaskForm):
 @app.route("/", methods=["GET", "POST"])
 def home():
     writing_text_form = TextAreaForm()
-    response = None
     error_message = None
     answer = None
     memory_save = None  # Initialize memory_save with None
@@ -54,11 +53,11 @@ def home():
         memory_save = memory.save_context({"input": user_input}, {"output": response['output']})
     # Initialize memory_buffer as an empty list or retrieve it from your memory object
     memory_load = memory.load_memory_variables({})
-    memory.buffer
+    memory_buffer = memory.buffer
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
-                           memory_load=memory_load, memory_save=memory_save, date=datetime.now().strftime("%a %d %B %Y"),
-                           error_message=error_message)
+                           memory_load=memory_load, memory_save=memory_save, date=datetime.now().strftime("%a %d %B %Y")
+                           , error_message=error_message, memory_buffer=memory_buffer)
 
 
 @app.route('/answer', methods=['POST'])

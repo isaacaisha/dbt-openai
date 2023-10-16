@@ -109,7 +109,22 @@ h3 {
     font-display: swap;
     height: 91px;
     min-height: 55px;
+    padding: 0.3rem;
     width: 100%;
+}
+
+.textarea-memory {
+    height: 199px;
+    padding: 0.9rem;
+}
+
+.error-message {
+    color: crimson;
+    font-family: 'Cardo';
+    margin: auto;
+    padding: 0.3rem;
+    text-align: center;
+    width: 73%;
 }
 
 #final-result-speech-content {
