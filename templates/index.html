@@ -144,12 +144,12 @@
     </div>
     <button id="showResultButton" type="button" class="btn text-center btn-story mb-3" onclick="toggleResultMemo()">Show History</button>
 </div>
-
 <!-- Add a div to display the history -->
 <div id="resultMemo" style="display: none;" class="text-center">
     {% for messages in memory_load %}
-        <!--<textarea style="color:green;" class="textarea-memory">{{ memory_load }}</textarea>-->
-        <textarea style="color:green;" class="textarea-memory" id="memoryTextarea">{{ memory_buffer }}</textarea>
+        <br>
+        <!--<textarea class="textarea-memory">{{ memory_load }}</textarea>-->
+        <textarea class="textarea-memory" id="memoryTextarea">{{ memory_buffer }}</textarea>
     {% endfor %}
 </div>
 

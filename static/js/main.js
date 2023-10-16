@@ -119,10 +119,12 @@ document.getElementById('final-result-content').style.display = 'none';
 document.getElementById('error-message').style.display = 'none';
 
 
+
 // JavaScript to toggle the visibility of the memory-load btn
 function toggleResultMemo() {
     var resultDiv = document.getElementById("resultMemo");
     var memoryTextarea = document.getElementById("memoryTextarea");
+    var errorMessage = document.getElementById("errorMessage");
 
     if (memoryTextarea.value.trim() !== "") {
         if (resultDiv.style.display === "none" || resultDiv.style.display === "") {
@@ -130,8 +132,10 @@ function toggleResultMemo() {
         } else {
             resultDiv.style.display = "none";
         }
+
+        // Set the line height for the text area (adjust the value as needed)
+        memoryTextarea.style.lineHeight = "1.9"; // Adjust the line height as needed
     } else {
         errorMessage.style.display = "block"; // Show the error message
-        /* alert("No data in memory_buffer to display."); */
     }
 }

@@ -114,7 +114,9 @@ h3 {
 }
 
 .textarea-memory {
+    color: #37AB37;
     height: 199px;
+    #line-height: 1.9rem;
     padding: 0.9rem;
 }
 
