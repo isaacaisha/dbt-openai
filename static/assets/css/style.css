@@ -227,6 +227,14 @@ textarea#writing_text.form-control, #final-result-content {
     padding: 0.5rem;
 }
 
+#showResultButton {
+    font-size: 1.09rem;
+}
+
+#content > div:nth-child(11) > a {
+    font-size: 0.7rem;
+}
+
 .error {
     color: crimson;
     background-color: #fff;

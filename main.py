@@ -10,7 +10,6 @@ from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
-from langchain.memory import ConversationSummaryBufferMemory
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -27,7 +26,6 @@ app.secret_key = secret_key
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")  # Set your desired LLM model here
 memory = ConversationBufferMemory()
-memory_summa = ConversationSummaryBufferMemory(llm=llm, max_token_limit=91)
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
 
