@@ -1,0 +1,55 @@
+{% extends 'header.html' %}
+
+{% block title %} Welcom€ to{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container-fluid mb-5">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="container-fluid py-1">
+            <h1 class="">DBT OpenAI Speech Generation ¡!¡</h1>
+        </div>
+    </div>
+</div>
+
+<hr class="mb-3" style="color:green;">
+
+<!-- Add a div to display the history -->
+<div id="resultMemo" style="" class="text-center mb-3">
+
+    <h3>Memory Buffer</h3>
+    {% for messages in memory_load %}
+        <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
+    {% endfor %}
+
+    <hr class="mb-3" style="color:yellow;">
+
+    <h3>Memory Load</h3>
+    {% for messages in memory_load %}
+        <textarea class="textarea-memory mb-3">{{ memory_load }}</textarea>
+    {% endfor %}
+
+    <hr class="mb-3" style="color:red;">
+
+    <h3>Conversation</h3>
+    <textarea class="textarea-memory">{{ conversation }}</textarea>
+
+</div>
+
+<hr class="mb-3" style="color:yellow;">
+
+<div class="text-center">
+    <a href="/" class="btn text-center btn-story mb-3">Back Home -¡!¡-</a>
+</div>
+
+<hr style="color:green;">
+
+{% endblock %}
+
+{% block footer %} {% endblock %}

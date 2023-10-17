@@ -10,6 +10,7 @@ from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationSummaryBufferMemory
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -26,6 +27,7 @@ app.secret_key = secret_key
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")  # Set your desired LLM model here
 memory = ConversationBufferMemory()
+memory_summa = ConversationSummaryBufferMemory(llm=llm, max_token_limit=91)
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
 
@@ -38,7 +40,6 @@ class TextAreaForm(FlaskForm):
 @app.route("/", methods=["GET", "POST"])
 def home():
     writing_text_form = TextAreaForm()
-    error_message = None
     answer = None
     memory_save = None  # Initialize memory_save with None
 
@@ -56,8 +57,8 @@ def home():
     memory_buffer = memory.buffer
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
-                           memory_load=memory_load, memory_save=memory_save, date=datetime.now().strftime("%a %d %B %Y")
-                           , error_message=error_message, memory_buffer=memory_buffer)
+                           memory_load=memory_load, memory_save=memory_save, memory_buffer=memory_buffer,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/answer', methods=['POST'])
@@ -94,6 +95,18 @@ def answer():
 def serve_audio():
     audio_file_path = 'temp_audio.mp3'
     return send_file(audio_file_path, as_attachment=True)
+
+
+@app.route('/show-history')
+def show_story():
+    memory_load = memory.load_memory_variables({})
+    memory_buffer = memory.buffer
+    print(f'Memory Buffer:\n{memory_buffer}\n')
+    print(f'Memory Load:\n{memory_load}\n')
+    print(f'Conversation:\n{conversation}\n')
+
+    return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
+                           conversation=conversation, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 if __name__ == '__main__':
