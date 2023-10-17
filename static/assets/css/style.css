@@ -120,15 +120,6 @@ h3 {
     padding: 0.9rem;
 }
 
-.error-message {
-    color: crimson;
-    font-family: 'Cardo';
-    margin: auto;
-    padding: 0.3rem;
-    text-align: center;
-    width: 73%;
-}
-
 #final-result-speech-content {
     border: 0.1rem solid #1295FA;
     border-radius: 0.9rem;

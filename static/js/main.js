@@ -124,7 +124,6 @@ document.getElementById('error-message').style.display = 'none';
 function toggleResultMemo() {
     var resultDiv = document.getElementById("resultMemo");
     var memoryTextarea = document.getElementById("memoryTextarea");
-    var errorMessage = document.getElementById("errorMessage");
 
     if (memoryTextarea.value.trim() !== "") {
         if (resultDiv.style.display === "none" || resultDiv.style.display === "") {
@@ -135,7 +134,23 @@ function toggleResultMemo() {
 
         // Set the line height for the text area (adjust the value as needed)
         memoryTextarea.style.lineHeight = "1.9"; // Adjust the line height as needed
-    } else {
-        errorMessage.style.display = "block"; // Show the error message
     }
 }
+
+// Add a click event listener to the "Show History" button
+document.getElementById('showResultButton').addEventListener('click', function () {
+    if (memoryTextarea.value.trim() === "") {
+        // Display an error message
+        document.getElementById('error-message').textContent = "Please,\nConverse with the App First,\nThen Reload the Page\n 😝";
+        document.getElementById('error-message').style.display = 'block';
+        resultDiv.style.display = 'none';
+    } else {
+        // Display the content in the "Final Result" section
+        document.getElementById('error-message').textContent = "";
+        document.getElementById('error-message').style.display = 'none';
+
+        document.getElementById('textarea-memory').textContent = memoryTextarea.value;
+        document.getElementById('textarea-memory').style.display = 'block';
+        resultDiv.style.display = 'block';
+    }
+});
