@@ -144,7 +144,15 @@
 
 <div id="resultMemo" style="display: none;" class="text-center">
     {% for messages in memory_load %}
-            <textarea class="textarea-memory" id="memoryTextarea">{{ memory_buffer }}</textarea>
+        <h3>Conversation</h3>
+        <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
+
+    <hr class="mb-3" style="color:yellow;">
+
+    <h3>Summary</h3>
+    <textarea class="textarea-memory mb-3" style="color:purple;">{{ summary }}</textarea>
+
+    <hr class="mb-3" style="color:red;">
     {% endfor %}
 </div>
 

@@ -27,6 +27,7 @@ app.secret_key = secret_key
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")  # Set your desired LLM model here
 memory = ConversationBufferMemory()
+memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=91)
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
 
@@ -52,8 +53,11 @@ def home():
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
 
+    memory_summary.save_context({"input": f"Summarize the memory:"}, {"output": f"{memory}"})
+    summary = memory_summary.load_memory_variables({})
+
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
-                           memory_load=memory_load, memory_buffer=memory_buffer,
+                           memory_load=memory_load, memory_buffer=memory_buffer, summary=summary,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -101,13 +105,12 @@ def show_story():
     print(f'Memory Load:\n{memory_load}\n')
     print(f'Conversation:\n{conversation}\n')
 
-    memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=91)
     memory_summary.save_context({"input": f"Summarize the memory:"}, {"output": f"{memory}"})
     summary = memory_summary.load_memory_variables({})
     print(f'Summary:\n{summary}\n')
 
     return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
-                           conversation=conversation, date=datetime.now().strftime("%a %d %B %Y"), summary=summary)
+                           conversation=conversation, summary=summary, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 if __name__ == '__main__':
