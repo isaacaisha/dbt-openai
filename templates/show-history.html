@@ -20,27 +20,21 @@
 
 <hr class="mb-3" style="color:green;">
 
-<!-- Add a div to display the history -->
 <div id="resultMemo" style="" class="text-center mb-3">
-
     <h3>Memory Buffer</h3>
-    {% for messages in memory_load %}
-        <textarea class="textarea-memory mb-3" id="memoryTextarea" style="color:green;">{{ memory_buffer }}</textarea>
-    {% endfor %}
+    <textarea class="textarea-memory mb-3" style="color:green;">{{ memory_buffer }}</textarea>
 
     <hr class="mb-3" style="color:yellow;">
 
     <h3>Memory Load</h3>
-    {% for messages in memory_load %}
-        <textarea class="textarea-memory mb-3" style="color:gold;">{{ memory_load }}</textarea>
-    {% endfor %}
+    <textarea class="textarea-memory mb-3" style="color:gold;">{{ memory_load }}</textarea>
 
     <hr class="mb-3" style="color:red;">
 
     <h3>Conversation</h3>
     <textarea class="textarea-memory" style="color:red;">{{ memory_buffer }}</textarea>
-
 </div>
+
 
 <hr class="mb-3" style="color:yellow;">
 
