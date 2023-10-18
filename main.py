@@ -10,6 +10,7 @@ from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationSummaryBufferMemory
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -18,7 +19,7 @@ app = Flask(__name__)
 _ = load_dotenv(find_dotenv())  # read local .env file
 openai.api_key = os.environ['OPENAI_API_KEY']
 # Generate a random secret key
-secret_key = secrets.token_hex(19)
+secret_key = secrets.token_hex(199)
 
 # Set it as the Flask application's secret key
 app.secret_key = secret_key
@@ -39,7 +40,6 @@ class TextAreaForm(FlaskForm):
 def home():
     writing_text_form = TextAreaForm()
     answer = None
-    memory_save = None  # Initialize memory_save with None
 
     if request.method == "POST" and writing_text_form.validate_on_submit():
         user_input = request.form['writing_text']
@@ -49,13 +49,11 @@ def home():
 
         answer = response['output'] if response else None
 
-        memory_save = memory.save_context({"input": user_input}, {"output": response['output']})
-    # Initialize memory_buffer as an empty list or retrieve it from your memory object
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
-                           memory_load=memory_load, memory_save=memory_save, memory_buffer=memory_buffer,
+                           memory_load=memory_load, memory_buffer=memory_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -103,8 +101,13 @@ def show_story():
     print(f'Memory Load:\n{memory_load}\n')
     print(f'Conversation:\n{conversation}\n')
 
+    memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=91)
+    memory_summary.save_context({"input": f"Summarize the memory:"}, {"output": f"{memory}"})
+    summary = memory_summary.load_memory_variables({})
+    print(f'Summary:\n{summary}\n')
+
     return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
-                           conversation=conversation, date=datetime.now().strftime("%a %d %B %Y"))
+                           conversation=conversation, date=datetime.now().strftime("%a %d %B %Y"), summary=summary)
 
 
 if __name__ == '__main__':
