@@ -53,11 +53,12 @@ def home():
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
 
-    memory_summary.save_context({"input": f"Summarize the memory:"}, {"output": f"{memory}"})
-    summary = memory_summary.load_memory_variables({})
+    memory_summary.save_context({"input": f"Summarize the memory.buffer:"}, {"output": f"{memory_buffer}"})
+    summary_buffer = memory_summary.load_memory_variables({})
+    print(f'Summary Buffer:\n{summary_buffer}\n')
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
-                           memory_load=memory_load, memory_buffer=memory_buffer, summary=summary,
+                           memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -105,12 +106,12 @@ def show_story():
     print(f'Memory Load:\n{memory_load}\n')
     print(f'Conversation:\n{conversation}\n')
 
-    memory_summary.save_context({"input": f"Summarize the memory:"}, {"output": f"{memory}"})
-    summary = memory_summary.load_memory_variables({})
-    print(f'Summary:\n{summary}\n')
+    memory_summary.save_context({"input": f"Summarize the conversation:"}, {"output": f"{conversation}"})
+    summary_conversation = memory_summary.load_memory_variables({})
+    print(f'Summary Conversation:\n{summary_conversation}\n')
 
     return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
-                           conversation=conversation, summary=summary, date=datetime.now().strftime("%a %d %B %Y"))
+                           conversation=conversation, summary_conversation=summary_conversation, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 if __name__ == '__main__':
