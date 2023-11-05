@@ -121,16 +121,11 @@ def show_conversation_api():
     memory_buffer = memory.buffer
 
     if memory_buffer:
-        conversation_lines = memory_buffer.split('\n')  # Split the conversation into lines
-
-        # Join the lines with '<br>' to create line breaks in HTML
-        conversation_text = '<br>'.join(conversation_lines)
-
         print(f'Conversation:\n{memory_buffer}\n')
-        return jsonify(f'"conversation_data": {conversation_text}')
+        return jsonify({"conversation_data": memory_buffer})
     else:
-        print(f'"message": First, start a conversation  😝 ¡!¡')
-        return '"message": First, start a conversation  😝 ¡!¡'
+        print(f'Conversation:\n{memory_buffer}\n')
+        return jsonify({"message": 'Start a conversation first 😝'})
 
 
 @app.route('/show-summary-api')
