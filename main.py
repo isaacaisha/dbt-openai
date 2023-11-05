@@ -111,7 +111,37 @@ def show_story():
     print(f'Summary Conversation:\n{summary_conversation}\n')
 
     return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
-                           conversation=conversation, summary_conversation=summary_conversation, date=datetime.now().strftime("%a %d %B %Y"))
+                           conversation=conversation, summary_conversation=summary_conversation,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+# --------------------------------------------------- API --------------------------------------------------------------
+@app.route('/show-conversation-api')
+def show_conversation_api():
+    memory_buffer = memory.buffer
+
+    if memory_buffer:
+        conversation_lines = memory_buffer.split('\n')  # Split the conversation into lines
+
+        # Join the lines with '<br>' to create line breaks in HTML
+        conversation_text = '<br>'.join(conversation_lines)
+
+        print(f'Conversation:\n{memory_buffer}\n')
+        return f'{conversation_text}'
+    else:
+        print(f'"message": First, start a conversation  😝 ¡!¡')
+        return '"message": First, start a conversation  😝 ¡!¡'
+
+
+@app.route('/show-summary-api')
+def show_history_api():
+    memory_buffer = memory.buffer
+    memory_summary.save_context({"input": f"Summarize the memory.buffer:"}, {"output": f"{memory_buffer}"})
+    summary_buffer = memory_summary.load_memory_variables({})
+    print(f'Summary Buffer:\n{summary_buffer}\n')
+
+    if summary_buffer:
+        return jsonify({"conversation_summary_data": summary_buffer})
 
 
 if __name__ == '__main__':
