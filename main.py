@@ -127,7 +127,7 @@ def show_conversation_api():
         conversation_text = '<br>'.join(conversation_lines)
 
         print(f'Conversation:\n{memory_buffer}\n')
-        return f'{conversation_text}'
+        return jsonify(f'"conversation_data": {conversation_text}')
     else:
         print(f'"message": First, start a conversation  😝 ¡!¡')
         return '"message": First, start a conversation  😝 ¡!¡'
