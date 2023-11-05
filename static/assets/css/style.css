@@ -231,7 +231,7 @@ textarea#writing_text.form-control, #final-result-content {
     font-size: 1.09rem;
 }
 
-#content > div:nth-child(11) > a {
+.detail {
     font-size: 0.7rem;
 }
 
