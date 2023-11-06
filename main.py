@@ -118,14 +118,14 @@ def show_story():
 # --------------------------------------------------- API --------------------------------------------------------------
 @app.route('/show-conversation-api')
 def show_conversation_api():
-    memory_buffer = memory.buffer
+    memory_load = memory.load_memory_variables({})
 
-    if memory_buffer:
-        print(f'Conversation:\n{memory_buffer}\n')
-        return jsonify({"conversation_data": memory_buffer})
+    if memory_load:
+        print(f'Conversation:\n{memory_load}\n')
+        return jsonify({"conversation_data": memory_load})
     else:
-        print(f'Conversation:\n{memory_buffer}\n')
-        return jsonify({"message": 'Start a conversation first 😝'})
+        print(f'Start a conversation first 😝')
+        return jsonify({"message": "Start a conversation first 😝"})
 
 
 @app.route('/show-summary-api')
