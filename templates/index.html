@@ -4,7 +4,8 @@
 
 {% block head %}
     {{ super() }}
-<link rel="shortcut icon" href="static/assets/images/favicon5.ico" type="image/x-icon">{% endblock %}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
+{% endblock %}
 
 {% block content %}
 
@@ -146,23 +147,19 @@
         <h3>Conversation</h3>
         <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
 
-        <hr class="mb-3" style="color:yellow;">
+    <hr class="mb-3" style="color:yellow;">
 
-        <h3>Summary</h3>
-        <textarea class="textarea-memory mb-3" style="color:purple;">{{ summary_buffer }}</textarea>
+    <h3>Summary</h3>
+    <textarea class="textarea-memory mb-3" style="color:purple;">{{ summary_buffer }}</textarea>
 
-        <hr class="mb-3" style="color:red;">
+    <hr class="mb-3" style="color:red;">
     {% endfor %}
 </div>
 
-<div class="text-center detail mb1">
+<div class="text-center detail mb5">
     <a href="/show-history" style="color:#fff;">Conversation Details</a>
 </div>
 
-<div class="text-center detail mb5">
-    <a href="https://dbt-openai-a853e0d6a59a.herokuapp.com/docs" style="color:#fff;">FastAPI ¡!¡</a>
-</div>
-
-{% endblock %}A
+{% endblock %}
 
 {% block footer %} {% endblock %}
