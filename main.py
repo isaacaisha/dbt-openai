@@ -115,30 +115,6 @@ def show_story():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-# --------------------------------------------------- API --------------------------------------------------------------
-@app.route('/show-conversation-api')
-def show_conversation_api():
-    memory_load = memory.load_memory_variables({})
-
-    if memory_load:
-        print(f'Conversation:\n{memory_load}\n')
-        return jsonify({"conversation_data": memory_load})
-    else:
-        print(f'Start a conversation first 😝')
-        return jsonify({"message": "Start a conversation first 😝"})
-
-
-@app.route('/show-summary-api')
-def show_history_api():
-    memory_buffer = memory.buffer
-    memory_summary.save_context({"input": f"Summarize the memory.buffer:"}, {"output": f"{memory_buffer}"})
-    summary_buffer = memory_summary.load_memory_variables({})
-    print(f'Summary Buffer:\n{summary_buffer}\n')
-
-    if summary_buffer:
-        return jsonify({"conversation_summary_data": summary_buffer})
-
-
 if __name__ == '__main__':
     # Clean up any previous temporary audio files
     temp_audio_file = 'temp_audio.mp3'
