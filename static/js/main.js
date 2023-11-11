@@ -139,6 +139,9 @@ function toggleResultMemo() {
 
 // Add a click event listener to the "Show History" button
 document.getElementById('showResultButton').addEventListener('click', function () {
+    var memoryTextarea = document.getElementById("memoryTextarea");
+    var resultDiv = document.getElementById("resultMemo"); // Define resultDiv here
+
     if (memoryTextarea.value.trim() === "") {
         // Display an error message
         document.getElementById('error-message').textContent = "Please,\nConverse with the App First,\nThen Reload the Page\n 😝";

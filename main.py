@@ -100,13 +100,13 @@ def answer():
     current_time = datetime.now(pytz.timezone('Europe/Paris'))
 
     if isinstance(response, str):
+        #llm_response = response  # Store the response to be saved in the database
         # If the response is a string, use it directly as the assistant's reply
         assistant_reply = response
-        llm_response = response  # Store the response to be saved in the database
     else:
         # Access the assistant's reply from the response object
         assistant_reply = response['output']
-        llm_response = response.choices[0].message['content']  # Save the response content for the database
+        #llm_response = response.choices[0].message['content']  # Save the response content for the database
 
     # Save the conversation summary
     memory_buffer = memory.buffer
@@ -119,7 +119,7 @@ def answer():
     INSERT INTO memory (user_message, llm_response, conversations_summary, published, rating, created_at)
     VALUES (%s, %s, %s, %s, %s, %s)
     """
-    cursor.execute(insert_query, (user_message, llm_response, conversations_summary_str, True, 5, current_time))
+    cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, True, 5, current_time))
     conn.commit()
 
     # Convert the text response to speech using gTTS
@@ -129,8 +129,8 @@ def answer():
     audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
     print(f'User Input:\n{user_message} 😎\n')
-    print(f'LLM Response:\n{llm_response} 😝\n')
-    print(f'conversations:\n{conversations_summary_str}')
+    print(f'Assistant_reply:\n{assistant_reply} 😝\n')
+    print(f'Conversations:\n{conversations_summary_str}')
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
@@ -153,7 +153,7 @@ def show_story():
     print(f'Memory Load:\n{memory_load}\n')
     print(f'Conversation:\n{conversation}\n')
 
-    memory_summary.save_context({"input": f"Summarize the conversation:"}, {"output": f"{conversation}"})
+    memory_summary.save_context({"input": f"Summarize the whole {conversation}:"}, {"output": f"{conversation}"})
     summary_conversation = memory_summary.load_memory_variables({})
     print(f'Summary Conversation:\n{summary_conversation}\n')
 
