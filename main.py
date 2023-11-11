@@ -13,6 +13,14 @@ from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 import warnings
 
+from pydantic import BaseModel
+from typing import Optional
+
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import pytz
+import json
+
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
@@ -35,6 +43,26 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 class TextAreaForm(FlaskForm):
     writing_text = TextAreaField('Start Writing', [validators.InputRequired(message="Please enter text.")])
     submit = SubmitField()
+
+
+class Memory(BaseModel):
+    user_message: str
+    llm_response: str
+    conversations_summary: str
+    published: bool = True
+    rating: Optional[int] = None
+    created_at: str
+
+
+try:
+    # Connect to your postgres DB
+    conn = psycopg2.connect(host='localhost', database='dbt_openai_api', port=5433,
+                            user='postgres', password='touremedina', cursor_factory=RealDictCursor)
+    # Open a cursor to perform database operations
+    cursor = conn.cursor()
+    print('Database connection was successful 😎')
+except Exception as error:
+    print(f'Connection with the database failed 😭\nError: {error} 😝')
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -65,17 +93,34 @@ def home():
 @app.route('/answer', methods=['POST'])
 def answer():
     user_message = request.form['prompt']
-    print(f'User Input:\n{user_message} 😎\n')
 
-    # Extend the conversation with the user's message
+    # Use the LLM to generate a response based on the user's message
     response = conversation.predict(input=user_message)
 
-    # Check if the response is a string, and if so, use it as the assistant's reply
+    current_time = datetime.now(pytz.timezone('Europe/Paris'))
+
     if isinstance(response, str):
+        # If the response is a string, use it directly as the assistant's reply
         assistant_reply = response
+        llm_response = response  # Store the response to be saved in the database
     else:
-        # If it's not a string, access the assistant's reply as you previously did
-        assistant_reply = response.choices[0].message['content']
+        # Access the assistant's reply from the response object
+        assistant_reply = response['output']
+        llm_response = response.choices[0].message['content']  # Save the response content for the database
+
+    # Save the conversation summary
+    memory_buffer = memory.buffer
+    memory_summary.save_context({"input": f"Summarize the memory.buffer:"}, {"output": f"{memory_buffer}"})
+    conversations_summary = memory_summary.load_memory_variables({})
+    conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
+
+    # Insert the conversation data into the database
+    insert_query = """
+    INSERT INTO memory (user_message, llm_response, conversations_summary, published, rating, created_at)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    cursor.execute(insert_query, (user_message, llm_response, conversations_summary_str, True, 5, current_time))
+    conn.commit()
 
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply)
@@ -83,7 +128,9 @@ def answer():
     # Create a temporary audio file
     audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
-    print(f'LLM Response:\n{assistant_reply} 😝\n')
+    print(f'User Input:\n{user_message} 😎\n')
+    print(f'LLM Response:\n{llm_response} 😝\n')
+    print(f'conversations:\n{conversations_summary_str}')
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
