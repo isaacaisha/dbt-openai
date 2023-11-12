@@ -55,17 +55,6 @@ class Memory(BaseModel):
     created_at: str
 
 
-try:
-    # Connect to your postgres DB
-    conn = psycopg2.connect(host='localhost', database='dbt_openai_api', port=5433,
-                            user='postgres', password='touremedina', cursor_factory=RealDictCursor)
-    # Open a cursor to perform database operations
-    cursor = conn.cursor()
-    print('Database connection was successful 😎')
-except Exception as error:
-    print(f'Connection with the database failed 😭\nError: {error} 😝')
-
-
 @app.route("/", methods=["GET", "POST"])
 def home():
     writing_text_form = TextAreaForm()
@@ -113,6 +102,13 @@ def answer():
     tts.save(audio_file_path)
     print(f'User Input:\n{user_message} 😎\n')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
+
+    # Connect to your postgres DB
+    conn = psycopg2.connect(host='localhost', database='dbt_openai_api', port=5433,
+                            user='postgres', password='touremedina', cursor_factory=RealDictCursor)
+    # Open a cursor to perform database operations
+    cursor = conn.cursor()
+    print('Database connection was successful 😎')
 
     current_time = datetime.now(pytz.timezone('Europe/Paris'))
     # Save the conversation summary
