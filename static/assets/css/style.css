@@ -235,6 +235,10 @@ textarea#writing_text.form-control, #final-result-content {
     font-size: 0.7rem;
 }
 
+.api {
+    font-size: 0.8rem;
+}
+
 .error {
     color: crimson;
     background-color: #fff;

@@ -71,12 +71,12 @@ cursor.execute("""
 """)
 conn.commit()
 
-# Creating the SQL command to fetch all data from the OMR table
-memory_db = "SELECT * FROM OMR"
-
-# Executing the query and fetching all the data
-cursor.execute(memory_db)
-data = cursor.fetchall()
+## Creating the SQL command to fetch all data from the OMR table
+#memory_db = "SELECT * FROM OMR"
+#
+## Executing the query and fetching all the data
+#cursor.execute(memory_db)
+#data = cursor.fetchall()
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -94,8 +94,9 @@ def home():
 
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
+    if memory_buffer:
+        memory_summary.save_context({"input": f"Summarize the {memory_load}:"}, {"output": f"{answer}"})
 
-    memory_summary.save_context({"input": f"Summarize the whole {data}:"}, {"output": f"{memory_buffer}"})
     summary_buffer = memory_summary.load_memory_variables({})
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
@@ -123,14 +124,17 @@ def answer():
     # Create a temporary audio file
     audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
-    print(f'User Input:\n{user_message} 😎\n')
-    print(f'LLM Response:\n{assistant_reply} 😝\n')
+    #print(f'User Input:\n{user_message} 😎\n')
+    #print(f'LLM Response:\n{assistant_reply} 😝\n')
 
     current_time = datetime.now(pytz.timezone('Europe/Paris'))
 
     # Save the conversation summary
     memory_buffer = memory.buffer
-    memory_summary.save_context({"input": f"{data}"}, {"output": f"{memory_buffer}"})
+    if memory_buffer:
+        memory_summary.save_context({"input": f"Summarize the whole {memory_buffer}:"}, {"output": f"{assistant_reply}"})
+
+    memory_summary.save_context({"input": "conversation"}, {"output": f"{assistant_reply}"})
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
@@ -159,8 +163,9 @@ def serve_audio():
 def show_story():
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
+    if memory_buffer:
+        memory_summary.save_context({"input": f"Summarize the whole {memory_load}:"}, {"output": f"{memory_buffer}"})
 
-    memory_summary.save_context({"input": f"Summarize the whole {conversation}:"}, {"output": f"{conversation}"})
     summary_conversation = memory_summary.load_memory_variables({})
 
     return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
