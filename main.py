@@ -12,14 +12,12 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 import warnings
-
 from pydantic import BaseModel
 from typing import Optional
-
 import psycopg2
-from psycopg2.extras import RealDictCursor
 import pytz
 import json
+
 
 warnings.filterwarnings('ignore')
 
@@ -73,6 +71,13 @@ cursor.execute("""
 """)
 conn.commit()
 
+# Creating the SQL command to fetch all data from the OMR table
+memory_db = "SELECT * FROM OMR"
+
+# Executing the query and fetching all the data
+cursor.execute(memory_db)
+data = cursor.fetchall()
+
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -90,7 +95,7 @@ def home():
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
 
-    memory_summary.save_context({"input": f"Summarize the whole {memory_buffer}:"}, {"output": f"{memory_buffer}"})
+    memory_summary.save_context({"input": f"Summarize the whole {data}:"}, {"output": f"{memory_buffer}"})
     summary_buffer = memory_summary.load_memory_variables({})
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
@@ -125,7 +130,7 @@ def answer():
 
     # Save the conversation summary
     memory_buffer = memory.buffer
-    memory_summary.save_context({"input": f"{conversation}"}, {"output": f"{memory_buffer}"})
+    memory_summary.save_context({"input": f"{data}"}, {"output": f"{memory_buffer}"})
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
@@ -157,7 +162,6 @@ def show_story():
 
     memory_summary.save_context({"input": f"Summarize the whole {conversation}:"}, {"output": f"{conversation}"})
     summary_conversation = memory_summary.load_memory_variables({})
-    print(f'Summary Conversation:\n{summary_conversation}\n')
 
     return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
                            conversation=conversation, summary_conversation=summary_conversation,
