@@ -56,13 +56,8 @@ class Memory(BaseModel):
 
 # Heroku provides the DATABASE_URL environment variable
 DATABASE_URL = os.environ['DATABASE_URL']
-PASSWORD = os.environ['PASSWORD']
-# Connect to your postgres DB
-conn = psycopg2.connect(host='localhost', database='dbt_openai_api', port=5433,
-                        user='postgres', password=PASSWORD, cursor_factory=RealDictCursor)
-# Open a cursor to perform database operations
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cursor = conn.cursor()
-print('Database connection was successful 😎')
 
 # Create OMR table
 cursor.execute("""
@@ -97,7 +92,6 @@ def home():
 
     memory_summary.save_context({"input": f"Summarize the whole {memory_buffer}:"}, {"output": f"{memory_buffer}"})
     summary_buffer = memory_summary.load_memory_variables({})
-    #print(f'Summary Buffer:\n{summary_buffer}\n')
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
                            memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
@@ -134,8 +128,6 @@ def answer():
     memory_summary.save_context({"input": f"{conversation}"}, {"output": f"{memory_buffer}"})
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
-    print(
-        f'user....{user_message}\nanswer.......{assistant_reply}\nconversations_summary_str..........{conversations_summary_str}\n')
 
     # Insert the conversation data into the OMR table
     insert_query = """
