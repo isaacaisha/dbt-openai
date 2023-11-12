@@ -21,7 +21,6 @@ from psycopg2.extras import RealDictCursor
 import pytz
 import json
 
-
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
@@ -55,6 +54,31 @@ class Memory(BaseModel):
     created_at: str
 
 
+# Heroku provides the DATABASE_URL environment variable
+DATABASE_URL = os.environ['DATABASE_URL']
+PASSWORD = os.environ['PASSWORD']
+# Connect to your postgres DB
+conn = psycopg2.connect(host='localhost', database='dbt_openai_api', port=5433,
+                        user='postgres', password=PASSWORD, cursor_factory=RealDictCursor)
+# Open a cursor to perform database operations
+cursor = conn.cursor()
+print('Database connection was successful 😎')
+
+# Create OMR table
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS OMR (
+        id SERIAL PRIMARY KEY,
+        user_message TEXT,
+        llm_response TEXT,
+        conversations_summary TEXT,
+        published BOOLEAN,
+        rating INTEGER,
+        created_at TIMESTAMP
+    )
+""")
+conn.commit()
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     writing_text_form = TextAreaForm()
@@ -73,7 +97,7 @@ def home():
 
     memory_summary.save_context({"input": f"Summarize the whole {memory_buffer}:"}, {"output": f"{memory_buffer}"})
     summary_buffer = memory_summary.load_memory_variables({})
-    print(f'Summary Buffer:\n{summary_buffer}\n')
+    #print(f'Summary Buffer:\n{summary_buffer}\n')
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
                            memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
@@ -103,23 +127,19 @@ def answer():
     print(f'User Input:\n{user_message} 😎\n')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
 
-    # Connect to your postgres DB
-    conn = psycopg2.connect(host='localhost', database='dbt_openai_api', port=5433,
-                            user='postgres', password='touremedina', cursor_factory=RealDictCursor)
-    # Open a cursor to perform database operations
-    cursor = conn.cursor()
-    print('Database connection was successful 😎')
-
     current_time = datetime.now(pytz.timezone('Europe/Paris'))
+
     # Save the conversation summary
     memory_buffer = memory.buffer
     memory_summary.save_context({"input": f"{conversation}"}, {"output": f"{memory_buffer}"})
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
-    print(f'user....{user_message}\nanswer.......{assistant_reply}\nconversations_summary_str..........{conversations_summary_str}\n')
-    # Insert the conversation data into the database
+    print(
+        f'user....{user_message}\nanswer.......{assistant_reply}\nconversations_summary_str..........{conversations_summary_str}\n')
+
+    # Insert the conversation data into the OMR table
     insert_query = """
-    INSERT INTO memory (user_message, llm_response, conversations_summary, published, rating, created_at)
+    INSERT INTO OMR (user_message, llm_response, conversations_summary, published, rating, created_at)
     VALUES (%s, %s, %s, %s, %s, %s)
     """
     cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, True, 5, current_time))
