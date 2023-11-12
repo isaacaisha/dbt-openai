@@ -31,10 +31,10 @@ secret_key = secrets.token_hex(199)
 app.secret_key = secret_key
 
 # Initialize an empty conversation chain
-llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")  # Set your desired LLM model here
+llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
-memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
+memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 
 # Define a Flask form
@@ -92,10 +92,8 @@ def home():
 
         answer = response['output'] if response else None
 
-    memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
-    if memory_buffer:
-        memory_summary.save_context({"input": f"Summarize the {memory_load}:"}, {"output": f"{answer}"})
+    memory_load = memory.load_memory_variables({})
 
     summary_buffer = memory_summary.load_memory_variables({})
 
@@ -118,23 +116,17 @@ def answer():
         # If it's not a string, access the assistant's reply as you previously did
         assistant_reply = response.choices[0].message['content']
 
-    # Convert the text response to speech using gTTS
-    tts = gTTS(assistant_reply)
-
-    # Create a temporary audio file
-    audio_file_path = 'temp_audio.mp3'
-    tts.save(audio_file_path)
-    #print(f'User Input:\n{user_message} 😎\n')
-    #print(f'LLM Response:\n{assistant_reply} 😝\n')
+    # print(f'User Input:\n{user_message} 😎\n')
+    # print(f'LLM Response:\n{assistant_reply} 😝\n')
 
     current_time = datetime.now(pytz.timezone('Europe/Paris'))
 
     # Save the conversation summary
     memory_buffer = memory.buffer
     if memory_buffer:
-        memory_summary.save_context({"input": f"Summarize the whole {memory_buffer}:"}, {"output": f"{assistant_reply}"})
+        memory.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
 
-    memory_summary.save_context({"input": "conversation"}, {"output": f"{assistant_reply}"})
+    memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
@@ -145,6 +137,13 @@ def answer():
     """
     cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, True, 5, current_time))
     conn.commit()
+
+    # Convert the text response to speech using gTTS
+    tts = gTTS(assistant_reply)
+
+    # Create a temporary audio file
+    audio_file_path = 'temp_audio.mp3'
+    tts.save(audio_file_path)
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
@@ -163,14 +162,10 @@ def serve_audio():
 def show_story():
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
-    if memory_buffer:
-        memory_summary.save_context({"input": f"Summarize the whole {memory_load}:"}, {"output": f"{memory_buffer}"})
-
     summary_conversation = memory_summary.load_memory_variables({})
 
     return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
-                           conversation=conversation, summary_conversation=summary_conversation,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+                           summary_conversation=summary_conversation, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 if __name__ == '__main__':
