@@ -21,6 +21,7 @@ from psycopg2.extras import RealDictCursor
 import pytz
 import json
 
+
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
@@ -81,7 +82,7 @@ def home():
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
 
-    memory_summary.save_context({"input": f"Summarize the memory.buffer:"}, {"output": f"{memory_buffer}"})
+    memory_summary.save_context({"input": f"Summarize the whole {memory_buffer}:"}, {"output": f"{memory_buffer}"})
     summary_buffer = memory_summary.load_memory_variables({})
     print(f'Summary Buffer:\n{summary_buffer}\n')
 
@@ -94,15 +95,15 @@ def home():
 def answer():
     user_message = request.form['prompt']
 
-    # Use the LLM to generate a response based on the user's message
+    # Extend the conversation with the user's message
     response = conversation.predict(input=user_message)
 
-    current_time = datetime.now(pytz.timezone('Europe/Paris'))
-
+    # Check if the response is a string, and if so, use it as the assistant's reply
     if isinstance(response, str):
         assistant_reply = response
     else:
-        assistant_reply = response['output']
+        # If it's not a string, access the assistant's reply as you previously did
+        assistant_reply = response.choices[0].message['content']
 
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply)
@@ -110,13 +111,16 @@ def answer():
     # Create a temporary audio file
     audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
+    print(f'User Input:\n{user_message} 😎\n')
+    print(f'LLM Response:\n{assistant_reply} 😝\n')
 
+    current_time = datetime.now(pytz.timezone('Europe/Paris'))
     # Save the conversation summary
     memory_buffer = memory.buffer
-    memory_summary.save_context({"input": f"Summarize the memory.buffer:"}, {"output": f"{memory_buffer}"})
+    memory_summary.save_context({"input": f"{conversation}"}, {"output": f"{memory_buffer}"})
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
-
+    print(f'user....{user_message}\nanswer.......{assistant_reply}\nconversations_summary_str..........{conversations_summary_str}\n')
     # Insert the conversation data into the database
     insert_query = """
     INSERT INTO memory (user_message, llm_response, conversations_summary, published, rating, created_at)
@@ -125,6 +129,7 @@ def answer():
     cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, True, 5, current_time))
     conn.commit()
 
+    # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
         "answer_audio_path": audio_file_path,
@@ -141,9 +146,6 @@ def serve_audio():
 def show_story():
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer
-    print(f'Memory Buffer:\n{memory_buffer}\n')
-    print(f'Memory Load:\n{memory_load}\n')
-    print(f'Conversation:\n{conversation}\n')
 
     memory_summary.save_context({"input": f"Summarize the whole {conversation}:"}, {"output": f"{conversation}"})
     summary_conversation = memory_summary.load_memory_variables({})
