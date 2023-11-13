@@ -139,17 +139,6 @@ def answer():
     #if memory_buffer:
     #    memory.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
 #
-    #memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
-    #conversations_summary = memory_summary.load_memory_variables({})
-    #conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
-#
-    ## Insert the conversation data into the OMR table
-    #insert_query = """
-    #INSERT INTO OMR (user_message, llm_response, conversations_summary, published, rating, created_at)
-    #VALUES (%s, %s, %s, %s, %s, %s)
-    #"""
-    #cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, True, 5, current_time))
-    #conn.commit()
 
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply)
@@ -157,6 +146,18 @@ def answer():
     # Create a temporary audio file
     audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
+
+    memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
+    conversations_summary = memory_summary.load_memory_variables({})
+    conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
+
+    # Insert the conversation data into the OMR table
+    insert_query = """
+    INSERT INTO OMR (user_message, llm_response, conversations_summary, published, rating, created_at)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, True, 5, current_time))
+    conn.commit()
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
