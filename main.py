@@ -37,6 +37,7 @@ memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 current_time = datetime.now(pytz.timezone('Europe/Paris'))
 
+
 # Define a Flask form
 class TextAreaForm(FlaskForm):
     writing_text = TextAreaField('Start Writing', [validators.InputRequired(message="Please enter text.")])
@@ -70,29 +71,6 @@ cursor.execute("""
     )
 """)
 conn.commit()
-
-
-#def retrieve_data_from_database():
-#    # Implement logic to extract parameters from user input
-#    # Build a database query based on the extracted parameters
-#    # Execute the query and retrieve relevant data from the database
-#    # Return the retrieved data
-#    return retrieved_data
-#
-#
-#def construct_response(data_from_database):
-#    # Process the retrieved data and generate a response for the user
-#    # Utilize the data to formulate a meaningful response
-#    # Return a response string based on the data retrieved
-#    return "Here is the information I found: " + str(data_from_database)
-#
-#
-## Creating the SQL command to fetch all data from the OMR table
-# memory_db = "SELECT * FROM OMR"
-#
-## Executing the query and fetching all the data
-# cursor.execute(memory_db)
-# data = cursor.fetchall()
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -131,15 +109,6 @@ def answer():
         # If it's not a string, access the assistant's reply as you previously did
         assistant_reply = response.choices[0].message['content']
 
-    # print(f'User Input:\n{user_message} 😎\n')
-    # print(f'LLM Response:\n{assistant_reply} 😝\n')
-
-    # Save the conversation summary
-    #memory_buffer = memory.buffer
-    #if memory_buffer:
-    #    memory.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
-#
-
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply)
 
@@ -158,6 +127,9 @@ def answer():
     """
     cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, True, 5, current_time))
     conn.commit()
+
+    # print(f'User Input:\n{user_message} 😎\n')
+    # print(f'LLM Response:\n{assistant_reply} 😝\n')
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({

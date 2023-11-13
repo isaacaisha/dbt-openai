@@ -1,73 +1,55 @@
 document.addEventListener('DOMContentLoaded', function() {
     const speechRecognitionButton = document.getElementById('speechRecognitionButton');
     const userInput = document.getElementById('userInput');
-    // Initialize variables
-    let userSpeechData = ""; // Initialize a variable to store the speech data
+    let userSpeechData = "";
     let recognition;
 
-    // Check if speech recognition is supported in the browser
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
 
         recognition.onstart = function () {
-            // Speech recognition started
             speechRecognitionButton.textContent = 'Listening...';
         };
 
         recognition.onresult = function (event) {
-            // Speech recognition result
             const transcript = event.results[0][0].transcript;
-            userSpeechData = transcript; // Update userSpeechData
-            userInput.value = transcript; // Update the userInput element
-
-            // Print the speech content to the console
+            userSpeechData = transcript;
+            userInput.value = transcript;
             console.log(userSpeechData);
         };
 
         recognition.onend = function () {
-            // Speech recognition ended
             speechRecognitionButton.textContent = 'Start Speech Recognition';
         };
 
         recognition.onerror = function (event) {
-            // Speech recognition error
             console.error('Speech recognition error:', event.error);
         };
     } else {
-        // Speech recognition not supported in this browser
         speechRecognitionButton.disabled = true;
         speechRecognitionButton.textContent = 'Speech Recognition Not Supported';
     }
-});
 
-// Add a click event listener to start or stop speech recognition
-speechRecognitionButton.addEventListener('click', function () {
-    if (recognition && recognition.state === 'listening') {
-        // If recognition is already running, stop it
-        recognition.stop();
-    } else {
-        // If recognition is not running, start it
-        recognition.start();
-    }
-});
+    // Click event listener for speech recognition
+    speechRecognitionButton.addEventListener('click', function () {
+        if (recognition && recognition.state === 'listening') {
+            recognition.stop();
+        } else {
+            recognition.start();
+        }
+    });
 
-// Add an event listener to the "Final Result" button
-document.getElementById('final_result_speech').addEventListener('click', function () {
-    // Check if the userSpeechData variable contains recognized speech
-    if (userSpeechData.trim() === "") {
-        // Display an error message if there's no recognized speech
-        document.getElementById('error-message').textContent = "Please,\nYou Have To Speech\nFirst 😝";
-        document.getElementById('error-message').style.display = 'block';
-
-        // Hide the "Final Result" content since there's no recognized speech
-        document.getElementById('final-result-speech-content').style.display = 'none';
-    } else {
-        // Clear any previous error message
-        document.getElementById('error-message').textContent = "";
-        document.getElementById('error-message').style.display = 'none';
-
-        // Display the recognized speech in the "Final Result" section
-        document.getElementById('final-result-speech-content').textContent = userSpeechData;
-        document.getElementById('final-result-speech-content').style.display = 'block';
-    }
+    // Click event listener for the "Final Result" button
+    document.getElementById('final_result_speech').addEventListener('click', function () {
+        if (userSpeechData.trim() === "") {
+            document.getElementById('error-message').textContent = "Please, You Have To Speech First 😝";
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('final-result-speech-content').style.display = 'none';
+        } else {
+            document.getElementById('error-message').textContent = "";
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('final-result-speech-content').textContent = userSpeechData;
+            document.getElementById('final-result-speech-content').style.display = 'block';
+        }
+    });
 });
