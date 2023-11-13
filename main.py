@@ -47,6 +47,7 @@ class TextAreaForm(FlaskForm):
 class Memory(BaseModel):
     user_message: str
     llm_response: str
+    memories: str
     conversations_summary: str
     published: bool = True
     rating: Optional[int] = None
@@ -97,7 +98,16 @@ def home():
 
 @app.route('/answer', methods=['POST'])
 def answer():
+    cursor.execute("SELECT conversations_summary FROM OMR")
+    data = cursor.fetchall()
+    conversation_data = data
+
     user_message = request.form['prompt']
+
+    if "database" in user_message.lower():
+        user_message = str(conversation_data) + user_message
+    else:
+        response = conversation.predict(input=user_message)
 
     # Extend the conversation with the user's message
     response = conversation.predict(input=user_message)
@@ -128,8 +138,8 @@ def answer():
     cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, True, 5, current_time))
     conn.commit()
 
-    # print(f'User Input:\n{user_message} 😎\n')
-    # print(f'LLM Response:\n{assistant_reply} 😝\n')
+    print(f'User Input: {user_message} 😎')
+    print(f'LLM Response:\n{assistant_reply} 😝\n')
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
