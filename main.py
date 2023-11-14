@@ -37,40 +37,39 @@ memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
+file = 'llm_memory.csv'
+loader = CSVLoader(file_path=file)
 
-# file = 'memories.csv'
-# loader = CSVLoader(file_path=file)
-#
-# docs = loader.load()
-# # Create a list of dictionaries with 'text' and 'metadata' fields
-# formatted_docs = [
-#     {
-#         'text': f"{doc.name if hasattr(doc, 'name') else 'Unnamed'}\n{doc.description if hasattr(doc, 'description') else 'No description'}",
-#         'metadata': {
-#             'source': 'memories.csv',
-#             'row': i,
-#             'id': doc.id if hasattr(doc, 'id') else f'ID_{i}'
-#             # Replace 'id' with the actual attribute name or use a default
-#         }
-#     }
-#     for i, doc in enumerate(docs)
-# ]
-#
+docs = loader.load()
+# Create a list of dictionaries with 'text' and 'metadata' fields
+formatted_docs = [
+    {
+        'text': f"{doc.name if hasattr(doc, 'name') else 'Unnamed'}\n{doc.description if hasattr(doc, 'description') else 'No description'}",
+        'metadata': {
+            'source': 'llm_memory.csv',
+            'row': i,
+            'id': doc.id if hasattr(doc, 'id') else f'ID_{i}'
+            # Replace 'id' with the actual attribute name or use a default
+        }
+    }
+    for i, doc in enumerate(docs)
+]
+
+# Assuming that 'page_content' is the attribute used for embedding
+texts_for_embedding = [getattr(doc, 'page_content', '') for doc in docs]
+print(f'texts_for_embedding:\n:{texts_for_embedding}\n')
+
+
 # # Print the first formatted document
 # print(f'doc[0]:\n{formatted_docs[0]}\n')
-#
-# # Assuming that 'page_content' is the attribute used for embedding
-# texts_for_embedding = [getattr(doc, 'page_content', '') for doc in docs]
-# # print(f'texts_for_embedding:\n:{texts_for_embedding}\n')
-#
+
 # embeddings = OpenAIEmbeddings()
-# embed = embeddings.embed_query("Hi my name is Harrison")
+# embed = embeddings.embed_query("conversations_summary")
 # print(f'len(embed):\n{len(embed)}\n')
 # print(f'embed[:5]:\n{embed[:5]}\n')
 #
 # qdocs = "".join([docs[i].page_content for i in range(len(docs[:5]))])
-# response = llm.call_as_llm(f"{qdocs} Question: Please list all your \
-# shirts with sun protection in a table in markdown and summarize each one.")
+# response = llm.call_as_llm(f"{qdocs} Question: Please summarize the whole conversation in less than 19 words.")
 # print(f'response:\n{response}')
 
 
@@ -143,17 +142,19 @@ def answer():
     # conversation_data = data[0][0]  # Extract the string from the result
     # print(f'user_message:\n{conversation_data}\n')
 
-    instruction = """My name is: Isaac Aïsha and your name is: Poto.\
-    You're an expert in Python programming language."""
+    # instruction = """My name is: Isaac Aïsha and your name is: Poto.\
+    # You're an expert in Python programming language."""
 
     user_message = request.form['prompt']
 
-    if "soo" in user_message.lower():
-        user_message = instruction + user_message
-        # Extend the conversation with the user's message
-        #response = conversation.predict(input=user_message)
-        # qdocs = "".join([docs[i].page_content for i in range(len(docs[:5]))])
-        response = llm.call_as_llm(f"{instruction} Question: {user_message}")
+    if user_message:
+        # user_message = instruction + user_message
+        # # Extend the conversation with the user's message
+        # response = conversation.predict(input=user_message)
+
+        qdocs = "".join([docs[i].page_content for i in range(len(docs[:5]))])
+        print(f'qdocs:\n{qdocs}\n')
+        response = llm.call_as_llm(f"{qdocs} Question: {user_message}")
     else:
         response = conversation.predict(input=user_message)
 
