@@ -11,6 +11,8 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
+from langchain.document_loaders import CSVLoader
+from langchain.embeddings import OpenAIEmbeddings
 import warnings
 from pydantic import BaseModel
 from typing import Optional
@@ -35,7 +37,41 @@ memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
-current_time = datetime.now(pytz.timezone('Europe/Paris'))
+
+# file = 'memories.csv'
+# loader = CSVLoader(file_path=file)
+#
+# docs = loader.load()
+# # Create a list of dictionaries with 'text' and 'metadata' fields
+# formatted_docs = [
+#     {
+#         'text': f"{doc.name if hasattr(doc, 'name') else 'Unnamed'}\n{doc.description if hasattr(doc, 'description') else 'No description'}",
+#         'metadata': {
+#             'source': 'memories.csv',
+#             'row': i,
+#             'id': doc.id if hasattr(doc, 'id') else f'ID_{i}'
+#             # Replace 'id' with the actual attribute name or use a default
+#         }
+#     }
+#     for i, doc in enumerate(docs)
+# ]
+#
+# # Print the first formatted document
+# print(f'doc[0]:\n{formatted_docs[0]}\n')
+#
+# # Assuming that 'page_content' is the attribute used for embedding
+# texts_for_embedding = [getattr(doc, 'page_content', '') for doc in docs]
+# # print(f'texts_for_embedding:\n:{texts_for_embedding}\n')
+#
+# embeddings = OpenAIEmbeddings()
+# embed = embeddings.embed_query("Hi my name is Harrison")
+# print(f'len(embed):\n{len(embed)}\n')
+# print(f'embed[:5]:\n{embed[:5]}\n')
+#
+# qdocs = "".join([docs[i].page_content for i in range(len(docs[:5]))])
+# response = llm.call_as_llm(f"{qdocs} Question: Please list all your \
+# shirts with sun protection in a table in markdown and summarize each one.")
+# print(f'response:\n{response}')
 
 
 # Define a Flask form
@@ -73,7 +109,7 @@ cursor.execute("""
         created_at TIMESTAMP
     )
 """)
-# cursor.execute("""TRUNCATE TABLE OMR;""")
+# cursor.execute("""TRUNCATE TABLE omr;""")
 conn.commit()
 
 
@@ -101,17 +137,23 @@ def home():
 
 @app.route('/answer', methods=['POST'])
 def answer():
-    cursor.execute("SELECT user_message FROM OMR")
-    data = cursor.fetchmany(1)
-    conversation_data = data
+    # cursor.execute("SELECT conversations_summary FROM OMR")
+    # data = cursor.fetchall()
+    #
+    # conversation_data = data[0][0]  # Extract the string from the result
+    # print(f'user_message:\n{conversation_data}\n')
+
+    instruction = """My name is: Isaac Aïsha and your name is: Poto.\
+    You're an expert in Python programming language."""
 
     user_message = request.form['prompt']
 
-    # Extend the conversation with the user's message
-    response = conversation.predict(input=user_message)
-
-    if "tell me" in user_message.lower():
-        user_message = str(conversation_data) + user_message
+    if "soo" in user_message.lower():
+        user_message = instruction + user_message
+        # Extend the conversation with the user's message
+        #response = conversation.predict(input=user_message)
+        # qdocs = "".join([docs[i].page_content for i in range(len(docs[:5]))])
+        response = llm.call_as_llm(f"{instruction} Question: {user_message}")
     else:
         response = conversation.predict(input=user_message)
 
@@ -133,6 +175,7 @@ def answer():
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
+    current_time = datetime.now(pytz.timezone('Europe/Paris'))
     # Insert the conversation data into the OMR table
     insert_query = """
     INSERT INTO OMR (user_message, llm_response, conversations_summary, published, rating, created_at)
