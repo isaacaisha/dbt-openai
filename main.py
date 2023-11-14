@@ -56,7 +56,9 @@ class Memory(BaseModel):
 
 # Heroku provides the DATABASE_URL environment variable
 DATABASE_URL = os.environ['DATABASE_URL']
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+conn = psycopg2.connect(host=os.environ['host'], port=5432, database=os.environ['database'],
+                        user=os.environ['user'],
+                        password=os.environ['password'])
 cursor = conn.cursor()
 
 # Create OMR table
@@ -71,6 +73,7 @@ cursor.execute("""
         created_at TIMESTAMP
     )
 """)
+# cursor.execute("""TRUNCATE TABLE OMR;""")
 conn.commit()
 
 
@@ -98,19 +101,19 @@ def home():
 
 @app.route('/answer', methods=['POST'])
 def answer():
-    cursor.execute("SELECT conversations_summary FROM OMR")
-    data = cursor.fetchall()
+    cursor.execute("SELECT user_message FROM OMR")
+    data = cursor.fetchmany(1)
     conversation_data = data
 
     user_message = request.form['prompt']
 
-    if "database" in user_message.lower():
+    # Extend the conversation with the user's message
+    response = conversation.predict(input=user_message)
+
+    if "tell me" in user_message.lower():
         user_message = str(conversation_data) + user_message
     else:
         response = conversation.predict(input=user_message)
-
-    # Extend the conversation with the user's message
-    response = conversation.predict(input=user_message)
 
     # Check if the response is a string, and if so, use it as the assistant's reply
     if isinstance(response, str):
