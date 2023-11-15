@@ -1,3 +1,4 @@
+import csv
 import os
 import openai
 from dotenv import load_dotenv, find_dotenv
@@ -57,20 +58,7 @@ formatted_docs = [
 
 # Assuming that 'page_content' is the attribute used for embedding
 texts_for_embedding = [getattr(doc, 'page_content', '') for doc in docs]
-print(f'texts_for_embedding:\n:{texts_for_embedding}\n')
-
-
-# # Print the first formatted document
-# print(f'doc[0]:\n{formatted_docs[0]}\n')
-
-# embeddings = OpenAIEmbeddings()
-# embed = embeddings.embed_query("conversations_summary")
-# print(f'len(embed):\n{len(embed)}\n')
-# print(f'embed[:5]:\n{embed[:5]}\n')
-#
-# qdocs = "".join([docs[i].page_content for i in range(len(docs[:5]))])
-# response = llm.call_as_llm(f"{qdocs} Question: Please summarize the whole conversation in less than 19 words.")
-# print(f'response:\n{response}')
+# print(f'texts_for_embedding:\n:{texts_for_embedding}\n')
 
 
 # Define a Flask form
@@ -98,18 +86,42 @@ cursor = conn.cursor()
 
 # Create OMR table
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS OMR (
+    CREATE TABLE IF NOT EXISTS omr (
         id SERIAL PRIMARY KEY,
         user_message TEXT,
         llm_response TEXT,
         conversations_summary TEXT,
-        published BOOLEAN,
-        rating INTEGER,
         created_at TIMESTAMP
     )
 """)
 # cursor.execute("""TRUNCATE TABLE omr;""")
 conn.commit()
+
+
+def memory_csv():
+    # Retrieve the new data for LLM memory
+    new_memory_data_query = """SELECT id, conversations_summary, created_at 
+    FROM OMR ORDER BY created_at DESC LIMIT 1;"""
+    cursor.execute(new_memory_data_query)
+    new_memory_data_result = cursor.fetchone()
+
+    # Check if there is data
+    if new_memory_data_result:
+        new_memory_data_id, new_memory_data_summary, new_memory_data_created_at = new_memory_data_result
+
+        # Convert conversations_summary from JSON to Python dictionary
+        json.loads(new_memory_data_summary)
+
+        # Save the last entry to llm_memory.csv
+        with open('llm_memory.csv', 'a', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+
+            # Write header if the file is empty
+            if csvfile.tell() == 0:
+                csv_writer.writerow(["id", "conversations_summary", "created_at"])
+
+            # Write the last entry
+            csv_writer.writerow([new_memory_data_id, new_memory_data_summary, new_memory_data_created_at])
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -136,23 +148,13 @@ def home():
 
 @app.route('/answer', methods=['POST'])
 def answer():
-    # cursor.execute("SELECT conversations_summary FROM OMR")
-    # data = cursor.fetchall()
-    #
-    # conversation_data = data[0][0]  # Extract the string from the result
-    # print(f'user_message:\n{conversation_data}\n')
-
-    # instruction = """My name is: Isaac Aïsha and your name is: Poto.\
-    # You're an expert in Python programming language."""
-
     user_message = request.form['prompt']
 
     if user_message:
-        # user_message = instruction + user_message
         # # Extend the conversation with the user's message
         # response = conversation.predict(input=user_message)
 
-        qdocs = "".join([docs[i].page_content for i in range(len(docs[:5]))])
+        qdocs = "".join([docs[i].page_content for i in range(len(docs))])
         print(f'qdocs:\n{qdocs}\n')
         response = llm.call_as_llm(f"{qdocs} Question: {user_message}")
     else:
@@ -179,14 +181,17 @@ def answer():
     current_time = datetime.now(pytz.timezone('Europe/Paris'))
     # Insert the conversation data into the OMR table
     insert_query = """
-    INSERT INTO OMR (user_message, llm_response, conversations_summary, published, rating, created_at)
-    VALUES (%s, %s, %s, %s, %s, %s)
+    INSERT INTO OMR (user_message, llm_response, conversations_summary, created_at)
+    VALUES (%s, %s, %s, %s)
     """
-    cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, True, 5, current_time))
+    cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, current_time))
     conn.commit()
 
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
+
+    # Retrieve the new datas for LLM memory
+    memory_csv()
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
