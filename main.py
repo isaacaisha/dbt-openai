@@ -126,63 +126,63 @@ def home():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-#@app.route('/answer', methods=['POST'])
-#def answer():
-#    user_message = request.form['prompt']
-#
-#    if user_message:
-#        # # Extend the conversation with the user's message
-#        # response = conversation.predict(input=user_message)
-#
-#        # Stored LLM memories
-#        file = 'llm_memory.csv'
-#        loader = CSVLoader(file_path=file)
-#        docs = loader.load()
-#
-#        qdocs = "".join([docs[i].page_content for i in range(len(docs))])
-#        # print(f'qdocs:\n{qdocs}\n')
-#        response = llm.call_as_llm(f"{qdocs} Question: {user_message}")
-#    else:
-#        response = conversation.predict(input=user_message)
-#
-#    # Check if the response is a string, and if so, use it as the assistant's reply
-#    if isinstance(response, str):
-#        assistant_reply = response
-#    else:
-#        # If it's not a string, access the assistant's reply as you previously did
-#        assistant_reply = response.choices[0].message['content']
-#
-#    # Convert the text response to speech using gTTS
-#    tts = gTTS(assistant_reply)
-#
-#    # Create a temporary audio file
-#    audio_file_path = 'temp_audio.mp3'
-#    tts.save(audio_file_path)
-#
-#    memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
-#    conversations_summary = memory_summary.load_memory_variables({})
-#    conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
-#
-#    current_time = datetime.now(pytz.timezone('Europe/Paris'))
-#    # Insert the conversation data into the OMR table
-#    insert_query = """
-#    INSERT INTO OMR (user_message, llm_response, conversations_summary, created_at)
-#    VALUES (%s, %s, %s, %s)
-#    """
-#    cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, current_time))
-#    conn.commit()
-#
-#    print(f'User Input: {user_message} 😎')
-#    print(f'LLM Response:\n{assistant_reply} 😝\n')
-#
-#    # Retrieve the new datas for LLM memory
-#    memory_csv()
-#
-#    # Return the response as JSON, including both text and the path to the audio file
-#    return jsonify({
-#        "answer_text": assistant_reply,
-#        "answer_audio_path": audio_file_path,
-#    })
+@app.route('/answer', methods=['POST'])
+def answer():
+    user_message = request.form['prompt']
+
+    if user_message:
+        # # Extend the conversation with the user's message
+        # response = conversation.predict(input=user_message)
+
+        # Stored LLM memories
+        file = 'llm_memory.csv'
+        loader = CSVLoader(file_path=file)
+        docs = loader.load()
+
+        qdocs = "".join([docs[i].page_content for i in range(len(docs))])
+        # print(f'qdocs:\n{qdocs}\n')
+        response = llm.call_as_llm(f"{qdocs} Question: {user_message}")
+    else:
+        response = conversation.predict(input=user_message)
+
+    # Check if the response is a string, and if so, use it as the assistant's reply
+    if isinstance(response, str):
+        assistant_reply = response
+    else:
+        # If it's not a string, access the assistant's reply as you previously did
+        assistant_reply = response.choices[0].message['content']
+
+    # Convert the text response to speech using gTTS
+    tts = gTTS(assistant_reply)
+
+    # Create a temporary audio file
+    audio_file_path = 'temp_audio.mp3'
+    tts.save(audio_file_path)
+
+    memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
+    conversations_summary = memory_summary.load_memory_variables({})
+    conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
+
+    current_time = datetime.now(pytz.timezone('Europe/Paris'))
+    # Insert the conversation data into the OMR table
+    insert_query = """
+    INSERT INTO OMR (user_message, llm_response, conversations_summary, created_at)
+    VALUES (%s, %s, %s, %s)
+    """
+    cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, current_time))
+    conn.commit()
+
+    print(f'User Input: {user_message} 😎')
+    print(f'LLM Response:\n{assistant_reply} 😝\n')
+
+    # Retrieve the new datas for LLM memory
+    memory_csv()
+
+    # Return the response as JSON, including both text and the path to the audio file
+    return jsonify({
+        "answer_text": assistant_reply,
+        "answer_audio_path": audio_file_path,
+    })
 
 
 @app.route('/audio')
