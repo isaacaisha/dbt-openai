@@ -64,7 +64,7 @@ document.getElementById('start-button').addEventListener('click', function () {
 });
 
 document.getElementById('generateButton').addEventListener('click', function (event) {
-    const speechData = userSpeechData.trim(); // Get the trimmed speech data
+    const speechData = userTextData.trim(); // Get the trimmed speech data
     const inputText = userInput.value.trim(); // Get the trimmed input text
 
     if (speechData === "" && inputText === "") {

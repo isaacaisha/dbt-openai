@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Click event listener for the "Final Result" button
     document.getElementById('final_result_speech').addEventListener('click', function () {
         if (userSpeechData.trim() === "") {
-            document.getElementById('error-message').textContent = "Please, You Have To Speech First 😝";
+            document.getElementById('error-message').textContent = "Please,\nYou Have To Speech\nFirst 😝";
             document.getElementById('error-message').style.display = 'block';
             document.getElementById('final-result-speech-content').style.display = 'none';
         } else {
