@@ -156,7 +156,8 @@ def answer():
 
         qdocs = "".join([docs[i].page_content for i in range(len(docs))])
         print(f'qdocs:\n{qdocs}\n')
-        response = llm.call_as_llm(f"{qdocs} Question: {user_message}")
+        response = llm.call_as_llm(f"{qdocs} Use the <conversations_summary> to implement your response.\
+        Question: {user_message}")
     else:
         response = conversation.predict(input=user_message)
 
