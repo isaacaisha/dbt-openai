@@ -1,8 +1,11 @@
-import csv
 import os
 import openai
-from dotenv import load_dotenv, find_dotenv
+import csv
 import secrets
+import warnings
+import pytz
+import json
+from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, validators
@@ -13,22 +16,17 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.document_loaders import CSVLoader
-import warnings
-from pydantic import BaseModel
-from typing import Optional
-import psycopg2
-import pytz
-import json
-
-# import langchain
-# langchain.debug = True
-
+from app.database import engine, get_db
+from app.models import Memory, db
 
 warnings.filterwarnings('ignore')
 
-app = Flask(__name__)
 _ = load_dotenv(find_dotenv())  # read local .env file
+
+app = Flask(__name__)
+
 openai.api_key = os.environ['OPENAI_API_KEY']
+
 # Generate a random secret key
 secret_key = secrets.token_hex(199)
 # Set it as the Flask application's secret key
@@ -47,61 +45,42 @@ class TextAreaForm(FlaskForm):
     submit = SubmitField()
 
 
-class Memory(BaseModel):
-    user_message: str
-    llm_response: str
-    memories: str
-    conversations_summary: str
-    published: bool = True
-    rating: Optional[int] = None
-    created_at: str
-
-
-# Heroku provides the DATABASE_URL environment variable
-DATABASE_URL = os.environ['DATABASE_URL']
-conn = psycopg2.connect(host=os.environ['host'], port=5432, database=os.environ['database'],
-                        user=os.environ['user'],
-                        password=os.environ['password'])
-cursor = conn.cursor()
-
-# Create OMR table
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS omr (
-        id SERIAL PRIMARY KEY,
-        user_message TEXT,
-        llm_response TEXT,
-        conversations_summary TEXT,
-        created_at TIMESTAMP
-    )
-""")
-# cursor.execute("""TRUNCATE TABLE omr;""")
-conn.commit()
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.environ['user']}:{os.environ['password']}@{os.environ['host']}:{os.environ['port']}/{os.environ['database']}"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 
 # Retrieve the new data for LLM memory
 def memory_csv():
-    new_memory_data_query = """SELECT id, conversations_summary, created_at 
-    FROM OMR ORDER BY created_at DESC LIMIT 1;"""
-    cursor.execute(new_memory_data_query)
-    new_memory_data_result = cursor.fetchone()
+    # Access the database session using the get_db function
+    with get_db() as db:
+        # Execute the SQLAlchemy query to get the latest memory data
+        new_memory_data_result = Memory.query.order_by(Memory.created_at.desc()).first()
 
-    # Check if there is data
-    if new_memory_data_result:
-        new_memory_data_id, new_memory_data_summary, new_memory_data_created_at = new_memory_data_result
+        # Check if there is data
+        if new_memory_data_result:
+            # Convert the result to a dictionary and store in the CSV file
+            memory_data_dict = {
+                "id": new_memory_data_result.id,
+                "conversations_summary": new_memory_data_result.conversations_summary,
+                "created_at": new_memory_data_result.created_at
+            }
 
-        # Convert conversations_summary from JSON to Python dictionary
-        json.loads(new_memory_data_summary)
+            # Save the last entry to summary_memories.csv
+            with open('app/summary_memories.csv', 'a', newline='') as csvfile:
+                csv_writer = csv.writer(csvfile)
 
-        # Save the last entry to llm_memory.csv
-        with open('llm_memory.csv', 'a', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
+                # Write header if the file is empty
+                if csvfile.tell() == 0:
+                    csv_writer.writerow(["id", "conversations_summary", "created_at"])
 
-            # Write header if the file is empty
-            if csvfile.tell() == 0:
-                csv_writer.writerow(["id", "conversations_summary", "created_at"])
+                # Write the last entry
+                csv_writer.writerow(
+                    [memory_data_dict["id"], memory_data_dict["conversations_summary"], memory_data_dict["created_at"]])
 
-            # Write the last entry
-            csv_writer.writerow([new_memory_data_id, new_memory_data_summary, new_memory_data_created_at])
+        return 'Data added to the summary_memory.csv'
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -135,7 +114,7 @@ def answer():
         # response = conversation.predict(input=user_message)
 
         # Stored LLM memories
-        file = 'llm_memory.csv'
+        file = os.path.join(os.path.dirname(__file__), 'summary_memories.csv')
         loader = CSVLoader(file_path=file)
         docs = loader.load()
 
@@ -156,7 +135,7 @@ def answer():
     tts = gTTS(assistant_reply)
 
     # Create a temporary audio file
-    audio_file_path = 'temp_audio.mp3'
+    audio_file_path = 'app/temp_audio.mp3'
     tts.save(audio_file_path)
 
     memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
@@ -164,13 +143,22 @@ def answer():
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
     current_time = datetime.now(pytz.timezone('Europe/Paris'))
-    # Insert the conversation data into the OMR table
-    insert_query = """
-    INSERT INTO OMR (user_message, llm_response, conversations_summary, created_at)
-    VALUES (%s, %s, %s, %s)
-    """
-    cursor.execute(insert_query, (user_message, assistant_reply, conversations_summary_str, current_time))
-    conn.commit()
+
+    # Access the database session using the get_db function
+    with get_db() as db:
+        # Create a new Memory object with the data
+        new_memory = Memory(
+            user_message=user_message,
+            llm_response=assistant_reply,
+            conversations_summary=conversations_summary_str,
+            created_at=current_time,
+        )
+
+        # Add the new memory to the session
+        db.add(new_memory)
+
+        # Commit changes to the database
+        db.commit()
 
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
@@ -187,7 +175,7 @@ def answer():
 
 @app.route('/audio')
 def serve_audio():
-    audio_file_path = 'temp_audio.mp3'
+    audio_file_path = 'app/temp_audio.mp3'
     return send_file(audio_file_path, as_attachment=True)
 
 
@@ -203,7 +191,7 @@ def show_story():
 
 if __name__ == '__main__':
     # Clean up any previous temporary audio files
-    temp_audio_file = 'temp_audio.mp3'
+    temp_audio_file = 'app/temp_audio.mp3'
     if os.path.exists(temp_audio_file):
         os.remove(temp_audio_file)
 
