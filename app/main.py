@@ -16,7 +16,7 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.document_loaders import CSVLoader
-from app.database import engine, get_db
+from app.database import get_db
 from app.models import Memory, db
 
 warnings.filterwarnings('ignore')
@@ -45,7 +45,8 @@ class TextAreaForm(FlaskForm):
     submit = SubmitField()
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.environ['user']}:{os.environ['password']}@{os.environ['host']}:{os.environ['port']}/{os.environ['database']}"
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.environ['user']}:{os.environ['password']}@{os.environ['host']}:{os.environ['port']}/{os.environ['database']}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 with app.app_context():
@@ -53,34 +54,30 @@ with app.app_context():
 
 
 # Retrieve the new data for LLM memory
+
+# Retrieve the new data for LLM memory
 def memory_csv():
-    # Access the database session using the get_db function
-    with get_db() as db:
-        # Execute the SQLAlchemy query to get the latest memory data
-        new_memory_data_result = Memory.query.order_by(Memory.created_at.desc()).first()
+    new_memory_data_query = Memory.query.order_by(Memory.created_at.desc()).first()
 
-        # Check if there is data
-        if new_memory_data_result:
-            # Convert the result to a dictionary and store in the CSV file
-            memory_data_dict = {
-                "id": new_memory_data_result.id,
-                "conversations_summary": new_memory_data_result.conversations_summary,
-                "created_at": new_memory_data_result.created_at
-            }
+    # Check if there is data
+    if new_memory_data_query:
+        new_memory_data_id = new_memory_data_query.id
+        new_memory_data_summary = new_memory_data_query.conversations_summary
+        new_memory_data_created_at = new_memory_data_query.created_at
 
-            # Save the last entry to summary_memories.csv
-            with open(os.path.join(os.path.dirname(__file__), 'summary_memories.csv'), 'a', newline='') as csvfile:
-                csv_writer = csv.writer(csvfile)
+        # Convert conversations_summary from JSON to Python dictionary
+        new_memory_data_summary = json.loads(new_memory_data_summary)
 
-                # Write header if the file is empty
-                if csvfile.tell() == 0:
-                    csv_writer.writerow(["id", "conversations_summary", "created_at"])
+        # Save the last entry to llm_memory.csv
+        with open('llm_memories.csv', 'a', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
 
-                # Write the last entry
-                csv_writer.writerow(
-                    [memory_data_dict["id"], memory_data_dict["conversations_summary"], memory_data_dict["created_at"]])
+            # Write header if the file is empty
+            if csvfile.tell() == 0:
+                csv_writer.writerow(["id", "conversations_summary", "created_at"])
 
-        return 'Data added to the summary_memory.csv'
+            # Write the last entry
+            csv_writer.writerow([new_memory_data_id, new_memory_data_summary, new_memory_data_created_at])
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -114,12 +111,12 @@ def answer():
         # response = conversation.predict(input=user_message)
 
         # Stored LLM memories
-        file = os.path.join(os.path.dirname(__file__), 'summary_memories.csv')
+        file = os.path.join(os.path.dirname(__file__), 'llm_memories.csv')
         loader = CSVLoader(file_path=file)
         docs = loader.load()
 
         qdocs = "".join([docs[i].page_content for i in range(len(docs))])
-        # print(f'qdocs:\n{qdocs}\n')
+        #print(f'qdocs:\n{qdocs}\n')
         response = llm.call_as_llm(f"{qdocs} Question: {user_message}")
     else:
         response = conversation.predict(input=user_message)
@@ -135,7 +132,7 @@ def answer():
     tts = gTTS(assistant_reply)
 
     # Create a temporary audio file
-    audio_file_path = 'app/temp_audio.mp3'
+    audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
 
     memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
@@ -175,7 +172,7 @@ def answer():
 
 @app.route('/audio')
 def serve_audio():
-    audio_file_path = 'app/temp_audio.mp3'
+    audio_file_path = 'temp_audio.mp3'
     return send_file(audio_file_path, as_attachment=True)
 
 
@@ -191,7 +188,7 @@ def show_story():
 
 if __name__ == '__main__':
     # Clean up any previous temporary audio files
-    temp_audio_file = 'app/temp_audio.mp3'
+    temp_audio_file = 'temp_audio.mp3'
     if os.path.exists(temp_audio_file):
         os.remove(temp_audio_file)
 
