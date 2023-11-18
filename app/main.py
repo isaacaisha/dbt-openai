@@ -69,7 +69,7 @@ def memory_csv():
             }
 
             # Save the last entry to summary_memories.csv
-            with open('app/summary_memories.csv', 'a', newline='') as csvfile:
+            with open(os.path.join(os.path.dirname(__file__), 'summary_memories.csv'), 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
 
                 # Write header if the file is empty
@@ -80,7 +80,7 @@ def memory_csv():
                 csv_writer.writerow(
                     [memory_data_dict["id"], memory_data_dict["conversations_summary"], memory_data_dict["created_at"]])
 
-        return 'Data added to the summary_memory.csv'
+    return 'Data added to the summary_memory.csv'
 
 
 @app.route("/", methods=["GET", "POST"])
