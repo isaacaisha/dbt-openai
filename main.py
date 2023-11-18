@@ -1,6 +1,5 @@
 import os
 import openai
-import csv
 import secrets
 import warnings
 import pytz
@@ -15,7 +14,6 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
-from langchain.document_loaders import CSVLoader
 from database import get_db
 from models import Memory, db
 
@@ -52,30 +50,14 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+    # Fetch memories from the database
+    with get_db() as db:
+        memories = db.query(Memory).all()
 
-# Retrieve the new data for LLM memory
-def memory_csv():
-    new_memory_data_query = Memory.query.order_by(Memory.created_at.desc()).first()
-
-    # Check if there is data
-    if new_memory_data_query:
-        new_memory_data_id = new_memory_data_query.id
-        new_memory_data_summary = new_memory_data_query.conversations_summary
-        new_memory_data_created_at = new_memory_data_query.created_at
-
-        # Convert conversations_summary from JSON to Python dictionary
-        new_memory_data_summary = json.loads(new_memory_data_summary)
-
-        # Save the last entry to llm_memory.csv
-        with open('llm_memories.csv', 'a', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-
-            # Write header if the file is empty
-            if csvfile.tell() == 0:
-                csv_writer.writerow(["id", "conversations_summary", "created_at"])
-
-            # Write the last entry
-            csv_writer.writerow([new_memory_data_id, new_memory_data_summary, new_memory_data_created_at])
+    # Concatenate memories for LLM input
+    qdocs = "".join([memory.conversations_summary for memory in memories])
+    memory_buffer = memory.buffer
+    summary_conversation = memory_summary.load_memory_variables({})
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -91,12 +73,17 @@ def home():
 
         answer = response['output'] if response else None
 
+    # Retrieve the last entry from qdocs
+    last_entry = qdocs.split("}")[-2] + "}"  # Assuming each entry ends with "}"
+    print(f'last_entry_home:\n{last_entry}\n')
+
     memory_buffer = memory.buffer
-    memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
+    print(f'memory_buffer_home:\n{memory_buffer}\n')
+    print(f'summary_buffer_home:\n{summary_buffer}\n')
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
-                           memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
+                           memory_load=last_entry, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -104,20 +91,8 @@ def home():
 def answer():
     user_message = request.form['prompt']
 
-    if user_message:
-        # # Extend the conversation with the user's message
-        # response = conversation.predict(input=user_message)
-
-        # Stored LLM memories
-        file = 'llm_memories.csv'
-        loader = CSVLoader(file_path=file)
-        docs = loader.load()
-
-        qdocs = "".join([docs[i].page_content for i in range(len(docs))])
-        #print(f'qdocs:\n{qdocs}\n')
-        response = llm.call_as_llm(f"{qdocs} Question: {user_message}")
-    else:
-        response = conversation.predict(input=user_message)
+    # Call LLM
+    response = llm.call_as_llm(f"{qdocs} Question: {user_message}")
 
     # Check if the response is a string, and if so, use it as the assistant's reply
     if isinstance(response, str):
@@ -158,9 +133,6 @@ def answer():
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
 
-    # Retrieve the new datas for LLM memory
-    memory_csv()
-
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
@@ -176,11 +148,15 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    memory_load = memory.load_memory_variables({})
-    memory_buffer = memory.buffer
-    summary_conversation = memory_summary.load_memory_variables({})
+    # Retrieve the last entry from qdocs
+    last_entry = qdocs.split("}")[-2] + "}"
+    #print(f'qdocs:\n{qdocs}\n')
+    print(f'last_entry:\n{last_entry}\n')
 
-    return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
+    print(f'memory_buffer:\n{memory_buffer}\n')
+    print(f'summary_conversation:\n{summary_conversation}\n')
+
+    return render_template('show-history.html', memory_load=last_entry, memory_buffer=memory_buffer,
                            summary_conversation=summary_conversation, date=datetime.now().strftime("%a %d %B %Y"))
 
 
