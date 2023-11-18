@@ -80,7 +80,7 @@ def memory_csv():
                 csv_writer.writerow(
                     [memory_data_dict["id"], memory_data_dict["conversations_summary"], memory_data_dict["created_at"]])
 
-    return 'Data added to the summary_memory.csv'
+        return 'Data added to the summary_memory.csv'
 
 
 @app.route("/", methods=["GET", "POST"])
