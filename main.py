@@ -16,8 +16,8 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.document_loaders import CSVLoader
-from app.database import get_db
-from app.models import Memory, db
+from database import get_db
+from models import Memory, db
 
 warnings.filterwarnings('ignore')
 
@@ -52,8 +52,6 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-
-# Retrieve the new data for LLM memory
 
 # Retrieve the new data for LLM memory
 def memory_csv():
@@ -111,7 +109,7 @@ def answer():
         # response = conversation.predict(input=user_message)
 
         # Stored LLM memories
-        file = os.path.join(os.path.dirname(__file__), 'llm_memories.csv')
+        file = 'llm_memories.csv'
         loader = CSVLoader(file_path=file)
         docs = loader.load()
 

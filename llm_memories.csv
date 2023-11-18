@@ -1,2 +1,4 @@
 id,conversations_summary,created_at
-44,"{'history': 'System: The human asks the AI where Paris is located. The AI responds that Paris is the capital city of France and is located in the northern part of the country, and offers to help with anything else.'}",2023-11-18 03:57:47.646819+00:00
+50,"{'history': ""System: The human introduces themselves as Isacc Aïsha, but the AI explains that it doesn't have a name or gender as a language model and asks how it can assist the human.""}",2023-11-18 04:15:16.022657+00:00
+51,"{'history': ""System: Isacc Aïsha introduces themselves to the AI, but the AI explains that as a language model, it doesn't have a name or gender. The AI asks how it can assist Isacc Aïsha.""}",2023-11-18 04:16:26.355373+00:00
+52,"{'history': ""System: Isacc Aïsha introduces themselves to the AI, but the AI explains that as a language model, it doesn't have a name or gender. The AI offers to assist Isacc Aïsha and shares its knowledge about Python programming language, describing it as a versatile and powerful language that is popular among developers and data scientists.""}",2023-11-18 04:17:49.561525+00:00
