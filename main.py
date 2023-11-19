@@ -70,7 +70,7 @@ def home():
 
         answer = response['output'] if response else None
 
-    memory_buffer = memory.buffer_as_messages
+    memory_buffer = memory.buffer_as_str
     memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
     # print(f'memory_buffer_home:\n{memory_buffer}\n')
