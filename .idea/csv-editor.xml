@@ -3,27 +3,6 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="/app/llm_memories.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/app/summary_memories.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/app/summary_memory.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="/llm_memories.csv">
           <value>
             <Attribute>
@@ -38,24 +17,17 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="/memories.csv">
+        <entry key="/memo.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="/summary_memories.csv">
+        <entry key="/memo_summary.csv">
           <value>
             <Attribute>
-              <option name="separator" value=":" />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/summary_memory.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value=":" />
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>

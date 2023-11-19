@@ -44,20 +44,17 @@ class TextAreaForm(FlaskForm):
 
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.environ['user']}:{os.environ['password']}@{os.environ['host']}:{os.environ['port']}/{os.environ['database']}"
+    'SQLALCHEMY_DATABASE_URI'] = (f"postgresql://{os.environ['user']}:{os.environ['password']}@"
+                                  f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+
 with app.app_context():
     db.create_all()
 
-    # Fetch memories from the database
-    with get_db() as db:
-        memories = db.query(Memory).all()
-
-    # Concatenate memories for LLM input
-    qdocs = "".join([memory.conversations_summary for memory in memories])
-    memory_buffer = memory.buffer
-    summary_conversation = memory_summary.load_memory_variables({})
+# Fetch memories from the database
+with get_db() as db:
+    memories = db.query(Memory).all()
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -73,17 +70,15 @@ def home():
 
         answer = response['output'] if response else None
 
-    # Retrieve the last entry from qdocs
-    last_entry = qdocs.split("}")[-2] + "}"  # Assuming each entry ends with "}"
-    print(f'last_entry_home:\n{last_entry}\n')
-
-    memory_buffer = memory.buffer
+    memory_buffer = memory.buffer_as_messages
+    memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
-    print(f'memory_buffer_home:\n{memory_buffer}\n')
-    print(f'summary_buffer_home:\n{summary_buffer}\n')
+    # print(f'memory_buffer_home:\n{memory_buffer}\n')
+    # print(f'memory_load_home:\n{memory_load}\n')
+    # print(f'summary_buffer_home:\n{summary_buffer}\n')
 
     return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
-                           memory_load=last_entry, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
+                           memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -91,8 +86,21 @@ def home():
 def answer():
     user_message = request.form['prompt']
 
-    # Call LLM
-    response = llm.call_as_llm(f"{qdocs} Question: {user_message}")
+    # Create a list of JSON strings for each conversation
+    conversation_strings = [memory.conversations_summary for memory in memories]
+
+    # Combine the first 3 and last 5 entries into a valid JSON array
+    qdocs = f"[{','.join(conversation_strings[:3] + conversation_strings[-5:])}]"
+
+    # Decode the JSON string
+    conversations = json.loads(qdocs)
+
+    # Convert the list of conversations to a JSON array string
+    conversations_json = json.dumps(conversations)
+
+    # Call llm ChatOpenAI
+    response = conversation.predict(input=conversations_json + user_message)
+    # print(f'conversations_json + user_message: {conversations_json + user_message}')
 
     # Check if the response is a string, and if so, use it as the assistant's reply
     if isinstance(response, str):
@@ -148,15 +156,15 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    # Retrieve the last entry from qdocs
-    last_entry = qdocs.split("}")[-2] + "}"
-    #print(f'qdocs:\n{qdocs}\n')
-    print(f'last_entry:\n{last_entry}\n')
+    summary_conversation = memory_summary.load_memory_variables({})
+    memory_load = memory.load_memory_variables({})
+    memory_buffer = memory.buffer_as_str
 
-    print(f'memory_buffer:\n{memory_buffer}\n')
-    print(f'summary_conversation:\n{summary_conversation}\n')
+    print(f'memory_buffer_story:\n{memory_buffer}\n')
+    print(f'memory_load_story:\n{memory_load}\n')
+    print(f'summary_conversation_story:\n{summary_conversation}\n')
 
-    return render_template('show-history.html', memory_load=last_entry, memory_buffer=memory_buffer,
+    return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
                            summary_conversation=summary_conversation, date=datetime.now().strftime("%a %d %B %Y"))
 
 
