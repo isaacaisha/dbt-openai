@@ -158,7 +158,6 @@ document.getElementById('showResultButton').addEventListener('click', function (
     }
 });
 
-
 // Add click event listener to the "Conversation Details" button
 document.getElementById('conversation-details').addEventListener('click', function (event) {
     // Check if there's no text entered and no speech data
