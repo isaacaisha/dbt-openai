@@ -93,14 +93,21 @@ def answer():
     qdocs = f"[{','.join(conversation_strings[:3] + conversation_strings[-5:])}]"
 
     # Decode the JSON string
-    conversations = json.loads(qdocs)
+    conversations_json = json.loads(qdocs)
 
-    # Convert the list of conversations to a JSON array string
-    conversations_json = json.dumps(conversations)
+    # Convert 'created_at' values to string
+    created_at_list = [str(memory.created_at) for memory in memories]
+
+    # Include 'created_at' in the conversation context
+    conversation_context = {
+        "created_at": created_at_list,
+        "conversations": conversations_json,
+        "user_message": user_message,
+    }
 
     # Call llm ChatOpenAI
-    response = conversation.predict(input=conversations_json + user_message)
-    # print(f'conversations_json + user_message: {conversations_json + user_message}')
+    response = conversation.predict(input=json.dumps(conversation_context))
+    print(f'conversation_context:\n{conversation_context}\n')
 
     # Check if the response is a string, and if so, use it as the assistant's reply
     if isinstance(response, str):
@@ -120,23 +127,23 @@ def answer():
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
-    current_time = datetime.now(pytz.timezone('Europe/Paris'))
-
-    # Access the database session using the get_db function
-    with get_db() as db:
-        # Create a new Memory object with the data
-        new_memory = Memory(
-            user_message=user_message,
-            llm_response=assistant_reply,
-            conversations_summary=conversations_summary_str,
-            created_at=current_time,
-        )
-
-        # Add the new memory to the session
-        db.add(new_memory)
-
-        # Commit changes to the database
-        db.commit()
+    #current_time = datetime.now(pytz.timezone('Europe/Paris'))
+#
+    ## Access the database session using the get_db function
+    #with get_db() as db:
+    #    # Create a new Memory object with the data
+    #    new_memory = Memory(
+    #        user_message=user_message,
+    #        llm_response=assistant_reply,
+    #        conversations_summary=conversations_summary_str,
+    #        created_at=current_time,
+    #    )
+#
+    #    # Add the new memory to the session
+    #    db.add(new_memory)
+#
+    #    # Commit changes to the database
+    #    db.commit()
 
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')

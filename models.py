@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from flask_sqlalchemy import SQLAlchemy
@@ -14,5 +15,23 @@ class Memory(db.Model):
     conversations_summary = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
 
+    ## Define the one-to-many relationship with HumanMessage
+    #user_messages = relationship('HumanMessage', back_populates='memory')
+
     def __repr__(self):
         return f"<Memory {self.id}>"
+
+
+#class HumanMessage(db.Model):
+#    __tablename__ = 'human_messages'
+#    id = Column(Integer, primary_key=True, nullable=False)
+#    content = Column(String, nullable=False)
+#    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+#
+#    # Define the foreign key relationship to Memory
+#    memory_id = Column(Integer, ForeignKey('memories.id'), nullable=False)
+#    memory = relationship('Memory', back_populates='user_messages')
+#
+#    def __repr__(self):
+#        return f"<HumanMessage {self.id}>"
+#

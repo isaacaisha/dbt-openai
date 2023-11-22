@@ -200,14 +200,14 @@ textarea#generatedText {
 
 .generate-text {
     color: #fff;
-    background-color:#9A30F3;
+    background-color: #9A30F3;
     border: 0.1rem solid #AEFAFC;
     margin-top: 1rem;
     font-family: 'Merriweather', sans-serif;
 }
 
 .generate-text:hover {
-    background-color:#9A30F3;
+    background-color: #9A30F3;
     color: #73DD7E;
 }
 
@@ -231,12 +231,37 @@ textarea#writing_text.form-control, #final-result-content {
     font-size: 1.09rem;
 }
 
-.detail {
+.info-btn > a {
+    color: #fff;
+    font-family: 'Merriweather', sans-serif;
+    text-decoration: None;
+}
+
+.info-btn > a:hover {
+    color: #000;
+}
+
+.conversation-details {
+    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 0.3rem;
     font-size: 0.7rem;
 }
 
-.api {
-    font-size: 0.8rem;
+.fastapi-docs {
+    background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 0.3rem;
+    font-size: 0.7rem;
+    transform: rotate(37deg);
+}
+
+.fastapi-redoc {
+    background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 0.3rem;
+    font-size: 0.7rem;
+    transform: rotate(-37deg);
 }
 
 .error {

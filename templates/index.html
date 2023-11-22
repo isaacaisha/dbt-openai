@@ -156,8 +156,28 @@
     {% endfor %}
 </div>
 
-<div class="text-center detail mb5">
-    <a href="/show-history" style="color:#fff;">Conversation Details</a>
+<!-- Add a button to show the conversation -->
+<div class="container text-center mb-1">
+    <div>
+
+        <hr class="mb-3">
+        <button id="conversation-details" type="button" class="conversation-details info-btn mb-3"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+            <a href="/show-history">Conversation Details</a>
+        </button>
+    </div>
+
+    <button id="fastapi-docs" type="button" class="fastapi-docs info-btn"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        <a href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs">FastAPI-docs</a>
+    </button>
+
+    <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+
+    <button id="fastapi-redoc" type="button" class="fastapi-redoc info-btn"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        <a href="https://openai-dbt-api-18753ef200f1.herokuapp.com/redoc">FastAPI-redoc</a>
+    </button>
 </div>
 
 {% endblock %}

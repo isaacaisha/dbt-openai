@@ -157,3 +157,20 @@ document.getElementById('showResultButton').addEventListener('click', function (
         resultDiv.style.display = 'block';
     }
 });
+
+
+// Add click event listener to the "Conversation Details" button
+document.getElementById('conversation-details').addEventListener('click', function (event) {
+    // Check if there's no text entered and no speech data
+    const speechData = userTextData.trim(); // Get the trimmed speech data
+    const inputText = userInput.value.trim(); // Get the trimmed input text
+
+    if (speechData === "" && inputText === "") {
+        // Display an error message
+        document.getElementById('error-message').textContent = "Please,\nInteract with the App\nFirst 😝";
+        document.getElementById('error-message').style.display = 'block';
+
+        // Prevent the default behavior of the anchor link
+        event.preventDefault();
+    }
+});
