@@ -15,7 +15,8 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 from database import get_db
-from models import Memory, db
+from models import Memory, User, db
+from schemas import UserCreate
 
 warnings.filterwarnings('ignore')
 
@@ -55,6 +56,7 @@ with app.app_context():
 # Fetch memories from the database
 with get_db() as db:
     memories = db.query(Memory).all()
+    omr = db.query(Memory).all()
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -87,21 +89,21 @@ def answer():
     user_message = request.form['prompt']
 
     # Create a list of JSON strings for each conversation
-    conversation_strings = [memory.conversations_summary for memory in memories]
+    conversation_strings = [memory.conversations_summary for memory in omr]
 
     # Combine the first 3 and last 5 entries into a valid JSON array
     qdocs = f"[{','.join(conversation_strings[:3] + conversation_strings[-5:])}]"
 
-    # Decode the JSON string
-    conversations_json = json.loads(qdocs)
+    # # Decode the JSON string
+    # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
 
     # Convert 'created_at' values to string
     created_at_list = [str(memory.created_at) for memory in memories]
 
     # Include 'created_at' in the conversation context
     conversation_context = {
-        "created_at": created_at_list,
-        "conversations": conversations_json,
+        "created_at": created_at_list[-5:],
+        "conversations": qdocs,
         "user_message": user_message,
     }
 
@@ -127,23 +129,23 @@ def answer():
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
-    #current_time = datetime.now(pytz.timezone('Europe/Paris'))
-#
-    ## Access the database session using the get_db function
-    #with get_db() as db:
-    #    # Create a new Memory object with the data
-    #    new_memory = Memory(
-    #        user_message=user_message,
-    #        llm_response=assistant_reply,
-    #        conversations_summary=conversations_summary_str,
-    #        created_at=current_time,
-    #    )
-#
-    #    # Add the new memory to the session
-    #    db.add(new_memory)
-#
-    #    # Commit changes to the database
-    #    db.commit()
+    current_time = datetime.now(pytz.timezone('Europe/Paris'))
+
+    # Access the database session using the get_db function
+    with get_db() as db:
+        # Create a new Memory object with the data
+        new_memory = Memory(
+            user_message=user_message,
+            llm_response=assistant_reply,
+            conversations_summary=conversations_summary_str,
+            created_at=current_time,
+        )
+
+        # Add the new memory to the session
+        db.add(new_memory)
+
+        # Commit changes to the database
+        db.commit()
 
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
@@ -173,6 +175,25 @@ def show_story():
 
     return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
                            summary_conversation=summary_conversation, date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@app.route("/users", methods=['POST'])
+def create_user():
+    data = request.get_json()
+    user = UserCreate(**data)
+
+    # Create a new User instance
+    new_user = User(email=user.email, password=user.password)
+
+    # Add the new user to the database using db.session
+    db.add(new_user)
+    db.commit()
+
+    # Refresh the new_user to get the updated values from the database
+    db.refresh(new_user)
+    print(f'new_user:\nEmail: {new_user.email}, Password: {new_user.password}\n')
+
+    return jsonify({"message": f"User Email: {new_user.email}, Password: {new_user.password} created successfully"})
 
 
 if __name__ == '__main__':

@@ -3,23 +3,38 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+
 
 db = SQLAlchemy()
 
 
 class Memory(db.Model):
-    __tablename__ = 'memories'
+    #__tablename__ = 'memories'
+    __tablename__ = 'omr'
     id = Column(Integer, primary_key=True, nullable=False)
     user_message = Column(String, nullable=False)
     llm_response = Column(String, nullable=False)
     conversations_summary = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
 
     ## Define the one-to-many relationship with HumanMessage
     #user_messages = relationship('HumanMessage', back_populates='memory')
 
     def __repr__(self):
         return f"<Memory {self.id}>"
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<User {self.id}>"
+
 
 
 #class HumanMessage(db.Model):
