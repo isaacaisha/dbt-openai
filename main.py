@@ -92,7 +92,7 @@ def answer():
     conversation_strings = [memory.conversations_summary for memory in omr]
 
     # Combine the first 1 and last 15 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-19:])}]"
+    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-9:])}]"
 
     # # Decode the JSON string
     # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
@@ -102,7 +102,7 @@ def answer():
 
     # Include 'created_at' in the conversation context
     conversation_context = {
-        "created_at": created_at_list[-19:],
+        "created_at": created_at_list[-9:],
         "conversations": qdocs,
         "user_message": user_message,
     }
