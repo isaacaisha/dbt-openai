@@ -55,7 +55,7 @@ with app.app_context():
 
 # Fetch memories from the database
 with get_db() as db:
-    memories = db.query(Memory).all()
+    # memories = db.query(Memory).all()
     omr = db.query(Memory).all()
 
 
@@ -84,27 +84,6 @@ def home():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-import json
-from flask import jsonify, request
-from gtts import gTTS
-from datetime import datetime
-import pytz
-
-
-# Function to truncate the conversation to avoid maximum tokens errors
-def truncate_conversation(conversation_strings, max_tokens):
-    total_tokens = 0
-    truncated_conversation = []
-    for conv_str in conversation_strings:
-        conv_tokens = len(conv_str.split())
-        if total_tokens + conv_tokens <= max_tokens:
-            truncated_conversation.append(conv_str)
-            total_tokens += conv_tokens
-        else:
-            break
-    return truncated_conversation
-
-
 @app.route('/answer', methods=['POST'])
 def answer():
     user_message = request.form['prompt']
@@ -112,22 +91,18 @@ def answer():
     # Create a list of JSON strings for each conversation
     conversation_strings = [memory.conversations_summary for memory in omr]
 
-    # Truncate the conversation to fit within the maximum token limit
-    max_tokens = 4097
-    truncated_conversation = truncate_conversation(conversation_strings, max_tokens)
-
-    # Combine the first 3 and last 5 entries into a valid JSON array
-    qdocs = f"[{','.join(truncated_conversation[:3] + truncated_conversation[-5:])}]"
+    # Combine the first 1 and last 15 entries into a valid JSON array
+    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-19:])}]"
 
     # # Decode the JSON string
     # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
 
     # Convert 'created_at' values to string
-    created_at_list = [str(memory.created_at) for memory in memories]
+    created_at_list = [str(memory.created_at) for memory in omr]
 
     # Include 'created_at' in the conversation context
     conversation_context = {
-        "created_at": created_at_list[-5:],
+        "created_at": created_at_list[-19:],
         "conversations": qdocs,
         "user_message": user_message,
     }
