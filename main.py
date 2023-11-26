@@ -14,9 +14,11 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
+
 from database import get_db
 from models import Memory, User, db
 from schemas import UserCreate
+from utils import hash_
 
 warnings.filterwarnings('ignore')
 
@@ -182,6 +184,10 @@ def create_user():
     data = request.get_json()
     user = UserCreate(**data)
 
+    # Hash the password - user.password
+    hashed_password = hash_(user.password)
+    user.password = hashed_password
+
     # Create a new User instance
     new_user = User(email=user.email, password=user.password)
 
@@ -191,9 +197,15 @@ def create_user():
 
     # Refresh the new_user to get the updated values from the database
     db.refresh(new_user)
-    print(f'new_user:\nEmail: {new_user.email}, Password: {new_user.password}\n')
+    print(f'new_user:\nEmail: {new_user.email}\nPassword: {new_user.password}\n')
 
-    return jsonify({"message": f"User Email: {new_user.email}, Password: {new_user.password} created successfully"})
+    return jsonify(
+        {
+            "User Email": f"{new_user.email}",
+            "Password": f"{new_user.password}",
+            "message": "created successfully ¡!¡"
+        }
+    )
 
 
 if __name__ == '__main__':
