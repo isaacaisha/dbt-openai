@@ -58,7 +58,8 @@ with app.app_context():
 # Fetch memories from the database
 with get_db() as db:
     # memories = db.query(Memory).all()
-    omr = db.query(Memory).all()
+    #omr = db.query(Memory).all()
+    test = db.query(Memory).all()
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -91,7 +92,7 @@ def answer():
     user_message = request.form['prompt']
 
     # Create a list of JSON strings for each conversation
-    conversation_strings = [memory.conversations_summary for memory in omr]
+    conversation_strings = [memory.conversations_summary for memory in test]
 
     # Combine the first 1 and last 15 entries into a valid JSON array
     qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-9:])}]"
@@ -100,7 +101,7 @@ def answer():
     # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
 
     # Convert 'created_at' values to string
-    created_at_list = [str(memory.created_at) for memory in omr]
+    created_at_list = [str(memory.created_at) for memory in test]
 
     # Include 'created_at' in the conversation context
     conversation_context = {
