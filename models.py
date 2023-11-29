@@ -10,8 +10,8 @@ db = SQLAlchemy()
 
 
 class Memory(db.Model):
-    #__tablename__ = 'memories'
-    __tablename__ = 'omr'
+    __tablename__ = 'memories'
+    #__tablename__ = 'omr'
     id = Column(Integer, primary_key=True, nullable=False)
     user_message = Column(String, nullable=False)
     llm_response = Column(String, nullable=False)
