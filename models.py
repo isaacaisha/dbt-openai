@@ -12,11 +12,13 @@ db = SQLAlchemy()
 class Memory(db.Model):
     #__tablename__ = 'memories'
     __tablename__ = 'omr'
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False, server_default=text('1'))
     user_message = Column(String, nullable=False)
     llm_response = Column(String, nullable=False)
     conversations_summary = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
+
+    owner_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=True)
 
     ## Define the one-to-many relationship with HumanMessage
     #user_messages = relationship('HumanMessage', back_populates='memory')
