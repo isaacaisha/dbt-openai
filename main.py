@@ -58,7 +58,7 @@ with app.app_context():
 # Fetch memories from the database
 with get_db() as db:
     # memories = db.query(Memory).all()
-    #omr = db.query(Memory).all()
+    # omr = db.query(Memory).all()
     test = db.query(Memory).all()
 
 
@@ -149,6 +149,7 @@ def answer():
 
         # Commit changes to the database
         db.commit()
+        db.refresh(new_memory)
 
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
