@@ -10,8 +10,6 @@ db = SQLAlchemy()
 
 
 class Memory(db.Model):
-    #__tablename__ = 'memories'
-    #__tablename__ = 'omr''memories'
     __tablename__ = 'test'
     id = Column(Integer, primary_key=True, nullable=False)
     user_message = Column(String, nullable=False)
@@ -26,15 +24,15 @@ class Memory(db.Model):
         return f"<Memory {self.id}>"
 
 
-class User(db.Model):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True, nullable=False)
-    email = Column(String, nullable=False, unique=True)
-    password = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f"<User {self.id}>"
+# class User(db.Model):
+#     __tablename__ = 'users'
+#     id = Column(Integer, primary_key=True, nullable=False)
+#     email = Column(String, nullable=False, unique=True)
+#     password = Column(String, nullable=False)
+#     created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
+#
+#     def __repr__(self):
+#         return f"<User {self.id}>"
 
 
 

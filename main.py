@@ -16,7 +16,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 
 from database import get_db
-from models import Memory, User, db
+from models import Memory, db  # User
 from schemas import UserCreate
 from utils import hash_
 
@@ -58,7 +58,6 @@ with app.app_context():
 # Fetch memories from the database
 with get_db() as db:
     # memories = db.query(Memory).all()
-    # omr = db.query(Memory).all()
     test = db.query(Memory).all()
 
 
@@ -181,33 +180,33 @@ def show_story():
                            summary_conversation=summary_conversation, date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@app.route("/users", methods=['POST'])
-def create_user():
-    data = request.get_json()
-    user = UserCreate(**data)
-
-    # Hash the password - user.password
-    hashed_password = hash_(user.password)
-    user.password = hashed_password
-
-    # Create a new User instance
-    new_user = User(email=user.email, password=user.password)
-
-    # Add the new user to the database using db.session
-    db.add(new_user)
-    db.commit()
-
-    # Refresh the new_user to get the updated values from the database
-    db.refresh(new_user)
-    print(f'new_user:\nEmail: {new_user.email}\nPassword: {new_user.password}\n')
-
-    return jsonify(
-        {
-            "User Email": f"{new_user.email}",
-            "Password": f"{new_user.password}",
-            "message": "created successfully ¡!¡"
-        }
-    )
+# @app.route("/users", methods=['POST'])
+# def create_user():
+#     data = request.get_json()
+#     user = UserCreate(**data)
+#
+#     # Hash the password - user.password
+#     hashed_password = hash_(user.password)
+#     user.password = hashed_password
+#
+#     # Create a new User instance
+#     new_user = User(email=user.email, password=user.password)
+#
+#     # Add the new user to the database using db.session
+#     db.add(new_user)
+#     db.commit()
+#
+#     # Refresh the new_user to get the updated values from the database
+#     db.refresh(new_user)
+#     print(f'new_user:\nEmail: {new_user.email}\nPassword: {new_user.password}\n')
+#
+#     return jsonify(
+#         {
+#             "User Email": f"{new_user.email}",
+#             "Password": f"{new_user.password}",
+#             "message": "created successfully ¡!¡"
+#         }
+#     )
 
 
 if __name__ == '__main__':
