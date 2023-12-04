@@ -1,5 +1,5 @@
 // Disable all buttons with the class "btn" except language selection buttons
-document.querySelectorAll('.btn:not(.language-btn)').forEach(function(btn) {
+document.querySelectorAll('.btn:not(.language-btn, .submit)').forEach(function(btn) {
     btn.disabled = true;
 });
 

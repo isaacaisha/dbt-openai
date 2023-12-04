@@ -17,17 +17,18 @@ large-image {
      text-decoration: 0.3rem line-through green;
  }
 
-#content > div.container-fluid.mb-5 > div > div {
+#content > div.container-fluid > div > div {
     padding: 0.3rem;
 }
 
-h1 {
+#content > div.container-fluid > div > div > h1, #content > div > div.container-fluid > div > div > h1{
     background-color: #fff;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
     color: #9126E8;
     font-family: 'Merriweather', sans-serif;
     font-display: swap;
+    font-size: 1.9rem;
     font-weight: 900;
     margin: 0;
     text-align: center;
@@ -54,7 +55,40 @@ h1 {
     }
 }
 
-h3 {
+#content > div:nth-child(5) > h3.mb-3, h3.mb-5, #resultMemo > h3 {
+    color: #AEFAFC;
+    font-family: 'Lora', 'Times New Roman', serif;
+}
+
+.nav-link {
+    color: #AEFAFC;
+    font-family: 'Merriweather', sans-serif;
+}
+
+/* Dropdown btn */
+button.btn.dropdown-toggle {
+    color: #fff;
+}
+
+.dropdown-item > a {
+    color: #9A30F3;
+    font-family: 'Lora', 'Times New Roman', serif;
+}
+
+li.nav-item > .nav-link:hover > a, button.btn.dropdown-toggle:hover {
+    color: #47FFAC;
+}
+
+.dropdown-item:hover {
+    color: #FC5378;
+}
+
+button.btn.dropdown-toggle, ul.dropdown-menu  {
+    background-color: transparent;
+}
+
+label {
+    color: #9A30F3;
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
@@ -190,7 +224,7 @@ textarea#generatedText {
     color: #9A30F3;
 }
 
-#generateButton, .btn-story:hover {
+#generateButton, #showResultButton {
     color: #37EC37;
 }
 
@@ -234,6 +268,7 @@ textarea#writing_text.form-control, #final-result-content {
 .info-btn > a {
     color: #fff;
     font-family: 'Merriweather', sans-serif;
+    font-size: 0.9rem;
     text-decoration: None;
 }
 
@@ -245,14 +280,14 @@ textarea#writing_text.form-control, #final-result-content {
     background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
-    font-size: 0.7rem;
+    font-size: 1.1rem;
 }
 
 .fastapi-docs {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
-    font-size: 0.7rem;
+    font-size: 1.1rem;
     transform: rotate(37deg);
 }
 
@@ -260,7 +295,7 @@ textarea#writing_text.form-control, #final-result-content {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
-    font-size: 0.7rem;
+    font-size: 1.1rem;
     transform: rotate(-37deg);
 }
 
@@ -274,7 +309,7 @@ textarea#writing_text.form-control, #final-result-content {
     white-space: pre-line;
 }
 
-hr {
+hr.mb-3, body hr {
     border: 0.1rem solid;
     border-radius: 0.5rem;
     margin: 0 3rem;
@@ -309,7 +344,7 @@ hr {
     border-radius: 0.5rem;
     color: #9A30F3;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 0.73rem;
+    font-size: 1rem;
     padding: 0.3rem;
 }
 # --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#

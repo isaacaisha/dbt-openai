@@ -1,0 +1,64 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon2.ico') }}">
+    {% include 'bootstrap/base.html' %}
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+
+  <!-- Page Header -->
+
+    <div class="container-fluid">
+        <div class="p-1 rounded-3 jumbotron">
+            <div class="py-1">
+                <h1 class="">Delete a Conversation ¡!¡</h1>
+            </div>
+        </div>
+    </div>
+
+    <hr style="color:green;">
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-8 col-md-10 mx-auto content mb-3">
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p style="color:red">{{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'outline-success  btn-block submit'}) }}
+            </div>
+        </div>
+    </div>
+
+    <hr style="color:yellow;">
+
+    <ul>
+        <li>
+                <a href="{{ url_for('get_private_conversations') }}">get_private_conversations</a>
+            <form action="{{ url_for('delete_conversation') }}" method="post">
+                <label for="conversation_id">Enter Conversation ID:</label>
+                <input type="text" name="id" id="conversation_id" required>
+                <button type="submit">Delete Conversation</button>
+            </form>
+        </li>
+    </ul>
+
+</div>
+
+{% endblock %}
+
+{% block footer_ %} {% endblock %}

@@ -5,12 +5,13 @@
 {% block head %}
     {{ super() }}
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
+    {% include 'bootstrap/base.html' %}
 {% endblock %}
 
 {% block content %}
 
 
-<div class="container-fluid mb-5">
+<div class="container-fluid">
     <div class="p-1 rounded-3 jumbotron">
         <div class="container-fluid py-1">
             <h1 class="">DBT OpenAI Speech Generation ¡!¡</h1>
@@ -42,7 +43,7 @@
     <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
 </div>
 
-<hr style="color:green;">
+<hr class="mb-3" style="color:green;">
 
 {% endblock %}
 
