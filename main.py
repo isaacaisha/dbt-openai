@@ -116,7 +116,7 @@ def register():
 
             print(f'New user email: {new_user.email}\nNew user  password: {new_user.password}')
 
-            return redirect(url_for('home'))
+            return redirect(url_for('login'))
 
     return render_template("register.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -289,8 +289,8 @@ def get_private_conversations():
 
     #return jsonify(serialized_histories)
     # Render an HTML template with the serialized data
-    return render_template('private_conversations.html', histories=serialized_histories,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+    return render_template('private-conversations.html', histories=serialized_histories,
+                           serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
