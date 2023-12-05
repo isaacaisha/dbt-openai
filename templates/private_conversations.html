@@ -1,0 +1,50 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon2.ico') }}">
+    {% include 'bootstrap/base.html' %}
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+
+  <!-- Page Header -->
+
+    <div class="container-fluid">
+        <div class="p-1 rounded-3 jumbotron">
+            <div class="py-1">
+                <h1 class="">Private Conversation ¡!¡</h1>
+            </div>
+        </div>
+    </div>
+
+    <hr class="mb-3" style="color:green;">
+
+    <div class="container conversations-details">
+        <ul>
+            {% for history in histories %}
+                <li>
+                    <strong>ID:</strong> {{ history.id }}<br>
+                    <strong>Owner ID:</strong> {{ history.owner_id }}<br>
+                    <strong>User Message:</strong> {{ history.user_message }}<br>
+                    <strong>LLM Response:</strong> {{ history.llm_response }}<br>
+                    <strong>Created At:</strong> {{ history.created_at }}<br>
+                    <!-- Add more fields as needed -->
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <hr class="mb-3" style="color:yellow;">
+
+</div>
+
+{% endblock %}
+
+{% block footer_ %} {% endblock %}

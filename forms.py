@@ -43,4 +43,4 @@ class EmailForm(FlaskForm):
 
 class DeleteForm(FlaskForm):
     conversation_id = StringField("conversation_id")
-    submit = SubmitField('SUBMIT COMMENT ¡!¡')
+    submit = SubmitField('DELETE ¡!¡')

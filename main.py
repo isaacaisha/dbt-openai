@@ -7,7 +7,6 @@ import json
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, Response, abort
 from flask_bootstrap import Bootstrap
-from werkzeug.exceptions import HTTPException
 from datetime import datetime
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
@@ -246,7 +245,11 @@ def answer():
 @app.route('/audio')
 def serve_audio():
     audio_file_path = 'temp_audio.mp3'
-    return send_file(audio_file_path, as_attachment=True, )
+    try:
+        return send_file(audio_file_path, as_attachment=True)
+    except FileNotFoundError:
+        # Handle the error gracefully, for example, return a 404 Not Found response
+        abort(404, description="Audio file not found")
 
 
 @app.route('/show-history')
@@ -284,33 +287,44 @@ def get_private_conversations():
 
         serialized_histories.append(serialized_history)
 
-    return jsonify(serialized_histories)
+    #return jsonify(serialized_histories)
+    # Render an HTML template with the serialized data
+    return render_template('private_conversations.html', histories=serialized_histories,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@app.route('/delete-conversation/<int:id>', methods=['GET', 'POST'])
+@app.route('/delete-conversation', methods=['GET', 'POST'])
 @login_required
-def delete_conversation(id):
-    # Access the database session using the get_db function
-    with get_db() as db:
-        # Query the database to get the conversation to be deleted
-        conversation_to_delete = db.query(Memory).filter(Memory.id == id).first()
+def delete_conversation():
+    form = DeleteForm()
 
-        # Check if the conversation exists
-        if not conversation_to_delete:
-            abort(404, description=f"Conversation with ID {id} not found")
+    if form.validate_on_submit():
+        # Access the database session using the get_db function
+        with get_db() as db:
+            # Get the conversation_id from the form
+            conversation_id = form.conversation_id.data
 
-        # Check if the current user is the owner of the conversation
-        if conversation_to_delete.owner_id != current_user.id:
-            abort(403, description="Not authorized to perform the requested action")
+            # Query the database to get the conversation to be deleted
+            conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
 
-        # Delete the conversation
-        db.delete(conversation_to_delete)
-        db.commit()
+            # Check if the conversation exists
+            if not conversation_to_delete:
+                abort(404, description=f"Conversation with ID {conversation_id} not found")
 
-        # Assuming you have a DeleteForm defined in forms.py
-        form = DeleteForm()
+            # Check if the current user is the owner of the conversation
+            if conversation_to_delete.owner_id != current_user.id:
+                abort(403, description="Not authorized to perform the requested action")
 
-        return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
+            # Delete the conversation
+            db.delete(conversation_to_delete)
+            print(f'conversation_to_delete:\n{conversation_to_delete}\n')
+            db.commit()
+
+            flash('Conversation deleted successfully', 'warning')
+
+            return redirect(url_for('home'))  # Replace 'your_redirect_route' with the appropriate route
+
+    return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
 
 
 if __name__ == '__main__':

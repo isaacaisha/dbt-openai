@@ -55,7 +55,7 @@ large-image {
     }
 }
 
-#content > div:nth-child(5) > h3.mb-3, h3.mb-5, #resultMemo > h3 {
+#content > div:nth-child(4) > h3, #content > h3, .conversations-details {
     color: #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
 }
@@ -73,6 +73,7 @@ button.btn.dropdown-toggle {
 .dropdown-item > a {
     color: #9A30F3;
     font-family: 'Lora', 'Times New Roman', serif;
+    font-size: 0.9rem;
 }
 
 li.nav-item > .nav-link:hover > a, button.btn.dropdown-toggle:hover {
@@ -245,7 +246,7 @@ textarea#generatedText {
     color: #73DD7E;
 }
 
-#final-result-content {
+#final-result-content, #resultMemo > h3 {
     color: #1295FA;
 }
 

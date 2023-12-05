@@ -24,7 +24,7 @@
         </div>
     </div>
 
-    <hr style="color:green;">
+    <hr class="mb-3" style="color:green;">
 
     <div class="container">
         <div class="row">
@@ -44,18 +44,7 @@
         </div>
     </div>
 
-    <hr style="color:yellow;">
-
-    <ul>
-        <li>
-                <a href="{{ url_for('get_private_conversations') }}">get_private_conversations</a>
-            <form action="{{ url_for('delete_conversation') }}" method="post">
-                <label for="conversation_id">Enter Conversation ID:</label>
-                <input type="text" name="id" id="conversation_id" required>
-                <button type="submit">Delete Conversation</button>
-            </form>
-        </li>
-    </ul>
+    <hr class="mb-5" style="color:yellow;">
 
 </div>
 
