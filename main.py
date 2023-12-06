@@ -5,7 +5,7 @@ import warnings
 import pytz
 import json
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, Response, abort
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from datetime import datetime
 from gtts import gTTS
@@ -110,13 +110,14 @@ def register():
             new_user = User(email=email, password=hashed_password)
             db.add(new_user)
             db.commit()
+            db.refresh(new_user)
 
             # Log in the user after registration
             login_user(new_user)
 
             print(f'New user email: {new_user.email}\nNew user  password: {new_user.password}')
 
-            return redirect(url_for('login'))
+            return redirect(url_for('home'))
 
     return render_template("register.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
