@@ -173,3 +173,9 @@ document.getElementById('conversation-details').addEventListener('click', functi
         event.preventDefault();
     }
 });
+
+// JavaScript function to toggle the visibility of the histories container
+function toggleHistories() {
+    var container = document.getElementById('historiesContainer');
+    container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+}

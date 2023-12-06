@@ -44,11 +44,16 @@
     <hr class="mb-3" style="color:yellow;">
 
 
-<div class="mb-3">
-    <pre>
-        {{ serialized_histories | tojson(indent=4) }}
-    </pre>}
-</div>
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <div class="text-center">
+        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">Show Histories json</button>
+    </div>
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesContainer" class="mb-3" style="display: none;">
+        <pre>
+            {{ serialized_histories | tojson(indent=4) }}
+        </pre>
+    </div>
 
     <hr class="mb-3" style="color:red;">
 
