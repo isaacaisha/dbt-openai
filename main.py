@@ -148,8 +148,8 @@ def answer():
         db.add(new_memory)
 
         # Commit changes to the database
-        #db.commit()
-        #db.refresh(new_memory)
+        db.commit()
+        db.refresh(new_memory)
 
     print(f'User id:\n{current_user.id} 😝\n')
     print(f'User Input: {user_message} 😎')
