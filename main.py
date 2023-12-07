@@ -89,6 +89,11 @@ def load_user(user_id):
 # Add a registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    # Get current user logged in
+    if not current_user:
+        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
+        return redirect(url_for('register'))
+
     form = RegisterForm()
     if request.method == 'POST':
         email = request.form.get('email')
@@ -164,8 +169,12 @@ def logout():
 
 
 @app.route('/answer', methods=['POST'])
-@login_required
 def answer():
+    # Get current user logged in
+    if not current_user:
+        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
+        return redirect(url_for('login'))
+
     user_message = request.form['prompt']
 
     # Get conversations only for the current user
@@ -256,6 +265,11 @@ def serve_audio():
 @app.route('/show-history')
 @login_required
 def show_story():
+    # Get current user logged in
+    if not current_user:
+        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
+        return redirect(url_for('login'))
+
     summary_conversation = memory_summary.load_memory_variables({})
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer_as_str
@@ -271,6 +285,11 @@ def show_story():
 @app.route("/private-conversations")
 @login_required
 def get_private_conversations():
+    # Get current user logged in
+    if not current_user:
+        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
+        return redirect(url_for('login'))
+
     # private:
     owner_id = current_user.id
     histories = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -299,6 +318,11 @@ def get_private_conversations():
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 @login_required
 def delete_conversation():
+    # Get current user logged in
+    if not current_user:
+        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
+        return redirect(url_for('login'))
+
     form = DeleteForm()
 
     if form.validate_on_submit():
