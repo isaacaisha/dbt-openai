@@ -21,6 +21,8 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegisterForm, LoginForm, TextAreaForm, DeleteForm, EmailForm
 
+import io
+
 warnings.filterwarnings('ignore')
 
 _ = load_dotenv(find_dotenv())  # read local .env file
@@ -29,7 +31,7 @@ app = Flask(__name__)
 Bootstrap(app)
 
 login_manager = LoginManager(app)
-#login_manager.login_view = 'login'
+login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 openai.api_key = os.environ['OPENAI_API_KEY']
@@ -82,7 +84,7 @@ def home():
     memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
 
-    return render_template('index.html', current_user=current_user, writing_text_form=writing_text_form, answer=answer,
+    return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
                            memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -166,6 +168,10 @@ def logout():
 def answer():
     user_message = request.form['prompt']
 
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        return jsonify({"error": "You must be logged in to use this feature. Please log in or register."}), 401
+
     # Get conversations only for the current user
     user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
@@ -173,7 +179,7 @@ def answer():
     conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
     # Create a list of JSON strings for each conversation
-    #conversation_strings = [memory.conversations_summary for memory in test]
+    # conversation_strings = [memory.conversations_summary for memory in test]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
     qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
@@ -205,9 +211,14 @@ def answer():
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply)
 
-    # Create a temporary audio file
-    audio_file_path = 'temp_audio.mp3'
-    tts.save(audio_file_path)
+    ## Create a temporary audio file
+    # audio_file_path = 'temp_audio.mp3'
+    # tts.save(audio_file_path)
+
+    # Create an in-memory file-like object to store the audio data
+    audio_data = io.BytesIO()
+    tts.write_to_fp(audio_data)
+    audio_data.seek(0)  # Reset the file pointer to the beginning
 
     memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
     conversations_summary = memory_summary.load_memory_variables({})
@@ -240,18 +251,28 @@ def answer():
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
-        "answer_audio_path": audio_file_path,
+        # "answer_audio_path": audio_file_path,
+        "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
     })
 
 
-@app.route('/audio')
-def serve_audio():
-    audio_file_path = 'temp_audio.mp3'
-    return send_file(audio_file_path, as_attachment=True)
+# @app.route('/audio')
+# def serve_audio():
+#    audio_file_path = 'temp_audio.mp3'
+#
+#    # Check if the file exists
+#    if not os.path.exists(audio_file_path):
+#        abort(404, description=f"Audio file not found")
+#
+#    return send_file(audio_file_path, as_attachment=True)
 
 
 @app.route('/show-history')
 def show_story():
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        return jsonify({"error": "You must be logged in to use this feature. Please register then log in 🤣."}), 401
+
     summary_conversation = memory_summary.load_memory_variables({})
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer_as_str
@@ -266,6 +287,10 @@ def show_story():
 
 @app.route("/private-conversations")
 def get_private_conversations():
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        return jsonify({"error": "You must be logged in to use this feature. Please register then log in 🤣."}), 401
+
     # private:
     owner_id = current_user.id
     histories = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -325,10 +350,9 @@ def delete_conversation():
 
 
 if __name__ == '__main__':
-
-    # Clean up any previous temporary audio files
-    temp_audio_file = 'temp_audio.mp3'
-    if os.path.exists(temp_audio_file):
-        os.remove(temp_audio_file)
+    ## Clean up any previous temporary audio files
+    # temp_audio_file = 'temp_audio.mp3'
+    # if os.path.exists(temp_audio_file):
+    #    os.remove(temp_audio_file)
 
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

@@ -40,10 +40,8 @@
 
 {% if not current_user.is_authenticated: %}
     <hr style="color:green;">
-<h3 class="mb-5 text-center log-register-h3">Please log in or register <br><span style="color:red;">To INTERACT with the</span><br><span style="color:red;">ARTIFICIAL INTELLIGENCE</span><br>and use this feature.<br>¡!¡</h3>
+<h3 class="mb-5 text-center log-register-h3">To INTERACT with the<br><span style="color:red;">ARTIFICIAL INTELLIGENCE</span><br>Please log in or register ¡!¡</h3>
     <hr class="mb-5" style="color:yellow;">
-{% else: %}
-
 {% endif %}
 
 
@@ -77,16 +75,6 @@
         French ¡!¡
     </button>
 </div>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul class="flashes">
-      {% for category, message in messages %}
-        <li class="{{ category }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
 
 <div class="container">
     <form id="prompt-form" method="POST">
@@ -139,16 +127,18 @@
         <!-- Play the audio response -->
         <audio id="response-audio" controls style="display: none;"></audio>
         {% endif %}
+        <!--
         <ul>
             <li>
                 <button class="dropdown-item btn text-center" type="button">
                     <audio controls>
-                        <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
+                        <source src="{{ url_for('answer') }}" type="audio/mp3">
                         Your browser does not support the audio element.
                     </audio>
                 </button>
             </li>
-        </ul>
+        </ul
+        >-->
     </div>
 
 
@@ -192,7 +182,7 @@
 
 <div class="dropdown text-center mb-3">
     <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Dropdown
+        Menu
     </button>
     <ul class="dropdown-menu">
         <li>
