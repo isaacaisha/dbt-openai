@@ -29,7 +29,8 @@ app = Flask(__name__)
 Bootstrap(app)
 
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+#login_manager.login_view = 'login'
+login_manager.init_app(app)
 
 openai.api_key = os.environ['OPENAI_API_KEY']
 
@@ -59,6 +60,11 @@ with get_db() as db:
     test = db.query(Memory).all()
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     writing_text_form = TextAreaForm()
@@ -76,22 +82,98 @@ def home():
     memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
 
-    return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
+    return render_template('index.html', current_user=current_user, writing_text_form=writing_text_form, answer=answer,
                            memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
+
+
+# Add a registration route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # If user's email already exists
+        if User.query.filter_by(email=form.email.data).first():
+            print(User.query.filter_by(email=form.email.data).first())
+            # Send a flash message
+            flash("You've already signed up with that email, log in instead!")
+            return redirect(url_for('login'))
+
+        # Hash the password before storing it
+        hashed_password = generate_password_hash(password, method='sha256')
+
+        # Access the database session using the get_db function
+        with get_db() as db:
+            # Create a new User instance and add it to the database
+            new_user = User(email=email, password=hashed_password)
+            db.add(new_user)
+            db.commit()
+
+            # Log in the user after registration
+            login_user(new_user)
+
+            print(f'New user email: {new_user.email}\nNew user  password: {new_user.password}')
+
+            return redirect(url_for('home'))
+
+    return render_template("register.html", form=form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+# Add a login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Replace this with your logic to authenticate the user
+        user = User.query.filter_by(email=email).first()
+
+        # Email doesn't exist
+        if not user:
+            flash("That email does not exist, please try again.")
+            return redirect(url_for('login'))
+        # Password incorrect
+        elif not check_password_hash(user.password, password):
+            flash('Password incorrect, please try again.')
+            return redirect(url_for('login'))
+        # Email exists and password correct
+        else:
+            login_user(user)
+
+            print(
+                f'logged user id: {current_user.id}\nlogged user email: {user.email}\nlogged user  password: {user.password}')
+
+            return redirect(url_for('home'))
+
+    return render_template("login.html", form=form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+# Add a logout route
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 
 @app.route('/answer', methods=['POST'])
 def answer():
     user_message = request.form['prompt']
 
-    ## Get conversations only for the current user
-    #user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
-#
-    ## Create a list of JSON strings for each conversation
-    #conversation_strings = [memory.conversations_summary for memory in user_conversations]
+    # Get conversations only for the current user
+    user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-    conversation_strings = [memory.conversations_summary for memory in test]
+    # Create a list of JSON strings for each conversation
+    conversation_strings = [memory.conversations_summary for memory in user_conversations]
+
+    # Create a list of JSON strings for each conversation
+    #conversation_strings = [memory.conversations_summary for memory in test]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
     qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
@@ -141,7 +223,7 @@ def answer():
             llm_response=assistant_reply,
             conversations_summary=conversations_summary_str,
             created_at=current_time,
-            #owner_id=current_user.id
+            owner_id=current_user.id
         )
 
         # Add the new memory to the session
@@ -203,7 +285,7 @@ def get_private_conversations():
 
         serialized_histories.append(serialized_history)
 
-    #return jsonify(serialized_histories)
+    # return jsonify(serialized_histories)
     # Render an HTML template with the serialized data
     return render_template('private-conversations.html', histories=serialized_histories,
                            serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
@@ -224,102 +306,22 @@ def delete_conversation():
 
             # Check if the conversation exists
             if not conversation_to_delete:
-                abort(404, description=f"Conversation with ID {conversation_id} doesn't exist 🤣 ¡!¡")
+                abort(404, description=f"Conversation with ID {conversation_id} not found")
 
             # Check if the current user is the owner of the conversation
             if conversation_to_delete.owner_id != current_user.id:
-                abort(403, description="Not authorized to perform the requested action 😝 ¡!¡")
+                abort(403, description="Not authorized to perform the requested action")
 
             # Delete the conversation
             db.delete(conversation_to_delete)
             print(f'conversation_to_delete:\n{conversation_to_delete}\n')
             db.commit()
 
-            flash('Conversation deleted successfully 😜¡!¡', 'warning')
+            flash('Conversation deleted successfully', 'warning')
 
             return redirect(url_for('home'))  # Replace 'your_redirect_route' with the appropriate route
 
     return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
-
-
-# Add a registration route
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegisterForm()
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        # If user's email already exists
-        if User.query.filter_by(email=form.email.data).first():
-            print(User.query.filter_by(email=form.email.data).first())
-            # Send a flash message
-            flash("You've already signed up with that email, log in instead 😇 ¡!¡")
-            return redirect(url_for('login'))
-
-        # Hash the password before storing it
-        hashed_password = generate_password_hash(password, method='sha256')
-
-        # Access the database session using the get_db function
-        with get_db() as db:
-            # Create a new User instance and add it to the database
-            new_user = User(email=email, password=hashed_password)
-            db.add(new_user)
-            db.commit()
-            db.refresh(new_user)
-
-            # Log in the user after registration
-            login_user(new_user)
-
-            print(f'New user email: {new_user.email}\nNew user  password: {new_user.password}')
-
-            return redirect(url_for('home'))
-
-    return render_template("register.html", form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        # Replace this with your logic to authenticate the user
-        user = User.query.filter_by(email=email).first()
-
-        # Email doesn't exist
-        if not user:
-            flash("That email does not exist, please try again 😭.\nIf not, first get registered 😝 ¡!¡")
-            return redirect(url_for('login'))
-        # Password incorrect
-        elif not check_password_hash(user.password, password):
-            flash('Password incorrect, please try again 😝.\nIf not, first get registered 😭 ¡!¡')
-            return redirect(url_for('login'))
-        # Email exists and password correct
-        else:
-            login_user(user)
-
-            print(
-                f'logged user id: {current_user.id}\nlogged user email: {user.email}\nlogged user  password: {user.password}')
-
-            return redirect(url_for('home'))
-
-    return render_template("login.html", form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
-# Add a logout route
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
