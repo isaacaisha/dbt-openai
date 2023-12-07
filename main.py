@@ -76,90 +76,9 @@ def home():
     memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
 
-    return render_template('index.html', current_user=current_user, writing_text_form=writing_text_form, answer=answer,
+    return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
                            memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
-
-
-# Add a registration route
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegisterForm()
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        # If user's email already exists
-        if User.query.filter_by(email=form.email.data).first():
-            print(User.query.filter_by(email=form.email.data).first())
-            # Send a flash message
-            flash("You've already signed up with that email, log in instead 😇 ¡!¡")
-            return redirect(url_for('login'))
-
-        # Hash the password before storing it
-        hashed_password = generate_password_hash(password, method='sha256')
-
-        # Access the database session using the get_db function
-        with get_db() as db:
-            # Create a new User instance and add it to the database
-            new_user = User(email=email, password=hashed_password)
-            db.add(new_user)
-            db.commit()
-            db.refresh(new_user)
-
-            # Log in the user after registration
-            login_user(new_user)
-
-            print(f'New user email: {new_user.email}\nNew user  password: {new_user.password}')
-
-            return redirect(url_for('home'))
-
-    return render_template("register.html", form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        # Replace this with your logic to authenticate the user
-        user = User.query.filter_by(email=email).first()
-
-        # Email doesn't exist
-        if not user:
-            flash("That email does not exist, please try again 😭.\nIf not, first get registered 😝 ¡!¡")
-            return redirect(url_for('login'))
-        # Password incorrect
-        elif not check_password_hash(user.password, password):
-            flash('Password incorrect, please try again 😝.\nIf not, first get registered 😭 ¡!¡')
-            return redirect(url_for('login'))
-        # Email exists and password correct
-        else:
-            login_user(user)
-
-            print(
-                f'logged user id: {current_user.id}\nlogged user email: {user.email}\nlogged user  password: {user.password}')
-
-            return redirect(url_for('home'))
-
-    return render_template("login.html", form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
-# Add a logout route
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('home'))
 
 
 @app.route('/answer', methods=['POST'])
@@ -185,9 +104,9 @@ def answer():
 
     # Include 'created_at' in the conversation context
     conversation_context = {
-        "user_message": user_message,
         "created_at": created_at_list[-5:],
         "conversations": qdocs,
+        "user_message": user_message,
     }
 
     # Call llm ChatOpenAI
@@ -222,15 +141,15 @@ def answer():
             llm_response=assistant_reply,
             conversations_summary=conversations_summary_str,
             created_at=current_time,
-            owner_id=current_user.id
+            #owner_id=current_user.id
         )
 
         # Add the new memory to the session
         db.add(new_memory)
 
         # Commit changes to the database
-        db.commit()
-        db.refresh(new_memory)
+        #db.commit()
+        #db.refresh(new_memory)
 
     print(f'User id:\n{current_user.id} 😝\n')
     print(f'User Input: {user_message} 😎')
@@ -321,6 +240,86 @@ def delete_conversation():
             return redirect(url_for('home'))  # Replace 'your_redirect_route' with the appropriate route
 
     return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+
+# Add a registration route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # If user's email already exists
+        if User.query.filter_by(email=form.email.data).first():
+            print(User.query.filter_by(email=form.email.data).first())
+            # Send a flash message
+            flash("You've already signed up with that email, log in instead 😇 ¡!¡")
+            return redirect(url_for('login'))
+
+        # Hash the password before storing it
+        hashed_password = generate_password_hash(password, method='sha256')
+
+        # Access the database session using the get_db function
+        with get_db() as db:
+            # Create a new User instance and add it to the database
+            new_user = User(email=email, password=hashed_password)
+            db.add(new_user)
+            db.commit()
+            db.refresh(new_user)
+
+            # Log in the user after registration
+            login_user(new_user)
+
+            print(f'New user email: {new_user.email}\nNew user  password: {new_user.password}')
+
+            return redirect(url_for('home'))
+
+    return render_template("register.html", form=form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Replace this with your logic to authenticate the user
+        user = User.query.filter_by(email=email).first()
+
+        # Email doesn't exist
+        if not user:
+            flash("That email does not exist, please try again 😭.\nIf not, first get registered 😝 ¡!¡")
+            return redirect(url_for('login'))
+        # Password incorrect
+        elif not check_password_hash(user.password, password):
+            flash('Password incorrect, please try again 😝.\nIf not, first get registered 😭 ¡!¡')
+            return redirect(url_for('login'))
+        # Email exists and password correct
+        else:
+            login_user(user)
+
+            print(
+                f'logged user id: {current_user.id}\nlogged user email: {user.email}\nlogged user  password: {user.password}')
+
+            return redirect(url_for('home'))
+
+    return render_template("login.html", form=form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+# Add a logout route
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
