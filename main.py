@@ -76,7 +76,7 @@ def home():
     memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
 
-    return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
+    return render_template('index.html', current_user=current_user, writing_text_form=writing_text_form, answer=answer,
                            memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -150,7 +150,7 @@ def login():
 
             return redirect(url_for('home'))
 
-    return render_template("login.html", form=form,
+    return render_template("login.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -166,9 +166,13 @@ def logout():
 def answer():
     user_message = request.form['prompt']
 
-    # Create a list of JSON strings for each conversation
-    conversation_strings = [memory.conversations_summary for memory in test]
+    ## Get conversations only for the current user
+    #user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+#
+    ## Create a list of JSON strings for each conversation
+    #conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
+    conversation_strings = [memory.conversations_summary for memory in test]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
     qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
@@ -181,9 +185,9 @@ def answer():
 
     # Include 'created_at' in the conversation context
     conversation_context = {
+        "user_message": user_message,
         "created_at": created_at_list[-5:],
         "conversations": qdocs,
-        "user_message": user_message,
     }
 
     # Call llm ChatOpenAI
@@ -218,6 +222,7 @@ def answer():
             llm_response=assistant_reply,
             conversations_summary=conversations_summary_str,
             created_at=current_time,
+            owner_id=current_user.id
         )
 
         # Add the new memory to the session
@@ -227,7 +232,7 @@ def answer():
         db.commit()
         db.refresh(new_memory)
 
-    #print(f'User id:\n{current_user.id} 😝\n')
+    print(f'User id:\n{current_user.id} 😝\n')
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
 
