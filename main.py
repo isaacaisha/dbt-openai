@@ -89,11 +89,6 @@ def load_user(user_id):
 # Add a registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # Get current user logged in
-    if not current_user:
-        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
-        return redirect(url_for('register'))
-
     form = RegisterForm()
     if request.method == 'POST':
         email = request.form.get('email')
@@ -128,7 +123,6 @@ def register():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-# Add a login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -170,11 +164,8 @@ def logout():
 
 @app.route('/answer', methods=['POST'])
 def answer():
-    # Get current user logged in
     if not current_user:
-        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
-        return redirect(url_for('login'))
-
+        return redirect(url_for('register'))
     user_message = request.form['prompt']
 
     # Get conversations only for the current user
@@ -264,7 +255,6 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-
     summary_conversation = memory_summary.load_memory_variables({})
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer_as_str
@@ -279,7 +269,6 @@ def show_story():
 
 @app.route("/private-conversations")
 def get_private_conversations():
-
     # private:
     owner_id = current_user.id
     histories = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -307,7 +296,6 @@ def get_private_conversations():
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-
     form = DeleteForm()
 
     if form.validate_on_submit():
