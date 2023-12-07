@@ -166,86 +166,81 @@ def logout():
 @app.route('/answer', methods=['POST'])
 @login_required
 def answer():
-    if not current_user.is_authenticated:
-        flash('You must be logged in to use this feature. Please log in or register.', 'warning')
-        return jsonify({"error": "You have to log in"})
+    user_message = request.form['prompt']
+
+    # Get conversations only for the current user
+    user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+
+    # Create a list of JSON strings for each conversation
+    conversation_strings = [memory.conversations_summary for memory in user_conversations]
+
+    # Combine the first 1 and last 9 entries into a valid JSON array
+    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
+
+    # # Decode the JSON string
+    # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
+
+    # Convert 'created_at' values to string
+    created_at_list = [str(memory.created_at) for memory in user_conversations]
+
+    # Include 'created_at' in the conversation context
+    conversation_context = {
+        "user_message": user_message,
+        "created_at": created_at_list[-5:],
+        "conversations": qdocs,
+    }
+
+    # Call llm ChatOpenAI
+    response = conversation.predict(input=json.dumps(conversation_context))
+    print(f'conversation_context:\n{conversation_context}\n')
+
+    # Check if the response is a string, and if so, use it as the assistant's reply
+    if isinstance(response, str):
+        assistant_reply = response
     else:
-        user_message = request.form['prompt']
+        # If it's not a string, access the assistant's reply as you previously did
+        assistant_reply = response.choices[0].message['content']
 
-        # Get conversations only for the current user
-        user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+    # Convert the text response to speech using gTTS
+    tts = gTTS(assistant_reply)
 
-        # Create a list of JSON strings for each conversation
-        conversation_strings = [memory.conversations_summary for memory in user_conversations]
+    # Create a temporary audio file
+    audio_file_path = 'temp_audio.mp3'
+    tts.save(audio_file_path)
 
-        # Combine the first 1 and last 9 entries into a valid JSON array
-        qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
+    memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
+    conversations_summary = memory_summary.load_memory_variables({})
+    conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
-        # # Decode the JSON string
-        # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
+    current_time = datetime.now(pytz.timezone('Europe/Paris'))
 
-        # Convert 'created_at' values to string
-        created_at_list = [str(memory.created_at) for memory in user_conversations]
+    # Access the database session using the get_db function
+    with get_db() as db:
+        # Create a new Memory object with the data
+        new_memory = Memory(
+            user_message=user_message,
+            llm_response=assistant_reply,
+            conversations_summary=conversations_summary_str,
+            created_at=current_time,
+            owner_id=current_user.id
+        )
 
-        # Include 'created_at' in the conversation context
-        conversation_context = {
-            "user_message": user_message,
-            "created_at": created_at_list[-5:],
-            "conversations": qdocs,
-        }
+        # Add the new memory to the session
+        db.add(new_memory)
 
-        # Call llm ChatOpenAI
-        response = conversation.predict(input=json.dumps(conversation_context))
-        print(f'conversation_context:\n{conversation_context}\n')
+        # Commit changes to the database
+        db.commit()
+        db.refresh(new_memory)
 
-        # Check if the response is a string, and if so, use it as the assistant's reply
-        if isinstance(response, str):
-            assistant_reply = response
-        else:
-            # If it's not a string, access the assistant's reply as you previously did
-            assistant_reply = response.choices[0].message['content']
+    print(f'User id:\n{current_user.id} 😝\n')
+    print(f'User Input: {user_message} 😎')
+    print(f'LLM Response:\n{assistant_reply} 😝\n')
 
-        # Convert the text response to speech using gTTS
-        tts = gTTS(assistant_reply)
-
-        # Create a temporary audio file
-        audio_file_path = 'temp_audio.mp3'
-        tts.save(audio_file_path)
-
-        memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
-        conversations_summary = memory_summary.load_memory_variables({})
-        conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
-
-        current_time = datetime.now(pytz.timezone('Europe/Paris'))
-
-        # Access the database session using the get_db function
-        with get_db() as db:
-            # Create a new Memory object with the data
-            new_memory = Memory(
-                user_message=user_message,
-                llm_response=assistant_reply,
-                conversations_summary=conversations_summary_str,
-                created_at=current_time,
-                owner_id=current_user.id
-            )
-
-            # Add the new memory to the session
-            db.add(new_memory)
-
-            # Commit changes to the database
-            db.commit()
-            db.refresh(new_memory)
-
-        print(f'User id:\n{current_user.id} 😝\n')
-        print(f'User Input: {user_message} 😎')
-        print(f'LLM Response:\n{assistant_reply} 😝\n')
-
-        # Return the response as JSON, including both text and the path to the audio file
-        return jsonify({
-            "answer_text": assistant_reply,
-            "answer_audio_path": audio_file_path,
-            "flash_messages": flash('warning'),
-        })
+    # Return the response as JSON, including both text and the path to the audio file
+    return jsonify({
+        "answer_text": assistant_reply,
+        "answer_audio_path": audio_file_path,
+    })
 
 
 @app.route('/audio')
