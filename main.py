@@ -244,11 +244,7 @@ def answer():
 @app.route('/audio')
 def serve_audio():
     audio_file_path = 'temp_audio.mp3'
-    try:
-        return send_file(audio_file_path, as_attachment=True)
-    except FileNotFoundError:
-        # Handle the error gracefully, for example, return a 404 Not Found response
-        abort(404, description="Audio file not found")
+    return send_file(audio_file_path, as_attachment=True)
 
 
 @app.route('/show-history')
