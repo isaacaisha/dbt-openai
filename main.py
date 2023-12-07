@@ -182,7 +182,7 @@ def answer():
     # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
 
     # Convert 'created_at' values to string
-    created_at_list = [str(memory.created_at) for memory in test]
+    created_at_list = [str(memory.created_at) for memory in user_conversations]
 
     # Include 'created_at' in the conversation context
     conversation_context = {
