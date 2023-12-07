@@ -166,11 +166,9 @@ def logout():
 def answer():
     user_message = request.form['prompt']
 
-    # Get conversations only for the current user
-    user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
-
     # Create a list of JSON strings for each conversation
-    conversation_strings = [memory.conversations_summary for memory in user_conversations]
+    conversation_strings = [memory.conversations_summary for memory in test]
+
 
     # Combine the first 1 and last 9 entries into a valid JSON array
     qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
@@ -179,13 +177,13 @@ def answer():
     # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
 
     # Convert 'created_at' values to string
-    created_at_list = [str(memory.created_at) for memory in user_conversations]
+    created_at_list = [str(memory.created_at) for memory in test]
 
     # Include 'created_at' in the conversation context
     conversation_context = {
-        "user_message": user_message,
         "created_at": created_at_list[-5:],
         "conversations": qdocs,
+        "user_message": user_message,
     }
 
     # Call llm ChatOpenAI
@@ -220,17 +218,16 @@ def answer():
             llm_response=assistant_reply,
             conversations_summary=conversations_summary_str,
             created_at=current_time,
-            owner_id=current_user.id
         )
 
         # Add the new memory to the session
         db.add(new_memory)
 
         # Commit changes to the database
-        db.commit()
-        db.refresh(new_memory)
+        #db.commit()
+        #db.refresh(new_memory)
 
-    print(f'User id:\n{current_user.id} 😝\n')
+    #print(f'User id:\n{current_user.id} 😝\n')
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
 
