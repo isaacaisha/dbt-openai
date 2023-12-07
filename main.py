@@ -76,7 +76,7 @@ def home():
     memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
 
-    return render_template('index.html', current_user=current_user, writing_text_form=writing_text_form, answer=answer,
+    return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
                            memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -150,7 +150,7 @@ def login():
 
             return redirect(url_for('home'))
 
-    return render_template("login.html", form=form, current_user=current_user,
+    return render_template("login.html", form=form,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
