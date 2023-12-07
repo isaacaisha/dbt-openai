@@ -263,12 +263,7 @@ def serve_audio():
 
 
 @app.route('/show-history')
-@login_required
 def show_story():
-    # Get current user logged in
-    if not current_user:
-        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
-        return redirect(url_for('login'))
 
     summary_conversation = memory_summary.load_memory_variables({})
     memory_load = memory.load_memory_variables({})
@@ -283,12 +278,7 @@ def show_story():
 
 
 @app.route("/private-conversations")
-@login_required
 def get_private_conversations():
-    # Get current user logged in
-    if not current_user:
-        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
-        return redirect(url_for('login'))
 
     # private:
     owner_id = current_user.id
@@ -316,12 +306,7 @@ def get_private_conversations():
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
-@login_required
 def delete_conversation():
-    # Get current user logged in
-    if not current_user:
-        flash("Please Login 😭.\nIf not, first get Registered 😝 ¡!¡")
-        return redirect(url_for('login'))
 
     form = DeleteForm()
 
