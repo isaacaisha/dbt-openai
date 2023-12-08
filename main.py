@@ -271,7 +271,9 @@ def answer():
 def show_story():
     if not current_user.is_authenticated:
         # If the user is not authenticated, return an appropriate response
-        return jsonify({"error": "You must be logged in to use this feature. Please register then log in 🤣."}), 401
+        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
     summary_conversation = memory_summary.load_memory_variables({})
     memory_load = memory.load_memory_variables({})
@@ -289,7 +291,9 @@ def show_story():
 def get_private_conversations():
     if not current_user.is_authenticated:
         # If the user is not authenticated, return an appropriate response
-        return jsonify({"error": "You must be logged in to use this feature. Please register then log in 🤣."}), 401
+        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
     # private:
     owner_id = current_user.id
