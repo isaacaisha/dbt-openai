@@ -138,6 +138,7 @@ def login():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
+        remember = form.remember_me.data
 
         # Find the user by username
         user = User.query.filter_by(email=email).first()
@@ -145,7 +146,7 @@ def login():
         # Check if the user exists and the password is correct
         if user and check_password_hash(user.password, password):
             # Log in the user
-            login_user(user)
+            login_user(user, remember=remember)
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
@@ -163,15 +164,16 @@ def logout():
 
 
 @app.route('/answer', methods=['GET', 'POST'])
+@login_required
 def answer():
     user_message = request.form['prompt']
 
     if current_user.is_authenticated:
 
-    #if not current_user.is_authenticated:
-    #    # If the user is not authenticated, return an appropriate response
-    #    return jsonify(), 401
-    #else:
+        # if not current_user.is_authenticated:
+        #    # If the user is not authenticated, return an appropriate response
+        #    return jsonify(), 401
+        # else:
         # Get conversations only for the current user
         user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
@@ -289,12 +291,12 @@ def show_story():
 @app.route("/private-conversations")
 def get_private_conversations():
     if current_user.is_authenticated:
-    #if not current_user.is_authenticated:
-    #    # If the user is not authenticated, return an appropriate response
-    #    # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
-    #    return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-    #            f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
-    #else:
+        # if not current_user.is_authenticated:
+        #    # If the user is not authenticated, return an appropriate response
+        #    # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+        #    return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+        #            f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+        # else:
         # private:
         owner_id = current_user.id
         histories = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -324,17 +326,16 @@ def get_private_conversations():
                 f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
 
-
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     if current_user.is_authenticated:
-    #if not current_user.is_authenticated:
-    #    # If the user is not authenticated, return an appropriate response
-    #    # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}),
-    #    # 401
-    #    return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-    #            f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
-    # else:
+        # if not current_user.is_authenticated:
+        #    # If the user is not authenticated, return an appropriate response
+        #    # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}),
+        #    # 401
+        #    return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+        #            f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+        # else:
         form = DeleteForm()
 
         if form.validate_on_submit():

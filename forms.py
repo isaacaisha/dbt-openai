@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, IntegerField, validators, TextAreaField, EmailField
+from wtforms import StringField, SubmitField, PasswordField, IntegerField, validators, TextAreaField, EmailField, \
+    BooleanField
 from wtforms.validators import DataRequired, URL
 from flask_ckeditor import CKEditorField
 
@@ -26,6 +27,7 @@ class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), validators.Email()])
     password = PasswordField("Password", validators=[DataRequired()])
     #user_name = StringField("Name", validators=[DataRequired()])
+    remember_me = BooleanField('Remember Me')  # Add this line
     submit = SubmitField("LET M€ IN ¡!¡")
 
 
