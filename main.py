@@ -23,6 +23,7 @@ from forms import RegisterForm, LoginForm, TextAreaForm, DeleteForm
 
 import io
 from flask_wtf.csrf import CSRFProtect
+from flask_cors import CORS
 
 warnings.filterwarnings('ignore')
 
@@ -30,6 +31,7 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__)
 Bootstrap(app)
+CORS(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -55,7 +57,7 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-csrf = CSRFProtect(app)
+#csrf = CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
