@@ -173,11 +173,12 @@
 </div>
 
 <!-- Add a button to show the history -->
-<div class="text-center">
+<div class="container text-center">
     <button id="showResultButton" type="button" class="btn text-center btn-story mb-3" onclick="toggleResultMemo()"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         Show History ¡!¡
     </button>
+    <hr class="mb-3" style="color:red">
 </div>
 
 <div id="resultMemo" style="display: none;" class="text-center">
@@ -191,10 +192,11 @@
     <textarea class="textarea-memory mb-3" style="color:purple;">{{ summary_buffer }}</textarea>
 
     {% endfor %}
+    <hr class="mb-3" style="color:green">
 </div>
 
-<div class="dropdown text-center mb-3">
-    <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+<div class="container dropdown text-center">
+    <button class="btn btn-info dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         Menu
     </button>
     <ul class="dropdown-menu">
@@ -209,6 +211,7 @@
             </button>
         </li>
     </ul>
+    <hr class="mb-3" style="color:green">
 </div>
 
 {% endblock %}
