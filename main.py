@@ -333,11 +333,6 @@ def delete_conversation():
     form = DeleteForm()
 
     if form.validate_on_submit():
-        if not current_user.is_authenticated:
-            # If the user is not authenticated, return an appropriate response
-            # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
-            return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                    f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
         # Access the database session using the get_db function
         with get_db() as db:
             # Get the conversation_id from the form
@@ -354,6 +349,12 @@ def delete_conversation():
             if conversation_to_delete.owner_id != current_user.id:
                 abort(403, description=f"Not authorized to perform the requested action\n"
                                        f"Conversation with ID 🔥{conversation_id}🔥\nDoesn't belongs to you ¡!¡")
+
+            if not current_user.is_authenticated:
+                # If the user is not authenticated, return an appropriate response
+                # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+                return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                    f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
             # Delete the conversation
             db.delete(conversation_to_delete)
