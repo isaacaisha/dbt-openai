@@ -33,6 +33,9 @@ app = Flask(__name__)
 Bootstrap(app)
 CORS(app)
 
+#csrf = CSRFProtect(app)
+#CSRFProtect(app)
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.init_app(app)
@@ -58,8 +61,6 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-#csrf = CSRFProtect(app)
-#CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
@@ -132,7 +133,8 @@ def register():
 
         return redirect(url_for('login'))
 
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -157,7 +159,8 @@ def login():
         else:
             flash('Login failed. Please check your username and password.', 'danger')
 
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/logout')
@@ -288,8 +291,9 @@ def show_story():
     print(f'memory_load_story:\n{memory_load}\n')
     print(f'summary_conversation_story:\n{summary_conversation}\n')
 
-    return render_template('show-history.html', memory_load=memory_load, memory_buffer=memory_buffer,
-                           summary_conversation=summary_conversation, date=datetime.now().strftime("%a %d %B %Y"))
+    return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
+                           memory_buffer=memory_buffer, summary_conversation=summary_conversation,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route("/private-conversations")
@@ -323,8 +327,9 @@ def get_private_conversations():
         # return jsonify(serialized_histories)
 
         # Render an HTML template with the serialized data
-        return render_template('private-conversations.html', histories=serialized_histories,
-                               serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
+        return render_template('private-conversations.html', current_user=current_user,
+                               histories=serialized_histories, serialized_histories=serialized_histories,
+                               date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
                 f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
@@ -369,7 +374,8 @@ def delete_conversation():
 
                 return redirect(url_for('delete_conversation'))
 
-        return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
+        return render_template('del.html', current_user=current_user, form=form,
+                               date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
                 f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
