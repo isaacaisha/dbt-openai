@@ -58,8 +58,8 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-#csrf = CSRFProtect(app)
-#CSRFProtect(app)
+# csrf = CSRFProtect(app)
+# CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
@@ -166,10 +166,12 @@ def logout():
 def answer():
     user_message = request.form['prompt']
 
-    if not current_user.is_authenticated:
-        # If the user is not authenticated, return an appropriate response
-        return jsonify(), 401
-    else:
+    if current_user.is_authenticated:
+
+    #if not current_user.is_authenticated:
+    #    # If the user is not authenticated, return an appropriate response
+    #    return jsonify(), 401
+    #else:
         # Get conversations only for the current user
         user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
@@ -257,6 +259,8 @@ def answer():
             "current_user": current_user_data,
             # "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
         })
+    else:
+        return jsonify(), 401
 
 
 @app.route('/audio')
@@ -284,12 +288,13 @@ def show_story():
 
 @app.route("/private-conversations")
 def get_private_conversations():
-    if not current_user.is_authenticated:
-        # If the user is not authenticated, return an appropriate response
-        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
-        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
-    else:
+    if current_user.is_authenticated:
+    #if not current_user.is_authenticated:
+    #    # If the user is not authenticated, return an appropriate response
+    #    # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+    #    return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+    #            f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+    #else:
         # private:
         owner_id = current_user.id
         histories = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -314,17 +319,22 @@ def get_private_conversations():
         # Render an HTML template with the serialized data
         return render_template('private-conversations.html', histories=serialized_histories,
                                serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    if not current_user.is_authenticated:
-        # If the user is not authenticated, return an appropriate response
-        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}),
-        # 401
-        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
-    else:
+    if current_user.is_authenticated:
+    #if not current_user.is_authenticated:
+    #    # If the user is not authenticated, return an appropriate response
+    #    # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}),
+    #    # 401
+    #    return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+    #            f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+    # else:
         form = DeleteForm()
 
         if form.validate_on_submit():
@@ -355,6 +365,9 @@ def delete_conversation():
                 return redirect(url_for('delete_conversation'))
 
         return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
+    else:
+        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
 
 if __name__ == '__main__':
