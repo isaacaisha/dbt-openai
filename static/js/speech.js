@@ -52,7 +52,7 @@ function sendRequest(prompt) {
             } else if (xhr.status === 401) {
                 // User is not authenticated, display the error message
                 var errorMessage = document.getElementById('error-message');
-                errorMessage.innerText = 'You must be logged in\nto use this feature.\nPlease log in or register.';
+                errorMessage.innerText = 'You must be logged in\nto use this feature.\nPlease register and log in.\nOr reload the page, thanks\n¡!¡ 😇 ¡!¡';
                 errorMessage.style.display = 'block';
             } else {
                 // Handle other HTTP error statuses if needed
