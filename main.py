@@ -5,9 +5,8 @@ import warnings
 import pytz
 import json
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, Response, abort
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
-from werkzeug.exceptions import HTTPException
 from datetime import datetime, timedelta
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
@@ -22,6 +21,9 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegisterForm, LoginForm, TextAreaForm, DeleteForm
 
+import io
+from flask_wtf.csrf import CSRFProtect
+
 warnings.filterwarnings('ignore')
 
 _ = load_dotenv(find_dotenv())  # read local .env file
@@ -31,6 +33,7 @@ Bootstrap(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+login_manager.init_app(app)
 
 openai.api_key = os.environ['OPENAI_API_KEY']
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -52,6 +55,7 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+#csrf = CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
@@ -60,6 +64,14 @@ with app.app_context():
 with get_db() as db:
     # memories = db.query(Memory).all()
     test = db.query(Memory).all()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id is not None and user_id.isdigit():
+        # Check if the user_id is a non-empty string of digits
+        return User.query.get(int(user_id))
+    return None
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -79,17 +91,10 @@ def home():
     memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
 
-    return render_template('index.html', current_user=current_user, writing_text_form=writing_text_form, answer=answer,
-                           memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
+    return render_template('index.html', current_user=current_user,
+                           writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
+                           memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    if user_id is not None and user_id.isdigit():
-        # Check if the user_id is a non-empty string of digits
-        return User.query.get(int(user_id))
-    return None
 
 
 # Add a registration route
@@ -125,21 +130,20 @@ def register():
 
         print(f'New username: {new_user.id}\n email: {new_user.email}\n password: {new_user.password}')
 
-        return redirect(url_for('login'))
+        return redirect(url_for('get_all_articles'))
 
     return render_template("register.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-# Add a login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if request.method == 'POST':
+    if form.validate_on_submit():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Replace this with your logic to authenticate the user
+        # Find user by email entered.
         user = User.query.filter_by(email=email).first()
 
         # Email doesn't exist
@@ -153,27 +157,26 @@ def login():
         # Email exists and password correct
         else:
             login_user(user)
-
-            print(
-                f'logged user id: {current_user.id}\nlogged user email: {user.email}\nlogged user  password: {user.password}')
-
             return redirect(url_for('home'))
 
     return render_template("login.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-# Add a logout route
 @app.route('/logout')
 def logout():
     logout_user()
+    print(f"Is user authenticated after logout? {current_user.is_authenticated}")
     return redirect(url_for('home'))
 
 
-@app.route('/answer', methods=['POST'])
-@login_required
+@app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
+
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        return jsonify(), 401
 
     # Get conversations only for the current user
     user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
@@ -181,8 +184,11 @@ def answer():
     # Create a list of JSON strings for each conversation
     conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
+    # Create a list of JSON strings for each conversation
+    # conversation_strings = [memory.conversations_summary for memory in test]
+
     # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
+    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-3:])}]"
 
     # # Decode the JSON string
     # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
@@ -192,9 +198,9 @@ def answer():
 
     # Include 'created_at' in the conversation context
     conversation_context = {
-        "user_message": user_message,
-        "created_at": created_at_list[-5:],
+        "created_at": created_at_list[-3:],
         "conversations": qdocs,
+        "user_message": user_message,
     }
 
     # Call llm ChatOpenAI
@@ -214,6 +220,11 @@ def answer():
     # Create a temporary audio file
     audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
+
+    ## Create an in-memory file-like object to store the audio data
+    # audio_data = io.BytesIO()
+    # tts.write_to_fp(audio_data)
+    # audio_data.seek(0)  # Reset the file pointer to the beginning
 
     memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
     conversations_summary = memory_summary.load_memory_variables({})
@@ -247,13 +258,17 @@ def answer():
     return jsonify({
         "answer_text": assistant_reply,
         "answer_audio_path": audio_file_path,
+        # "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
     })
 
 
 @app.route('/audio')
 def serve_audio():
     audio_file_path = 'temp_audio.mp3'
-    return send_file(audio_file_path, as_attachment=True, )
+    # Check if the file exists
+    if not os.path.exists(audio_file_path):
+        abort(404, description=f"Audio file not found")
+    return send_file(audio_file_path, as_attachment=True)
 
 
 @app.route('/show-history')
@@ -272,6 +287,13 @@ def show_story():
 
 @app.route("/private-conversations")
 def get_private_conversations():
+
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+
     # private:
     owner_id = current_user.id
     histories = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -291,37 +313,54 @@ def get_private_conversations():
 
         serialized_histories.append(serialized_history)
 
-    return jsonify(serialized_histories)
+    # return jsonify(serialized_histories)
+
+    # Render an HTML template with the serialized data
+    return render_template('private-conversations.html', histories=serialized_histories,
+                           serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
-@login_required
-def delete_conversation(id):
-    # Access the database session using the get_db function
-    with get_db() as db:
-        # Query the database to get the conversation to be deleted
-        conversation_to_delete = db.query(Memory).filter(Memory.id == id).first()
+def delete_conversation():
 
-        # Check if the conversation exists
-        if not conversation_to_delete:
-            abort(404, description=f"Conversation with ID {id} not found")
+    form = DeleteForm()
 
-        # Check if the current user is the owner of the conversation
-        if conversation_to_delete.owner_id != current_user.id:
-            abort(403, description="Not authorized to perform the requested action")
+    if form.validate_on_submit():
+        if not current_user.is_authenticated:
+            # If the user is not authenticated, return an appropriate response
+            # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+            return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                    f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+        # Access the database session using the get_db function
+        with get_db() as db:
+            # Get the conversation_id from the form
+            conversation_id = form.conversation_id.data
 
-        # Delete the conversation
-        db.delete(conversation_to_delete)
-        db.commit()
+            # Query the database to get the conversation to be deleted
+            conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
 
-        # Assuming you have a DeleteForm defined in forms.py
-        form = DeleteForm()
+            # Check if the conversation exists
+            if not conversation_to_delete:
+                abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
 
-        return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
+            # Check if the current user is the owner of the conversation
+            if conversation_to_delete.owner_id != current_user.id:
+                abort(403, description=f"Not authorized to perform the requested action\n"
+                                       f"Conversation with ID 🔥{conversation_id}🔥\nDoesn't belongs to you ¡!¡")
+
+            # Delete the conversation
+            db.delete(conversation_to_delete)
+            print(f'conversation_to_delete:\n{conversation_to_delete}\n')
+            db.commit()
+
+            flash('Conversation deleted successfully', 'warning')
+
+            return redirect(url_for('delete_conversation'))
+
+    return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
 
 
 if __name__ == '__main__':
-
     # Clean up any previous temporary audio files
     temp_audio_file = 'temp_audio.mp3'
     if os.path.exists(temp_audio_file):

@@ -31,7 +31,6 @@
         <div class="row">
 
             <div class="col-lg-8 col-md-10 mx-auto content mb-3">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
@@ -40,6 +39,10 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
+
+                {% if csrf_enabled %}
+                    {{ form.csrf_token }}
+                {% endif %}
 
                 {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'danger  btn-block submit'}) }}
             </div>
