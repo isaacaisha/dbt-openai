@@ -7,7 +7,6 @@ import json
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
-from flask_wtf.csrf import CSRFProtect
 from datetime import datetime, timedelta
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
@@ -30,7 +29,6 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__)
 Bootstrap(app)
-csrf = CSRFProtect(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
