@@ -187,6 +187,10 @@ def logout():
 def answer():
     user_message = request.form['prompt']
 
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        return jsonify(), 401
+
     # Get conversations only for the current user
     user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
@@ -258,10 +262,6 @@ def answer():
         # Commit changes to the database
         db.commit()
         db.refresh(new_memory)
-
-        if not current_user.is_authenticated:
-            # If the user is not authenticated, return an appropriate response
-            return jsonify({"error": "You must be logged in to use this feature. Please log in or register 😎¡!¡"}), 401
 
     print(f'User id:\n{current_user.id} 😝\n')
     print(f'User Input: {user_message} 😎')
