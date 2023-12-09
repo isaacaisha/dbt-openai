@@ -22,6 +22,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegisterForm, LoginForm, TextAreaForm, DeleteForm
 
 import io
+from flask_wtf.csrf import CSRFProtect
 
 warnings.filterwarnings('ignore')
 
@@ -54,6 +55,7 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+#csrf = CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
