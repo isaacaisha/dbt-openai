@@ -77,6 +77,11 @@ def home():
     writing_text_form = TextAreaForm()
     answer = None
 
+    if writing_text_form.validate_on_submit():
+        if not current_user.is_authenticated:
+            flash("You need to login or register to interact with the AI.")
+            return redirect(url_for("home"))
+
     if request.method == "POST" and writing_text_form.validate_on_submit():
         user_input = request.form['writing_text']
 
@@ -301,6 +306,12 @@ def show_story():
 @app.route("/private-conversations")
 def get_private_conversations():
 
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+
     # private:
     owner_id = current_user.id
     histories = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -322,12 +333,6 @@ def get_private_conversations():
 
     # return jsonify(serialized_histories)
 
-    if not current_user.is_authenticated:
-        # If the user is not authenticated, return an appropriate response
-        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
-        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
-
     # Render an HTML template with the serialized data
     return render_template('private-conversations.html', histories=serialized_histories,
                            serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
@@ -339,6 +344,11 @@ def delete_conversation():
     form = DeleteForm()
 
     if form.validate_on_submit():
+        if not current_user.is_authenticated:
+            # If the user is not authenticated, return an appropriate response
+            # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+            return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                    f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
         # Access the database session using the get_db function
         with get_db() as db:
             # Get the conversation_id from the form
@@ -362,12 +372,6 @@ def delete_conversation():
             db.commit()
 
             flash('Conversation deleted successfully', 'warning')
-
-            if not current_user.is_authenticated:
-                # If the user is not authenticated, return an appropriate response
-                # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
-                return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                        f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
             return redirect(url_for('delete_conversation'))
 

@@ -55,14 +55,14 @@ large-image {
     }
 }
 
+.nav-link {
+    color: red;
+    font-family: 'Merriweather', sans-serif;
+}
+
 #content > div:nth-child(4) > h3, #content > h3, .conversations-details {
     color: #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
-}
-
-.nav-link {
-    color: #AEFAFC;
-    font-family: 'Merriweather', sans-serif;
 }
 
 /* Dropdown btn */
