@@ -22,7 +22,7 @@
                 <h1 class="">Register ¡!¡</h1>
             </div>
         </div>
-        <p style="color:#fff;" class="text-center">Interact with the App</p>
+        <p style="color:#fff;" class="text-center">To Interact<br>with the<br>Artificial Intelligence</p>
     </div>
 
     <hr class="mb-3" style="color:green;">
@@ -34,22 +34,51 @@
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
-                            <p style="color:red">{{ message }}</p>
+                            <p style="color:green">{{ message }}</p>
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-
+<!--
                 {% if csrf_enabled %}
                     {{ form.csrf_token }}
                 {% endif %}
 
                 {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success  btn-block submit'}) }}
+-->
+                <div class="container">
+                    <!--<h3 class="mt-5 mb-4">Register</h3>-->
+                    <form method="POST" action="{{ url_for('register') }}">
+                        {{ form.hidden_tag() }}
 
-          </div>
+                        <div class="mb-3">
+                          {{ form.email.label(class="form-label") }}
+                          {{ form.email(class="form-control", placeholder="Your email address") }}
+                        </div>
+
+                        <div class="mb-3">
+                          {{ form.password.label(class="form-label") }}
+                          {{ form.password(class="form-control", placeholder="Choose a password") }}
+                        </div>
+
+                        <div class="mb-3">
+                          {{ form.confirm_password.label(class="form-label") }}
+                          {{ form.confirm_password(class="form-control", placeholder="Confirm your password") }}
+                        </div>
+
+                        <div class="mb-3 text-center">
+                            <button type="submit" class="btn submit btn-success">Register</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4">
+                      <p>Already have an account? <a href="{{ url_for('login') }}">Log in here</a>.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-  </div>
+    </div>
 
-  <hr class="mb-5" style="color:yellow;">
+    <hr class="mb-5" style="color:yellow;">
 
 </div>
 

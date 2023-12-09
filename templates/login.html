@@ -22,7 +22,7 @@
                 <h1 class="">Log In ¡!¡</h1>
             </div>
         </div>
-        <p style="color:#fff;" class="text-center">Welcome Back ¡!¡</p>
+        <p style="color:#fff;" class="text-center">Welcome Back, Log In ¡!¡<br>To Interact<br>with the<br>Artificial Intelligence</p>
     </div>
 
     <hr class="mb-3" style="color:green;">
@@ -32,27 +32,45 @@
 
             <div class="col-lg-8 col-md-10 mx-auto content mb-3">
 
-
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
-                            <p style="color:red">{{ message }}</p>
+                            <p style="color:green">{{ message }}</p>
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-
+<!--
                 {% if csrf_enabled %}
                     {{ form.csrf_token }}
                 {% endif %}
 
                 {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success  btn-block submit'}) }}
+-->
+
+                <form method="POST" action="{{ url_for('login') }}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="form-group">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control") }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control") }}
+                    </div>
+
+                    <div class="mb-3 text-center">
+                        <button type="submit" class="btn submit btn-success">Log In</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <hr class="mb-5" style="color:yellow;">
-
 </div>
+
+    <hr class="mb-5" style="color:yellow;">
 
 {% endblock %}
 

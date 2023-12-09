@@ -19,6 +19,7 @@ from flask_ckeditor import CKEditorField
 class RegisterForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), validators.Email()])
     password = PasswordField("Password", validators=[DataRequired(), validators.Length(min=6)])
+    confirm_password = PasswordField("Password", validators=[DataRequired(), validators.Length(min=6)])
     #user_name = StringField("Name", validators=[DataRequired()])
     submit = SubmitField("SIGN M€ UP ¡!¡")
 
@@ -27,7 +28,7 @@ class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), validators.Email()])
     password = PasswordField("Password", validators=[DataRequired()])
     #user_name = StringField("Name", validators=[DataRequired()])
-    remember_me = BooleanField('Remember Me')  # Add this line
+    #remember_me = BooleanField('Remember Me')  # Add this line
     submit = SubmitField("LET M€ IN ¡!¡")
 
 

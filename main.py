@@ -58,8 +58,8 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-# csrf = CSRFProtect(app)
-# CSRFProtect(app)
+#csrf = CSRFProtect(app)
+#CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
@@ -109,7 +109,7 @@ def register():
         email = form.email.data
         password = form.password.data
 
-        # Check if the username is already taken
+        # Check if the email is already taken
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash(f'Email: 🔥{email}🔥 is already taken. Please choose a different one.', 'danger')
@@ -126,6 +126,10 @@ def register():
         db.commit()
 
         flash('Registration successful! You can now log in.', 'success')
+
+        # After successful registration
+        login_user(new_user)
+
         return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
@@ -138,7 +142,7 @@ def login():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-        remember = form.remember_me.data
+        #remember = form.remember_me.data
 
         # Find the user by username
         user = User.query.filter_by(email=email).first()
@@ -146,7 +150,8 @@ def login():
         # Check if the user exists and the password is correct
         if user and check_password_hash(user.password, password):
             # Log in the user
-            login_user(user, remember=remember)
+            login_user(user)
+            #login_user(user, remember=remember)
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
