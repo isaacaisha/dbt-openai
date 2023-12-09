@@ -38,6 +38,7 @@ login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 openai.api_key = os.environ['OPENAI_API_KEY']
+app.config['WTF_CSRF_ENABLED'] = True
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
@@ -57,7 +58,8 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-# csrf = CSRFProtect(app)
+#csrf = CSRFProtect(app)
+#CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
@@ -316,6 +318,12 @@ def get_private_conversations():
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}),
+        # 401
+        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
     form = DeleteForm()
 
     if form.validate_on_submit():
@@ -335,13 +343,6 @@ def delete_conversation():
             if conversation_to_delete.owner_id != current_user.id:
                 abort(403, description=f"Not authorized to perform the requested action\n"
                                        f"Conversation with ID 🔥{conversation_id}🔥\nDoesn't belongs to you ¡!¡")
-
-            if not current_user.is_authenticated:
-                # If the user is not authenticated, return an appropriate response
-                # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}),
-                # 401
-                return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                        f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
             # Delete the conversation
             db.delete(conversation_to_delete)
