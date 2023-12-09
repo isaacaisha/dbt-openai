@@ -82,26 +82,3 @@ document.getElementById('prompt-form').addEventListener('submit', function (e) {
     var prompt = document.getElementById('userInput').value; // Get text from the textarea
     sendRequest(prompt);
 });
-
-// Set the audio source and play
-var audio = document.getElementById('response-audio');
-
-// Add click event listener to the replay button
-document.getElementById('replayButton').addEventListener('click', function () {
-    replayResponse();
-});
-
-// Function to replay the response
-function replayResponse() {
-    // Check if the audio element exists
-    if (audio) {
-        // Pause and reset the audio to the beginning
-        audio.pause();
-        audio.currentTime = 0;
-
-        // Auto-play the audio when it's ready
-        audio.oncanplay = function () {
-            audio.play();
-        };
-    }
-}

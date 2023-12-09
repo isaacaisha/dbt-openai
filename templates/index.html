@@ -6,6 +6,7 @@
     {{ super() }}
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
     {% include 'bootstrap/base.html' %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -37,14 +38,13 @@
         {% endif %}
     </ul>
 </header>
-
+<!--
 {% if not current_user.is_authenticated: %}
     <hr style="color:green;">
 <h3 class="mb-5 text-center log-register-h3">To INTERACT with the<br><span style="color:red;">ARTIFICIAL INTELLIGENCE</span><br>Please log in or register ¡!¡</h3>
     <hr class="mb-5" style="color:yellow;">
 {% endif %}
-
-
+-->
 <div class="text-center mb-1">
     <h3 class="mb-3">1°Click on your Favorite Language:</h3>
     <div>
@@ -127,16 +127,19 @@
         <!-- Play the audio response -->
         <audio id="response-audio" controls style="display: none;"></audio>
         {% endif %}
-        <!-- Add replay button -->
-        <div class="text-center">
-            <button id="replayButton" class="btn replay">Replay</button>
-        </div>
-    </div>
-        <!-- Add replay button -->
-        <div class="text-center">
-            <button id="replayButton" class="btn replay">Replay</button>
-        </div>
 
+        <ul>
+            <li>
+                <button class="dropdown-item btn text-center" type="button">
+                    <audio controls>
+                        <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+                </button>
+            </li>
+        </ul
+        >
+    </div>
 
 
 </div>

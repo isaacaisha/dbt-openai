@@ -99,7 +99,7 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    #if request.method == 'POST':
+    # if request.method == 'POST':
     #    email = request.form.get('email')
     #    password = request.form.get('password')
 
@@ -124,7 +124,7 @@ def register():
             # Create a new User instance and add it to the database
             new_user = User()
             new_user.email = request.form['email']
-            #new_user.name = request.form['name']
+            # new_user.name = request.form['name']
             new_user.password = hash_and_salted_password
             # new_user.is_admin = True  # Set this user as an admin
 
@@ -146,7 +146,7 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    #if request.method == 'POST':
+    # if request.method == 'POST':
     if form.validate_on_submit():
         email = request.form.get('email')
         password = request.form.get('password')
@@ -183,14 +183,14 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route('/answer', methods=['POST'])
+@app.route('/answer', methods=['GET', 'POST'])
 @login_required
 def answer():
     user_message = request.form['prompt']
 
-    #if not current_user.is_authenticated:
-    #    # If the user is not authenticated, return an appropriate response
-    #    return jsonify({"error": "You must be logged in to use this feature. Please log in or register."}), 401
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        return jsonify({"error": "You must be logged in to use this feature. Please log in or register."}), 401
 
     # Get conversations only for the current user
     user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
@@ -202,7 +202,7 @@ def answer():
     # conversation_strings = [memory.conversations_summary for memory in test]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-3:])}]"
+    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
 
     # # Decode the JSON string
     # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
@@ -231,14 +231,14 @@ def answer():
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply)
 
-    ## Create a temporary audio file
-    # audio_file_path = 'temp_audio.mp3'
-    # tts.save(audio_file_path)
+    # Create a temporary audio file
+    audio_file_path = 'temp_audio.mp3'
+    tts.save(audio_file_path)
 
-    # Create an in-memory file-like object to store the audio data
-    audio_data = io.BytesIO()
-    tts.write_to_fp(audio_data)
-    audio_data.seek(0)  # Reset the file pointer to the beginning
+    ## Create an in-memory file-like object to store the audio data
+    # audio_data = io.BytesIO()
+    # tts.write_to_fp(audio_data)
+    # audio_data.seek(0)  # Reset the file pointer to the beginning
 
     memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
     conversations_summary = memory_summary.load_memory_variables({})
@@ -275,25 +275,22 @@ def answer():
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
-        # "answer_audio_path": audio_file_path,
-        "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
+        "answer_audio_path": audio_file_path,
+        # "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
     })
 
 
-# @app.route('/audio')
-# def serve_audio():
-#    audio_file_path = 'temp_audio.mp3'
-#
-#    # Check if the file exists
-#    if not os.path.exists(audio_file_path):
-#        abort(404, description=f"Audio file not found")
-#
-#    return send_file(audio_file_path, as_attachment=True)
+@app.route('/audio')
+def serve_audio():
+    audio_file_path = 'temp_audio.mp3'
+    # Check if the file exists
+    if not os.path.exists(audio_file_path):
+        abort(404, description=f"Audio file not found")
+    return send_file(audio_file_path, as_attachment=True)
 
 
 @app.route('/show-history')
 def show_story():
-
     summary_conversation = memory_summary.load_memory_variables({})
     memory_load = memory.load_memory_variables({})
     memory_buffer = memory.buffer_as_str
@@ -308,7 +305,6 @@ def show_story():
 
 @app.route("/private-conversations")
 def get_private_conversations():
-
     if not current_user.is_authenticated:
         # If the user is not authenticated, return an appropriate response
         # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
@@ -361,11 +357,12 @@ def delete_conversation():
 
             # Check if the conversation exists
             if not conversation_to_delete:
-                abort(404, description=f"Conversation with ID {conversation_id} not found")
+                abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
 
             # Check if the current user is the owner of the conversation
             if conversation_to_delete.owner_id != current_user.id:
-                abort(403, description="Not authorized to perform the requested action")
+                abort(403, description=f"Not authorized to perform the requested action\n"
+                                       f"Conversation with ID 🔥{conversation_id}🔥\nDoesn't belongs to you ¡!¡")
 
             # Delete the conversation
             db.delete(conversation_to_delete)
@@ -374,15 +371,15 @@ def delete_conversation():
 
             flash('Conversation deleted successfully', 'warning')
 
-            return redirect(url_for('home'))  # Replace 'your_redirect_route' with the appropriate route
+            return redirect(url_for('delete_conversation'))  # Replace 'your_redirect_route' with the appropriate route
 
     return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
 
 
 if __name__ == '__main__':
-    ## Clean up any previous temporary audio files
-    # temp_audio_file = 'temp_audio.mp3'
-    # if os.path.exists(temp_audio_file):
-    #    os.remove(temp_audio_file)
+    # Clean up any previous temporary audio files
+    temp_audio_file = 'temp_audio.mp3'
+    if os.path.exists(temp_audio_file):
+        os.remove(temp_audio_file)
 
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
