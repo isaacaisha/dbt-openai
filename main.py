@@ -104,10 +104,6 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    # if request.method == 'POST':
-    #    email = request.form.get('email')
-    #    password = request.form.get('password')
-
     if form.validate_on_submit():
 
         # If user's email already exists
@@ -117,46 +113,40 @@ def register():
             flash("You've already signed up with that email, log in instead!")
             return redirect(url_for('login'))
 
-        # Hash the password before storing it
         hash_and_salted_password = generate_password_hash(
             request.form.get('password'),
             method='pbkdf2:sha256',
             salt_length=8
         )
 
-        # Access the database session using the get_db function
-        with get_db() as db:
-            # Create a new User instance and add it to the database
-            new_user = User()
-            new_user.email = request.form['email']
-            # new_user.name = request.form['name']
-            new_user.password = hash_and_salted_password
-            # new_user.is_admin = True  # Set this user as an admin
+        new_user = User()
+        new_user.email = request.form['email']
+        #new_user.name = request.form['name']
+        new_user.password = hash_and_salted_password
+        # new_user.is_admin = True  # Set this user as an admin
 
-            db.add(new_user)
-            db.commit()
+        db.add(new_user)
+        db.commit()
 
-            # Log in the user after registration
-            login_user(new_user)
+        # Log in and authenticate the user after adding details to the database.
+        login_user(new_user)
 
-            print(f'New user email: {new_user.email}\nNew user  password: {new_user.password}')
+        print(f'New username: {new_user.id}\n email: {new_user.email}\n password: {new_user.password}')
 
-            return redirect(url_for('home'))
+        return redirect(url_for('get_all_articles'))
 
     return render_template("register.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-# Add a login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    # if request.method == 'POST':
     if form.validate_on_submit():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Replace this with your logic to authenticate the user
+        # Find user by email entered.
         user = User.query.filter_by(email=email).first()
 
         # Email doesn't exist
@@ -170,21 +160,16 @@ def login():
         # Email exists and password correct
         else:
             login_user(user)
-
-            print(
-                f'logged user id: {current_user.id}\nlogged user email: {user.email}\n'
-                f'logged user  password: {user.password}')
-
             return redirect(url_for('home'))
 
     return render_template("login.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-# Add a logout route
 @app.route('/logout')
 def logout():
     logout_user()
+    print(f"Is user authenticated after logout? {current_user.is_authenticated}")
     return redirect(url_for('home'))
 
 
