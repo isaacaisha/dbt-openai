@@ -169,7 +169,6 @@ def logout():
 
 
 @app.route('/answer', methods=['GET', 'POST'])
-@login_required
 def answer():
     user_message = request.form['prompt']
 
@@ -263,7 +262,7 @@ def answer():
         return jsonify({
             "answer_text": assistant_reply,
             "answer_audio_path": audio_file_path,
-            #"current_user": current_user_data,
+            "current_user": current_user_data,
             # "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
         })
     else:
