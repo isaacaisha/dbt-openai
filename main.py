@@ -55,7 +55,7 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-#csrf = CSRFProtect(app)
+csrf = CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
@@ -190,9 +190,6 @@ def answer():
     # Combine the first 1 and last 9 entries into a valid JSON array
     qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-3:])}]"
 
-    # # Decode the JSON string
-    # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
-
     # Convert 'created_at' values to string
     created_at_list = [str(memory.created_at) for memory in user_conversations]
 
@@ -254,10 +251,18 @@ def answer():
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
 
+    # Convert current_user to JSON-serializable format
+    current_user_data = {
+        "id": current_user.id,
+        # "username": current_user.username,
+        # Include any other relevant fields
+    }
+
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
         "answer_audio_path": audio_file_path,
+        "current_user": current_user_data,
         # "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
     })
 
