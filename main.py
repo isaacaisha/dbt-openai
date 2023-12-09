@@ -169,94 +169,94 @@ def answer():
     if not current_user.is_authenticated:
         # If the user is not authenticated, return an appropriate response
         return jsonify(), 401
-
-    # Get conversations only for the current user
-    user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
-
-    # Create a list of JSON strings for each conversation
-    conversation_strings = [memory.conversations_summary for memory in user_conversations]
-
-    # Create a list of JSON strings for each conversation
-    # conversation_strings = [memory.conversations_summary for memory in test]
-
-    # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-3:])}]"
-
-    # Convert 'created_at' values to string
-    created_at_list = [str(memory.created_at) for memory in user_conversations]
-
-    # Include 'created_at' in the conversation context
-    conversation_context = {
-        "created_at": created_at_list[-3:],
-        "conversations": qdocs,
-        "user_message": user_message,
-    }
-
-    # Call llm ChatOpenAI
-    response = conversation.predict(input=json.dumps(conversation_context))
-    print(f'conversation_context:\n{conversation_context}\n')
-
-    # Check if the response is a string, and if so, use it as the assistant's reply
-    if isinstance(response, str):
-        assistant_reply = response
     else:
-        # If it's not a string, access the assistant's reply as you previously did
-        assistant_reply = response.choices[0].message['content']
+        # Get conversations only for the current user
+        user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-    # Convert the text response to speech using gTTS
-    tts = gTTS(assistant_reply)
+        # Create a list of JSON strings for each conversation
+        conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
-    # Create a temporary audio file
-    audio_file_path = 'temp_audio.mp3'
-    tts.save(audio_file_path)
+        # Create a list of JSON strings for each conversation
+        # conversation_strings = [memory.conversations_summary for memory in test]
 
-    ## Create an in-memory file-like object to store the audio data
-    # audio_data = io.BytesIO()
-    # tts.write_to_fp(audio_data)
-    # audio_data.seek(0)  # Reset the file pointer to the beginning
+        # Combine the first 1 and last 9 entries into a valid JSON array
+        qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-3:])}]"
 
-    memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
-    conversations_summary = memory_summary.load_memory_variables({})
-    conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
+        # Convert 'created_at' values to string
+        created_at_list = [str(memory.created_at) for memory in user_conversations]
 
-    current_time = datetime.now(pytz.timezone('Europe/Paris'))
+        # Include 'created_at' in the conversation context
+        conversation_context = {
+            "created_at": created_at_list[-3:],
+            "conversations": qdocs,
+            "user_message": user_message,
+        }
 
-    # Access the database session using the get_db function
-    with get_db() as db:
-        # Create a new Memory object with the data
-        new_memory = Memory(
-            user_message=user_message,
-            llm_response=assistant_reply,
-            conversations_summary=conversations_summary_str,
-            created_at=current_time,
-            owner_id=current_user.id
-        )
+        # Call llm ChatOpenAI
+        response = conversation.predict(input=json.dumps(conversation_context))
+        print(f'conversation_context:\n{conversation_context}\n')
 
-        # Add the new memory to the session
-        db.add(new_memory)
+        # Check if the response is a string, and if so, use it as the assistant's reply
+        if isinstance(response, str):
+            assistant_reply = response
+        else:
+            # If it's not a string, access the assistant's reply as you previously did
+            assistant_reply = response.choices[0].message['content']
 
-        # Commit changes to the database
-        db.commit()
-        db.refresh(new_memory)
+        # Convert the text response to speech using gTTS
+        tts = gTTS(assistant_reply)
 
-    print(f'User id:\n{current_user.id} 😝\n')
-    print(f'User Input: {user_message} 😎')
-    print(f'LLM Response:\n{assistant_reply} 😝\n')
+        # Create a temporary audio file
+        audio_file_path = 'temp_audio.mp3'
+        tts.save(audio_file_path)
 
-    # Convert current_user to JSON-serializable format
-    current_user_data = {
-        "id": current_user.id,
-        # "username": current_user.username,
-        # Include any other relevant fields
-    }
+        ## Create an in-memory file-like object to store the audio data
+        # audio_data = io.BytesIO()
+        # tts.write_to_fp(audio_data)
+        # audio_data.seek(0)  # Reset the file pointer to the beginning
 
-    # Return the response as JSON, including both text and the path to the audio file
-    return jsonify({
-        "answer_text": assistant_reply,
-        "answer_audio_path": audio_file_path,
-        "current_user": current_user_data,
-        # "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
-    })
+        memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
+        conversations_summary = memory_summary.load_memory_variables({})
+        conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
+
+        current_time = datetime.now(pytz.timezone('Europe/Paris'))
+
+        # Access the database session using the get_db function
+        with get_db() as db:
+            # Create a new Memory object with the data
+            new_memory = Memory(
+                user_message=user_message,
+                llm_response=assistant_reply,
+                conversations_summary=conversations_summary_str,
+                created_at=current_time,
+                owner_id=current_user.id
+            )
+
+            # Add the new memory to the session
+            db.add(new_memory)
+
+            # Commit changes to the database
+            db.commit()
+            db.refresh(new_memory)
+
+        print(f'User id:\n{current_user.id} 😝\n')
+        print(f'User Input: {user_message} 😎')
+        print(f'LLM Response:\n{assistant_reply} 😝\n')
+
+        # Convert current_user to JSON-serializable format
+        current_user_data = {
+            "id": current_user.id,
+            # "username": current_user.username,
+            # Include any other relevant fields
+        }
+
+        # Return the response as JSON, including both text and the path to the audio file
+        return jsonify({
+            "answer_text": assistant_reply,
+            "answer_audio_path": audio_file_path,
+            "current_user": current_user_data,
+            # "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
+        })
 
 
 @app.route('/audio')
@@ -289,31 +289,31 @@ def get_private_conversations():
         # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
         return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
                 f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+    else:
+        # private:
+        owner_id = current_user.id
+        histories = db.query(Memory).filter_by(owner_id=owner_id).all()
 
-    # private:
-    owner_id = current_user.id
-    histories = db.query(Memory).filter_by(owner_id=owner_id).all()
+        # Create a list to store serialized data for each Memory object
+        serialized_histories = []
 
-    # Create a list to store serialized data for each Memory object
-    serialized_histories = []
+        for history in histories:
+            serialized_history = {
+                "id": history.id,
+                "owner_id": history.owner_id,
+                "user_message": history.user_message,
+                "llm_response": history.llm_response,
+                "created_at": history.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # Convert to string
+                # Add more fields as needed
+            }
 
-    for history in histories:
-        serialized_history = {
-            "id": history.id,
-            "owner_id": history.owner_id,
-            "user_message": history.user_message,
-            "llm_response": history.llm_response,
-            "created_at": history.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # Convert to string
-            # Add more fields as needed
-        }
+            serialized_histories.append(serialized_history)
 
-        serialized_histories.append(serialized_history)
+        # return jsonify(serialized_histories)
 
-    # return jsonify(serialized_histories)
-
-    # Render an HTML template with the serialized data
-    return render_template('private-conversations.html', histories=serialized_histories,
-                           serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
+        # Render an HTML template with the serialized data
+        return render_template('private-conversations.html', histories=serialized_histories,
+                               serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -324,36 +324,37 @@ def delete_conversation():
         # 401
         return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
                 f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
-    form = DeleteForm()
+    else:
+        form = DeleteForm()
 
-    if form.validate_on_submit():
-        # Access the database session using the get_db function
-        with get_db() as db:
-            # Get the conversation_id from the form
-            conversation_id = form.conversation_id.data
+        if form.validate_on_submit():
+            # Access the database session using the get_db function
+            with get_db() as db:
+                # Get the conversation_id from the form
+                conversation_id = form.conversation_id.data
 
-            # Query the database to get the conversation to be deleted
-            conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
+                # Query the database to get the conversation to be deleted
+                conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
 
-            # Check if the conversation exists
-            if not conversation_to_delete:
-                abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
+                # Check if the conversation exists
+                if not conversation_to_delete:
+                    abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
 
-            # Check if the current user is the owner of the conversation
-            if conversation_to_delete.owner_id != current_user.id:
-                abort(403, description=f"Not authorized to perform the requested action\n"
-                                       f"Conversation with ID 🔥{conversation_id}🔥\nDoesn't belongs to you ¡!¡")
+                # Check if the current user is the owner of the conversation
+                if conversation_to_delete.owner_id != current_user.id:
+                    abort(403, description=f"Not authorized to perform the requested action\n"
+                                           f"Conversation with ID 🔥{conversation_id}🔥\nDoesn't belongs to you ¡!¡")
 
-            # Delete the conversation
-            db.delete(conversation_to_delete)
-            print(f'conversation_to_delete:\n{conversation_to_delete}\n')
-            db.commit()
+                # Delete the conversation
+                db.delete(conversation_to_delete)
+                print(f'conversation_to_delete:\n{conversation_to_delete}\n')
+                db.commit()
 
-            flash('Conversation deleted successfully', 'warning')
+                flash('Conversation deleted successfully', 'warning')
 
-            return redirect(url_for('delete_conversation'))
+                return redirect(url_for('delete_conversation'))
 
-    return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
+        return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
 
 
 if __name__ == '__main__':
