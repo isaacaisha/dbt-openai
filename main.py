@@ -184,13 +184,12 @@ def logout():
 
 
 @app.route('/answer', methods=['GET', 'POST'])
-@login_required
 def answer():
     user_message = request.form['prompt']
 
     if not current_user.is_authenticated:
         # If the user is not authenticated, return an appropriate response
-        return jsonify({"error": "You must be logged in to use this feature. Please log in or register."}), 401
+        return jsonify({"error": "You must be logged in to use this feature. Please log in or register 😎 ¡!¡"}), 401
 
     # Get conversations only for the current user
     user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
@@ -202,7 +201,7 @@ def answer():
     # conversation_strings = [memory.conversations_summary for memory in test]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
+    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-3:])}]"
 
     # # Decode the JSON string
     # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
@@ -263,10 +262,6 @@ def answer():
         # Commit changes to the database
         db.commit()
         db.refresh(new_memory)
-
-        if not current_user.is_authenticated:
-            flash("You need to login or register to interact with the AI 😎 ¡!¡")
-            return redirect(url_for("login", current_user=current_user))
 
     print(f'User id:\n{current_user.id} 😝\n')
     print(f'User Input: {user_message} 😎')
