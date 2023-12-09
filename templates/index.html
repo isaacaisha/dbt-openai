@@ -48,29 +48,29 @@
 <div class="text-center mb-1">
     <h3 class="mb-3">1°Click on your Favorite Language:</h3>
     <div>
-        <button id="langAr" data-lang="ar-AR" type="button" class="language-btn mb-5"
+        <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         عربي ¡!¡ Arabic
         </button>
     </div>
-    <button id="langEn" data-lang="en-US" type="button" class="language-btn mb-3"
+    <button id="langEn" data-lang="en-US" type="button" class="btn language-btn mb-3"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         English ¡!¡
     </button>
     <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
-    <button id="langEs" data-lang="es-ES" type="button" class="language-btn"
+    <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         Spanish ¡!¡
     </button>
 </div>
 <div class="text-center mb-2">
-    <button id="langPt" data-lang="pt-BR" type="button" class="language-btn"
+    <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         Brazil ¡!¡
     </button>
 </div>
 <div class="text-center mb-3">
-    <button id="langFr" data-lang="fr-FR" type="button" class="language-btn"
+    <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         French ¡!¡
     </button>
@@ -127,19 +127,16 @@
         <!-- Play the audio response -->
         <audio id="response-audio" controls style="display: none;"></audio>
         {% endif %}
-        <!--
-        <ul>
-            <li>
-                <button class="dropdown-item btn text-center" type="button">
-                    <audio controls>
-                        <source src="{{ url_for('answer') }}" type="audio/mp3">
-                        Your browser does not support the audio element.
-                    </audio>
-                </button>
-            </li>
-        </ul
-        >-->
+        <!-- Add replay button -->
+        <div class="text-center">
+            <button id="replayButton" class="btn replay">Replay</button>
+        </div>
     </div>
+        <!-- Add replay button -->
+        <div class="text-center">
+            <button id="replayButton" class="btn replay">Replay</button>
+        </div>
+
 
 
 </div>
@@ -180,6 +177,19 @@
     </button>
 </div>
 
+<div id="resultMemo" style="display: none;" class="text-center">
+    {% for messages in memory_load %}
+        <h3>Conversation</h3>
+        <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
+
+    <hr class="mb-3" style="color:yellow;">
+
+    <h3>Summary</h3>
+    <textarea class="textarea-memory mb-3" style="color:purple;">{{ summary_buffer }}</textarea>
+
+    {% endfor %}
+</div>
+
 <div class="dropdown text-center mb-3">
     <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         Menu
@@ -196,19 +206,6 @@
             </button>
         </li>
     </ul>
-</div>
-
-<div id="resultMemo" style="display: none;" class="text-center">
-    {% for messages in memory_load %}
-        <h3>Conversation</h3>
-        <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
-
-    <hr class="mb-3" style="color:yellow;">
-
-    <h3>Summary</h3>
-    <textarea class="textarea-memory mb-3" style="color:purple;">{{ summary_buffer }}</textarea>
-
-    {% endfor %}
 </div>
 
 {% endblock %}

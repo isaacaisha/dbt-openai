@@ -7,7 +7,7 @@ import json
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
-from datetime import datetime
+from datetime import datetime, timedelta
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
@@ -19,7 +19,7 @@ from models import Memory, db, User
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegisterForm, LoginForm, TextAreaForm, DeleteForm, EmailForm
+from forms import RegisterForm, LoginForm, TextAreaForm, DeleteForm
 
 import io
 
@@ -35,6 +35,8 @@ login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 openai.api_key = os.environ['OPENAI_API_KEY']
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
 # Generate a random secret key
 secret_key = secrets.token_hex(199)
@@ -64,7 +66,10 @@ with get_db() as db:
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    if user_id is not None and user_id.isdigit():
+        # Check if the user_id is a non-empty string of digits
+        return User.query.get(int(user_id))
+    return None
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -84,8 +89,9 @@ def home():
     memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
 
-    return render_template('index.html', writing_text_form=writing_text_form, answer=answer,
-                           memory_load=memory_load, memory_buffer=memory_buffer, summary_buffer=summary_buffer,
+    return render_template('index.html', current_user=current_user,
+                           writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
+                           memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -93,9 +99,11 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+    #if request.method == 'POST':
+    #    email = request.form.get('email')
+    #    password = request.form.get('password')
+
+    if form.validate_on_submit():
 
         # If user's email already exists
         if User.query.filter_by(email=form.email.data).first():
@@ -105,12 +113,21 @@ def register():
             return redirect(url_for('login'))
 
         # Hash the password before storing it
-        hashed_password = generate_password_hash(password, method='sha256')
+        hash_and_salted_password = generate_password_hash(
+            request.form.get('password'),
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
 
         # Access the database session using the get_db function
         with get_db() as db:
             # Create a new User instance and add it to the database
-            new_user = User(email=email, password=hashed_password)
+            new_user = User()
+            new_user.email = request.form['email']
+            #new_user.name = request.form['name']
+            new_user.password = hash_and_salted_password
+            # new_user.is_admin = True  # Set this user as an admin
+
             db.add(new_user)
             db.commit()
 
@@ -129,7 +146,8 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if request.method == 'POST':
+    #if request.method == 'POST':
+    if form.validate_on_submit():
         email = request.form.get('email')
         password = request.form.get('password')
 
@@ -149,7 +167,8 @@ def login():
             login_user(user)
 
             print(
-                f'logged user id: {current_user.id}\nlogged user email: {user.email}\nlogged user  password: {user.password}')
+                f'logged user id: {current_user.id}\nlogged user email: {user.email}\n'
+                f'logged user  password: {user.password}')
 
             return redirect(url_for('home'))
 
@@ -165,12 +184,13 @@ def logout():
 
 
 @app.route('/answer', methods=['POST'])
+@login_required
 def answer():
     user_message = request.form['prompt']
 
-    if not current_user.is_authenticated:
-        # If the user is not authenticated, return an appropriate response
-        return jsonify({"error": "You must be logged in to use this feature. Please log in or register."}), 401
+    #if not current_user.is_authenticated:
+    #    # If the user is not authenticated, return an appropriate response
+    #    return jsonify({"error": "You must be logged in to use this feature. Please log in or register."}), 401
 
     # Get conversations only for the current user
     user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
@@ -182,7 +202,7 @@ def answer():
     # conversation_strings = [memory.conversations_summary for memory in test]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-5:])}]"
+    qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-3:])}]"
 
     # # Decode the JSON string
     # conversations_json = json.loads(qdocs) -> use this instead of 'qdocs' for 'memories' table
@@ -192,7 +212,7 @@ def answer():
 
     # Include 'created_at' in the conversation context
     conversation_context = {
-        "created_at": created_at_list[-5:],
+        "created_at": created_at_list[-3:],
         "conversations": qdocs,
         "user_message": user_message,
     }
@@ -243,6 +263,10 @@ def answer():
         # Commit changes to the database
         db.commit()
         db.refresh(new_memory)
+
+        if not current_user.is_authenticated:
+            flash("You need to login or register to interact with the AI 😎 ¡!¡")
+            return redirect(url_for("login", current_user=current_user))
 
     print(f'User id:\n{current_user.id} 😝\n')
     print(f'User Input: {user_message} 😎')

@@ -219,7 +219,7 @@ textarea#generatedText {
     font-family: 'Cardo';
 }
 
-#speechRecognitionButton:hover, #final_result_speech:hover {
+#speechRecognitionButton:hover, #final_result_speech:hover, .btn.replay {
     background-color: 9A30F3;
     border: 0.1rem solid #73DD7E;
     color: #9A30F3;
@@ -277,14 +277,14 @@ textarea#writing_text.form-control, #final-result-content {
     color: #000;
 }
 
-.conversation-details {
+.btn.conversation-details {
     background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
     font-size: 1.1rem;
 }
 
-.fastapi-docs {
+.btn.fastapi-docs {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
@@ -292,7 +292,7 @@ textarea#writing_text.form-control, #final-result-content {
     transform: rotate(37deg);
 }
 
-.fastapi-redoc {
+.btn.fastapi-redoc {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;

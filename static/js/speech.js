@@ -41,7 +41,7 @@ function sendRequest(prompt) {
                 audio.style.display = 'block';
 
                 // Auto-play the audio when it's ready
-                audio.oncanplay = function() {
+                audio.oncanplay = function () {
                     audio.play();
                 };
 
@@ -65,10 +65,10 @@ function sendRequest(prompt) {
 
 // Add click event listeners to the language buttons to set the active button
 var languageButtons = document.querySelectorAll('.language-btn');
-languageButtons.forEach(function(button) {
-    button.addEventListener('click', function() {
+languageButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
         // Remove the 'active' class from all buttons
-        languageButtons.forEach(function(btn) {
+        languageButtons.forEach(function (btn) {
             btn.classList.remove('active');
         });
         // Add the 'active' class to the clicked button
@@ -82,3 +82,26 @@ document.getElementById('prompt-form').addEventListener('submit', function (e) {
     var prompt = document.getElementById('userInput').value; // Get text from the textarea
     sendRequest(prompt);
 });
+
+// Set the audio source and play
+var audio = document.getElementById('response-audio');
+
+// Add click event listener to the replay button
+document.getElementById('replayButton').addEventListener('click', function () {
+    replayResponse();
+});
+
+// Function to replay the response
+function replayResponse() {
+    // Check if the audio element exists
+    if (audio) {
+        // Pause and reset the audio to the beginning
+        audio.pause();
+        audio.currentTime = 0;
+
+        // Auto-play the audio when it's ready
+        audio.oncanplay = function () {
+            audio.play();
+        };
+    }
+}
