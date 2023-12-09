@@ -8,7 +8,7 @@ from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, Response, abort
 from flask_bootstrap import Bootstrap
 from werkzeug.exceptions import HTTPException
-from datetime import datetime
+from datetime import datetime, timedelta
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
@@ -33,6 +33,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 openai.api_key = os.environ['OPENAI_API_KEY']
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
 # Generate a random secret key
 secret_key = secrets.token_hex(199)
@@ -84,16 +86,17 @@ def home():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    if user_id is not None and user_id.isdigit():
+        # Check if the user_id is a non-empty string of digits
+        return User.query.get(int(user_id))
+    return None
 
 
 # Add a registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+    if form.validate_on_submit():
 
         # If user's email already exists
         if User.query.filter_by(email=form.email.data).first():
@@ -102,22 +105,27 @@ def register():
             flash("You've already signed up with that email, log in instead!")
             return redirect(url_for('login'))
 
-        # Hash the password before storing it
-        hashed_password = generate_password_hash(password, method='sha256')
+        hash_and_salted_password = generate_password_hash(
+            request.form.get('password'),
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
 
-        # Access the database session using the get_db function
-        with get_db() as db:
-            # Create a new User instance and add it to the database
-            new_user = User(email=email, password=hashed_password)
-            db.add(new_user)
-            db.commit()
+        new_user = User()
+        new_user.email = request.form['email']
+        #new_user.name = request.form['name']
+        new_user.password = hash_and_salted_password
+        # new_user.is_admin = True  # Set this user as an admin
 
-            # Log in the user after registration
-            login_user(new_user)
+        db.add(new_user)
+        db.commit()
 
-            print(f'New user email: {new_user.email}\nNew user  password: {new_user.password}')
+        # Log in and authenticate the user after adding details to the database.
+        login_user(new_user)
 
-            return redirect(url_for('login'))
+        print(f'New username: {new_user.id}\n email: {new_user.email}\n password: {new_user.password}')
+
+        return redirect(url_for('login'))
 
     return render_template("register.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -157,7 +165,6 @@ def login():
 
 # Add a logout route
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
