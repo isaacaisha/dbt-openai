@@ -187,10 +187,6 @@ def logout():
 def answer():
     user_message = request.form['prompt']
 
-    if not current_user.is_authenticated:
-        # If the user is not authenticated, return an appropriate response
-        return jsonify({"error": "You must be logged in to use this feature. Please log in or register 😎 ¡!¡"}), 401
-
     # Get conversations only for the current user
     user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
@@ -263,6 +259,10 @@ def answer():
         db.commit()
         db.refresh(new_memory)
 
+        if not current_user.is_authenticated:
+            # If the user is not authenticated, return an appropriate response
+            return jsonify({"error": "You must be logged in to use this feature. Please log in or register 😎¡!¡"}), 401
+
     print(f'User id:\n{current_user.id} 😝\n')
     print(f'User Input: {user_message} 😎')
     print(f'LLM Response:\n{assistant_reply} 😝\n')
@@ -300,11 +300,6 @@ def show_story():
 
 @app.route("/private-conversations")
 def get_private_conversations():
-    if not current_user.is_authenticated:
-        # If the user is not authenticated, return an appropriate response
-        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
-        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
     # private:
     owner_id = current_user.id
@@ -326,6 +321,13 @@ def get_private_conversations():
         serialized_histories.append(serialized_history)
 
     # return jsonify(serialized_histories)
+
+    if not current_user.is_authenticated:
+        # If the user is not authenticated, return an appropriate response
+        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+
     # Render an HTML template with the serialized data
     return render_template('private-conversations.html', histories=serialized_histories,
                            serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
@@ -333,11 +335,6 @@ def get_private_conversations():
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    if not current_user.is_authenticated:
-        # If the user is not authenticated, return an appropriate response
-        # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
-        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
     form = DeleteForm()
 
@@ -366,7 +363,13 @@ def delete_conversation():
 
             flash('Conversation deleted successfully', 'warning')
 
-            return redirect(url_for('delete_conversation'))  # Replace 'your_redirect_route' with the appropriate route
+            if not current_user.is_authenticated:
+                # If the user is not authenticated, return an appropriate response
+                # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+                return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                        f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+
+            return redirect(url_for('delete_conversation'))
 
     return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
 
