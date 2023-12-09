@@ -78,6 +78,11 @@
 
 <div class="container">
     <form id="prompt-form" method="POST">
+
+    {% if csrf_enabled %}
+        {{ form.csrf_token }}
+    {% endif %}
+
         {% if error_message %}
             <div class="alert alert-info">
                 {{ error_message }}
