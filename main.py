@@ -331,8 +331,8 @@ def get_private_conversations():
                                histories=serialized_histories, serialized_histories=serialized_histories,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
-        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -377,8 +377,8 @@ def delete_conversation():
         return render_template('del.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
-        return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
 
 
 if __name__ == '__main__':
