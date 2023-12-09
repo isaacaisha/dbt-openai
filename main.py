@@ -57,7 +57,7 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-#csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
@@ -99,76 +99,64 @@ def home():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-# Add a registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
+
     if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
 
-        # If user's email already exists
-        if User.query.filter_by(email=form.email.data).first():
-            print(User.query.filter_by(email=form.email.data).first())
-            # Send a flash message
-            flash("You've already signed up with that email, log in instead!")
-            return redirect(url_for('login'))
+        # Check if the username is already taken
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash(f'Email: 🔥{email}🔥 is already taken. Please choose a different one.', 'danger')
+            return redirect(url_for('register'))
 
-        hash_and_salted_password = generate_password_hash(
-            request.form.get('password'),
-            method='pbkdf2:sha256',
-            salt_length=8
-        )
+        # Hash the password before saving it to the database
+        hashed_password = generate_password_hash(password, method='sha256')
 
-        new_user = User()
-        new_user.email = request.form['email']
-        #new_user.name = request.form['name']
-        new_user.password = hash_and_salted_password
-        # new_user.is_admin = True  # Set this user as an admin
+        # Create a new user
+        new_user = User(email=email, password=hashed_password)
 
+        # Add the new user to the database
         db.add(new_user)
         db.commit()
 
-        # Log in and authenticate the user after adding details to the database.
-        login_user(new_user)
+        flash('Registration successful! You can now log in.', 'success')
+        return redirect(url_for('login'))
 
-        print(f'New username: {new_user.id}\n email: {new_user.email}\n password: {new_user.password}')
-
-        return redirect(url_for('get_all_articles'))
-
-    return render_template("register.html", form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+    return render_template('register.html', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if form.validate_on_submit():
-        email = request.form.get('email')
-        password = request.form.get('password')
 
-        # Find user by email entered.
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        # Find the user by username
         user = User.query.filter_by(email=email).first()
 
-        # Email doesn't exist
-        if not user:
-            flash("That email does not exist, please try again.")
-            return redirect(url_for('login'))
-        # Password incorrect
-        elif not check_password_hash(user.password, password):
-            flash('Password incorrect, please try again.')
-            return redirect(url_for('login'))
-        # Email exists and password correct
-        else:
+        # Check if the user exists and the password is correct
+        if user and check_password_hash(user.password, password):
+            # Log in the user
             login_user(user)
+            flash('Login successful!', 'success')
             return redirect(url_for('home'))
+        else:
+            flash('Login failed. Please check your username and password.', 'danger')
 
-    return render_template("login.html", form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+    return render_template('login.html', form=form)
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
-    print(f"Is user authenticated after logout? {current_user.is_authenticated}")
+    flash('Logout successful!', 'success')
     return redirect(url_for('home'))
 
 
@@ -294,7 +282,6 @@ def show_story():
 
 @app.route("/private-conversations")
 def get_private_conversations():
-
     if not current_user.is_authenticated:
         # If the user is not authenticated, return an appropriate response
         # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
@@ -329,7 +316,6 @@ def get_private_conversations():
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-
     form = DeleteForm()
 
     if form.validate_on_submit():
@@ -352,9 +338,10 @@ def delete_conversation():
 
             if not current_user.is_authenticated:
                 # If the user is not authenticated, return an appropriate response
-                # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
+                # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}),
+                # 401
                 return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                    f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
+                        f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
 
             # Delete the conversation
             db.delete(conversation_to_delete)
