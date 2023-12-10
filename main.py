@@ -33,8 +33,8 @@ app = Flask(__name__)
 Bootstrap(app)
 CORS(app)
 
-#csrf = CSRFProtect(app)
-#CSRFProtect(app)
+# csrf = CSRFProtect(app)
+# CSRFProtect(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -131,15 +131,13 @@ def login():
         # Check if the user exists and the password is correct
         if user and check_password_hash(user.password, password):
             # Log in the user
-            #login_user(user)
+            # login_user(user)
             login_user(user, remember=remember)
             flash('Login successful!', 'success')
             print(f'login_user:\n{login_user}\n')
             return redirect(url_for('home'))
         else:
             flash('Login failed. Please check your username and password.', 'danger')
-
-        flash('Login successful!', 'success')
 
     return render_template('login.html', form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
