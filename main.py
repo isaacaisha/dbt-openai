@@ -43,7 +43,8 @@ login_manager.init_app(app)
 openai.api_key = os.environ['OPENAI_API_KEY']
 app.config['WTF_CSRF_ENABLED'] = True
 app.config['SESSION_TYPE'] = 'filesystem'
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
 # Generate a random secret key
 secret_key = secrets.token_hex(199)
@@ -103,10 +104,10 @@ def register():
         db.add(new_user)
         db.commit()
 
-        flash('Registration successful! You can now log in.', 'success')
-
         # After successful registration
         login_user(new_user)
+
+        flash('Registration successful! You can now log in.', 'success')
 
         return redirect(url_for('login'))
 
@@ -133,9 +134,12 @@ def login():
             #login_user(user)
             login_user(user, remember=remember)
             flash('Login successful!', 'success')
+            print(f'login_user:\n{login_user}\n')
             return redirect(url_for('home'))
         else:
             flash('Login failed. Please check your username and password.', 'danger')
+
+        flash('Login successful!', 'success')
 
     return render_template('login.html', form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
