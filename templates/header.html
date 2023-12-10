@@ -48,29 +48,28 @@
             <!-- Content -->
             {% block content %}{% endblock %}
 
+            <!-- Add a button to show the conversation -->
+            <div class="container text-center mb-1">
+                <div>
 
-    <!-- Add a button to show the conversation -->
-    <div class="container text-center mb-1">
-        <div>
+                    <button id="conversation-details" type="button" class="btn submit conversation-details info-btn mb-2"
+                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                        <a href="/show-history">Conversation Details</a>
+                    </button>
+                </div>
 
-            <button id="conversation-details" type="button" class="btn submit conversation-details info-btn mb-2"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-                <a href="/show-history">Conversation Details</a>
-            </button>
-        </div>
+                <button id="fastapi-docs" type="button" class="btn submit fastapi-docs info-btn"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                    <a href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs">FastAPI-1</a>
+                </button>
 
-        <button id="fastapi-docs" type="button" class="btn submit fastapi-docs info-btn"
-                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-            <a href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs">FastAPI-1</a>
-        </button>
+                <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
 
-        <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
-
-        <button id="fastapi-redoc" type="button" class="btn submit fastapi-redoc info-btn"
-                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-            <a href="https://openai-dbt-api-18753ef200f1.herokuapp.com/redoc">FastAPI-2</a>
-        </button>
-    </div>
+                <button id="fastapi-redoc" type="button" class="btn submit fastapi-redoc info-btn"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                    <a href="https://openai-dbt-api-18753ef200f1.herokuapp.com/redoc">FastAPI-2</a>
+                </button>
+            </div>
 
         </div>
         <div id="footer">
@@ -119,14 +118,11 @@
 
             <!-- Bootstrap core JavaScript -->
             <script src="static/vendor/jquery/jquery.min.js"></script>
-            <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-            <!-- Custom scripts for this template -->
-            <script src="static/js/dbt-openai.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 
+
             <!-- Include JavaScript file -->
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="static/js/dbt-openai.min.js"></script>
             <script src="static/js/main.js"></script>
             <script src="static/js/speech.js"></script>
             <script src="static/js/recording-speech.js"></script>
