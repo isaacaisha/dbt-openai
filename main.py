@@ -130,7 +130,7 @@ def login():
         # Check if the user exists and the password is correct
         if user and check_password_hash(user.password, password):
             # Log in the user
-            login_user(user)
+            #login_user(user)
             login_user(user, remember=remember)
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
