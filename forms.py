@@ -1,33 +1,19 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, IntegerField, validators, TextAreaField, EmailField, \
-    BooleanField
-from wtforms.validators import DataRequired, URL
-from flask_ckeditor import CKEditorField
-
-
-# WTForm
-#class CreateArticleForm(FlaskForm):
-#    title = StringField("Article Title", validators=[DataRequired()])
-#    price = StringField("Price (£)", validators=[DataRequired()])
-#    img_url = StringField("Product Image URL", validators=[DataRequired(), URL()])
-#    body = CKEditorField("Product Content", validators=[DataRequired()])
-#    author = StringField("Product Author")
-#    author_id = StringField("Author_id")
-#    submit = SubmitField("SUBMIT PRODUCT ¡!¡")
+from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField, BooleanField
+from wtforms.validators import DataRequired
 
 
 class RegisterForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), validators.Email()])
     password = PasswordField("Password", validators=[DataRequired(), validators.Length(min=6)])
     confirm_password = PasswordField("Password", validators=[DataRequired(), validators.Length(min=6)])
-    #user_name = StringField("Name", validators=[DataRequired()])
+    name = StringField("Name", validators=[DataRequired()])
     submit = SubmitField("SIGN M€ UP ¡!¡")
 
 
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), validators.Email()])
     password = PasswordField("Password", validators=[DataRequired()])
-    #user_name = StringField("Name", validators=[DataRequired()])
     remember_me = BooleanField('Remember Me: ')
     submit = SubmitField("LET M€ IN ¡!¡")
 
@@ -36,14 +22,6 @@ class LoginForm(FlaskForm):
 class TextAreaForm(FlaskForm):
     writing_text = TextAreaField('Start Writing', [validators.InputRequired(message="Please enter text.")])
     submit = SubmitField()
-
-
-#class EmailForm(FlaskForm):
-#    name = StringField("Name", validators=[DataRequired()])
-#    email = StringField("Email", validators=[DataRequired(), validators.Email()])
-#    phone = IntegerField("Phone Number", validators=[DataRequired()])
-#    email_message = CKEditorField("Message", validators=[validators.DataRequired()])
-#    submit = SubmitField("S€ND ¡!¡")
 
 
 class DeleteForm(FlaskForm):

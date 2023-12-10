@@ -65,6 +65,11 @@
                           {{ form.confirm_password(class="form-control", placeholder="Confirm your password") }}
                         </div>
 
+                        <div class="mb-3">
+                          {{ form.name.label(class="form-label") }}
+                          {{ form.name(class="form-control", placeholder="Choose your username") }}
+                        </div>
+
                         <div class="mb-3 text-center">
                             <button type="submit" class="btn submit btn-success">Register</button>
                         </div>

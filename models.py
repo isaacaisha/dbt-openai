@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
 db = SQLAlchemy()
@@ -10,6 +11,7 @@ db = SQLAlchemy()
 class Memory(db.Model):
     __tablename__ = 'test'
     id = Column(Integer, primary_key=True, nullable=False)
+    user_name = Column(String, nullable=False)
     user_message = Column(String, nullable=False)
     llm_response = Column(String, nullable=False)
     conversations_summary = Column(String, nullable=False)
@@ -17,19 +19,23 @@ class Memory(db.Model):
 
     owner_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
+    # Add a foreign key relationship to the User model
+    owner = relationship('User', foreign_keys=[owner_id])
+
     def __repr__(self):
-        return f"<Memory {self.id}, user_message='{self.user_message}', llm_response='{self.llm_response}'>"
+        return f"<Memory id={self.id}>"
 
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"<User {self.id}, email='{self.email}', password='{self.password}>"
+        return f"<User id={self.id}, email='{self.email}'>"
 
     # Flask-Login required methods
     def get_id(self):

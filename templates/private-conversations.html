@@ -37,13 +37,14 @@
 
     <div class="container conversations-details">
         <ul>
-            {% for history in histories %}
+            {% for conversation_ in conversations %}
                 <li>
-                    <strong>ID:</strong> {{ history.id }}<br>
-                    <strong>Owner ID:</strong> {{ history.owner_id }}<br>
-                    <strong>User Message:</strong> {{ history.user_message }}<br>
-                    <strong>LLM Response:</strong> {{ history.llm_response }}<br>
-                    <strong>Created At:</strong> {{ history.created_at }}<br>
+                    <strong>ID:</strong> {{ conversation_.id }}<br>
+                    <strong>Owner ID:</strong> {{ conversation_.owner_id }}<br>
+                    <strong>Username:</strong> {{ conversation_.user_name }}<br>
+                    <strong>User Message:</strong> {{ conversation_.user_message }}<br>
+                    <strong>LLM Response:</strong> {{ conversation_.llm_response }}<br>
+                    <strong>Created At:</strong> {{ conversation_.created_at }}<br>
                     <!-- Add more fields as needed -->
                 </li>
             {% endfor %}
@@ -55,12 +56,12 @@
 
     <!-- Add a button to trigger the display of serialized_histories -->
     <div class="text-center">
-        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">Show Histories json</button>
+        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">Show Conversations json</button>
     </div>
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesContainer" class="mb-3" style="display: none;">
         <pre>
-            {{ serialized_histories | tojson(indent=4) }}
+            {{ serialized_conversations | tojson(indent=4) }}
         </pre>
     </div>
 

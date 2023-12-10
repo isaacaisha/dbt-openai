@@ -17,12 +17,10 @@ from langchain.memory import ConversationSummaryBufferMemory
 from database import get_db
 from models import Memory, db, User
 
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegisterForm, LoginForm, TextAreaForm, DeleteForm
 
-import io
-from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
 
 warnings.filterwarnings('ignore')
@@ -32,9 +30,6 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 app = Flask(__name__)
 Bootstrap(app)
 CORS(app)
-
-# csrf = CSRFProtect(app)
-# CSRFProtect(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -80,77 +75,6 @@ def load_user(user_id):
     return None
 
 
-#@app.route('/register', methods=['GET', 'POST'])
-#def register():
-#    form = RegisterForm()
-#
-#    if form.validate_on_submit():
-#        email = form.email.data
-#        password = form.password.data
-#
-#        # Check if the email is already taken
-#        existing_user = User.query.filter_by(email=email).first()
-#        if existing_user:
-#            flash(f'Email: 🔥{email}🔥 is already taken. Please choose a different one.', 'danger')
-#            return redirect(url_for('register'))
-#
-#        # Hash the password before saving it to the database
-#        hashed_password = generate_password_hash(password, method='sha256')
-#
-#        # Create a new user
-#        new_user = User(email=email, password=hashed_password)
-#
-#        # Add the new user to the database
-#        db.add(new_user)
-#        db.commit()
-#
-#        # After successful registration
-#        login_user(new_user)
-#
-#        flash('Registration successful! You can now log in.', 'success')
-#
-#        return redirect(url_for('login'))
-#
-#    return render_template('register.html', form=form, current_user=current_user,
-#                           date=datetime.now().strftime("%a %d %B %Y"))
-#
-#
-#@app.route('/login', methods=['GET', 'POST'])
-#def login():
-#    form = LoginForm()
-#
-#    if form.validate_on_submit():
-#        email = form.email.data
-#        password = form.password.data
-#        remember = form.remember_me.data
-#        print(f'remember_me:\n{remember}\n')
-#
-#        # Find the user by username
-#        user = User.query.filter_by(email=email).first()
-#
-#        # Check if the user exists and the password is correct
-#        if user and check_password_hash(user.password, password):
-#            # Log in the user
-#            # login_user(user)
-#            login_user(user, remember=remember)
-#            flash('Login successful!', 'success')
-#            print(f'login_user:\n{login_user}\n')
-#            return redirect(url_for('home'))
-#        else:
-#            flash('Login failed. Please check your username and password.', 'danger')
-#
-#    return render_template('login.html', form=form, current_user=current_user,
-#                           date=datetime.now().strftime("%a %d %B %Y"))
-#
-#
-#@app.route('/logout')
-#@login_required
-#def logout():
-#    logout_user()
-#    flash('Logout successful!', 'success')
-#    return redirect(url_for('home'))
-
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -171,7 +95,7 @@ def register():
 
         new_user = User()
         new_user.email = request.form['email']
-        #new_user.name = request.form['name']
+        new_user.name = request.form['name']
         new_user.password = hash_and_salted_password
         # new_user.is_admin = True  # Set this user as an admin
 
@@ -181,9 +105,10 @@ def register():
         # Log in and authenticate the user after adding details to the database.
         login_user(new_user)
 
-        print(f'New username: {new_user.id}\n email: {new_user.email}\n password: {new_user.password}')
+        print(f'New username: {new_user.name} and id: {new_user.id}\n'
+              f'email: {new_user.email}\n password: {new_user.password}')
 
-        return redirect(url_for('home'))
+        return redirect(url_for('login'))
 
     return render_template("register.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -252,10 +177,6 @@ def answer():
 
     if current_user.is_authenticated:
 
-        # if not current_user.is_authenticated:
-        #    # If the user is not authenticated, return an appropriate response
-        #    return jsonify(), 401
-        # else:
         # Get conversations only for the current user
         user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
@@ -275,6 +196,7 @@ def answer():
         conversation_context = {
             "created_at": created_at_list[-3:],
             "conversations": qdocs,
+            "user_name": current_user.name,
             "user_message": user_message,
         }
 
@@ -296,11 +218,6 @@ def answer():
         audio_file_path = 'temp_audio.mp3'
         tts.save(audio_file_path)
 
-        ## Create an in-memory file-like object to store the audio data
-        # audio_data = io.BytesIO()
-        # tts.write_to_fp(audio_data)
-        # audio_data.seek(0)  # Reset the file pointer to the beginning
-
         memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
         conversations_summary = memory_summary.load_memory_variables({})
         conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
@@ -311,11 +228,12 @@ def answer():
         with get_db() as db:
             # Create a new Memory object with the data
             new_memory = Memory(
+                user_name=current_user.name,
+                owner_id=current_user.id,
                 user_message=user_message,
                 llm_response=assistant_reply,
                 conversations_summary=conversations_summary_str,
-                created_at=current_time,
-                owner_id=current_user.id
+                created_at=current_time
             )
 
             # Add the new memory to the session
@@ -325,14 +243,16 @@ def answer():
             db.commit()
             db.refresh(new_memory)
 
-        print(f'User id:\n{current_user.id} 😝\n')
+        print(f'User Name: {current_user.name} 😎')
+        print(f'User ID:{current_user.id} 😝')
         print(f'User Input: {user_message} 😎')
         print(f'LLM Response:\n{assistant_reply} 😝\n')
 
         # Convert current_user to JSON-serializable format
         current_user_data = {
             "id": current_user.id,
-            # "username": current_user.username,
+            "username": current_user.name,
+            "user_email": current_user.email,
             # Include any other relevant fields
         }
 
@@ -341,7 +261,6 @@ def answer():
             "answer_text": assistant_reply,
             "answer_audio_path": audio_file_path,
             "current_user": current_user_data,
-            # "answer_audio": audio_data.read().decode('latin-1'),  # Convert binary data to string
         })
     else:
         return jsonify(), 401
@@ -374,36 +293,31 @@ def show_story():
 @app.route("/private-conversations")
 def get_private_conversations():
     if current_user.is_authenticated:
-        # if not current_user.is_authenticated:
-        #    # If the user is not authenticated, return an appropriate response
-        #    # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}), 401
-        #    return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-        #            f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
-        # else:
-        # private:
+
         owner_id = current_user.id
-        histories = db.query(Memory).filter_by(owner_id=owner_id).all()
+        conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
 
         # Create a list to store serialized data for each Memory object
-        serialized_histories = []
+        serialized_conversations = []
 
-        for history in histories:
+        for conversation_ in conversations:
             serialized_history = {
-                "id": history.id,
-                "owner_id": history.owner_id,
-                "user_message": history.user_message,
-                "llm_response": history.llm_response,
-                "created_at": history.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # Convert to string
+                "id": conversation_.id,
+                "owner_id": conversation_.owner_id,
+                "user_name": conversation_.user_name,
+                "user_message": conversation_.user_message,
+                "llm_response": conversation_.llm_response,
+                "created_at": conversation_.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # Convert to string
                 # Add more fields as needed
             }
 
-            serialized_histories.append(serialized_history)
+            serialized_conversations.append(serialized_history)
 
-        # return jsonify(serialized_histories)
+        # return jsonify(serialized_conversations)
 
         # Render an HTML template with the serialized data
         return render_template('private-conversations.html', current_user=current_user,
-                               histories=serialized_histories, serialized_histories=serialized_histories,
+                               conversations=serialized_conversations, serialized_conversations=serialized_conversations,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
@@ -413,13 +327,7 @@ def get_private_conversations():
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     if current_user.is_authenticated:
-        # if not current_user.is_authenticated:
-        #    # If the user is not authenticated, return an appropriate response
-        #    # return jsonify({"error": "You must be logged in to use this feature. Please register then log in."}),
-        #    # 401
-        #    return (f'<h1 style="color:red; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-        #            f'Then Log Into<br>¡!¡ 😎 ¡!¡</h1>')
-        # else:
+
         form = DeleteForm()
 
         if form.validate_on_submit():
