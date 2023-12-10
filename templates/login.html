@@ -60,6 +60,11 @@
                         {{ form.password(class="form-control") }}
                     </div>
 
+                    <div class="form-group">
+                        {{ form.remember_me.label(class="form-check-label") }}
+                        {{ form.remember_me(class="form-check-input") }}
+                    </div>
+
                     <div class="mb-3 text-center">
                         <button type="submit" class="btn submit btn-success">Log In</button>
                     </div>

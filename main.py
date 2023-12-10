@@ -269,7 +269,8 @@ def login():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-        #remember = form.remember_me.data
+        remember = form.remember_me.data
+        print(f'remember_me:\n{remember}\n')
 
         # Find the user by username
         user = User.query.filter_by(email=email).first()
@@ -278,7 +279,7 @@ def login():
         if user and check_password_hash(user.password, password):
             # Log in the user
             login_user(user)
-            #login_user(user, remember=remember)
+            login_user(user, remember=remember)
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
