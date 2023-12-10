@@ -102,75 +102,6 @@ def home():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegisterForm()
-
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-
-        # Check if the email is already taken
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            flash(f'Email: 🔥{email}🔥 is already taken. Please choose a different one.', 'danger')
-            return redirect(url_for('register'))
-
-        # Hash the password before saving it to the database
-        hashed_password = generate_password_hash(password, method='sha256')
-
-        # Create a new user
-        new_user = User(email=email, password=hashed_password)
-
-        # Add the new user to the database
-        db.add(new_user)
-        db.commit()
-
-        flash('Registration successful! You can now log in.', 'success')
-
-        # After successful registration
-        login_user(new_user)
-
-        return redirect(url_for('login'))
-
-    return render_template('register.html', form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-        #remember = form.remember_me.data
-
-        # Find the user by username
-        user = User.query.filter_by(email=email).first()
-
-        # Check if the user exists and the password is correct
-        if user and check_password_hash(user.password, password):
-            # Log in the user
-            login_user(user)
-            #login_user(user, remember=remember)
-            flash('Login successful!', 'success')
-            return redirect(url_for('home'))
-        else:
-            flash('Login failed. Please check your username and password.', 'danger')
-
-    return render_template('login.html', form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('Logout successful!', 'success')
-    return redirect(url_for('home'))
-
-
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
@@ -294,6 +225,75 @@ def show_story():
     return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
                            memory_buffer=memory_buffer, summary_conversation=summary_conversation,
                            date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        # Check if the email is already taken
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash(f'Email: 🔥{email}🔥 is already taken. Please choose a different one.', 'danger')
+            return redirect(url_for('register'))
+
+        # Hash the password before saving it to the database
+        hashed_password = generate_password_hash(password, method='sha256')
+
+        # Create a new user
+        new_user = User(email=email, password=hashed_password)
+
+        # Add the new user to the database
+        db.add(new_user)
+        db.commit()
+
+        flash('Registration successful! You can now log in.', 'success')
+
+        # After successful registration
+        login_user(new_user)
+
+        return redirect(url_for('login'))
+
+    return render_template('register.html', form=form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        #remember = form.remember_me.data
+
+        # Find the user by username
+        user = User.query.filter_by(email=email).first()
+
+        # Check if the user exists and the password is correct
+        if user and check_password_hash(user.password, password):
+            # Log in the user
+            login_user(user)
+            #login_user(user, remember=remember)
+            flash('Login successful!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Login failed. Please check your username and password.', 'danger')
+
+    return render_template('login.html', form=form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Logout successful!', 'success')
+    return redirect(url_for('home'))
 
 
 @app.route("/private-conversations")
