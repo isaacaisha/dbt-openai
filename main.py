@@ -36,8 +36,17 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
-openai.api_key = os.environ['OPENAI_API_KEY']
-app.config['WTF_CSRF_ENABLED'] = True
+openai_api_key = os.environ['OPENAI_API_KEY']
+
+# Check if the API key is available
+if not openai_api_key:
+    raise ValueError("OpenAI API key is missing. Check your .env file.")
+else:
+    print("OpenAI API key found:", openai_api_key)
+
+# Set the OpenAI API key
+openai.api_key = openai_api_key
+
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
@@ -179,6 +188,7 @@ def home():
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
+    print(f"Received request:\n{request.form}\n")
 
     if current_user.is_authenticated:
 
@@ -213,8 +223,11 @@ def answer():
         if isinstance(response, str):
             assistant_reply = response
         else:
-            # If it's not a string, access the assistant's reply as you previously did
-            assistant_reply = response.choices[0].message['content']
+            # If it's not a string, access the assistant's reply appropriately
+            if isinstance(response, dict) and 'choices' in response:
+                assistant_reply = response['choices'][0]['message']['content']
+            else:
+                assistant_reply = None
 
         # Convert the text response to speech using gTTS
         tts = gTTS(assistant_reply)
@@ -345,26 +358,34 @@ def select_conversation():
         # Retrieve the selected conversation ID
         selected_conversation_id = form.conversation_id.data
 
+        # Construct the URL string for the 'get_conversation' route
+        url = f'/conversation/{selected_conversation_id}'
+
         # Redirect to the route that will display the selected conversation
-        return redirect(url_for('get_conversation', conversation_id=selected_conversation_id))
+        return redirect(url)
 
     return render_template('conversation-by-id.html', form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/conversation/<int:conversation_id>')
+#@login_required
 def get_conversation(conversation_id):
     try:
         # Retrieve the conversation by ID and user_id
-        conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=current_user.id).one()
+        conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=current_user.id).first()
 
-        # You can now use the 'conversation' variable to access the details of the conversation
-        return render_template('conversation.html', current_user=current_user,
-                               conversation_=conversation_, date=datetime.now().strftime("%a %d %B %Y"))
+        if conversation_ is not None:
+            # You can now use the 'conversation_' variable to access the details of the conversation
+            return render_template('conversation.html', current_user=current_user,
+                                   conversation_=conversation_, date=datetime.now().strftime("%a %d %B %Y"))
+        else:
+            # Handle the case where no conversation with the given ID is found
+            abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
 
     except NoResultFound:
-        # Handle the case where no conversation with the given ID is found
-        abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
+        # Handle the case where an exception occurs during the database query
+        abort(500, description=f"An error occurred while retrieving the conversation with ID 🔥{conversation_id}🔥")
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])

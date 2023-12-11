@@ -41,7 +41,7 @@
 
 {% if not current_user.is_authenticated: %}
     <hr style="color:green;">
-<h3 class="mb-5 text-center log-register-h3">To INTERACT with the<br><span class="artificial-intelligence">ARTIFICIAL INTELLIGENCE</span><br>Please Register or Log in<br>¡!¡ 😇 ¡!¡</h3>
+<h3 class="mb-3 text-center log-register-h3">To INTERACT with the<br><span class="artificial-intelligence">ARTIFICIAL INTELLIGENCE</span><br>Please Register or Log in<br>¡!¡ 😇 ¡!¡</h3>
     <hr class="mb-5" style="color:yellow;">
 {% endif %}
 
@@ -78,6 +78,7 @@
 
 <div class="container">
     <form id="prompt-form" method="POST">
+        {{ writing_text_form.hidden_tag() }}
         {% if error_message %}
             <div style="color:green;" class="alert alert-info">
                 {{ error_message }}
@@ -101,7 +102,7 @@
         </div>
         <!--<label for="userInput" class="label_">Write Your Text, below:</label>-->
         <div class="mb-3" id="textarea-container" style="display: none;">
-            <textarea class="form-control" id="userInput" name="writing_text"
+            <textarea class="form-control" id="userInput" name="prompt"
                       placeholder="T😎 ASK M€, WRITE  HERE¡!¡:" oninput="capitalizeSentences(this)"></textarea>
         </div>
 
