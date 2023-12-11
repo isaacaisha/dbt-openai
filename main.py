@@ -348,7 +348,7 @@ def select_conversation():
         # Redirect to the route that will display the selected conversation
         return redirect(url_for('get_conversation', conversation_id=selected_conversation_id))
 
-    return render_template('conversation-by-id.html', form=form,
+    return render_template('conversation-by-id.html', form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
