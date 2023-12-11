@@ -18,7 +18,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from database import get_db
 from models import Memory, db, User
 
-from flask_login import LoginManager, login_user, logout_user, current_user
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegisterForm, LoginForm, TextAreaForm, ConversationIdForm, DeleteForm
 
@@ -283,7 +283,6 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-
     owner_id = current_user.id
 
     # Modify the query to filter records based on the current user's ID
@@ -356,11 +355,8 @@ def select_conversation():
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     try:
-        # Assuming that current_user is available (from Flask-Login)
-        owner_id = current_user.id
-
         # Retrieve the conversation by ID and user_id
-        conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=owner_id).one()
+        conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=current_user.id).one()
 
         # You can now use the 'conversation' variable to access the details of the conversation
         return render_template('conversation.html', current_user=current_user,
