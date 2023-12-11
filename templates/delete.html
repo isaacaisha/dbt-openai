@@ -40,7 +40,7 @@
                     {% endif %}
                 {% endwith %}
 
-                <form method="post">
+                <form method="post" action="{{ url_for('delete_conversation') }}">
                     {{ form.hidden_tag() }}
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'danger btn-block submit'}) }}
                 </form>
