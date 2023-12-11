@@ -45,6 +45,8 @@
 
                 {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success  btn-block submit'}) }}
 
+                {{ wtf.form_field(form.csrf_token) }}
+
             </div>
         </div>
     </div>
