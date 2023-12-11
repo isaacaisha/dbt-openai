@@ -40,6 +40,7 @@
                 {% endwith %}
 
                 <form method="post" action="{{ url_for('select_conversation') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     {{ form.hidden_tag() }}
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
                 </form>
