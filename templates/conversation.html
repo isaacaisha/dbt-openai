@@ -6,10 +6,7 @@
 
 {% block head %}
     {{ super() }}
-    <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='assets/css/style.css') }}" rel="stylesheet">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon3.ico') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon.ico') }}">
     {% include 'bootstrap/base.html' %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
@@ -70,9 +67,3 @@
 {% endblock %}
 
 {% block footer_ %}{% endblock %}
-
-<script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/dbt-openai.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/recording-speech.js') }}"></script>
-<script src="{{ url_for('static', filename='js/speech.js') }}"></script>
