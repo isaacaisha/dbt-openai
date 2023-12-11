@@ -61,7 +61,7 @@ large-image {
     font-family: 'Merriweather', sans-serif;
 }
 
-.log-register-h3:hover {
+.log-register-h3 {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.19rem solid #9ED2C6;
     border-top-left-radius: 37%;

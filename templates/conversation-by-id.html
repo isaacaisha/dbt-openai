@@ -39,11 +39,10 @@
                     {% endif %}
                 {% endwith %}
 
-                {% if csrf_enabled %}
-                    {{ form.csrf_token }}
-                {% endif %}
-
-                {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success  btn-block submit'}) }}
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
+                </form>
 
             </div>
         </div>

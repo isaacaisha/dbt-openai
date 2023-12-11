@@ -337,7 +337,7 @@ def get_all_conversations():
                 f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
 
 
-@app.route('/select-conversation', methods=['GET', 'POST'])
+@app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
     form = ConversationIdForm()
 
