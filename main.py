@@ -6,7 +6,6 @@ import pytz
 import json
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
-from flask_login import login_required
 from flask_bootstrap import Bootstrap
 from datetime import datetime, timedelta
 from gtts import gTTS
@@ -148,7 +147,6 @@ def login():
 
 
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
     print(f"Is user authenticated after logout? {current_user.is_authenticated}")
@@ -284,7 +282,6 @@ def serve_audio():
 
 
 @app.route('/show-history')
-@login_required
 def show_story():
 
     owner_id = current_user.id
@@ -304,7 +301,6 @@ def show_story():
 
 
 @app.route("/get-all-conversations")
-@login_required
 def get_all_conversations():
     if current_user.is_authenticated:
 
@@ -343,7 +339,6 @@ def get_all_conversations():
 
 
 @app.route('/select-conversation', methods=['GET', 'POST'])
-@login_required
 def select_conversation():
     form = ConversationIdForm()
 
@@ -359,7 +354,6 @@ def select_conversation():
 
 
 @app.route('/conversation/<int:conversation_id>')
-@login_required
 def get_conversation(conversation_id):
     try:
         # Assuming that current_user is available (from Flask-Login)
@@ -378,7 +372,6 @@ def get_conversation(conversation_id):
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
-@login_required
 def delete_conversation():
     if current_user.is_authenticated:
 
