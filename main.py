@@ -374,7 +374,6 @@ def select_conversation():
 
 
 @app.route('/conversation/<int:conversation_id>')
-# @login_required
 def get_conversation(conversation_id):
     try:
         # Retrieve the conversation by ID and user_id
