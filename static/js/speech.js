@@ -2,7 +2,20 @@
 function sendRequest(prompt) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/answer', true);
+
+    // Get CSRF token
+    var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
+    var csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+
+    // Print CSRF token for testing
+    console.log('CSRF Token:', csrfToken);
+
+    // Set request headers, including the CSRF token
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    if (csrfToken) {
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+    }
+
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
@@ -60,7 +73,13 @@ function sendRequest(prompt) {
             }
         }
     };
-    xhr.send('prompt=' + encodeURIComponent(prompt));
+
+    // Include the CSRF token in the request body
+    var requestBody = 'prompt=' + encodeURIComponent(prompt);
+    if (csrfToken) {
+        requestBody += '&csrf_token=' + encodeURIComponent(csrfToken);
+    }
+    xhr.send(requestBody);
 }
 
 // Add click event listeners to the language buttons to set the active button
