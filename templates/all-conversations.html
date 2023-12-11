@@ -20,7 +20,7 @@
     <div class="container-fluid">
         <div class="p-1 rounded-3 jumbotron">
             <div class="py-1">
-                <h1 class="">Private Conversation ¡!¡</h1>
+                <h1 class="">Get All Conversations ¡!¡</h1>
             </div>
         </div>
     </div>
@@ -39,12 +39,13 @@
         <ul>
             {% for conversation_ in conversations %}
                 <li>
-                    <strong>ID:</strong> {{ conversation_.id }}<br>
-                    <strong>Owner ID:</strong> {{ conversation_.owner_id }}<br>
-                    <strong>Username:</strong> {{ conversation_.user_name }}<br>
-                    <strong>User Message:</strong> {{ conversation_.user_message }}<br>
-                    <strong>LLM Response:</strong> {{ conversation_.llm_response }}<br>
-                    <strong>Created At:</strong> {{ conversation_.created_at }}<br>
+                    <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
+                    <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
+                    <span style="color:#30ABB7;"><strong>Username:</strong> {{ conversation_.user_name }}</span><br>
+                    <span style="color:#9A30F3;"><strong>User Message:</strong> {{ conversation_.user_message }}</span><br>
+                    <span style="color:#1295FA;"><strong>LLM Response:</strong> {{ conversation_.llm_response }}</span><br>
+                    <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary }}</span><br>
+                    <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
                     <!-- Add more fields as needed -->
                 </li>
             {% endfor %}
@@ -52,7 +53,6 @@
     </div>
 
     <hr class="mb-3" style="color:yellow;">
-
 
     <!-- Add a button to trigger the display of serialized_histories -->
     <div class="text-center">

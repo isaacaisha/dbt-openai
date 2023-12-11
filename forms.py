@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField, BooleanField
+from wtforms import StringField, SubmitField, PasswordField, validators, TextAreaField, BooleanField, IntegerField
 from wtforms.validators import DataRequired
 
 
@@ -24,6 +24,11 @@ class TextAreaForm(FlaskForm):
     submit = SubmitField()
 
 
+class ConversationIdForm(FlaskForm):
+    conversation_id = IntegerField("conversation_id")
+    submit = SubmitField('SELECT ¡!¡')
+
+
 class DeleteForm(FlaskForm):
-    conversation_id = StringField("conversation_id")
+    conversation_id = IntegerField("conversation_id")
     submit = SubmitField('DELETE ¡!¡')

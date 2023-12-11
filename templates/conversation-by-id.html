@@ -1,0 +1,64 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href='static/assets/images/favicon1.ico'>
+    {% include 'bootstrap/base.html' %}
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+
+    <!-- Page Header -->
+
+    <div class="container-fluid">
+        <div class="p-1 rounded-3 jumbotron">
+            <div class="py-1">
+                <h1 class="">Get a Conversation by ID ¡!¡</h1>
+            </div>
+        </div>
+    </div>
+
+    <hr class="mb-3" style="color:green;">
+
+    <div class="container conversations-details">
+        <h3 class="text-center">Select a Conversation</h3>
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto mb-3">
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p style="color:green">{{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% if csrf_enabled %}
+                    {{ form.csrf_token }}
+                {% endif %}
+
+                {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success  btn-block submit'}) }}
+
+            </div>
+        </div>
+    </div>
+
+    <hr class="mb-3" style="color:yellow;">
+
+    <div class="text-center">
+        <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+    </div>
+
+    <hr class="mb-5" style="color:red;">
+
+</div>
+
+{% endblock %}
+
+{% block footer_ %} {% endblock %}

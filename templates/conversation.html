@@ -1,0 +1,70 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon3.ico') }}">
+    {% include 'bootstrap/base.html' %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+
+  <!-- Page Header -->
+
+    <div class="container-fluid">
+        <div class="p-1 rounded-3 jumbotron">
+            <div class="py-1">
+                <h1 class="">Selected Conversation ¡!¡</h1>
+            </div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color:green">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <hr class="mb-3" style="color:green;">
+
+    <div class="container conversations-details">
+        <h3>Conversation Details</h3>
+                    <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
+                    <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
+                    <span style="color:#30ABB7;"><strong>Username:</strong> {{ conversation_.user_name }}</span><br>
+                    <span style="color:#9A30F3;"><strong>User Message:</strong> {{ conversation_.user_message }}</span><br>
+                    <span style="color:#1295FA;"><strong>LLM Response:</strong> {{ conversation_.llm_response }}</span><br>
+                    <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary }}</span><br>
+                    <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+        <!-- Add more details as needed -->
+
+        <!-- Example: Link to go back to the conversation selection page -->
+        <div class="mb-5 text-center">
+            <a href="{{ url_for('select_conversation') }}" style="color:#fff;">
+                Click to Go Back to Conversation Selection
+            </a>
+        </div>
+    </div>
+
+    <hr class="mb-3" style="color:yellow;">
+
+    <div class="text-center">
+        <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+    </div>
+
+    <hr class="mb-5" style="color:red;">
+
+</div>
+
+{% endblock %}
+
+{% block footer_ %}
+{% endblock %}

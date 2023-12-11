@@ -22,7 +22,7 @@
                 <h1 class="">Log In ¡!¡</h1>
             </div>
         </div>
-        <p style="color:#fff;" class="text-center">Welcome Back, Log In ¡!¡<br>To Interact<br>with the<br>Artificial Intelligence</p>
+        <h5 class="text-center conversations-details">Welcome Back, Log In ¡!¡<br>To Interact<br>with the<br>Artificial Intelligence</h5>
     </div>
 
     <hr class="mb-3" style="color:green;">
@@ -39,13 +39,6 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-<!--
-                {% if csrf_enabled %}
-                    {{ form.csrf_token }}
-                {% endif %}
-
-                {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success  btn-block submit'}) }}
--->
 
                 <form method="POST" action="{{ url_for('login') }}">
                     {{ form.hidden_tag() }}
@@ -66,7 +59,7 @@
                     </div>
 
                     <div class="mb-3 text-center">
-                        <button type="submit" class="btn submit btn-success">Log In</button>
+                        <button type="submit" class="btn submit btn-block btn-success">Log In</button>
                     </div>
                 </form>
             </div>
@@ -75,7 +68,13 @@
 
 </div>
 
-    <hr class="mb-5" style="color:yellow;">
+<hr class="mb-3" style="color:yellow;">
+
+<div class="text-center">
+    <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+</div>
+
+<hr class="mb-5" style="color:red;">
 
 {% endblock %}
 

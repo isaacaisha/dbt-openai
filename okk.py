@@ -322,7 +322,7 @@
 #    # return jsonify(serialized_histories)
 #
 #    # Render an HTML template with the serialized data
-#    return render_template('private-conversations.html', histories=serialized_histories,
+#    return render_template('all-conversations.html', histories=serialized_histories,
 #                           serialized_histories=serialized_histories, date=datetime.now().strftime("%a %d %B %Y"))
 #
 #
@@ -364,7 +364,7 @@
 #
 #            return redirect(url_for('delete_conversation'))
 #
-#    return render_template('del.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
+#    return render_template('delete.html', date=datetime.now().strftime("%a %d %B %Y"), form=form)
 #
 #
 #if __name__ == '__main__':

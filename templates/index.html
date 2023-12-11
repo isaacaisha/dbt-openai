@@ -202,7 +202,12 @@
     <ul class="dropdown-menu">
         <li>
             <button class="dropdown-item" type="button">
-                <a href="{{ url_for('get_private_conversations') }}">get_conversations</a>
+                <a href="{{ url_for('get_all_conversations') }}">get_all_conversations</a>
+            </button>
+        </li>
+        <li>
+            <button class="dropdown-item" type="button">
+                <a href="{{ url_for('select_conversation') }}">select_conversation</a>
             </button>
         </li>
         <li>

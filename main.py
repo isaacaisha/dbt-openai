@@ -6,6 +6,7 @@ import pytz
 import json
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
+from flask_login import login_required
 from flask_bootstrap import Bootstrap
 from datetime import datetime, timedelta
 from gtts import gTTS
@@ -14,12 +15,13 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 
+from sqlalchemy.orm.exc import NoResultFound
 from database import get_db
 from models import Memory, db, User
 
 from flask_login import LoginManager, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegisterForm, LoginForm, TextAreaForm, DeleteForm
+from forms import RegisterForm, LoginForm, TextAreaForm, ConversationIdForm, DeleteForm
 
 from flask_cors import CORS
 
@@ -79,12 +81,16 @@ def load_user(user_id):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
+        # Check if the passwords match
+        if form.password.data != form.confirm_password.data:
+            flash("Passwords do not match. Please enter matching passwords.", "danger")
+            return redirect(url_for('register'))
 
         # If user's email already exists
         if User.query.filter_by(email=form.email.data).first():
             print(User.query.filter_by(email=form.email.data).first())
             # Send a flash message
-            flash("You've already signed up with that email, log in instead!")
+            flash("You've already signed up with that email, log in instead!", "info")
             return redirect(url_for('login'))
 
         hash_and_salted_password = generate_password_hash(
@@ -126,11 +132,11 @@ def login():
 
         # Email doesn't exist
         if not user:
-            flash("That email does not exist, please try again.")
+            flash("That email does not exist, please try again.", "warning")
             return redirect(url_for('login'))
         # Password incorrect
         elif not check_password_hash(user.password, password):
-            flash('Password incorrect, please try again.')
+            flash('Password incorrect, please try again.', "warning")
             return redirect(url_for('login'))
         # Email exists and password correct
         else:
@@ -142,6 +148,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     print(f"Is user authenticated after logout? {current_user.is_authenticated}")
@@ -253,14 +260,15 @@ def answer():
             "id": current_user.id,
             "username": current_user.name,
             "user_email": current_user.email,
+            "user_password": current_user.password,
             # Include any other relevant fields
         }
 
         # Return the response as JSON, including both text and the path to the audio file
         return jsonify({
+            "current_user": current_user_data,
             "answer_text": assistant_reply,
             "answer_audio_path": audio_file_path,
-            "current_user": current_user_data,
         })
     else:
         return jsonify(), 401
@@ -276,9 +284,14 @@ def serve_audio():
 
 
 @app.route('/show-history')
+@login_required
 def show_story():
-    summary_conversation = memory_summary.load_memory_variables({})
-    memory_load = memory.load_memory_variables({})
+
+    owner_id = current_user.id
+
+    # Modify the query to filter records based on the current user's ID
+    summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
+    memory_load = memory.load_memory_variables({'owner_id': owner_id})
     memory_buffer = memory.buffer_as_str
 
     print(f'memory_buffer_story:\n{memory_buffer}\n')
@@ -290,8 +303,9 @@ def show_story():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@app.route("/private-conversations")
-def get_private_conversations():
+@app.route("/get-all-conversations")
+@login_required
+def get_all_conversations():
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -307,6 +321,7 @@ def get_private_conversations():
                 "user_name": conversation_.user_name,
                 "user_message": conversation_.user_message,
                 "llm_response": conversation_.llm_response,
+                "conversations_summary": conversation_.conversations_summary,
                 "created_at": conversation_.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # Convert to string
                 # Add more fields as needed
             }
@@ -316,15 +331,54 @@ def get_private_conversations():
         # return jsonify(serialized_conversations)
 
         # Render an HTML template with the serialized data
-        return render_template('private-conversations.html', current_user=current_user,
-                               conversations=serialized_conversations, serialized_conversations=serialized_conversations,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+        return render_template('all-conversations.html',
+                               current_user=current_user,
+                               conversations=serialized_conversations,
+                               serialized_conversations=serialized_conversations,
+                               date=datetime.now().strftime("%a %d %B %Y")
+                               )
     else:
         return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
                 f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
 
 
+@app.route('/select-conversation', methods=['GET', 'POST'])
+@login_required
+def select_conversation():
+    form = ConversationIdForm()
+
+    if form.validate_on_submit():
+        # Retrieve the selected conversation ID
+        selected_conversation_id = form.conversation_id.data
+
+        # Redirect to the route that will display the selected conversation
+        return redirect(url_for('get_conversation', conversation_id=selected_conversation_id))
+
+    return render_template('conversation-by-id.html', form=form,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@app.route('/conversation/<int:conversation_id>')
+@login_required
+def get_conversation(conversation_id):
+    try:
+        # Assuming that current_user is available (from Flask-Login)
+        owner_id = current_user.id
+
+        # Retrieve the conversation by ID and user_id
+        conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=owner_id).one()
+
+        # You can now use the 'conversation' variable to access the details of the conversation
+        return render_template('conversation.html', current_user=current_user,
+                               conversation_=conversation_, date=datetime.now().strftime("%a %d %B %Y"))
+
+    except NoResultFound:
+        # Handle the case where no conversation with the given ID is found
+        abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
+
+
 @app.route('/delete-conversation', methods=['GET', 'POST'])
+@login_required
 def delete_conversation():
     if current_user.is_authenticated:
 
@@ -357,7 +411,7 @@ def delete_conversation():
 
                 return redirect(url_for('delete_conversation'))
 
-        return render_template('del.html', current_user=current_user, form=form,
+        return render_template('delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'

@@ -22,7 +22,7 @@
                 <h1 class="">Register ¡!¡</h1>
             </div>
         </div>
-        <p style="color:#fff;" class="text-center">To Interact<br>with the<br>Artificial Intelligence</p>
+        <h5 class="text-center conversations-details">To Interact<br>with the<br>Artificial Intelligence</h5>
     </div>
 
     <hr class="mb-3" style="color:green;">
@@ -38,13 +38,7 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-<!--
-                {% if csrf_enabled %}
-                    {{ form.csrf_token }}
-                {% endif %}
 
-                {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success  btn-block submit'}) }}
--->
                 <div class="container">
                     <!--<h3 class="mt-5 mb-4">Register</h3>-->
                     <form method="POST" action="{{ url_for('register') }}">
@@ -71,7 +65,7 @@
                         </div>
 
                         <div class="mb-3 text-center">
-                            <button type="submit" class="btn submit btn-success">Register</button>
+                            <button type="submit" class="btn submit btn-block btn-success">Register</button>
                         </div>
                     </form>
 
@@ -83,7 +77,13 @@
         </div>
     </div>
 
-    <hr class="mb-5" style="color:yellow;">
+    <hr class="mb-3" style="color:yellow;">
+
+    <div class="text-center">
+        <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+    </div>
+
+    <hr class="mb-5" style="color:red;">
 
 </div>
 

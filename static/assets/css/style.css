@@ -56,6 +56,7 @@ large-image {
 }
 
 .nav-link {
+    background-color: transparent !important;
     color: #9A30F3;
     font-family: 'Merriweather', sans-serif;
 }
@@ -120,7 +121,7 @@ label {
     color: #000;
 }
 
-#langAr {
+#langAr, .btn-story:hover {
     background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
 }
 
@@ -138,7 +139,7 @@ label {
     background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
 }
 
-#langFr, .btn-story {
+#langFr {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
 }
 
@@ -295,6 +296,7 @@ textarea#writing_text.form-control, #final-result-content {
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
     font-size: 1.1rem;
+    margin: 0.5rem;
     transform: rotate(37deg);
 }
 
@@ -303,6 +305,7 @@ textarea#writing_text.form-control, #final-result-content {
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
     font-size: 1.1rem;
+    margin: 0.5rem;
     transform: rotate(-37deg);
 }
 
@@ -359,5 +362,9 @@ hr.mb-3, body hr {
     font-size: 2.7rem;
 }
 
+/* link: Click to Go Back to Conversation Selection */
+#content > div.content > div.container.conversations-details > div > a {
+    text-decoration: None;
+}
 
 # --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
