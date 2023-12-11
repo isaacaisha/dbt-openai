@@ -22,6 +22,7 @@ from flask_login import LoginManager, login_user, logout_user, current_user, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegisterForm, LoginForm, TextAreaForm, ConversationIdForm, DeleteForm
 
+from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
 
 warnings.filterwarnings('ignore')
@@ -30,6 +31,7 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__)
 Bootstrap(app)
+csrf = CSRFProtect(app)
 CORS(app)
 
 login_manager = LoginManager(app)
@@ -188,7 +190,9 @@ def home():
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
-    print(f"Received request:\n{request.form}\n")
+
+    csrf_token = request.form.get('csrf_token')
+    print(f'csrf_token:\n{csrf_token}\n')
 
     if current_user.is_authenticated:
 
@@ -197,9 +201,6 @@ def answer():
 
         # Create a list of JSON strings for each conversation
         conversation_strings = [memory.conversations_summary for memory in user_conversations]
-
-        # Create a list of JSON strings for each conversation
-        # conversation_strings = [memory.conversations_summary for memory in test]
 
         # Combine the first 1 and last 9 entries into a valid JSON array
         qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-3:])}]"
@@ -296,20 +297,24 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    owner_id = current_user.id
+    if current_user.is_authenticated:
+        owner_id = current_user.id
 
-    # Modify the query to filter records based on the current user's ID
-    summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
-    memory_load = memory.load_memory_variables({'owner_id': owner_id})
-    memory_buffer = memory.buffer_as_str
+        # Modify the query to filter records based on the current user's ID
+        summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
+        memory_load = memory.load_memory_variables({'owner_id': owner_id})
+        memory_buffer = memory.buffer_as_str
 
-    print(f'memory_buffer_story:\n{memory_buffer}\n')
-    print(f'memory_load_story:\n{memory_load}\n')
-    print(f'summary_conversation_story:\n{summary_conversation}\n')
+        print(f'memory_buffer_story:\n{memory_buffer}\n')
+        print(f'memory_load_story:\n{memory_load}\n')
+        print(f'summary_conversation_story:\n{summary_conversation}\n')
 
-    return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
-                           memory_buffer=memory_buffer, summary_conversation=summary_conversation,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+        return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
+                               memory_buffer=memory_buffer, summary_conversation=summary_conversation,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
 
 
 @app.route("/get-all-conversations")
@@ -369,7 +374,7 @@ def select_conversation():
 
 
 @app.route('/conversation/<int:conversation_id>')
-#@login_required
+# @login_required
 def get_conversation(conversation_id):
     try:
         # Retrieve the conversation by ID and user_id
