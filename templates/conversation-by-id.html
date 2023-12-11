@@ -6,6 +6,9 @@
 
 {% block head %}
     {{ super() }}
+    <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='assets/css/style.css') }}" rel="stylesheet">
     <link rel="shortcut icon" type="image/x-icon" href='static/assets/images/favicon1.ico'>
     {% include 'bootstrap/base.html' %}
 {% endblock %}
