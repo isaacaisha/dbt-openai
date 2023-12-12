@@ -115,7 +115,7 @@ def register():
         db.commit()
         db.refresh(new_user)
 
-        time.sleep(1)
+        time.sleep(3)
 
         # Log in and authenticate the user after adding details to the database.
         login_user(new_user)
@@ -150,7 +150,7 @@ def login():
             return redirect(url_for('login'))
         # Email exists and password correct
         else:
-            time.sleep(1)
+            time.sleep(3)
             login_user(user, remember=remember_me)
             return redirect(url_for('home'))
 
@@ -160,7 +160,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    time.sleep(3)
+    time.sleep(1)
     logout_user()
     print(f"Is user authenticated after logout? {current_user.is_authenticated}")
     return redirect(url_for('home'))
@@ -301,7 +301,7 @@ def serve_audio():
 @csrf.exempt
 @app.route('/show-history')
 def show_story():
-    time.sleep(1)
+    time.sleep(3)
     if current_user.is_authenticated:
         owner_id = current_user.id
 
@@ -325,7 +325,7 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(1)
+    time.sleep(3)
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -367,7 +367,7 @@ def select_conversation():
     form = ConversationIdForm()
 
     if form.validate_on_submit():
-        time.sleep(1)
+        time.sleep(3)
         # Retrieve the selected conversation ID
         selected_conversation_id = form.conversation_id.data
 
