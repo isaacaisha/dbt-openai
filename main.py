@@ -84,10 +84,6 @@ def load_user(user_id):
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
-
     if form.validate_on_submit():
         # Check if the passwords match
         if form.password.data != form.confirm_password.data:
@@ -131,10 +127,6 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
-
     if form.validate_on_submit():
         email = request.form.get('email')
         password = request.form.get('password')
@@ -172,9 +164,6 @@ def home():
     writing_text_form = TextAreaForm()
     answer = None
 
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
-
     if request.method == "POST" and writing_text_form.validate_on_submit():
         user_input = request.form['writing_text']
 
@@ -192,13 +181,10 @@ def home():
                            memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
-
+@csrf.exempt
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
-
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
 
     if current_user.is_authenticated:
 
@@ -304,10 +290,6 @@ def serve_audio():
 @csrf.exempt
 @app.route('/show-history')
 def show_story():
-
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
-
     if current_user.is_authenticated:
         owner_id = current_user.id
 
@@ -331,10 +313,6 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
-
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -371,12 +349,10 @@ def get_all_conversations():
                 f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
 
 
+@csrf.exempt
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
     form = ConversationIdForm()
-
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
 
     if form.validate_on_submit():
         # Retrieve the selected conversation ID
@@ -395,10 +371,6 @@ def select_conversation():
 @csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
-
     try:
         # Retrieve the conversation by ID and user_id
         conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=current_user.id).first()
@@ -416,12 +388,9 @@ def get_conversation(conversation_id):
         abort(500, description=f"An error occurred while retrieving the conversation with ID 🔥{conversation_id}🔥")
 
 
+@csrf.exempt
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
-
     if current_user.is_authenticated:
 
         form = DeleteForm()
