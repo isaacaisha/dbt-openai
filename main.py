@@ -362,7 +362,7 @@ def select_conversation():
     form = ConversationIdForm()
 
     if form.validate_on_submit():
-        time.sleep(3)
+        time.sleep(5)
         # Retrieve the selected conversation ID
         selected_conversation_id = form.conversation_id.data
 
@@ -380,7 +380,6 @@ def select_conversation():
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     try:
-        time.sleep(1)
         # Retrieve the conversation by ID and user_id
         conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=current_user.id).first()
 
