@@ -1,4 +1,6 @@
 import os
+import time
+
 import openai
 import secrets
 import warnings
@@ -111,6 +113,9 @@ def register():
 
         db.add(new_user)
         db.commit()
+        db.refresh(new_user)
+
+        time.sleep(1)
 
         # Log in and authenticate the user after adding details to the database.
         login_user(new_user)
@@ -145,6 +150,7 @@ def login():
             return redirect(url_for('login'))
         # Email exists and password correct
         else:
+            time.sleep(1)
             login_user(user, remember=remember_me)
             return redirect(url_for('home'))
 
@@ -154,6 +160,7 @@ def login():
 
 @app.route('/logout')
 def logout():
+    time.sleep(3)
     logout_user()
     print(f"Is user authenticated after logout? {current_user.is_authenticated}")
     return redirect(url_for('home'))
@@ -196,7 +203,7 @@ def answer():
         conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
         # Combine the first 1 and last 9 entries into a valid JSON array
-        qdocs = f"[{','.join(conversation_strings[:1] + conversation_strings[-3:])}]"
+        qdocs = f"[{','.join(conversation_strings[-3:])}]"
 
         # Convert 'created_at' values to string
         created_at_list = [str(memory.created_at) for memory in user_conversations]
@@ -276,7 +283,10 @@ def answer():
             "answer_audio_path": audio_file_path,
         })
     else:
-        return jsonify(), 401
+        # return jsonify('You must be logged in\nto use this feature.\nPlease register and log in.\n'
+        #                'Or reload the page, thanks\n¡!¡ 😇 ¡!¡'), 401
+        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
+                f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
 
 
 @app.route('/audio')
@@ -291,6 +301,7 @@ def serve_audio():
 @csrf.exempt
 @app.route('/show-history')
 def show_story():
+    time.sleep(1)
     if current_user.is_authenticated:
         owner_id = current_user.id
 
@@ -314,6 +325,7 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
+    time.sleep(1)
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -355,6 +367,7 @@ def select_conversation():
     form = ConversationIdForm()
 
     if form.validate_on_submit():
+        time.sleep(1)
         # Retrieve the selected conversation ID
         selected_conversation_id = form.conversation_id.data
 
@@ -372,6 +385,7 @@ def select_conversation():
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     try:
+        time.sleep(1)
         # Retrieve the conversation by ID and user_id
         conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=current_user.id).first()
 
@@ -381,15 +395,21 @@ def get_conversation(conversation_id):
                                    conversation_=conversation_, date=datetime.now().strftime("%a %d %B %Y"))
         else:
             # Handle the case where no conversation with the given ID is found
-            abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
+            # abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
+            return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
+                    f'Conversation with ID 🔥{conversation_id}🔥 not found<br>¡!¡ 😎 ¡!¡</h1>'), 404
 
     except NoResultFound:
         # Handle the case where an exception occurs during the database query
-        abort(500, description=f"An error occurred while retrieving the conversation with ID 🔥{conversation_id}🔥")
+        # abort(500, description=f"An error occurred while retrieving the conversation with ID 🔥{conversation_id}🔥")
+        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
+                f'An error occurred while retrieving the conversation with ID 🔥{conversation_id}🔥<br>'
+                f'¡!¡ 😎 ¡!¡</h1>'), 500
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    time.sleep(1)
     if current_user.is_authenticated:
 
         form = DeleteForm()
@@ -405,16 +425,20 @@ def delete_conversation():
 
                 # Check if the conversation exists
                 if not conversation_to_delete:
-                    abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
+                    # abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
+                    return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
+                            f'Conversation with ID 🔥{conversation_id}🔥 not found<br>¡!¡ 😎 ¡!¡</h1>'), 404
 
                 # Check if the current user is the owner of the conversation
                 if conversation_to_delete.owner_id != current_user.id:
-                    abort(403, description=f"Not authorized to perform the requested action\n"
-                                           f"Conversation with ID 🔥{conversation_id}🔥\nDoesn't belongs to you ¡!¡")
+                    # abort(403, description=f"Not authorized to perform the requested action\n"
+                    #                       f"Conversation with ID 🔥{conversation_id}🔥\nDoesn't belongs to you ¡!¡")
+                    return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
+                            f'Conversation with ID 🔥{conversation_id}🔥\nDoesn\'t belongs to you<br>'
+                            f'¡!¡ 😎 ¡!¡</h1>'), 403
 
                 # Delete the conversation
                 db.delete(conversation_to_delete)
-                print(f'conversation_to_delete:\n{conversation_to_delete}\n')
                 db.commit()
 
                 flash('Conversation deleted successfully', 'warning')

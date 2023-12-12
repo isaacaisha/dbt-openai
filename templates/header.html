@@ -112,6 +112,19 @@
                       © DBT Copyright {{ year }} {{ date }}
                       </span>
                     </div>
+                    <div class=" text-center">
+                    {% if current_user.is_authenticated: %}
+                        <div class="container">
+                            <ul>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link rounded-5" id="contact-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false">
+                                        <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                    </div>
                   </div>
                 </div>
               </div>
