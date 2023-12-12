@@ -129,9 +129,9 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    time.sleep(3)
     form = LoginForm()
     if form.validate_on_submit():
-        time.sleep(3)
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data
@@ -294,11 +294,10 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
-@csrf.exempt
 @app.route('/show-history')
 def show_story():
+    time.sleep(3)
     if current_user.is_authenticated:
-        time.sleep(3)
         owner_id = current_user.id
 
         # Modify the query to filter records based on the current user's ID
@@ -321,8 +320,8 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
+    time.sleep(3)
     if current_user.is_authenticated:
-        time.sleep(3)
 
         owner_id = current_user.id
         conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -360,10 +359,10 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    time.sleep(3)
     form = ConversationIdForm()
 
     if form.validate_on_submit():
-        time.sleep(3)
         # Retrieve the selected conversation ID
         selected_conversation_id = form.conversation_id.data
 
@@ -405,12 +404,12 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    time.sleep(3)
     if current_user.is_authenticated:
 
         form = DeleteForm()
 
         if form.validate_on_submit():
-            time.sleep(3)
             # Access the database session using the get_db function
             with get_db() as db:
                 # Get the conversation_id from the form
