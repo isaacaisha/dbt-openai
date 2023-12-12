@@ -155,6 +155,7 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
+    print(f"Is user authenticated after logout? {current_user.is_authenticated}")
     return redirect(url_for('home'))
 
 
@@ -181,7 +182,7 @@ def home():
                            memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
-@csrf.exempt
+
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
@@ -349,7 +350,6 @@ def get_all_conversations():
                 f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
 
 
-@csrf.exempt
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
     form = ConversationIdForm()
@@ -388,7 +388,6 @@ def get_conversation(conversation_id):
         abort(500, description=f"An error occurred while retrieving the conversation with ID 🔥{conversation_id}🔥")
 
 
-@csrf.exempt
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     if current_user.is_authenticated:
