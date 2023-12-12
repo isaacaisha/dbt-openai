@@ -40,12 +40,6 @@ login_manager.init_app(app)
 
 openai_api_key = os.environ['OPENAI_API_KEY']
 
-# Check if the API key is available
-if not openai_api_key:
-    raise ValueError("OpenAI API key is missing. Check your .env file.")
-else:
-    print("OpenAI API key found:", openai_api_key)
-
 # Set the OpenAI API key
 openai.api_key = openai_api_key
 
@@ -136,6 +130,7 @@ def login():
     if form.validate_on_submit():
         email = request.form.get('email')
         password = request.form.get('password')
+        remember_me = form.remember_me.data
 
         # Find user by email entered.
         user = User.query.filter_by(email=email).first()
@@ -150,7 +145,7 @@ def login():
             return redirect(url_for('login'))
         # Email exists and password correct
         else:
-            login_user(user)
+            login_user(user, remember=remember_me)
             return redirect(url_for('home'))
 
     return render_template("login.html", form=form, current_user=current_user,
@@ -160,10 +155,10 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
-    print(f"Is user authenticated after logout? {current_user.is_authenticated}")
     return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route("/", methods=["GET", "POST"])
 def home():
     writing_text_form = TextAreaForm()
@@ -190,9 +185,6 @@ def home():
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
-
-    csrf_token = request.form.get('csrf_token')
-    print(f'csrf_token:\n{csrf_token}\n')
 
     if current_user.is_authenticated:
 
@@ -295,6 +287,7 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
+@csrf.exempt
 @app.route('/show-history')
 def show_story():
     if current_user.is_authenticated:
@@ -317,6 +310,7 @@ def show_story():
                 f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
 
 
+@csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
     if current_user.is_authenticated:
@@ -373,6 +367,7 @@ def select_conversation():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
+@csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     try:
