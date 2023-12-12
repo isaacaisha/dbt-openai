@@ -165,6 +165,7 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
 
