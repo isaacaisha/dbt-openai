@@ -40,7 +40,7 @@
 
                 <div class="">
                     <!--<h3 class="mt-5 mb-4">Register</h3>-->
-                    <form method="POST" action="{{ url_for('register') }}">
+                    <form method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         {{ form.hidden_tag() }}
 

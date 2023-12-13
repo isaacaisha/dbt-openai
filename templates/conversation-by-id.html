@@ -39,7 +39,7 @@
                     {% endif %}
                 {% endwith %}
 
-                <form method="post" action="{{ url_for('select_conversation') }}">
+                <form method="post">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     {{ form.hidden_tag() }}
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
@@ -52,7 +52,7 @@
     <hr class="mb-3" style="color:yellow;">
 
     <div class="text-center">
-        <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+        <a href="/conversation_id" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
     </div>
 
     <hr class="mb-5" style="color:red;">

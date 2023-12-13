@@ -147,7 +147,7 @@ def login():
         # Email exists and password correct
         else:
             login_user(user, remember=remember_me)
-            return redirect(url_for('home_answer'))
+            return redirect(url_for('conversation_answer'))
 
     return render_template("login.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -161,6 +161,11 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    return render_template('index.html', date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@app.route("/conversation-answer", methods=["GET", "POST"])
+def conversation_answer():
     writing_text_form = TextAreaForm()
     answer = None
 
@@ -176,30 +181,7 @@ def home():
     memory_load = memory.load_memory_variables({})
     summary_buffer = memory_summary.load_memory_variables({})
 
-    return render_template('index.html', current_user=current_user,
-                           writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
-                           memory_buffer=memory_buffer, summary_buffer=summary_buffer,
-                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@app.route("/home-answer", methods=["GET", "POST"])
-def home_answer():
-    writing_text_form = TextAreaForm()
-    answer = None
-
-    if request.method == "POST" and writing_text_form.validate_on_submit():
-        user_input = request.form['writing_text']
-
-        # Use the LLM to generate a response based on user input
-        response = conversation.predict(input=user_input)
-
-        answer = response['output'] if response else None
-
-    memory_buffer = memory.buffer_as_str
-    memory_load = memory.load_memory_variables({})
-    summary_buffer = memory_summary.load_memory_variables({})
-
-    return render_template('answer.html', current_user=current_user,
+    return render_template('conversation-answer.html', current_user=current_user,
                            writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
                            memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -311,7 +293,7 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(1)
+    time.sleep(3)
     if current_user.is_authenticated:
         owner_id = current_user.id
 
@@ -335,7 +317,7 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(1)
+    time.sleep(3)
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -372,11 +354,11 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    time.sleep(3)
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
         if form.validate_on_submit():
-            time.sleep(1)
             # Retrieve the selected conversation ID
             selected_conversation_id = form.conversation_id.data
 
