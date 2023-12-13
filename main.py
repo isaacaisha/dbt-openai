@@ -85,10 +85,10 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    time.sleep(3)
     form = RegisterForm()
-    time.sleep(2)
     if form.validate_on_submit():
-        time.sleep(2)
+        time.sleep(3)
         # Check if the passwords match
         if form.password.data != form.confirm_password.data:
             flash("Passwords do not match. Please enter matching passwords 😭.")
@@ -128,9 +128,9 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    time.sleep(2)
+    time.sleep(3)
     if form.validate_on_submit():
-        time.sleep(2)
+        time.sleep(3)
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data
@@ -356,12 +356,12 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(2)
+    time.sleep(3)
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
         if form.validate_on_submit():
-            time.sleep(2)
+            time.sleep(3)
             # Retrieve the selected conversation ID
             selected_conversation_id = form.conversation_id.data
 
@@ -382,6 +382,7 @@ def select_conversation():
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     try:
+        time.sleep(3)
         # Retrieve the conversation by ID and user_id
         conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=current_user.id).first()
 
@@ -403,13 +404,13 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(2)
+    time.sleep(3)
     if current_user.is_authenticated:
 
         form = DeleteForm()
 
         if form.validate_on_submit():
-            time.sleep(2)
+            time.sleep(3)
             # Access the database session using the get_db function
             with get_db() as db:
                 # Get the conversation_id from the form
