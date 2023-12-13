@@ -87,6 +87,7 @@ def load_user(user_id):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
+        time.sleep(1)
         # Check if the passwords match
         if form.password.data != form.confirm_password.data:
             flash("Passwords do not match. Please enter matching passwords 😭.")
@@ -127,6 +128,7 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
+        time.sleep(1)
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data
@@ -291,6 +293,7 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
+    time.sleep(3)
     if current_user.is_authenticated:
         owner_id = current_user.id
 
@@ -314,6 +317,7 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
+    time.sleep(3)
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -350,6 +354,7 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    time.sleep(3)
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
@@ -395,11 +400,13 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    time.sleep(2)
     if current_user.is_authenticated:
 
         form = DeleteForm()
 
         if form.validate_on_submit():
+            time.sleep(1)
             # Access the database session using the get_db function
             with get_db() as db:
                 # Get the conversation_id from the form
