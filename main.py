@@ -85,7 +85,6 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    time.sleep(3)
     form = RegisterForm()
     if form.validate_on_submit():
         time.sleep(3)
@@ -128,7 +127,6 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    time.sleep(3)
     if form.validate_on_submit():
         time.sleep(3)
         email = request.form.get('email')
@@ -356,7 +354,6 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(3)
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
@@ -383,15 +380,23 @@ def select_conversation():
 def get_conversation(conversation_id):
     try:
         time.sleep(3)
-        # Retrieve the conversation by ID and user_id
-        conversation_ = Memory.query.filter_by(id=conversation_id, owner_id=current_user.id).first()
+        # Retrieve the conversation by ID
+        conversation_ = Memory.query.filter_by(id=conversation_id).first()
 
         if conversation_ is not None:
-            # You can now use the 'conversation_' variable to access the details of the conversation
-            return render_template('conversation-details.html', current_user=current_user,
-                                   conversation_=conversation_, date=datetime.now().strftime("%a %d %B %Y"))
+            if conversation_.owner_id == current_user.id:
+                # User has access to the conversation
+                return render_template('conversation-details.html', current_user=current_user,
+                                       conversation_=conversation_, date=datetime.now().strftime("%a %d %B %Y"))
+            else:
+                # User doesn't have access, return a forbidden message
+                return render_template('conversation-forbidden.html',
+                                       current_user=current_user,
+                                       conversation_id=conversation_id,
+                                       date=datetime.now().strftime("%a %d %B %Y")), 403
         else:
-            return render_template('not-found.html',
+            # Conversation not found, return a not found message
+            return render_template('conversation-not-found.html',
                                    current_user=current_user,
                                    conversation_id=conversation_id,
                                    date=datetime.now().strftime("%a %d %B %Y")), 404
@@ -422,15 +427,16 @@ def delete_conversation():
                 # Check if the conversation exists
                 if not conversation_to_delete:
                     # abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
-                    return render_template('not-found.html',
+                    return render_template('conversation-not-found.html',
                                            current_user=current_user,
                                            conversation_id=conversation_id,
                                            date=datetime.now().strftime("%a %d %B %Y")), 404
                 # Check if the current user is the owner of the conversation
                 if conversation_to_delete.owner_id != current_user.id:
-                    return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
-                            f'Conversation with<br>ID 🔥{conversation_id}🔥<br>\nDoesn\'t belongs to you<br>'
-                            f'¡!¡ 😝 ¡!¡</h1>'), 403
+                    return render_template('conversation-forbidden.html',
+                                           current_user=current_user,
+                                           conversation_id=conversation_id,
+                                           date=datetime.now().strftime("%a %d %B %Y")), 403
 
                 # Delete the conversation
                 db.delete(conversation_to_delete)

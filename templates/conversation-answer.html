@@ -115,12 +115,14 @@
 
         <ul>
             <li>
-                <button class="dropdown-item btn text-center" type="button">
-                    <audio controls>
-                        <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
-                        Your browser does not support the audio element.
-                    </audio>
-                </button>
+                <div class="text-center">
+                    <button class="btn text-center">
+                        <audio controls>
+                            <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </button>
+                </div>
             </li>
         </ul
         >
