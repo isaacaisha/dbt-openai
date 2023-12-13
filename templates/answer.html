@@ -1,0 +1,218 @@
+{% extends 'header.html' %}
+
+{% block title %} Welcom€ to{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
+    {% include 'bootstrap/base.html' %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="container-fluid py-1">
+            <h1 class="">DBT OpenAI Speech Generation ¡!¡</h1>
+        </div>
+    </div>
+</div>
+
+        <!---------- Navigation ----------->
+<header>
+    <ul class="nav nav-pills nav-fill gap-2 p-1 small rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-black);">
+        {% if not current_user.is_authenticated: %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-5" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true"><a class="nav-link login" href="{{ url_for('login') }}">Log in</a></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-5" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><a class="nav-link register" href="{{ url_for('register') }}">Register</a></button>
+        </li>
+        {% else %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-5" id="contact-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><a class="nav-link" href="#">¡!¡ AÎ fotos ¡!¡<br>(coming soon)</a></button>
+        </li>
+        {% endif %}
+    </ul>
+</header>
+
+<div class="text-center mb-1">
+    <h3 class="mb-5">1°Click on your Favorite Language:</h3>
+    <div>
+        <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        عربي ¡!¡ Arabic
+        </button>
+    </div>
+    <button id="langEn" data-lang="en-US" type="button" class="btn language-btn mb-3"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        English ¡!¡
+    </button>
+    <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+    <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        Spanish ¡!¡
+    </button>
+</div>
+<div class="text-center mb-2">
+    <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        Brazil ¡!¡
+    </button>
+</div>
+<div class="text-center mb-3">
+    <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        French ¡!¡
+    </button>
+</div>
+
+<div class="container">
+    <form id="prompt-form" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {{ writing_text_form.hidden_tag() }}
+        {% if error_message %}
+            <div style="color:green;" class="alert alert-info">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <div class="text-center">
+            <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
+            <div class="mb-3">
+                <button id="start-button" type="button" class="btn mb-3"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                    Click to Start Writing ¡!¡
+                </button>
+                <hr style="color:green;">
+            </div>
+
+            <!-- Add a button for speech recognition -->
+            <button id="speechRecognitionButton" type="button" class="btn mb-3"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                Start Speech Recognition ¡!¡
+            </button>
+        </div>
+        <!--<label for="userInput" class="label_">Write Your Text, below:</label>-->
+        <div class="mb-3" id="textarea-container" style="display: none;">
+            <textarea class="form-control" id="userInput" name="prompt"
+                      placeholder="T😎 ASK M€, WRITE  HERE¡!¡:" oninput="capitalizeSentences(this)"></textarea>
+        </div>
+
+        <hr style="color:yellow">
+
+        <div class="text-center">
+            <button id="generateButton" class="mb-3 btn generate-text" type="submit"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+            Click for Response 🔥¡!¡🔥
+        </button>
+        </div>
+    </form>
+
+    <div>
+        <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
+
+        {% if answer %}
+        <!-- Display the text response -->
+        <div id="response-text">{{ answer|safe }} 💪🏿😇👌🏿</div>
+        {% endif %}
+
+        {% if answer %}
+        <!-- Play the audio response -->
+        <audio id="response-audio" controls style="display: none;"></audio>
+        {% endif %}
+
+        <ul>
+            <li>
+                <button class="dropdown-item btn text-center" type="button">
+                    <audio controls>
+                        <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+                </button>
+            </li>
+        </ul
+        >
+    </div>
+
+
+</div>
+
+<div class="container">
+    <h3 class="mb-1 h3_result"></h3>
+    <hr class="mb-3" style="color:red">
+    <div class="container">
+        <div class="text-center">
+            <button id="final_result_speech" type="button" class="btn mb-3"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                Show Speech prompt ¡!¡
+            </button>
+        </div>
+        <textarea class="form-control result" id="final-result-speech-content" style="display: none;"></textarea>
+    </div>
+    <hr class="mb-3" style="color:green">
+</div>
+
+<div class="container">
+    <div class="container">
+        <div class="mb-3 text-center">
+            <button id="final_result" type="button" class="btn"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                Show Writing prompt ¡!¡
+            </button>
+        </div>
+        <textarea class="form-control result" id="final-result-content" style="display: none;"></textarea>
+    </div>
+    <hr class="mb-3" style="color:yellow;">
+</div>
+
+<!-- Add a button to show the history -->
+<div class="container text-center">
+    <button id="showResultButton" type="button" class="btn text-center btn-story mb-3" onclick="toggleResultMemo()"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        Show History ¡!¡
+    </button>
+    <hr class="mb-3" style="color:red">
+</div>
+
+<div id="resultMemo" style="display: none;" class="text-center">
+    {% for messages in memory_load %}
+        <h3>Conversation</h3>
+        <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
+
+    <hr class="mb-3" style="color:yellow;">
+
+    <h3>Summary</h3>
+    <textarea class="textarea-memory mb-3" style="color:purple;">{{ summary_buffer }}</textarea>
+
+    {% endfor %}
+    <hr class="mb-3" style="color:green">
+</div>
+
+<div class="container dropdown text-center">
+    <button class="btn btn-info dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Menu
+    </button>
+    <ul class="dropdown-menu">
+        <li>
+            <button class="dropdown-item" type="button">
+                <a href="{{ url_for('get_all_conversations') }}">get_all_conversations</a>
+            </button>
+        </li>
+        <li>
+            <button class="dropdown-item" type="button">
+                <a href="{{ url_for('select_conversation') }}">select_conversation</a>
+            </button>
+        </li>
+        <li>
+            <button class="dropdown-item" type="button">
+                <a href="{{ url_for('delete_conversation') }}">delete_conversation</a>
+            </button>
+        </li>
+    </ul>
+    <hr class="mb-3" style="color:green">
+</div>
+
+{% endblock %}
+
+{% block footer %} {% endblock %}

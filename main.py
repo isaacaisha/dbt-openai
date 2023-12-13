@@ -87,7 +87,7 @@ def load_user(user_id):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        time.sleep(3)
+        time.sleep(1)
         # Check if the passwords match
         if form.password.data != form.confirm_password.data:
             flash("Passwords do not match. Please enter matching passwords 😭.")
@@ -128,7 +128,7 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        time.sleep(3)
+        time.sleep(1)
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data
@@ -147,7 +147,7 @@ def login():
         # Email exists and password correct
         else:
             login_user(user, remember=remember_me)
-            return redirect(url_for('home'))
+            return redirect(url_for('home_answer'))
 
     return render_template("login.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -161,7 +161,6 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
 
@@ -178,6 +177,29 @@ def home():
     summary_buffer = memory_summary.load_memory_variables({})
 
     return render_template('index.html', current_user=current_user,
+                           writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
+                           memory_buffer=memory_buffer, summary_buffer=summary_buffer,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@app.route("/home-answer", methods=["GET", "POST"])
+def home_answer():
+    writing_text_form = TextAreaForm()
+    answer = None
+
+    if request.method == "POST" and writing_text_form.validate_on_submit():
+        user_input = request.form['writing_text']
+
+        # Use the LLM to generate a response based on user input
+        response = conversation.predict(input=user_input)
+
+        answer = response['output'] if response else None
+
+    memory_buffer = memory.buffer_as_str
+    memory_load = memory.load_memory_variables({})
+    summary_buffer = memory_summary.load_memory_variables({})
+
+    return render_template('answer.html', current_user=current_user,
                            writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
                            memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -289,7 +311,7 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(3)
+    time.sleep(1)
     if current_user.is_authenticated:
         owner_id = current_user.id
 
@@ -313,7 +335,7 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(3)
+    time.sleep(1)
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -354,7 +376,7 @@ def select_conversation():
 
     if current_user.is_authenticated:
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(1)
             # Retrieve the selected conversation ID
             selected_conversation_id = form.conversation_id.data
 
@@ -403,7 +425,7 @@ def delete_conversation():
         form = DeleteForm()
 
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(1)
             # Access the database session using the get_db function
             with get_db() as db:
                 # Get the conversation_id from the form
