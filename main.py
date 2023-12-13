@@ -89,14 +89,14 @@ def register():
     if form.validate_on_submit():
         # Check if the passwords match
         if form.password.data != form.confirm_password.data:
-            flash("Passwords do not match. Please enter matching passwords.", "danger")
+            flash("Passwords do not match. Please enter matching passwords 😭.")
             return redirect(url_for('register'))
 
         # If user's email already exists
         if User.query.filter_by(email=form.email.data).first():
             print(User.query.filter_by(email=form.email.data).first())
             # Send a flash message
-            flash("You've already signed up with that email, log in instead!", "info")
+            flash("You've already signed up with that email, log in instead! 🤣.")
             return redirect(url_for('login'))
 
         hash_and_salted_password = generate_password_hash(
@@ -109,7 +109,6 @@ def register():
         new_user.email = request.form['email']
         new_user.name = request.form['name']
         new_user.password = hash_and_salted_password
-        # new_user.is_admin = True  # Set this user as an admin
 
         db.add(new_user)
         db.commit()
@@ -117,9 +116,6 @@ def register():
 
         # Log in and authenticate the user after adding details to the database.
         login_user(new_user)
-
-        print(f'New username: {new_user.name} and id: {new_user.id}\n'
-              f'email: {new_user.email}\n password: {new_user.password}')
 
         return redirect(url_for('login'))
 
@@ -131,7 +127,6 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        time.sleep(3)
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data
@@ -141,11 +136,11 @@ def login():
 
         # Email doesn't exist
         if not user:
-            flash("That email does not exist, please try again.", "warning")
+            flash("That email does not exist, please try again 😭 ¡!¡")
             return redirect(url_for('login'))
         # Password incorrect
         elif not check_password_hash(user.password, password):
-            flash('Password incorrect, please try again.', "warning")
+            flash('Password incorrect, please try again 😭 ¡!¡')
             return redirect(url_for('login'))
         # Email exists and password correct
         else:
@@ -159,13 +154,11 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
-    print(f"Is user authenticated after logout? {current_user.is_authenticated}")
     return redirect(url_for('home'))
 
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
 
@@ -205,7 +198,6 @@ def answer():
         # Convert 'created_at' values to string
         created_at_list = [str(memory.created_at) for memory in user_conversations]
 
-        # Include 'created_at' in the conversation context
         conversation_context = {
             "created_at": created_at_list[-3:],
             "conversations": qdocs,
@@ -270,7 +262,6 @@ def answer():
             "username": current_user.name,
             "user_email": current_user.email,
             "user_password": current_user.password,
-            # Include any other relevant fields
         }
 
         # Return the response as JSON, including both text and the path to the audio file
@@ -280,10 +271,8 @@ def answer():
             "answer_audio_path": audio_file_path,
         })
     else:
-        # return jsonify('You must be logged in\nto use this feature.\nPlease register and log in.\n'
-        #                'Or reload the page, thanks\n¡!¡ 😇 ¡!¡'), 401
-        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
+        return render_template('authentication-error.html', current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
 @app.route('/audio')
@@ -297,7 +286,7 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(3)
+    time.sleep(1)
     if current_user.is_authenticated:
         owner_id = current_user.id
 
@@ -314,14 +303,14 @@ def show_story():
                                memory_buffer=memory_buffer, summary_conversation=summary_conversation,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
-        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
+        return render_template('authentication-error.html', current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(3)
+    time.sleep(1)
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -344,8 +333,6 @@ def get_all_conversations():
 
             serialized_conversations.append(serialized_history)
 
-        # return jsonify(serialized_conversations)
-
         # Render an HTML template with the serialized data
         return render_template('all-conversations.html',
                                current_user=current_user,
@@ -354,27 +341,30 @@ def get_all_conversations():
                                date=datetime.now().strftime("%a %d %B %Y")
                                )
     else:
-        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
+        return render_template('authentication-error.html', current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
     form = ConversationIdForm()
 
-    if form.validate_on_submit():
-        time.sleep(5)
-        # Retrieve the selected conversation ID
-        selected_conversation_id = form.conversation_id.data
+    if current_user.is_authenticated:
+        if form.validate_on_submit():
+            # Retrieve the selected conversation ID
+            selected_conversation_id = form.conversation_id.data
 
-        # Construct the URL string for the 'get_conversation' route
-        url = f'/conversation/{selected_conversation_id}'
+            # Construct the URL string for the 'get_conversation' route
+            url = f'/conversation/{selected_conversation_id}'
 
-        # Redirect to the route that will display the selected conversation
-        return redirect(url)
+            # Redirect to the route that will display the selected conversation
+            return redirect(url)
 
-    return render_template('conversation-by-id.html', form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+        return render_template('conversation-by-id.html', form=form, current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        return render_template('authentication-error.html', current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
 @csrf.exempt
@@ -389,17 +379,15 @@ def get_conversation(conversation_id):
             return render_template('conversation.html', current_user=current_user,
                                    conversation_=conversation_, date=datetime.now().strftime("%a %d %B %Y"))
         else:
-            # Handle the case where no conversation with the given ID is found
-            # abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
-            return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
-                    f'Conversation with ID 🔥{conversation_id}🔥 not found<br>¡!¡ 😎 ¡!¡</h1>'), 404
+            return render_template('not-found.html',
+                                   current_user=current_user,
+                                   conversation_id=conversation_id,
+                                   date=datetime.now().strftime("%a %d %B %Y")), 404
 
     except NoResultFound:
-        # Handle the case where an exception occurs during the database query
-        # abort(500, description=f"An error occurred while retrieving the conversation with ID 🔥{conversation_id}🔥")
         return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
-                f'An error occurred while retrieving the conversation with ID 🔥{conversation_id}🔥<br>'
-                f'¡!¡ 😎 ¡!¡</h1>'), 500
+                f'An error occurred while retrieving the conversation with<br>ID 🔥{conversation_id}🔥<br>'
+                f'¡!¡ 😭 ¡!¡</h1>'), 500
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -409,7 +397,6 @@ def delete_conversation():
         form = DeleteForm()
 
         if form.validate_on_submit():
-            time.sleep(3)
             # Access the database session using the get_db function
             with get_db() as db:
                 # Get the conversation_id from the form
@@ -421,30 +408,29 @@ def delete_conversation():
                 # Check if the conversation exists
                 if not conversation_to_delete:
                     # abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
-                    return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
-                            f'Conversation with ID 🔥{conversation_id}🔥 not found<br>¡!¡ 😎 ¡!¡</h1>'), 404
-
+                    return render_template('not-found.html',
+                                           current_user=current_user,
+                                           conversation_id=conversation_id,
+                                           date=datetime.now().strftime("%a %d %B %Y")), 404
                 # Check if the current user is the owner of the conversation
                 if conversation_to_delete.owner_id != current_user.id:
-                    # abort(403, description=f"Not authorized to perform the requested action\n"
-                    #                       f"Conversation with ID 🔥{conversation_id}🔥\nDoesn't belongs to you ¡!¡")
                     return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
-                            f'Conversation with ID 🔥{conversation_id}🔥\nDoesn\'t belongs to you<br>'
-                            f'¡!¡ 😎 ¡!¡</h1>'), 403
+                            f'Conversation with<br>ID 🔥{conversation_id}🔥<br>\nDoesn\'t belongs to you<br>'
+                            f'¡!¡ 😝 ¡!¡</h1>'), 403
 
                 # Delete the conversation
                 db.delete(conversation_to_delete)
                 db.commit()
 
-                flash('Conversation deleted successfully', 'warning')
+                flash('Conversation deleted successfully 😎 ¡!¡')
 
                 return redirect(url_for('delete_conversation'))
 
         return render_template('delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
-        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">First Get Registered<br>'
-                f'Then Log In<br>Or reload the page, thanks<br>¡!¡ 😎 ¡!¡</h1>')
+        return render_template('authentication-error.html', current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
 if __name__ == '__main__':

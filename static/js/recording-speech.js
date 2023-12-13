@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('final_result_speech').addEventListener('click', function () {
         if (userSpeechData.trim() === "") {
             // Display an error message if no speech data
-            document.getElementById('error-message').textContent = "Please,\nYou Have To Speech\nFirst 😝";
+            document.getElementById('error-message').textContent = "Please,\nYou Have To Speech\nFirst\n ¡!¡ 😝 ¡!¡";
             document.getElementById('error-message').style.display = 'block';
             document.getElementById('final-result-speech-content').style.display = 'none';
         } else {

@@ -31,7 +31,7 @@
         </li>
         {% else %}
         <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-5" id="contact-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><a class="nav-link" href="{{ url_for('logout') }}">Log Out</a></button>
+            <button class="nav-link rounded-5" id="contact-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><a class="nav-link" href="#">¡!¡ AÎ fotos ¡!¡<br>(coming soon)</a></button>
         </li>
         {% endif %}
     </ul>
@@ -39,7 +39,7 @@
 
 {% if not current_user.is_authenticated: %}
     <hr style="color:green;">
-<h3 class="mb-3 text-center log-register-h3">To INTERACT with<br><span class="artificial-intelligence">SìįSí</span><br>Please Register or Log in<br>¡!¡ <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown"> ¡!¡</h3>
+<h3 class="mb-3 text-center log-register-h3">To INTERACT with:<br><span class="artificial-intelligence">SìįSí</span><br>Please Register then Log in<br>¡!¡ <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown"> ¡!¡</h3>
     <hr class="mb-5" style="color:yellow;">
 {% endif %}
 

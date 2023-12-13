@@ -1,12 +1,10 @@
-{% import "bootstrap/wtf.html" as wtf %}
-
 {% extends 'header.html' %}
 
 {% block title %} Welcome to {% endblock %}
 
 {% block head %}
     {{ super() }}
-    <link rel="shortcut icon" type="image/x-icon" href='static/assets/images/favicon3.ico'>
+    <link rel="shortcut icon" type="image/x-icon" href='static/assets/images/favicon1.ico'>
     {% include 'bootstrap/base.html' %}
 {% endblock %}
 
@@ -22,7 +20,8 @@
                 <h1 class="">Log In ¡!¡</h1>
             </div>
         </div>
-        <h5 class="text-center conversations-details">Welcome Back, Log In ¡!¡<br>To Interact<br>with the<br>Artificial Intelligence</h5>
+        <h5 class="text-center conversations-details">Welcome Back<br>-∞- ¡!¡ Log In ¡!¡ -∞-<br>
+            To Interact with the<br>¡!¡ Artificial Intelligence ¡!¡</h5>
     </div>
 
     <hr class="mb-3" style="color:green;">
@@ -35,7 +34,7 @@
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
-                            <p style="color:red">{{ message }}</p>
+                            <p style="color:#17a2b8;">{{ message }}</p>
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
@@ -46,12 +45,12 @@
 
                     <div class="form-group">
                         {{ form.email.label(class="form-label") }}
-                        {{ form.email(class="form-control") }}
+                        {{ form.email(class="form-control",  autocomplete="email") }}
                     </div>
 
                     <div class="form-group">
                         {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control") }}
+                        {{ form.password(class="form-control",  autocomplete="password") }}
                     </div>
 
                     <div class="form-group">

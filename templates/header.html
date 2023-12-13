@@ -114,8 +114,8 @@
                     </div>
                     <div class=" text-center">
                     {% if current_user.is_authenticated: %}
-                        <button  class="btn submit nav-link rounded-5" id="contact-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false">
-                            <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+                        <button  class="btn submit">
+                            <a class="log-out" href="{{ url_for('logout') }}">Log Out</a>
                         </button>
                     {% endif %}
                     </div>

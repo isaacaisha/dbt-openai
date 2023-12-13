@@ -69,7 +69,7 @@ document.getElementById('generateButton').addEventListener('click', function (ev
 
     if (speechData === "" && inputText === "") {
         // Display an error message if both fields are empty
-        document.getElementById('error-message').textContent = "Please,\nYou Have To Speech or Enter Text\nFirst 😝";
+        document.getElementById('error-message').textContent = "Please,\nYou Have To Speech or Enter Text\nFirst\n¡!¡ 😝 ¡!¡";
         document.getElementById('error-message').style.display = 'block';
 
         // Hide the "Final Result" content since there's no recognized speech or input text
@@ -93,7 +93,7 @@ document.getElementById('final_result').addEventListener('click', function () {
     // Check if the textarea is empty
     if (userTextData.trim() === "") {
         // Display an error message
-        document.getElementById('error-message').textContent = "Please,\nYou Have To Write\nFirst 😝";
+        document.getElementById('error-message').textContent = "Please,\nYou Have To Write\nFirst\n ¡!¡ 😝 ¡!¡";
         document.getElementById('error-message').style.display = 'block';
 
         // Hide the "Final Result" content since there's no text
@@ -144,7 +144,7 @@ document.getElementById('showResultButton').addEventListener('click', function (
 
     if (memoryTextarea.value.trim() === "") {
         // Display an error message
-        document.getElementById('error-message').textContent = "Please,\nConverse with the App First,\nThen Reload the Page\n 😝";
+        document.getElementById('error-message').textContent = "Please,\nConverse with the App First,\nThen Reload the Page\n ¡!¡ 😝 ¡!¡";
         document.getElementById('error-message').style.display = 'block';
         resultDiv.style.display = 'none';
     } else {
@@ -166,7 +166,7 @@ document.getElementById('conversation-details').addEventListener('click', functi
 
     if (speechData === "" && inputText === "") {
         // Display an error message
-        document.getElementById('error-message').textContent = "Please,\nInteract with the App\nFirst 😝";
+        document.getElementById('error-message').textContent = "Please,\nInteract with the App\nFirst\n ¡!¡ 😝 ¡!¡";
         document.getElementById('error-message').style.display = 'block';
 
         // Prevent the default behavior of the anchor link

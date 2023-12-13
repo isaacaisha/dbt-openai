@@ -57,8 +57,16 @@ large-image {
 
 .nav-link {
     background-color: transparent !important;
+    color: #20c997;
+    font-family: 'Merriweather', sans-serif;
+}
+
+
+.log-out {
+    background-color: transparent !important;
     color: #9A30F3;
     font-family: 'Merriweather', sans-serif;
+    font-size: 1rem;
 }
 
 .log-register-h3 {

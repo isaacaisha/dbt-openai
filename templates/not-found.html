@@ -1,0 +1,42 @@
+{% extends 'header.html' %}
+
+{% block title %} Welcom€ to{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon3.ico') }}">
+    {% include 'bootstrap/base.html' %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="container-fluid py-1">
+            <h1 class="">DBT OpenAI Speech Generation ¡!¡</h1>
+        </div>
+    </div>
+</div>
+
+<hr class="mb-3" style="color:green;">
+
+<div id="resultMemo" class="text-center mb-3">
+    <h3 style="color:red;">Sorry Not Found</h3>
+    <h3>
+        Conversation with:<br>ID 🔥{{ conversation_id }}🔥<br>not found<br>¡!¡ 😭 ¡!¡
+    </h3>
+</div>
+
+<hr class="mb-3" style="color:yellow;">
+
+<div class="text-center">
+    <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+</div>
+
+<hr class="mb-3" style="color:green;">
+
+{% endblock %}
+
+{% block footer %} {% endblock %}
