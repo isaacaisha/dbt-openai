@@ -386,7 +386,7 @@ def get_conversation(conversation_id):
         if conversation_ is not None:
             time.sleep(2)
             # You can now use the 'conversation_' variable to access the details of the conversation
-            return render_template('conversation.html', current_user=current_user,
+            return render_template('conversation-details.html', current_user=current_user,
                                    conversation_=conversation_, date=datetime.now().strftime("%a %d %B %Y"))
         else:
             return render_template('not-found.html',
