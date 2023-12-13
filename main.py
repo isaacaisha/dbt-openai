@@ -86,8 +86,9 @@ def load_user(user_id):
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
+    time.sleep(2)
     if form.validate_on_submit():
-        time.sleep(1)
+        time.sleep(2)
         # Check if the passwords match
         if form.password.data != form.confirm_password.data:
             flash("Passwords do not match. Please enter matching passwords 😭.")
@@ -127,8 +128,9 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+    time.sleep(2)
     if form.validate_on_submit():
-        time.sleep(1)
+        time.sleep(2)
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data
@@ -354,11 +356,12 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(3)
+    time.sleep(2)
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
         if form.validate_on_submit():
+            time.sleep(2)
             # Retrieve the selected conversation ID
             selected_conversation_id = form.conversation_id.data
 
@@ -406,7 +409,7 @@ def delete_conversation():
         form = DeleteForm()
 
         if form.validate_on_submit():
-            time.sleep(1)
+            time.sleep(2)
             # Access the database session using the get_db function
             with get_db() as db:
                 # Get the conversation_id from the form
