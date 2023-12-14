@@ -196,7 +196,6 @@ def answer():
     user_message = request.form['prompt']
 
     if current_user.is_authenticated:
-        time.sleep(3)
 
         # Get conversations only for the current user
         user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()

@@ -77,6 +77,10 @@ large-image {
     color: #47FFAC;
 }
 
+#content > nav {
+    margin: 7.3rem 0;
+}
+
 .log-in {
     font-family: 'Cardo';
     font-size: 3.07rem;
