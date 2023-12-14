@@ -48,6 +48,7 @@
                     {{ form.hidden_tag() }}
 
                     <div class="form-group">
+                        {{ form.csrf_token }}
                         {{ form.email.label(class="form-label") }}
                         {{ form.email(class="form-control",  autocomplete="email") }}
                     </div>
