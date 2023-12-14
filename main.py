@@ -162,11 +162,13 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    time.sleep(3)
     return render_template('index.html', date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
+    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
 
@@ -190,9 +192,11 @@ def conversation_answer():
 
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
+    time.sleep(3)
     user_message = request.form['prompt']
 
     if current_user.is_authenticated:
+        time.sleep(3)
 
         # Get conversations only for the current user
         user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
