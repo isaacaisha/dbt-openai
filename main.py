@@ -355,12 +355,12 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(3)
+    time.sleep(5)
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(5)
             # Retrieve the selected conversation ID
             selected_conversation_id = form.conversation_id.data
 
@@ -411,13 +411,13 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(3)
+    time.sleep(5)
     if current_user.is_authenticated:
 
         form = DeleteForm()
 
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(5)
             # Access the database session using the get_db function
             with get_db() as db:
                 # Get the conversation_id from the form
