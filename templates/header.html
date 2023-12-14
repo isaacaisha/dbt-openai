@@ -83,6 +83,9 @@
                         <li class="nav-item">
                             <a class="nav-link"  href="{{ url_for('delete_conversation') }}">Delete Conversation</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link log-out" href="{{ url_for('logout') }}">Log Out</a>
+                        </li>
                         {% endif %}
                     </ul>
                 </div>
@@ -154,13 +157,6 @@
                       <span class="copyright">
                       © DBT Copyright {{ year }} {{ date }}
                       </span>
-                    </div>
-                    <div class=" text-center">
-                    {% if current_user.is_authenticated: %}
-                        <button  class="btn submit">
-                            <a class="log-out" href="{{ url_for('logout') }}">Log Out</a>
-                        </button>
-                    {% endif %}
                     </div>
                   </div>
                 </div>

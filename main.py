@@ -84,10 +84,10 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    time.sleep(3)
+    time.sleep(5)
     form = RegisterForm()
     if form.validate_on_submit():
-        time.sleep(3)
+        time.sleep(5)
         # Check if the passwords match
         if form.password.data != form.confirm_password.data:
             flash("Passwords do not match. Please enter matching passwords 😭.")
