@@ -9,8 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
-{% block content %}
-
+{% block content1 %}
 <div class="container-fluid">
     <div class="p-1 rounded-3 jumbotron">
         <div class="container-fluid py-1">
@@ -18,22 +17,15 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-        <!---------- Navigation ----------->
-<header>
-    <ul class="nav nav-pills nav-fill gap-2 p-1 small rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-black);">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active rounded-5" id="home-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="true"><a class="nav-link login" href="{{ url_for('login') }}">Log in</a></button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-5" id="profile-tab2" data-bs-toggle="tab" type="button" role="tab" aria-selected="false"><a class="nav-link register" href="{{ url_for('register') }}">Register</a></button>
-        </li>
-    </ul>
-</header>
+{% block content %}
 
-    <hr style="color:green;">
+<hr style="color:green;">
+
 <h3 class="mb-3 text-center log-register-h3">To INTERACT with:<br><span class="artificial-intelligence">SìįSí</span><br>Please Register then Log in<br>¡!¡ <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown"> ¡!¡</h3>
-    <hr class="mb-5" style="color:yellow;">
+
+<hr class="mb-5" style="color:yellow;">
 
 {% endblock %}
 

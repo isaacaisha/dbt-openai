@@ -55,18 +55,32 @@ large-image {
     }
 }
 
-.nav-link {
-    background-color: transparent !important;
+#content > nav > a {
     color: #20c997;
+}
+
+#content > nav > button {
+    color: #20c997;
+    border: 0.1rem solid #20c997;
+}
+
+#navbarSupportedContent > ul > li > a {
+    color: #9ED2C6;
     font-family: 'Merriweather', sans-serif;
 }
 
+#navbarSupportedContent > ul > li > a:hover {
+    color: #47FFAC;
+}
 
-.log-out {
-    background-color: transparent !important;
-    color: #9A30F3;
-    font-family: 'Merriweather', sans-serif;
-    font-size: 1rem;
+.log-in {
+    font-family: 'Cardo';
+    font-size: 2.71rem;
+}
+
+.register {
+    font-family: 'Cardo';
+    font-size: 2.71rem;
 }
 
 .log-register-h3 {
@@ -78,38 +92,23 @@ large-image {
     padding: 0.7rem;
 }
 
+.log-out {
+    color: #9A30F3;
+    font-family: 'Merriweather', sans-serif;
+    font-size: 1rem;
+}
+
 .artificial-intelligence {
     color: #9A30F3;
     font-family: 'Cardo';
     font-size: 2.71rem;
 }
 
-#content > h3, #content > div:nth-child(3) > h3, .conversations-details {
+#content > h3, #content > div:nth-child(3) > h3,
+#resultMemo > h3:nth-child(2), #resultMemo > h3,
+.conversations-details {
     color: #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
-}
-
-/* Dropdown btn */
-button.btn.dropdown-toggle {
-    color: #fff;
-}
-
-.dropdown-item > a {
-    color: #9A30F3;
-    font-family: 'Lora', 'Times New Roman', serif;
-    font-size: 0.9rem;
-}
-
-li.nav-item > .nav-link:hover > a, button.btn.dropdown-toggle:hover {
-    color: #47FFAC;
-}
-
-.dropdown-item:hover {
-    color: #FC5378;
-}
-
-button.btn.dropdown-toggle, ul.dropdown-menu  {
-    background-color: transparent;
 }
 
 label {

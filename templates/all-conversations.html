@@ -9,12 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
-{% block content %}
-
-<div class="content">
-
-  <!-- Page Header -->
-
+{% block content1 %}
     <div class="container-fluid">
         <div class="p-1 rounded-3 jumbotron">
             <div class="py-1">
@@ -22,6 +17,13 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+
+  <!-- Page Header -->
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}

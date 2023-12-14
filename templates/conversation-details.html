@@ -9,19 +9,22 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="py-1">
+            <h1 class="">Selected Conversation ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
 {% block content %}
 
 <div class="content">
 
   <!-- Page Header -->
-
-    <div class="container-fluid">
-        <div class="p-1 rounded-3 jumbotron">
-            <div class="py-1">
-                <h1 class="">Selected Conversation ¡!¡</h1>
-            </div>
-        </div>
-    </div>
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -42,9 +45,7 @@
                     <span style="color:#1295FA;"><strong>LLM Response:</strong> {{ conversation_.llm_response }}</span><br>
                     <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary }}</span><br>
                     <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
-        <!-- Add more details as needed -->
 
-        <!-- Example: Link to go back to the conversation selection page -->
         <div class="mb-5 text-center">
             <a href="{{ url_for('select_conversation') }}" style="color:#fff;">
                 Click to Go Back to Conversation Selection
