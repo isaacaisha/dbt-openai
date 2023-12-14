@@ -71,24 +71,17 @@ large-image {
 #navbarSupportedContent > ul > li > a {
     color: #9ED2C6;
     font-family: 'Merriweather', sans-serif;
+    text-align: center;
 }
 
 #navbarSupportedContent > ul > li > a:hover {
     color: #47FFAC;
 }
 
-#content > nav {
+.log-in , .register {
+    font-family: 'Cardo';
+    font-size: 3.07rem;
     margin: 7.3rem 0;
-}
-
-.log-in {
-    font-family: 'Cardo';
-    font-size: 3.07rem;
-}
-
-.register {
-    font-family: 'Cardo';
-    font-size: 3.07rem;
 }
 
 .log-register-h3 {
