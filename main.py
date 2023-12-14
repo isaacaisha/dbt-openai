@@ -126,10 +126,10 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    time.sleep(3)
+    time.sleep(5)
     form = LoginForm()
     if form.validate_on_submit():
-        time.sleep(3)
+        time.sleep(5)
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data
@@ -318,7 +318,7 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(3)
+    time.sleep(5)
     if current_user.is_authenticated:
 
         owner_id = current_user.id
