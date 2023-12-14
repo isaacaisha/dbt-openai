@@ -1,3 +1,5 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
 {% extends 'header.html' %}
 
 {% block title %} Welcom€ to{% endblock %}
@@ -55,6 +57,7 @@
 <div class="container">
     <form id="prompt-form" method="POST">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {{ writing_text_form.csrf_token }}
         {{ writing_text_form.hidden_tag() }}
         {% if error_message %}
             <div style="color:green;" class="alert alert-info">
