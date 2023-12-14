@@ -1,6 +1,5 @@
 import os
 import time
-
 import openai
 import secrets
 import warnings
@@ -85,6 +84,7 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    time.sleep(3)
     form = RegisterForm()
     if form.validate_on_submit():
         time.sleep(3)
@@ -126,6 +126,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    time.sleep(3)
     form = LoginForm()
     if form.validate_on_submit():
         time.sleep(3)
@@ -354,6 +355,7 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    time.sleep(3)
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
