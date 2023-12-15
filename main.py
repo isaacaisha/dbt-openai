@@ -458,7 +458,7 @@ def delete_conversation():
                 # Delete the conversation
                 db.delete(conversation_to_delete)
                 db.commit()
-                flash('Conversation deleted successfully 😎 ¡!¡')
+                flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎 ¡!¡')
 
                 return redirect(url_for('delete_conversation'))
 
