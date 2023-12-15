@@ -20,6 +20,8 @@
 </div>
 {% endblock %}
 
+{% block navbar %}{% endblock %}
+
 {% block content %}
 
 <div class="content">
@@ -44,9 +46,7 @@
 
                 <div class="">
                     <!--<h3 class="mt-5 mb-4">Register</h3>-->
-                    <form method="POST">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        {{ form.csrf_token }}
+                    <form method="POST" action="{{ url_for('register') }}">
                         {{ form.hidden_tag() }}
 
                         <div class="mb-3">

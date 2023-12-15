@@ -47,6 +47,7 @@ openai.api_key = openai_api_key
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+app.config['WTF_CSRF_ENABLED'] = True
 
 # Generate a random secret key
 secret_key = secrets.token_hex(199)
@@ -84,10 +85,10 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    time.sleep(5)
+    time.sleep(1)
     form = RegisterForm()
     if form.validate_on_submit():
-        time.sleep(5)
+        time.sleep(1)
         # Check if the passwords match
         if form.password.data != form.confirm_password.data:
             flash("Passwords do not match. Please enter matching passwords 😭.")
@@ -126,10 +127,10 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    time.sleep(5)
+    time.sleep(1)
     form = LoginForm()
     if form.validate_on_submit():
-        time.sleep(5)
+        time.sleep(1)
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data
@@ -162,13 +163,13 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(3)
-    return render_template('index.html', date=datetime.now().strftime("%a %d %B %Y"))
+    return render_template('index.html', current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    time.sleep(3)
+    time.sleep(1)
     writing_text_form = TextAreaForm()
     answer = None
 
@@ -192,7 +193,6 @@ def conversation_answer():
 
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
-    time.sleep(3)
     user_message = request.form['prompt']
 
     if current_user.is_authenticated:
@@ -204,13 +204,13 @@ def answer():
         conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
         # Combine the first 1 and last 9 entries into a valid JSON array
-        qdocs = f"[{','.join(conversation_strings[-3:])}]"
+        qdocs = f"[{','.join(conversation_strings[-1:])}]"
 
         # Convert 'created_at' values to string
         created_at_list = [str(memory.created_at) for memory in user_conversations]
 
         conversation_context = {
-            "created_at": created_at_list[-3:],
+            "created_at": created_at_list[-1:],
             "conversations": qdocs,
             "user_name": current_user.name,
             "user_message": user_message,
@@ -280,6 +280,7 @@ def answer():
             "current_user": current_user_data,
             "answer_text": assistant_reply,
             "answer_audio_path": audio_file_path,
+            "memory_id": new_memory.id
         })
     else:
         return render_template('authentication-error.html', current_user=current_user,
@@ -297,14 +298,14 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(3)
+    time.sleep(1)
     if current_user.is_authenticated:
         owner_id = current_user.id
 
         # Modify the query to filter records based on the current user's ID
         summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
         memory_load = memory.load_memory_variables({'owner_id': owner_id})
-        memory_buffer = memory.buffer_as_str
+        memory_buffer = str(owner_id) + memory.buffer_as_str
 
         print(f'memory_buffer_story:\n{memory_buffer}\n')
         print(f'memory_load_story:\n{memory_load}\n')
@@ -321,7 +322,7 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(5)
+    time.sleep(3)
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -358,12 +359,12 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(5)
+    time.sleep(3)
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
         if form.validate_on_submit():
-            time.sleep(5)
+            time.sleep(3)
             # Retrieve the selected conversation ID
             selected_conversation_id = form.conversation_id.data
 
@@ -414,13 +415,13 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(5)
+    time.sleep(3)
     if current_user.is_authenticated:
 
         form = DeleteForm()
 
         if form.validate_on_submit():
-            time.sleep(5)
+            time.sleep(3)
             # Access the database session using the get_db function
             with get_db() as db:
                 # Get the conversation_id from the form

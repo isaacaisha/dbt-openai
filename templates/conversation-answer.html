@@ -55,12 +55,10 @@
 </div>
 
 <div class="container">
-    <form id="prompt-form" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        {{ writing_text_form.csrf_token }}
+    <form id="prompt-form" method="POST" action="{{ url_for('answer') }}">
         {{ writing_text_form.hidden_tag() }}
         {% if error_message %}
-            <div style="color:green;" class="alert alert-info">
+            <div class="alert alert-info">
                 {{ error_message }}
             </div>
         {% endif %}
@@ -106,22 +104,21 @@
 
         {% if answer %}
         <!-- Play the audio response -->
-        <audio id="response-audio" controls style="display: none;"></audio>
+        <audio id="response-audio" controls style="display: none;">
+            <source src="{{ url_for('serve_audio', memory_id=current_user.id) }}" type="audio/mp3">
+                Your browser does not support the audio element.
+        </audio>
         {% endif %}
 
-        <ul>
-            <li>
-                <div class="text-center">
-                    <button class="btn text-center">
-                        <audio controls>
-                            <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
-                            Your browser does not support the audio element.
-                        </audio>
-                    </button>
-                </div>
-            </li>
-        </ul
-        >
+        <div class="text-center">
+            <button class="btn text-center">
+                <audio controls>
+                    <source src="{{ url_for('serve_audio', memory_id=current_user.id) }}" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </button>
+        </div>
+
     </div>
 
 

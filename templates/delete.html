@@ -43,8 +43,6 @@
                 {% endwith %}
 
                 <form method="post" action="{{ url_for('delete_conversation') }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    {{ form.csrf_token }}
                     {{ form.hidden_tag() }}
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'danger btn-block submit'}) }}
                 </form>

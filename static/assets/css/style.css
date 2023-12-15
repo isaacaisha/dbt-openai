@@ -84,6 +84,10 @@ large-image {
     margin: 7.3rem 0;
 }
 
+.hr-home-header {
+    margin-top: 3.7rem;
+}
+
 .log-register-h3 {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.19rem solid #9ED2C6;
