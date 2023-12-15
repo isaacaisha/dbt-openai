@@ -130,7 +130,7 @@ def login():
     time.sleep(3)
     form = LoginForm()
     if form.validate_on_submit():
-        time.sleep(2)
+        time.sleep(3)
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data

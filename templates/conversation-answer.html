@@ -55,7 +55,7 @@
 </div>
 
 <div class="container">
-    <form id="prompt-form" method="POST" action="{{ url_for('answer') }}">
+    <form id="prompt-form" method="POST" action="/answer">
         {{ writing_text_form.hidden_tag() }}
         {% if error_message %}
             <div class="alert alert-info">
