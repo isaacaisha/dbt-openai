@@ -167,12 +167,16 @@ def home():
     writing_text_form = TextAreaForm()
     response = None
 
-    if writing_text_form.validate_on_submit():
-        user_input = request.form['writing_text']
+    try:
+        if writing_text_form.validate_on_submit():
+            user_input = request.form['writing_text']
 
-        # Use the LLM to generate a response based on user input
-        response = conversation.predict(input=user_input)
-        print(f'Home Response:\n{response}\n')
+            # Use the LLM to generate a response based on user input
+            response = conversation.predict(input=user_input)
+            print(f'Home Response:\n{response}\n')
+    except:
+        print('Bad Request The CSRF session token is missing.')
+        pass
 
     return render_template('index.html', current_user=current_user, response=response,
                            writing_text_form=writing_text_form, date=datetime.now().strftime("%a %d %B %Y"))
@@ -374,16 +378,20 @@ def select_conversation():
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
-        if form.validate_on_submit():
-            time.sleep(2)
-            # Retrieve the selected conversation ID
-            selected_conversation_id = form.conversation_id.data
+        try:
+            if form.validate_on_submit():
+                time.sleep(2)
+                # Retrieve the selected conversation ID
+                selected_conversation_id = form.conversation_id.data
 
-            # Construct the URL string for the 'get_conversation' route
-            url = f'/conversation/{selected_conversation_id}'
+                # Construct the URL string for the 'get_conversation' route
+                url = f'/conversation/{selected_conversation_id}'
 
-            # Redirect to the route that will display the selected conversation
-            return redirect(url)
+                # Redirect to the route that will display the selected conversation
+                return redirect(url)
+        except:
+            print('Bad Request The CSRF session token is missing.')
+            pass
 
         return render_template('conversation-by-id.html', form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -396,7 +404,7 @@ def select_conversation():
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     try:
-        time.sleep(2)
+        time.sleep(3)
         # Retrieve the conversation by ID
         conversation_ = Memory.query.filter_by(id=conversation_id).first()
 
@@ -433,35 +441,39 @@ def delete_conversation():
 
         if form.validate_on_submit():
             time.sleep(2)
-            # Access the database session using the get_db function
-            with get_db() as db:
-                # Get the conversation_id from the form
-                conversation_id = form.conversation_id.data
+            try:
+                # Access the database session using the get_db function
+                with get_db() as db:
+                    # Get the conversation_id from the form
+                    conversation_id = form.conversation_id.data
 
-                # Query the database to get the conversation to be deleted
-                conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
+                    # Query the database to get the conversation to be deleted
+                    conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
 
-                # Check if the conversation exists
-                if not conversation_to_delete:
-                    # abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
-                    return render_template('conversation-not-found.html',
-                                           current_user=current_user,
-                                           conversation_id=conversation_id,
-                                           date=datetime.now().strftime("%a %d %B %Y")), 404
-                # Check if the current user is the owner of the conversation
-                if conversation_to_delete.owner_id != current_user.id:
-                    return render_template('conversation-forbidden.html',
-                                           current_user=current_user,
-                                           conversation_id=conversation_id,
-                                           date=datetime.now().strftime("%a %d %B %Y")), 403
+                    # Check if the conversation exists
+                    if not conversation_to_delete:
+                        # abort(404, description=f"Conversation with ID 🔥{conversation_id}🔥 not found")
+                        return render_template('conversation-delete-not-found.html',
+                                               current_user=current_user,
+                                               conversation_id=conversation_id,
+                                               date=datetime.now().strftime("%a %d %B %Y")), 404
+                    # Check if the current user is the owner of the conversation
+                    if conversation_to_delete.owner_id != current_user.id:
+                        return render_template('conversation-forbidden.html',
+                                               current_user=current_user,
+                                               conversation_id=conversation_id,
+                                               date=datetime.now().strftime("%a %d %B %Y")), 403
 
-                # Delete the conversation
-                db.delete(conversation_to_delete)
-                db.commit()
+                    # Delete the conversation
+                    db.delete(conversation_to_delete)
+                    db.commit()
 
-                flash('Conversation deleted successfully 😎 ¡!¡')
+                    flash('Conversation deleted successfully 😎 ¡!¡')
 
-                return redirect(url_for('delete_conversation'))
+                    return redirect(url_for('delete_conversation'))
+            except:
+                print('Bad Request The CSRF session token is missing.')
+                pass
 
         return render_template('delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
