@@ -44,7 +44,8 @@
                     <span style="color:#9A30F3;"><strong>User Message:</strong> {{ conversation_.user_message }}</span><br>
                     <span style="color:#1295FA;"><strong>LLM Response:</strong> {{ conversation_.llm_response }}</span><br>
                     <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary }}</span><br>
-                    <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+                    <span><strong>Created At:</strong> {{ formatted_created_at }}</span><br><br>
+
 
         <div class="mb-5 text-center">
             <a href="/select-conversation-id" style="color:#fff;">

@@ -183,9 +183,11 @@ def conversation_answer():
     time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
+    owner_id = None
 
     if request.method == "POST" and writing_text_form.validate_on_submit():
         user_input = request.form['writing_text']
+        owner_id = current_user.id
 
         # Use the LLM to generate a response based on user input
         response = conversation.predict(input=user_input)
@@ -193,8 +195,8 @@ def conversation_answer():
         answer = response['output'] if response else None
 
     memory_buffer = memory.buffer_as_str
-    memory_load = memory.load_memory_variables({})
-    summary_buffer = memory_summary.load_memory_variables({})
+    memory_load = memory.load_memory_variables({'owner_id': owner_id})
+    summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
 
     return render_template('conversation-answer.html', current_user=current_user,
                            writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
@@ -350,7 +352,8 @@ def get_all_conversations():
                 "user_message": conversation_.user_message,
                 "llm_response": conversation_.llm_response,
                 "conversations_summary": conversation_.conversations_summary,
-                "created_at": conversation_.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # Convert to string
+                #"created_at": conversation_.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # Convert to string
+                'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
                 # Add more fields as needed
             }
 
@@ -402,9 +405,13 @@ def get_conversation(conversation_id):
 
         if conversation_ is not None:
             if conversation_.owner_id == current_user.id:
+                # Format created_at timestamp
+                formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
+
                 # User has access to the conversation
                 return render_template('conversation-details.html', current_user=current_user,
-                                       conversation_=conversation_, date=datetime.now().strftime("%a %d %B %Y"))
+                                       conversation_=conversation_, formatted_created_at=formatted_created_at,
+                                       date=datetime.now().strftime("%a %d %B %Y"))
             else:
                 # User doesn't have access, return a forbidden message
                 return render_template('conversation-forbidden.html',
@@ -467,6 +474,31 @@ def delete_conversation():
     else:
         return render_template('authentication-error.html', current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y")), 401
+
+
+@app.route('/api/conversations-jsonify', methods=['GET'])
+def get_conversations_jsonify():
+    try:
+        # Retrieve all conversations from the database
+        conversations = Memory.query.all()
+
+        # Convert the conversations to a list of dictionaries
+        conversations_list = []
+        for conversation in conversations:
+            conversation_dict = {
+                'id': conversation.id,
+                'user_name': conversation.user_name,
+                'user_message': conversation.user_message,
+                'llm_response': conversation.llm_response,
+                'created_at': conversation.created_at.strftime("%a %d %B %Y"),
+            }
+            conversations_list.append(conversation_dict)
+
+        # Return the data in JSON format
+        return jsonify({'conversations': conversations_list})
+
+    except NoResultFound:
+        return jsonify({'error': 'No conversations found'}), 404
 
 
 if __name__ == '__main__':

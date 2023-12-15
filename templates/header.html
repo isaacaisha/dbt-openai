@@ -164,6 +164,13 @@
                   </div>
                 </div>
               </div>
+              {% if current_user.id == 1: %}
+              <div class="mb-3 text-center">
+                  <a href="/api/conversations-jsonify" style="color:#fff;">
+                      Click to Get MEM😎RY Conversations Jsonify
+                  </a>
+              </div>
+              {% endif %}
             </footer>
 
             <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>

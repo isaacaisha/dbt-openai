@@ -22,7 +22,7 @@ class LoginForm(FlaskForm):
 class TextAreaForm(FlaskForm):
     writing_text = TextAreaField(
         'Start Writing for testing:',
-        [validators.InputRequired(message="Please enter a text.")]
+        [validators.InputRequired(message="Please, first enter a text.")]
     )
     submit = SubmitField("Click for Response 🔥¡!¡🔥")
 
