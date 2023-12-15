@@ -459,7 +459,7 @@ def delete_conversation():
                                                date=datetime.now().strftime("%a %d %B %Y")), 404
                     # Check if the current user is the owner of the conversation
                     if conversation_to_delete.owner_id != current_user.id:
-                        return render_template('conversation-forbidden.html',
+                        return render_template('conversation-delete-forbidden.html',
                                                current_user=current_user,
                                                conversation_id=conversation_id,
                                                date=datetime.now().strftime("%a %d %B %Y")), 403

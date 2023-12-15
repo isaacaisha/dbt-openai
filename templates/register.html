@@ -46,6 +46,7 @@
 
                 <div class="">
 
+                    {{ form.hidden_tag() }}
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
 
                     <div class="mt-4">
