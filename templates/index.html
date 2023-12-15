@@ -68,6 +68,7 @@
             {% endif %}
         {% endwith %}
 
+        {{ writing_text_form.hidden_tag() }}
         {{ wtf.quick_form(writing_text_form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
     </div>
 
