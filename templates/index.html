@@ -1,3 +1,5 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
 {% extends 'header.html' %}
 
 {% block title %} Welcom€ to{% endblock %}
@@ -25,10 +27,10 @@
 {% block content %}
 
 <hr class="hr-home-header" style="color:green;">
+
 <h3 class="text-center log-register-h3">To INTERACT with:<br><span class="artificial-intelligence">SìįSí</span><br>Please Register then Log in<br>¡!¡ <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown"> ¡!¡</h3>
 
 <hr class="mb-3" style="color:yellow;">
-
 
 <!-- Navbar -->
 <nav class="navbar">
@@ -56,6 +58,27 @@
     </div>
 
 </nav>
+
+<hr class="mb-3" style="color:yellow;">
+
+<div>
+    <div class="mb-3 text-center">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p style="color:#17a2b8;">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {{ wtf.quick_form(writing_text_form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
+    </div>
+
+    {% if response %}
+        <!-- Display the text response -->
+        <div id="response-text" class="mb-3 text-center" style="color:#fff;">{{ response|safe }}<br>💪🏿😇👌🏿</div>
+    {% endif %}
+</div>
 
 <hr class="mb-3" style="color:red;">
 

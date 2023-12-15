@@ -163,8 +163,18 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    return render_template('index.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+    writing_text_form = TextAreaForm()
+    response = None
+
+    if writing_text_form.validate_on_submit():
+        user_input = request.form['writing_text']
+
+        # Use the LLM to generate a response based on user input
+        response = conversation.predict(input=user_input)
+        print(f'Home Response:\n{response}\n')
+
+    return render_template('index.html', current_user=current_user, response=response,
+                           writing_text_form=writing_text_form, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
@@ -204,13 +214,13 @@ def answer():
         conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
         # Combine the first 1 and last 9 entries into a valid JSON array
-        qdocs = f"[{','.join(conversation_strings[-1:])}]"
+        qdocs = f"[{','.join(conversation_strings[-3:])}]"
 
         # Convert 'created_at' values to string
         created_at_list = [str(memory.created_at) for memory in user_conversations]
 
         conversation_context = {
-            "created_at": created_at_list[-1:],
+            "created_at": created_at_list[-3:],
             "conversations": qdocs,
             "user_name": current_user.name,
             "user_message": user_message,
@@ -305,7 +315,7 @@ def show_story():
         # Modify the query to filter records based on the current user's ID
         summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
         memory_load = memory.load_memory_variables({'owner_id': owner_id})
-        memory_buffer = str(owner_id) + memory.buffer_as_str
+        memory_buffer = f'{current_user.name}:\n{memory.buffer_as_str}'
 
         print(f'memory_buffer_story:\n{memory_buffer}\n')
         print(f'memory_load_story:\n{memory_load}\n')
@@ -322,7 +332,7 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(3)
+    time.sleep(1)
     if current_user.is_authenticated:
 
         owner_id = current_user.id
@@ -359,12 +369,12 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(3)
+    time.sleep(1)
     form = ConversationIdForm()
 
     if current_user.is_authenticated:
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(1)
             # Retrieve the selected conversation ID
             selected_conversation_id = form.conversation_id.data
 
@@ -385,7 +395,7 @@ def select_conversation():
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     try:
-        time.sleep(3)
+        time.sleep(1)
         # Retrieve the conversation by ID
         conversation_ = Memory.query.filter_by(id=conversation_id).first()
 
@@ -415,13 +425,13 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(3)
+    time.sleep(1)
     if current_user.is_authenticated:
 
         form = DeleteForm()
 
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(1)
             # Access the database session using the get_db function
             with get_db() as db:
                 # Get the conversation_id from the form

@@ -21,10 +21,10 @@ class LoginForm(FlaskForm):
 # Define a Flask form
 class TextAreaForm(FlaskForm):
     writing_text = TextAreaField(
-        'Start Writing:',
+        'Start Writing for testing:',
         [validators.InputRequired(message="Please enter a text.")]
     )
-    submit = SubmitField()
+    submit = SubmitField("Click for Response 🔥¡!¡🔥")
 
 
 class ConversationIdForm(FlaskForm):

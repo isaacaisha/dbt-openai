@@ -11,12 +11,12 @@
 {% endblock %}
 
 {% block content1 %}
-<div class="container-fluid">
-    <div class="p-1 rounded-3 jumbotron">
-        <div class="py-1">
-            <h1 class="">Log In ¡!¡</h1>
+    <div class="container-fluid">
+        <div class="p-1 rounded-3 jumbotron">
+            <div class="py-1">
+                <h1 class="">Log In ¡!¡</h1>
+            </div>
         </div>
-    </div>
     </div>
 {% endblock %}
 
@@ -24,63 +24,42 @@
 
 {% block content %}
 
-<div class="content">
+    <div class="content">
 
-  <!-- Page Header -->
-    <h5 class="text-center conversations-details">Welcome Back<br>-∞- ¡!¡ Log In ¡!¡ -∞-<br>
-        To Interact with the<br>¡!¡ Artificial Intelligence ¡!¡</h5>
+        <!-- Page Header -->
+        <h5 class="text-center conversations-details">Welcome Back<br>-∞- ¡!¡ Log In ¡!¡ -∞-<br>
+            To Interact with the<br>¡!¡ Artificial Intelligence ¡!¡</h5>
 
-    <hr class="mb-3" style="color:green;">
+        <hr class="mb-3" style="color:green;">
 
-    <div class="container">
-        <div class="row">
+        <div class="container">
+            <div class="row">
 
-            <div class="col-lg-8 col-md-10 mx-auto content mb-3">
+                <div class="col-lg-8 col-md-10 mx-auto content mb-3">
 
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for message in messages %}
-                            <p style="color:#17a2b8;">{{ message }}</p>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <p style="color:#17a2b8;">{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
 
-                <form method="POST" action="{{ url_for('login') }}">
-                    {{ form.hidden_tag() }}
+                    {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
 
-                    <div class="form-group">
-                        {{ form.csrf_token }}
-                        {{ form.email.label(class="form-label") }}
-                        {{ form.email(class="form-control",  autocomplete="email") }}
-                    </div>
-
-                    <div class="form-group">
-                        {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control",  autocomplete="password") }}
-                    </div>
-
-                    <div class="form-group">
-                        {{ form.remember_me.label(class="form-check-label") }}
-                        {{ form.remember_me(class="form-check-input") }}
-                    </div>
-
-                    <div class="mb-3 text-center">
-                        <button type="submit" class="btn submit btn-block btn-success">Log In</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
+
     </div>
 
-</div>
+    <hr class="mb-3" style="color:yellow;">
 
-<hr class="mb-3" style="color:yellow;">
+    <div class="text-center">
+        <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+    </div>
 
-<div class="text-center">
-    <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
-</div>
-
-<hr class="mb-5" style="color:red;">
+    <hr class="mb-5" style="color:red;">
 
 {% endblock %}
 
