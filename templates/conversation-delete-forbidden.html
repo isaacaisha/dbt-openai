@@ -32,7 +32,7 @@
 </div>
 
 <div class="mb-3 text-center">
-    <a href="/delete-conversation" style="color:#fff;">
+    <a href="{{ url_for('delete_conversation') }}" style="color:#fff;">
         Click to Go Back to Conversation Selection
     </a>
 </div>
@@ -40,7 +40,7 @@
 <hr class="mb-3" style="color:yellow;">
 
 <div class="text-center">
-    <a href="/conversation-answer" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+    <a href="{{ url_for('conversation_answer') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
 </div>
 
 <hr class="mb-5" style="color:red;">
