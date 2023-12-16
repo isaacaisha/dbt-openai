@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
 
     <head>
-        <meta charset="utf-8">
-        <meta name="geo.place-name" content="Spain">
-        <meta property="og:type" content="dbt-openai DBT">
-        <meta name="description" content="This is dbt-openai website.">
-        <meta property="og:title" content="dbt-openai website">
-        <meta content="Programmer" property="og:description">
-        <meta property="og:image" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/static/assets/images/logo3.jpg">
-        <meta property="og:url" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/">
-        <meta property="og:description" content="dbt-openai Website - Programmer & Developer, Frontend & Backend">
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="Programmer & Developer, Frontend & Backend - dbt-openai Website">
-        <meta name="twitter:description" content="Programmer & Developer - dbt-openai Website">
-        <meta name="twitter:image" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/static/assets/images/logo3.jpg">
-        <meta name="keywords" content="dbt-openai Website - programmer, developer, frontend, backend, python, javascript">
-        <meta name="author" content="Developer">
-        <!--<meta name="google-site-verification" content="YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE" />-->
-        <meta name="robots" content="index, follow" />
-        <meta name="googlebot" content="index, follow">
-
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
         {% block head %}
+            <meta charset="utf-8">
+            <meta name="geo.place-name" content="Spain">
+            <meta property="og:type" content="dbt-openai DBT">
+            <meta name="description" content="This is dbt-openai website.">
+            <meta property="og:title" content="dbt-openai website">
+            <meta content="Programmer" property="og:description">
+            <meta property="og:image" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/static/assets/images/logo3.jpg">
+            <meta property="og:url" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/">
+            <meta property="og:description" content="dbt-openai Website - Programmer & Developer, Frontend & Backend">
+            <meta name="twitter:card" content="summary_large_image">
+            <meta name="twitter:title" content="Programmer & Developer, Frontend & Backend - dbt-openai Website">
+            <meta name="twitter:description" content="Programmer & Developer - dbt-openai Website">
+            <meta name="twitter:image" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/static/assets/images/logo3.jpg">
+            <meta name="keywords" content="dbt-openai Website - programmer, developer, frontend, backend, python, javascript">
+            <meta name="author" content="Developer">
+            <!--<meta name="google-site-verification" content="YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE" />-->
+            <meta name="robots" content="index, follow" />
+            <meta name="googlebot" content="index, follow">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+            <!-- Include CSRF token in the request headers -->
+            <meta name="csrf-token" content="{{ csrf_token() }}">
+
             <title>{% block title %}{% endblock %} 👌🏿DBT OpenAI App💪🏿</title>
 
             <!-- Custom fonts for this template -->

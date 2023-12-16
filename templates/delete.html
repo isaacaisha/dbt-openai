@@ -42,7 +42,8 @@
                     {% endif %}
                 {% endwith %}
 
-                    {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'danger btn-block submit'}) }}
+                {{ form.hidden_tag() }}
+                {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'danger btn-block submit'}) }}
 
             </div>
         </div>

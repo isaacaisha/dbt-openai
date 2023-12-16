@@ -85,12 +85,10 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    time.sleep(2)
     form = RegisterForm()
 
     try:
         if form.validate_on_submit():
-            time.sleep(1)
             # Check if the passwords match
             if form.password.data != form.confirm_password.data:
                 flash("Passwords do not match. Please enter matching passwords 😭.")
@@ -134,12 +132,10 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    time.sleep(2)
     form = LoginForm()
 
     try:
         if form.validate_on_submit():
-            time.sleep(1)
             email = request.form.get('email')
             password = request.form.get('password')
             remember_me = form.remember_me.data
@@ -175,7 +171,6 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(2)
     writing_text_form = TextAreaForm()
     response = None
 
@@ -195,7 +190,6 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    time.sleep(2)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -334,7 +328,6 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -363,7 +356,6 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -406,13 +398,11 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(2)
     form = ConversationIdForm()
 
     try:
         if current_user.is_authenticated:
             if form.validate_on_submit():
-                time.sleep(1)
                 # Retrieve the selected conversation ID
                 selected_conversation_id = form.conversation_id.data
 
@@ -435,13 +425,12 @@ def select_conversation():
 @csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    time.sleep(2)
 
     try:
         # Retrieve the conversation by ID
         conversation_ = Memory.query.filter_by(id=conversation_id).first()
 
-        if conversation_ is not None:
+        if conversation_ is not None and current_user.is_authenticated:
             if conversation_.owner_id == current_user.id:
                 # Format created_at timestamp
                 formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
@@ -471,7 +460,6 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -479,7 +467,6 @@ def delete_conversation():
             form = DeleteForm()
 
             if form.validate_on_submit():
-                time.sleep(1)
                 # Access the database session using the get_db function
                 with get_db() as db:
                     # Get the conversation_id from the form
