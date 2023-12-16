@@ -85,7 +85,7 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    time.sleep(1)
+    time.sleep(2)
     form = RegisterForm()
 
     try:
@@ -134,7 +134,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    time.sleep(1)
+    time.sleep(2)
     form = LoginForm()
 
     try:
@@ -175,7 +175,7 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(1)
+    time.sleep(2)
     writing_text_form = TextAreaForm()
     response = None
 
@@ -195,7 +195,7 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    time.sleep(1)
+    time.sleep(2)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -288,12 +288,12 @@ def answer():
                     created_at=current_time
                 )
 
-                # Add the new memory to the session
-                db.add(new_memory)
-
-                # Commit changes to the database
-                db.commit()
-                db.refresh(new_memory)
+                ## Add the new memory to the session
+                #db.add(new_memory)
+#
+                ## Commit changes to the database
+                #db.commit()
+                #db.refresh(new_memory)
 
             print(f'User Name: {current_user.name} 😎')
             print(f'User ID:{current_user.id} 😝')
@@ -334,31 +334,36 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(1)
-    if current_user.is_authenticated:
-        owner_id = current_user.id
+    time.sleep(2)
 
-        # Modify the query to filter records based on the current user's ID
-        summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
-        memory_load = memory.load_memory_variables({'owner_id': owner_id})
-        memory_buffer = f'{current_user.name}:\n{memory.buffer_as_str}'
+    try:
+        if current_user.is_authenticated:
+            owner_id = current_user.id
 
-        print(f'memory_buffer_story:\n{memory_buffer}\n')
-        print(f'memory_load_story:\n{memory_load}\n')
-        print(f'summary_conversation_story:\n{summary_conversation}\n')
+            # Modify the query to filter records based on the current user's ID
+            summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
+            memory_load = memory.load_memory_variables({'owner_id': owner_id})
+            memory_buffer = f'{current_user.name}:\n{memory.buffer_as_str}'
 
-        return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
-                               memory_buffer=memory_buffer, summary_conversation=summary_conversation,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-    else:
-        return render_template('authentication-error.html', current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y")), 401
+            print(f'memory_buffer_story:\n{memory_buffer}\n')
+            print(f'memory_load_story:\n{memory_load}\n')
+            print(f'summary_conversation_story:\n{summary_conversation}\n')
+
+            return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
+                                   memory_buffer=memory_buffer, summary_conversation=summary_conversation,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
+        else:
+            return render_template('authentication-error.html', current_user=current_user,
+                                   date=datetime.now().strftime("%a %d %B %Y")), 401
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('show_story'))
 
 
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(1)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -401,7 +406,7 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(1)
+    time.sleep(2)
     form = ConversationIdForm()
 
     try:
@@ -430,8 +435,9 @@ def select_conversation():
 @csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
+    time.sleep(2)
+
     try:
-        time.sleep(1)
         # Retrieve the conversation by ID
         conversation_ = Memory.query.filter_by(id=conversation_id).first()
 
@@ -465,7 +471,7 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(1)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
