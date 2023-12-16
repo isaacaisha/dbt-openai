@@ -86,7 +86,6 @@ def load_user(user_id):
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    time.sleep(3)
 
     try:
         if form.validate_on_submit():
@@ -134,7 +133,6 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    time.sleep(3)
 
     try:
         if form.validate_on_submit():
@@ -175,7 +173,6 @@ def logout():
 def home():
     writing_text_form = TextAreaForm()
     response = None
-    time.sleep(3)
 
     try:
         if writing_text_form.validate_on_submit():
@@ -196,7 +193,6 @@ def conversation_answer():
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
-    time.sleep(3)
 
     try:
         if request.method == "POST" and writing_text_form.validate_on_submit():
@@ -332,7 +328,6 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -361,7 +356,6 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -405,7 +399,6 @@ def get_all_conversations():
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
     form = ConversationIdForm()
-    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -432,7 +425,6 @@ def select_conversation():
 @csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    time.sleep(3)
 
     try:
         # Retrieve the conversation by ID
@@ -468,7 +460,6 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -517,7 +508,6 @@ def delete_conversation():
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
-    time.sleep(3)
     try:
         # Retrieve all conversations from the database
         conversations = Memory.query.all()
