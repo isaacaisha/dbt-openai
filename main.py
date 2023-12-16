@@ -269,11 +269,11 @@ def answer():
             )
 
             # Add the new memory to the session
-            #db.add(new_memory)
+            db.add(new_memory)
 
             # Commit changes to the database
-            #db.commit()
-            #db.refresh(new_memory)
+            db.commit()
+            db.refresh(new_memory)
 
         print(f'User Name: {current_user.name} 😎')
         print(f'User ID:{current_user.id} 😝')
