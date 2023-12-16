@@ -282,12 +282,12 @@ def answer():
                     created_at=current_time
                 )
 
-                ## Add the new memory to the session
-                #db.add(new_memory)
-#
-                ## Commit changes to the database
-                #db.commit()
-                #db.refresh(new_memory)
+                # Add the new memory to the session
+                db.add(new_memory)
+
+                # Commit changes to the database
+                db.commit()
+                db.refresh(new_memory)
 
             print(f'User Name: {current_user.name} 😎')
             print(f'User ID:{current_user.id} 😝')
