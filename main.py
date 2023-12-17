@@ -100,8 +100,8 @@ def register():
                 return redirect(url_for('register'))
 
             # If user's email already exists
-            if User.query.filter_by(email=form.email.data).first():
-                print(User.query.filter_by(email=form.email.data).first())
+            #if User.query.filter_by(email=form.email.data).first():
+            if db.query(User).filter_by(email=form.email.data).first():
 
                 # Send a flash message
                 flash("You've already signed up with that email, log in instead! 🤣.")
@@ -146,7 +146,8 @@ def login():
             remember_me = form.remember_me.data
 
             # Find user by email entered.
-            user = User.query.filter_by(email=email).first()
+            #user = User.query.filter_by(email=email).first()
+            user = db.query(Memory).filter_by(email=email).first()
 
             # Email doesn't exist
             if not user:
@@ -176,7 +177,6 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(3)
     writing_text_form = TextAreaForm()
     response = None
 
@@ -200,7 +200,6 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -339,7 +338,6 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -367,7 +365,6 @@ def show_story():
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -410,7 +407,6 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -438,11 +434,11 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    time.sleep(3)
 
     try:
         # Retrieve the conversation by ID
-        conversation_ = Memory.query.filter_by(id=conversation_id).first()
+        #conversation_ = Memory.query.filter_by(id=conversation_id).first()
+        conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
         if conversation_ is not None and current_user.is_authenticated:
             if conversation_.owner_id == current_user.id:
@@ -474,7 +470,6 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -522,9 +517,10 @@ def delete_conversation():
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
+
     try:
         # Retrieve all conversations from the database
-        conversations = Memory.query.all()
+        conversations = test
 
         # Convert the conversations to a list of dictionaries
         conversations_list = []
