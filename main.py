@@ -88,6 +88,12 @@ def load_user(user_id):
     return None
 
 
+@app.context_processor
+def inject_user():
+    user = current_user
+    return dict(current_user=user)
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()

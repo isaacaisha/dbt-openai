@@ -55,7 +55,7 @@
             {% block navbar %}
             <nav class="navbar navbar-expand-md navbar-dark">
 
-                <a class="navbar-brand col" href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs">SìįSí Dbt ¡!¡</a>
+                <a class="navbar-brand col" href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs">SìįSí Dbt ¡!¡</a>{% if current_user.is_authenticated %}
 
                 <button class="navbar-toggler mx-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -95,6 +95,11 @@
                 </div>
 
             </nav>
+            <p style="color:#fff;">Welcome, {{ current_user.name }}!</p>
+            {% else %}
+            <p>Guest user</p>
+            {% endif %}
+
             {% endblock %}
 
             <!-- Content -->
