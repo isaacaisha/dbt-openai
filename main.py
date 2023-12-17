@@ -176,6 +176,7 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    time.sleep(3)
     writing_text_form = TextAreaForm()
     response = None
 
@@ -199,6 +200,7 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
+    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -337,6 +339,7 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -364,6 +367,7 @@ def show_story():
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -406,6 +410,7 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -433,6 +438,7 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
+    time.sleep(3)
 
     try:
         # Retrieve the conversation by ID
@@ -469,6 +475,7 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
