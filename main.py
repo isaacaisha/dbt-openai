@@ -88,12 +88,6 @@ def load_user(user_id):
     return None
 
 
-@app.context_processor
-def inject_user():
-    user = current_user
-    return dict(current_user=user)
-
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -299,12 +293,12 @@ def answer():
                     created_at=current_time
                 )
 
-                # Add the new memory to the session
-                db.add(new_memory)
-
-                # Commit changes to the database
-                db.commit()
-                db.refresh(new_memory)
+                ## Add the new memory to the session
+                #db.add(new_memory)
+#
+                ## Commit changes to the database
+                #db.commit()
+                #db.refresh(new_memory)
 
             print(f'User Name: {current_user.name} 😎')
             print(f'User ID:{current_user.id} 😝')
