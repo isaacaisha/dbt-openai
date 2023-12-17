@@ -134,7 +134,7 @@ def register():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('register'))
+        return redirect(url_for('home'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -169,7 +169,7 @@ def login():
                                date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
 
 
 @app.route('/logout')
@@ -180,7 +180,7 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(3)
+    time.sleep(2)
     writing_text_form = TextAreaForm()
     response = None
 
@@ -203,9 +203,9 @@ def home():
         return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -231,13 +231,13 @@ def conversation_answer():
                                date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('conversation_answer'))
+        return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
-    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -332,9 +332,10 @@ def answer():
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('answer'))
+        return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route('/audio')
 def serve_audio():
     audio_file_path = 'temp_audio.mp3'
@@ -344,9 +345,10 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
+@csrf.exempt
 @app.route('/show-history')
 def show_story():
-    time.sleep(3)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -369,13 +371,13 @@ def show_story():
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('show_story'))
+        return redirect(url_for('home'))
 
 
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(3)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -413,19 +415,19 @@ def get_all_conversations():
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('get_all_conversations'))
+        return redirect(url_for('home'))
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(3)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
             form = ConversationIdForm()
 
             if form.validate_on_submit():
-                time.sleep(2)
+                time.sleep(1)
                 # Retrieve the selected conversation ID
                 selected_conversation_id = form.conversation_id.data
 
@@ -442,12 +444,13 @@ def select_conversation():
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('select_conversation'))
+        return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    time.sleep(2)
+    time.sleep(1)
 
     try:
         # Retrieve the conversation by ID
@@ -486,7 +489,7 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(3)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -532,7 +535,7 @@ def delete_conversation():
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('delete_conversation'))
+        return redirect(url_for('home'))
 
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
