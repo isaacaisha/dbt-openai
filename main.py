@@ -197,7 +197,6 @@ def home():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
     writing_text_form = TextAreaForm()
@@ -227,7 +226,6 @@ def conversation_answer():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
@@ -328,7 +326,6 @@ def answer():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route('/audio')
 def serve_audio():
     audio_file_path = 'temp_audio.mp3'
@@ -338,7 +335,6 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
-@csrf.exempt
 @app.route('/show-history')
 def show_story():
 
@@ -366,7 +362,6 @@ def show_story():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
 
@@ -436,7 +431,6 @@ def select_conversation():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
 
