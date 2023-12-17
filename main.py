@@ -202,6 +202,7 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
+    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -340,6 +341,7 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -367,6 +369,7 @@ def show_story():
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -409,12 +412,14 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
             form = ConversationIdForm()
 
             if form.validate_on_submit():
+                time.sleep(3)
                 # Retrieve the selected conversation ID
                 selected_conversation_id = form.conversation_id.data
 
@@ -427,6 +432,7 @@ def select_conversation():
             return render_template('conversation-by-id.html', form=form, current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
         else:
+            time.sleep(3)
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
@@ -436,6 +442,7 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
+    time.sleep(3)
 
     try:
         # Retrieve the conversation by ID
@@ -453,12 +460,14 @@ def get_conversation(conversation_id):
                                            conversation_=conversation_, formatted_created_at=formatted_created_at,
                                            date=datetime.now().strftime("%a %d %B %Y"))
                 else:
+                    time.sleep(3)
                     # User doesn't have access, return a forbidden message
                     return render_template('conversation-forbidden.html',
                                            current_user=current_user,
                                            conversation_id=conversation_id,
                                            date=datetime.now().strftime("%a %d %B %Y")), 403
             else:
+                time.sleep(3)
                 # Conversation not found, return a not found message
                 return render_template('conversation-not-found.html',
                                        current_user=current_user,
@@ -473,12 +482,14 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
             form = DeleteForm()
 
             if form.validate_on_submit():
+                time.sleep(3)
                 # Access the database session using the get_db function
                 with get_db() as db:
                     # Get the conversation_id from the form
