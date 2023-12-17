@@ -460,7 +460,6 @@ def get_conversation(conversation_id):
                                        conversation_id=conversation_id,
                                        date=datetime.now().strftime("%a %d %B %Y")), 403
         else:
-            time.sleep(1)
             # Conversation not found, return a not found message
             return render_template('conversation-not-found.html',
                                    current_user=current_user,
@@ -499,7 +498,6 @@ def delete_conversation():
 
                     # Check if the current user is the owner of the conversation
                     if conversation_to_delete.owner_id != current_user.id:
-                        time.sleep(1)
                         return render_template('conversation-delete-forbidden.html',
                                                current_user=current_user,
                                                conversation_id=conversation_id,
