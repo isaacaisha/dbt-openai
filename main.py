@@ -18,7 +18,7 @@ from langchain.memory import ConversationSummaryBufferMemory
 from sqlalchemy.orm.exc import NoResultFound
 from app.databases.database import get_db
 from app.models.memory import Memory, db, User
-from app.schemas.schemas import schemas_bp
+# from app.schemas.schemas import schemas_bp
 
 from flask_login import LoginManager, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -100,32 +100,33 @@ def register():
                 return redirect(url_for('register'))
 
             # If user's email already exists
-            #if User.query.filter_by(email=form.email.data).first():
-            if db.query(User).filter_by(email=form.email.data).first():
+            with get_db() as db:
+                #if User.query.filter_by(email=form.email.data).first():
+                if db.query(User).filter_by(email=form.email.data).first():
 
-                # Send a flash message
-                flash("You've already signed up with that email, log in instead! 🤣.")
+                    # Send a flash message
+                    flash("You've already signed up with that email, log in instead! 🤣.")
+                    return redirect(url_for('login'))
+
+                hash_and_salted_password = generate_password_hash(
+                    request.form.get('password'),
+                    method='pbkdf2:sha256',
+                    salt_length=8
+                )
+
+                new_user = User()
+                new_user.email = request.form['email']
+                new_user.name = request.form['name']
+                new_user.password = hash_and_salted_password
+
+                db.add(new_user)
+                db.commit()
+                db.refresh(new_user)
+
+                # Log in and authenticate the user after adding details to the database.
+                login_user(new_user)
+
                 return redirect(url_for('login'))
-
-            hash_and_salted_password = generate_password_hash(
-                request.form.get('password'),
-                method='pbkdf2:sha256',
-                salt_length=8
-            )
-
-            new_user = User()
-            new_user.email = request.form['email']
-            new_user.name = request.form['name']
-            new_user.password = hash_and_salted_password
-
-            db.add(new_user)
-            db.commit()
-            db.refresh(new_user)
-
-            # Log in and authenticate the user after adding details to the database.
-            login_user(new_user)
-
-            return redirect(url_for('login'))
 
         return render_template("register.html", form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -146,21 +147,22 @@ def login():
             remember_me = form.remember_me.data
 
             # Find user by email entered.
-            #user = User.query.filter_by(email=email).first()
-            user = db.query(User).filter_by(email=email).first()
+            with get_db() as db:
+                #user = User.query.filter_by(email=email).first()
+                user = db.query(User).filter_by(email=email).first()
 
-            # Email doesn't exist
-            if not user:
-                flash("That email does not exist, please try again 😭 ¡!¡")
-                return redirect(url_for('login'))
-            # Password incorrect
-            elif not check_password_hash(user.password, password):
-                flash('Password incorrect, please try again 😭 ¡!¡')
-                return redirect(url_for('login'))
-            # Email exists and password correct
-            else:
-                login_user(user, remember=remember_me)
-                return redirect(url_for('conversation_answer'))
+                # Email doesn't exist
+                if not user:
+                    flash("That email does not exist, please try again 😭 ¡!¡")
+                    return redirect(url_for('login'))
+                # Password incorrect
+                elif not check_password_hash(user.password, password):
+                    flash('Password incorrect, please try again 😭 ¡!¡')
+                    return redirect(url_for('login'))
+                # Email exists and password correct
+                else:
+                    login_user(user, remember=remember_me)
+                    return redirect(url_for('conversation_answer'))
 
         return render_template("login.html", form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -368,35 +370,35 @@ def get_all_conversations():
 
     try:
         if current_user.is_authenticated:
+            with get_db() as db:
+                owner_id = current_user.id
+                conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
 
-            owner_id = current_user.id
-            conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
+                # Create a list to store serialized data for each Memory object
+                serialized_conversations = []
 
-            # Create a list to store serialized data for each Memory object
-            serialized_conversations = []
+                for conversation_ in conversations:
+                    serialized_history = {
+                        "id": conversation_.id,
+                        "owner_id": conversation_.owner_id,
+                        "user_name": conversation_.user_name,
+                        "user_message": conversation_.user_message,
+                        "llm_response": conversation_.llm_response,
+                        "conversations_summary": conversation_.conversations_summary,
+                        # "created_at": conversation_.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # Convert to string
+                        'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
+                        # Add more fields as needed
+                    }
 
-            for conversation_ in conversations:
-                serialized_history = {
-                    "id": conversation_.id,
-                    "owner_id": conversation_.owner_id,
-                    "user_name": conversation_.user_name,
-                    "user_message": conversation_.user_message,
-                    "llm_response": conversation_.llm_response,
-                    "conversations_summary": conversation_.conversations_summary,
-                    # "created_at": conversation_.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # Convert to string
-                    'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
-                    # Add more fields as needed
-                }
+                    serialized_conversations.append(serialized_history)
 
-                serialized_conversations.append(serialized_history)
-
-            # Render an HTML template with the serialized data
-            return render_template('all-conversations.html',
-                                   current_user=current_user,
-                                   conversations=serialized_conversations,
-                                   serialized_conversations=serialized_conversations,
-                                   date=datetime.now().strftime("%a %d %B %Y")
-                                   )
+                # Render an HTML template with the serialized data
+                return render_template('all-conversations.html',
+                                       current_user=current_user,
+                                       conversations=serialized_conversations,
+                                       serialized_conversations=serialized_conversations,
+                                       date=datetime.now().strftime("%a %d %B %Y")
+                                       )
         else:
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
@@ -437,30 +439,31 @@ def get_conversation(conversation_id):
 
     try:
         # Retrieve the conversation by ID
-        #conversation_ = Memory.query.filter_by(id=conversation_id).first()
-        conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
+        with get_db() as db:
+            #conversation_ = Memory.query.filter_by(id=conversation_id).first()
+            conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
-        if conversation_ is not None and current_user.is_authenticated:
-            if conversation_.owner_id == current_user.id:
-                # Format created_at timestamp
-                formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
+            if conversation_ is not None and current_user.is_authenticated:
+                if conversation_.owner_id == current_user.id:
+                    # Format created_at timestamp
+                    formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
 
-                # User has access to the conversation
-                return render_template('conversation-details.html', current_user=current_user,
-                                       conversation_=conversation_, formatted_created_at=formatted_created_at,
-                                       date=datetime.now().strftime("%a %d %B %Y"))
+                    # User has access to the conversation
+                    return render_template('conversation-details.html', current_user=current_user,
+                                           conversation_=conversation_, formatted_created_at=formatted_created_at,
+                                           date=datetime.now().strftime("%a %d %B %Y"))
+                else:
+                    # User doesn't have access, return a forbidden message
+                    return render_template('conversation-forbidden.html',
+                                           current_user=current_user,
+                                           conversation_id=conversation_id,
+                                           date=datetime.now().strftime("%a %d %B %Y")), 403
             else:
-                # User doesn't have access, return a forbidden message
-                return render_template('conversation-forbidden.html',
+                # Conversation not found, return a not found message
+                return render_template('conversation-not-found.html',
                                        current_user=current_user,
                                        conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y")), 403
-        else:
-            # Conversation not found, return a not found message
-            return render_template('conversation-not-found.html',
-                                   current_user=current_user,
-                                   conversation_id=conversation_id,
-                                   date=datetime.now().strftime("%a %d %B %Y")), 404
+                                       date=datetime.now().strftime("%a %d %B %Y")), 404
 
     except NoResultFound:
         return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
