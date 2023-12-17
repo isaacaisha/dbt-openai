@@ -91,6 +91,20 @@ large-image {
     margin: 0.7rem;
     padding: 0.7rem;
 }
+/* register & log-in index.html */
+#navbarSupportedContent > ul > li:nth-child(1) > a.register-home,
+#navbarSupportedContent > ul > li:nth-child(3) > a.log-in-home {
+    border: 0.1rem solid gold;
+    border-radius: 19rem;
+    font-size: 2.7rem;
+    margin: 0 1rem;
+    padding: 1.3rem;
+    transform: rotate(7deg);
+}
+
+#navbarSupportedContent > ul > li:nth-child(3) > a.log-in-home {
+    transform: rotate(-7deg);
+}
 
 .log-out {
     color: #9A30F3;
