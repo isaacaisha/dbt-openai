@@ -1,6 +1,10 @@
+from flask import Blueprint
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
+
+
+schemas_bp = Blueprint('schemas', __name__)
 
 
 class MemoryBase(BaseModel):

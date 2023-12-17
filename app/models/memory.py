@@ -1,9 +1,13 @@
+from flask import Blueprint
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin
 from sqlalchemy.orm import relationship
+from flask_login import UserMixin
 from datetime import datetime
+
+
+memory_bp = Blueprint('memory', __name__)
 
 db = SQLAlchemy()
 
@@ -52,3 +56,4 @@ class User(UserMixin, db.Model):
     @property
     def is_anonymous(self):
         return False
+

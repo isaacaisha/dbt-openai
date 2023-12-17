@@ -1,10 +1,10 @@
 import os
 import time
 import openai
+import json
 import secrets
 import warnings
 import pytz
-import json
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
@@ -16,12 +16,17 @@ from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 
 from sqlalchemy.orm.exc import NoResultFound
-from database import get_db
-from models import Memory, db, User
+from app.databases.database import get_db
+from app.models.memory import Memory, db, User
+from app.schemas.schemas import schemas_bp
 
-from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from flask_login import LoginManager, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegisterForm, LoginForm, TextAreaForm, ConversationIdForm, DeleteForm
+from app.forms.conversation_id_form import ConversationIdForm
+from app.forms.delete_form import DeleteForm
+from app.forms.login_form import LoginForm
+from app.forms.register_form import RegisterForm
+from app.forms.text_area_form import TextAreaForm
 
 from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
@@ -30,7 +35,7 @@ warnings.filterwarnings('ignore')
 
 _ = load_dotenv(find_dotenv())  # read local .env file
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 Bootstrap(app)
 csrf = CSRFProtect(app)
 CORS(app)
@@ -85,10 +90,12 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    time.sleep(1)
     form = RegisterForm()
 
     try:
         if form.validate_on_submit():
+            time.sleep(1)
             # Check if the passwords match
             if form.password.data != form.confirm_password.data:
                 flash("Passwords do not match. Please enter matching passwords 😭.")
@@ -132,10 +139,12 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    time.sleep(1)
     form = LoginForm()
 
     try:
         if form.validate_on_submit():
+            time.sleep(1)
             email = request.form.get('email')
             password = request.form.get('password')
             remember_me = form.remember_me.data
@@ -171,18 +180,24 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    time.sleep(1)
     writing_text_form = TextAreaForm()
     response = None
 
     try:
         if writing_text_form.validate_on_submit():
+            time.sleep(1)
             user_input = request.form['writing_text']
 
             # Use the LLM to generate a response based on user input
             response = conversation.predict(input=user_input)
 
-        return render_template('index.html', current_user=current_user, response=response,
-                               writing_text_form=writing_text_form, date=datetime.now().strftime("%a %d %B %Y"))
+        memory_buffer = memory.buffer_as_str
+        memory_load = memory.load_memory_variables({})
+
+        return render_template('index.html', writing_text_form=writing_text_form,
+                               current_user=current_user, response=response, memory_buffer=memory_buffer,
+                               memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return redirect(url_for('home'))
@@ -190,12 +205,14 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
+    time.sleep(1)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
 
     try:
         if request.method == "POST" and writing_text_form.validate_on_submit():
+            time.sleep(1)
             user_input = request.form['writing_text']
             owner_id = current_user.id
 
@@ -220,6 +237,7 @@ def conversation_answer():
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
+    time.sleep(1)
 
     try:
         if current_user.is_authenticated:
@@ -328,9 +346,11 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
+    time.sleep(1)
 
     try:
         if current_user.is_authenticated:
+            time.sleep(1)
             owner_id = current_user.id
 
             # Modify the query to filter records based on the current user's ID
@@ -356,9 +376,11 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
+    time.sleep(1)
 
     try:
         if current_user.is_authenticated:
+            time.sleep(1)
 
             owner_id = current_user.id
             conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -398,11 +420,14 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    form = ConversationIdForm()
+    time.sleep(1)
 
     try:
         if current_user.is_authenticated:
+            form = ConversationIdForm()
+
             if form.validate_on_submit():
+                time.sleep(1)
                 # Retrieve the selected conversation ID
                 selected_conversation_id = form.conversation_id.data
 
@@ -425,6 +450,7 @@ def select_conversation():
 @csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
+    time.sleep(1)
 
     try:
         # Retrieve the conversation by ID
@@ -460,13 +486,14 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    time.sleep(1)
 
     try:
         if current_user.is_authenticated:
-
             form = DeleteForm()
 
             if form.validate_on_submit():
+                time.sleep(1)
                 # Access the database session using the get_db function
                 with get_db() as db:
                     # Get the conversation_id from the form

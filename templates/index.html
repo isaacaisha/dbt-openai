@@ -74,11 +74,17 @@
 
     {% if response %}
         <!-- Display the text response -->
-        <textarea  class="form-control result mb-3" style="color:purple;">{{ response|safe }}</textarea>
+        <div id="resultMemo" style="" class="text-center mb-3">
+            <hr style="color:red;">
+            <h3>…·SìįSí·…(LLM) Response</h3>
+            <textarea class="form-control result mb-3" style="color:purple;">{{ response|safe }}</textarea>
+            <h3>Conversation</h3>
+            <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
+        </div>
     {% endif %}
 </div>
 
-<hr class="mb-5" style="color:red;">
+<hr class="mb-5" style="color:green;">
 
 {% endblock %}
 
