@@ -71,7 +71,9 @@
         {% endwith %}
 
         {{ writing_text_form.hidden_tag() }}
+        <div style="margin:9%;">
         {{ wtf.quick_form(writing_text_form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
+        </div>
     </div>
 
     {% if response %}

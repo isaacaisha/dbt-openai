@@ -96,12 +96,14 @@
 
             </nav>
 
-            {% if current_user.is_authenticated %}
-                <span style="color:#fff;">Welcome, {{ current_user.name }}!</span>
-            {% else %}
-                <span style="color:#fff;">Reload the page</span>
-            {% endif %}
-            {% endblock %}
+            <div class="text-center">
+                {% if current_user.is_authenticated %}
+                    <span style="color:#fff;">Welcome, {{ current_user.name }}!</span>
+                {% else %}
+                    <span style="color:#fff;">Reload the page</span>
+                {% endif %}
+                {% endblock %}
+            </div>
 
             <!-- Content -->
             {% block content %}{% endblock %}
