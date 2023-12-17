@@ -4,8 +4,6 @@
 
 {% block head %}
     {{ super() }}
-    <!-- Include CSRF token in the request headers -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
     {% include 'bootstrap/base.html' %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
