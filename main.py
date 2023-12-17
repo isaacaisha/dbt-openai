@@ -90,7 +90,7 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    time.sleep(1)
+    time.sleep(2)
     form = RegisterForm()
 
     try:
@@ -139,7 +139,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    time.sleep(1)
+    time.sleep(2)
     form = LoginForm()
 
     try:
@@ -178,9 +178,10 @@ def logout():
     return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(1)
+    time.sleep(2)
     writing_text_form = TextAreaForm()
     response = None
 
@@ -205,7 +206,7 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    time.sleep(1)
+    time.sleep(2)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -237,7 +238,7 @@ def conversation_answer():
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
-    time.sleep(1)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -344,13 +345,13 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
+@csrf.exempt
 @app.route('/show-history')
 def show_story():
-    time.sleep(1)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
-            time.sleep(1)
             owner_id = current_user.id
 
             # Modify the query to filter records based on the current user's ID
@@ -376,11 +377,10 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(1)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
-            time.sleep(1)
 
             owner_id = current_user.id
             conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -420,7 +420,7 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(1)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:
@@ -486,7 +486,7 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(1)
+    time.sleep(2)
 
     try:
         if current_user.is_authenticated:

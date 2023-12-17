@@ -56,4 +56,3 @@ class User(UserMixin, db.Model):
     @property
     def is_anonymous(self):
         return False
-
