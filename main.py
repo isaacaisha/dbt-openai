@@ -147,7 +147,7 @@ def login():
 
             # Find user by email entered.
             #user = User.query.filter_by(email=email).first()
-            user = db.query(Memory).filter_by(email=email).first()
+            user = db.query(User).filter_by(email=email).first()
 
             # Email doesn't exist
             if not user:
