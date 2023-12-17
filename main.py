@@ -144,7 +144,7 @@ def login():
 
     try:
         if form.validate_on_submit():
-            time.sleep(1)
+            time.sleep(2)
             email = request.form.get('email')
             password = request.form.get('password')
             remember_me = form.remember_me.data
@@ -178,10 +178,9 @@ def logout():
     return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(2)
+    time.sleep(3)
     writing_text_form = TextAreaForm()
     response = None
 
@@ -206,7 +205,7 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    time.sleep(2)
+    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -345,10 +344,9 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
-@csrf.exempt
 @app.route('/show-history')
 def show_story():
-    time.sleep(2)
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -377,7 +375,7 @@ def show_story():
 @csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(2)
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
@@ -420,14 +418,14 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(2)
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
             form = ConversationIdForm()
 
             if form.validate_on_submit():
-                time.sleep(1)
+                time.sleep(2)
                 # Retrieve the selected conversation ID
                 selected_conversation_id = form.conversation_id.data
 
@@ -447,10 +445,9 @@ def select_conversation():
         return redirect(url_for('select_conversation'))
 
 
-@csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    time.sleep(1)
+    time.sleep(2)
 
     try:
         # Retrieve the conversation by ID
@@ -458,6 +455,7 @@ def get_conversation(conversation_id):
 
         if conversation_ is not None and current_user.is_authenticated:
             if conversation_.owner_id == current_user.id:
+                time.sleep(1)
                 # Format created_at timestamp
                 formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
 
@@ -466,12 +464,14 @@ def get_conversation(conversation_id):
                                        conversation_=conversation_, formatted_created_at=formatted_created_at,
                                        date=datetime.now().strftime("%a %d %B %Y"))
             else:
+                time.sleep(1)
                 # User doesn't have access, return a forbidden message
                 return render_template('conversation-forbidden.html',
                                        current_user=current_user,
                                        conversation_id=conversation_id,
                                        date=datetime.now().strftime("%a %d %B %Y")), 403
         else:
+            time.sleep(1)
             # Conversation not found, return a not found message
             return render_template('conversation-not-found.html',
                                    current_user=current_user,
@@ -486,14 +486,14 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(2)
+    time.sleep(3)
 
     try:
         if current_user.is_authenticated:
             form = DeleteForm()
 
             if form.validate_on_submit():
-                time.sleep(1)
+                time.sleep(2)
                 # Access the database session using the get_db function
                 with get_db() as db:
                     # Get the conversation_id from the form
@@ -504,6 +504,7 @@ def delete_conversation():
 
                     # Check if the conversation exists
                     if not conversation_to_delete:
+                        time.sleep(1)
                         return render_template('conversation-delete-not-found.html',
                                                current_user=current_user,
                                                conversation_id=conversation_id,
@@ -511,6 +512,7 @@ def delete_conversation():
 
                     # Check if the current user is the owner of the conversation
                     if conversation_to_delete.owner_id != current_user.id:
+                        time.sleep(1)
                         return render_template('conversation-delete-forbidden.html',
                                                current_user=current_user,
                                                conversation_id=conversation_id,
