@@ -203,6 +203,7 @@ def home():
         return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
     time.sleep(2)
