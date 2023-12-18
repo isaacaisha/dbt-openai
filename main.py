@@ -234,6 +234,7 @@ def conversation_answer():
         return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
@@ -343,6 +344,7 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
+@csrf.exempt
 @app.route('/show-history')
 def show_story():
     time.sleep(2)
@@ -371,6 +373,7 @@ def show_story():
         return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
     time.sleep(2)
@@ -443,6 +446,7 @@ def select_conversation():
         return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     time.sleep(2)
@@ -531,6 +535,7 @@ def delete_conversation():
         return redirect(url_for('home'))
 
 
+@csrf.exempt
 @app.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
 
