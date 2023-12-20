@@ -94,6 +94,7 @@ def register():
     form = RegisterForm()
 
     try:
+
         if form.validate_on_submit():
             # Check if the passwords match
             if form.password.data != form.confirm_password.data:
@@ -127,6 +128,8 @@ def register():
                 # Log in and authenticate the user after adding details to the database.
                 login_user(new_user)
 
+                print(f"Form data: {form.data}")
+
                 return redirect(url_for('login'))
 
         return render_template("register.html", form=form, current_user=current_user,
@@ -143,6 +146,10 @@ def login():
     form = LoginForm()
 
     try:
+        # Log the request data for both GET and POST requests
+        print(f"Request method: {request.method}")
+        print(f"Request form data: {request.form}")
+
         if form.validate_on_submit():
             time.sleep(2)
             email = request.form.get('email')
@@ -167,6 +174,8 @@ def login():
                     login_user(user, remember=remember_me)
                     return redirect(url_for('conversation_answer'))
 
+        print(f"Form data: {form.data}")
+
         return render_template("login.html", form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
@@ -186,6 +195,10 @@ def home():
     response = None
 
     try:
+        # Log the request data for both GET and POST requests
+        print(f"Request method: {request.method}")
+        print(f"Request form data: {request.form}")
+
         if writing_text_form.validate_on_submit():
             user_input = request.form['writing_text']
 
@@ -194,6 +207,8 @@ def home():
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
+
+        print(f"Form data: {writing_text_form.data}")
 
         return render_template('index.html', writing_text_form=writing_text_form,
                                current_user=current_user, response=response, memory_buffer=memory_buffer,
@@ -212,6 +227,10 @@ def conversation_answer():
     owner_id = None
 
     try:
+        # Log the request data for both GET and POST requests
+        print(f"Request method: {request.method}")
+        print(f"Request form data: {request.form}")
+
         if request.method == "POST" and writing_text_form.validate_on_submit():
             user_input = request.form['writing_text']
             owner_id = current_user.id
@@ -224,6 +243,8 @@ def conversation_answer():
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({'owner_id': owner_id})
         summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
+
+        print(f"Form data: {writing_text_form.data}")
 
         return render_template('conversation-answer.html', current_user=current_user,
                                writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
@@ -240,6 +261,10 @@ def answer():
     user_message = request.form['prompt']
 
     try:
+        # Log the request data for both GET and POST requests
+        print(f"Request method: {request.method}")
+        print(f"Request form data: {request.form}")
+
         if current_user.is_authenticated:
 
             # Get conversations only for the current user
@@ -350,6 +375,10 @@ def show_story():
     time.sleep(2)
 
     try:
+        # Log the request data for both GET and POST requests
+        print(f"Request method: {request.method}")
+        print(f"Request form data: {request.form}")
+
         if current_user.is_authenticated:
             owner_id = current_user.id
 
@@ -379,6 +408,10 @@ def get_all_conversations():
     time.sleep(2)
 
     try:
+        # Log the request data for both GET and POST requests
+        print(f"Request method: {request.method}")
+        print(f"Request form data: {request.form}")
+
         if current_user.is_authenticated:
             with get_db() as db:
                 owner_id = current_user.id
@@ -422,6 +455,10 @@ def select_conversation():
     time.sleep(2)
 
     try:
+        # Log the request data for both GET and POST requests
+        print(f"Request method: {request.method}")
+        print(f"Request form data: {request.form}")
+
         if current_user.is_authenticated:
             form = ConversationIdForm()
 
@@ -432,6 +469,8 @@ def select_conversation():
 
                 # Construct the URL string for the 'get_conversation' route
                 url = f'/conversation/{selected_conversation_id}'
+
+                print(f"Form data: {form.data}")
 
                 # Redirect to the route that will display the selected conversation
                 return redirect(url)
@@ -452,6 +491,10 @@ def get_conversation(conversation_id):
     time.sleep(2)
 
     try:
+        # Log the request data for both GET and POST requests
+        print(f"Request method: {request.method}")
+        print(f"Request form data: {request.form}")
+
         # Retrieve the conversation by ID
         with get_db() as db:
             #conversation_ = Memory.query.filter_by(id=conversation_id).first()
@@ -491,11 +534,16 @@ def delete_conversation():
     time.sleep(2)
 
     try:
+        # Log the request data for both GET and POST requests
+        print(f"Request method: {request.method}")
+        print(f"Request form data: {request.form}")
+
         if current_user.is_authenticated:
             form = DeleteForm()
 
             if form.validate_on_submit():
                 time.sleep(2)
+
                 # Access the database session using the get_db function
                 with get_db() as db:
                     # Get the conversation_id from the form
@@ -524,6 +572,8 @@ def delete_conversation():
                     flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎 ¡!¡')
 
                     return redirect(url_for('delete_conversation'))
+
+            print(f"Form data: {form.data}")
 
             return render_template('delete.html', current_user=current_user, form=form,
                                    date=datetime.now().strftime("%a %d %B %Y"))
@@ -560,6 +610,12 @@ def get_conversations_jsonify():
 
     except NoResultFound:
         return jsonify({'error': 'No conversations found'}), 404
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    print(f"An error occurred: {str(e)}")
+    return "Internal Server Error", 500
 
 
 if __name__ == '__main__':
