@@ -193,11 +193,12 @@ def logout():
 def home():
     writing_text_form = TextAreaForm()
     response = None
+    user_input = None
 
     try:
         # Log the request data for both GET and POST requests
         print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}")
+        print(f"Request form data: {request.form}\n")
 
         if writing_text_form.validate_on_submit():
             user_input = request.form['writing_text']
@@ -208,7 +209,9 @@ def home():
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
-        print(f"Form data: {writing_text_form.data}")
+        print(f"Form data: {writing_text_form.data}\n")
+        print(f"user_input: {user_input}")
+        print(f"response: {response}\n")
 
         return render_template('index.html', writing_text_form=writing_text_form,
                                current_user=current_user, response=response, memory_buffer=memory_buffer,

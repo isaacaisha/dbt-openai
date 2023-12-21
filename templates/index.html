@@ -33,7 +33,7 @@
 <hr class="mb-3" style="color:yellow;">
 
 <!-- Navbar -->
-<nav class="navbar">
+<nav class="navbar nav-home">
 <!--
     <a class="navbar-brand col" href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs">SìįSí Dbt ¡!¡</a>
     <button class="navbar-toggler mx-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@
                    href="{{ url_for('login') }}" style="color:#1295FA;">Log ~ In</a>
             </li>
         </ul>
-        <p class="text-center" style="color:yellow;">🔥∞To Use ALL FEATURES∞🔥</p>
+        <p class="text-center" style="color:yellow; font-family:italic;">🔥∞To Use All Features∞🔥</p>
     </div>
 
 </nav>
@@ -70,9 +70,19 @@
             {% endif %}
         {% endwith %}
 
+        <div class="mb-3" style="margin:9%;">
+        <form method="post" action="{{ url_for('home') }}" class="mb-3">
+            {{ wtf.form_field(writing_text_form.csrf_token) }}
+            {{ wtf.form_field(writing_text_form.writing_text, class_='form-control') }}
+            {{ wtf.form_field(writing_text_form.submit, class_='success btn submit') }}
+        </form>
+        </div>
+
+        <hr class="mb-5" style="color:red;">
+
+        <div class="mb-3" style="margin:9%;">
         {{ writing_text_form.hidden_tag() }}
-        <div style="margin:9%;">
-        {{ wtf.quick_form(writing_text_form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
+        {{ wtf.quick_form(writing_text_form, button_map={'submit': 'success btn submit'}) }}
         </div>
     </div>
 

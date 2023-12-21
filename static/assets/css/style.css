@@ -97,6 +97,11 @@ large-image {
     margin: 0.7rem;
     padding: 0.7rem;
 }
+
+.navbar.nav-home {
+    margin-bottom: 0;
+}
+
 /* register & log-in index.html */
 #navbarSupportedContent > ul > li:nth-child(1) > a.register-home,
 #navbarSupportedContent > ul > li:nth-child(3) > a.log-in-home {
@@ -139,6 +144,12 @@ label {
 /* home textarea */
 #writing_text {
     color: green;
+}
+
+#submit.success.btn.submit {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+    color: blue;
 }
 
 .crown {
