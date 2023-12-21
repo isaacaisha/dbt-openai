@@ -45,7 +45,7 @@
                         {% endif %}
                     {% endwith %}
 
-                    {{ form.hidden_tag() }}
+                    {{ wtf.form_field(form.csrf_token) }}
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
 
                 </div>
