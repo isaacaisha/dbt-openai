@@ -56,7 +56,7 @@
 
 <div class="container">
     <form id="prompt-form" method="POST" action="{{ url_for('answer') }}">
-        {{ wtf.form_field(writing_text_form.csrf_token) }}
+        {{ writing_text_form.hidden_tag() }}
         {% if error_message %}
             <div class="alert alert-info">
                 {{ error_message }}

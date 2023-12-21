@@ -38,7 +38,7 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 app = Flask(__name__, template_folder='templates')
 Bootstrap(app)
 csrf = CSRFProtect(app)
-CORS(app)
+#CORS(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -49,10 +49,10 @@ openai_api_key = os.environ['OPENAI_API_KEY']
 # Set the OpenAI API key
 openai.api_key = openai_api_key
 
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-app.config['WTF_CSRF_ENABLED'] = True
+#app.config['SESSION_TYPE'] = 'filesystem'
+#app.config['SESSION_PERMANENT'] = True
+#app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+#app.config['WTF_CSRF_ENABLED'] = True
 
 # Generate a random secret key
 secret_key = secrets.token_hex(199)
@@ -69,6 +69,16 @@ app.config[
     'SQLALCHEMY_DATABASE_URI'] = (f"postgresql://{os.environ['user']}:{os.environ['password']}@"
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id is not None and user_id.isdigit():
+        # Check if the user_id is a non-empty string of digits
+        return User.query.get(int(user_id))
+    return None
+
+
 db.init_app(app)
 
 with app.app_context():
@@ -78,14 +88,6 @@ with app.app_context():
 with get_db() as db:
     # memories = db.query(Memory).all()
     test = db.query(Memory).all()
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    if user_id is not None and user_id.isdigit():
-        # Check if the user_id is a non-empty string of digits
-        return User.query.get(int(user_id))
-    return None
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -221,7 +223,6 @@ def home():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
     time.sleep(2)
@@ -258,7 +259,6 @@ def conversation_answer():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
     user_message = request.form['prompt']
@@ -372,7 +372,6 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
-@csrf.exempt
 @app.route('/show-history')
 def show_story():
     time.sleep(2)
@@ -405,7 +404,6 @@ def show_story():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route("/get-all-conversations")
 def get_all_conversations():
     time.sleep(2)
@@ -488,7 +486,6 @@ def select_conversation():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     time.sleep(2)
@@ -588,7 +585,6 @@ def delete_conversation():
         return redirect(url_for('home'))
 
 
-@csrf.exempt
 @app.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
 
