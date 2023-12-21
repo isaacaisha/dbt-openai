@@ -42,7 +42,6 @@
                     {% endif %}
                 {% endwith %}
 
-                <!--{{ wtf.form_field(form.csrf_token) }}-->
                 {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'danger btn-block submit'}) }}
 
             </div>

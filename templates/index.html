@@ -58,7 +58,7 @@
 
 </nav>
 
-<hr class="mb-3" style="color:yellow;">
+<hr class="mb-5" style="color:yellow;">
 
 <div>
     <div class="mb-4 text-center">
@@ -69,20 +69,9 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-<!--
-        <div class="mb-3" style="margin: 0 9%;">
-        <form method="post" action="{{ url_for('home') }}" class="mb-3">
-            {{ wtf.form_field(writing_text_form.csrf_token) }}
-            {{ wtf.form_field(writing_text_form.writing_text, class_='form-control') }}
-            {{ wtf.form_field(writing_text_form.submit, class_='success btn submit') }}
-        </form>
-        </div>
--->
-        <hr class="mb-5" style="color:red;">
+
 
         <div class="mb-3" style="margin:0 9%;">
-        <!--{{ wtf.form_field(writing_text_form.csrf_token) }}-->
-        <!--{{ writing_text_form.hidden_tag() }}-->
         {{ wtf.quick_form(writing_text_form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
         </div>
     </div>
