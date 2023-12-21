@@ -14,14 +14,14 @@ db = SQLAlchemy()
 
 class Memory(db.Model):
     __tablename__ = 'test'
-    id = Column(Integer, primary_key=True, nullable=False)
-    user_name = Column(String, nullable=False)
-    user_message = Column(String, nullable=False)
-    llm_response = Column(String, nullable=False)
-    conversations_summary = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_name = db.Column(db.String, nullable=False)
+    user_message = db.Column(db.String, nullable=False)
+    llm_response = db.Column(db.String, nullable=False)
+    conversations_summary = db.Column(db.String, nullable=False)
+    created_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
 
-    owner_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
     # Add a foreign key relationship to the User model
     owner = relationship('User', foreign_keys=[owner_id])
@@ -32,11 +32,11 @@ class Memory(db.Model):
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True, nullable=False)
-    name = Column(String, nullable=False)
-    email = Column(String, nullable=False, unique=True)
-    password = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
+    password = db.Column(db.String, nullable=False)
+    created_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
         return f"<User id={self.id}, email='{self.email}'>"
