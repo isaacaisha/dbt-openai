@@ -24,7 +24,7 @@
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
             <!-- Include CSRF token in the request headers -->
-            <meta name="csrf-token" content="{{ csrf_token() }}">
+            <!--<meta name="csrf-token" content="{{ csrf_token() }}">-->
 
             <title>{% block title %}{% endblock %} 👌🏿DBT OpenAI App💪🏿</title>
 
@@ -49,7 +49,7 @@
     <body>
         <div id="content">
             <!-- Content-Title -->
-            {% block content1 %}{% endblock %}
+            {% block content1 %}{% endblock %}<span style="display: none;">{{ csrf_token() }}</span>
 
             <!-- Navbar -->
             {% block navbar %}
