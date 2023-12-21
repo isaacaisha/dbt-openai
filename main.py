@@ -121,8 +121,8 @@ def register():
                 new_user.name = request.form['name']
                 new_user.password = hash_and_salted_password
 
-                db.add(new_user)
-                db.commit()
+                db.session.add(new_user)
+                db.session.commit()
                 db.refresh(new_user)
 
                 # Log in and authenticate the user after adding details to the database.
@@ -326,10 +326,10 @@ def answer():
                 )
 
                 # Add the new memory to the session
-                db.add(new_memory)
+                db.session.add(new_memory)
 
                 # Commit changes to the database
-                db.commit()
+                db.session.commit()
                 db.refresh(new_memory)
 
             print(f'User Name: {current_user.name} 😎')
@@ -562,8 +562,8 @@ def delete_conversation():
                                                date=datetime.now().strftime("%a %d %B %Y")), 403
 
                     # Delete the conversation
-                    db.delete(conversation_to_delete)
-                    db.commit()
+                    db.session.delete(conversation_to_delete)
+                    db.session.commit()
                     flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎 ¡!¡')
 
                     return redirect(url_for('delete_conversation'))
