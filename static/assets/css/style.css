@@ -152,11 +152,15 @@ label {
     color: blue;
 }
 
-.crown {
+.crown, .micro {
     border: 0.1rem solid #AEFAFC;
     border-radius: 2.3rem;
     padding: 0.3rem;
     width: 2.7rem;
+}
+
+.micro {
+    border: 0.1rem solid #000;
 }
 
 .language-btn, .btn-story {
