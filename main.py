@@ -90,7 +90,6 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    time.sleep(1)
     form = RegisterForm()
 
     try:
@@ -141,7 +140,6 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    time.sleep(1)
     form = LoginForm()
 
     try:
@@ -150,7 +148,6 @@ def login():
         print(f"Request form data: {request.form}")
 
         if form.validate_on_submit():
-            time.sleep(2)
             email = request.form.get('email')
             password = request.form.get('password')
             remember_me = form.remember_me.data
@@ -222,7 +219,6 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    time.sleep(2)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -371,7 +367,6 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(2)
 
     try:
         # Log the request data for both GET and POST requests
@@ -403,7 +398,6 @@ def show_story():
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(2)
 
     try:
         # Log the request data for both GET and POST requests
@@ -450,7 +444,6 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(2)
 
     try:
         # Log the request data for both GET and POST requests
@@ -461,7 +454,6 @@ def select_conversation():
             form = ConversationIdForm()
 
             if form.validate_on_submit():
-                time.sleep(2)
                 # Retrieve the selected conversation ID
                 selected_conversation_id = form.conversation_id.data
 
@@ -485,7 +477,6 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    time.sleep(2)
 
     try:
         # Log the request data for both GET and POST requests
@@ -499,7 +490,6 @@ def get_conversation(conversation_id):
 
             if conversation_ is not None and current_user.is_authenticated:
                 if conversation_.owner_id == current_user.id:
-                    time.sleep(2)
                     # Format created_at timestamp
                     formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
 
@@ -526,7 +516,6 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(2)
 
     try:
         # Log the request data for both GET and POST requests
@@ -537,7 +526,6 @@ def delete_conversation():
             form = DeleteForm()
 
             if form.validate_on_submit():
-                time.sleep(2)
 
                 # Access the database session using the get_db function
                 with get_db() as db:
