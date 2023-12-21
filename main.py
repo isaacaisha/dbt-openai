@@ -6,8 +6,14 @@ import secrets
 import warnings
 import pytz
 from dotenv import load_dotenv, find_dotenv
+
+from flask_wtf.csrf import CSRFProtect
+from flask_cors import CORS
+
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
+from flask_login import LoginManager, login_user, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
@@ -15,21 +21,15 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 
-from sqlalchemy.orm.exc import NoResultFound
 from app.databases.database import get_db
 from app.models.memory import Memory, db, User
 # from app.schemas.schemas import schemas_bp
-
-from flask_login import LoginManager, login_user, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
 from app.forms.conversation_id_form import ConversationIdForm
 from app.forms.delete_form import DeleteForm
 from app.forms.login_form import LoginForm
 from app.forms.register_form import RegisterForm
 from app.forms.text_area_form import TextAreaForm
 
-from flask_wtf.csrf import CSRFProtect
-from flask_cors import CORS
 
 warnings.filterwarnings('ignore')
 
@@ -37,17 +37,22 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
 Bootstrap(app)
-#CORS(app)
+csrf = CSRFProtect(app)
+CORS(app)
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.init_app(app)
 
 openai_api_key = os.environ['OPENAI_API_KEY']
 
 # Set the OpenAI API key
 openai.api_key = openai_api_key
 
-#app.config['SESSION_TYPE'] = 'filesystem'
-#app.config['SESSION_PERMANENT'] = True
-#app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-#app.config['WTF_CSRF_ENABLED'] = True
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+app.config['WTF_CSRF_ENABLED'] = True
 
 # Generate a random secret key
 secret_key = secrets.token_hex(199)
@@ -65,11 +70,6 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-csrf = CSRFProtect(app)
-
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.init_app(app)
 
 with app.app_context():
     db.create_all()
