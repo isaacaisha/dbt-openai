@@ -45,14 +45,15 @@ class User(UserMixin, db.Model):
     def get_id(self):
         return str(self.id)
 
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
+    # @property
+    # def is_authenticated(self):
+    #     return True
+#
+    # @property
+    # def is_active(self):
+    #     return True
+#
+    # @property
+    # def is_anonymous(self):
+    #     return False
+#
