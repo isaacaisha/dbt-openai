@@ -6,7 +6,7 @@ import secrets
 import warnings
 import pytz
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort, make_response
 from flask_bootstrap import Bootstrap
 from datetime import datetime, timedelta
 from gtts import gTTS
@@ -30,6 +30,12 @@ from app.forms.text_area_form import TextAreaForm
 
 from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
+
+import logging
+
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 warnings.filterwarnings('ignore')
 
@@ -77,6 +83,16 @@ def load_user(user_id):
         # Check if the user_id is a non-empty string of digits
         return User.query.get(int(user_id))
     return None
+
+
+# Add these headers to your responses
+@app.after_request
+def add_header(response):
+    response.cache_control.no_cache = True
+    response.cache_control.no_store = True
+    response.cache_control.must_revalidate = True
+    response.cache_control.max_age = 0
+    return response
 
 
 db.init_app(app)
@@ -130,16 +146,17 @@ def register():
                 # Log in and authenticate the user after adding details to the database.
                 login_user(new_user)
 
-                print(f"Form data: {form.data}")
-
                 return redirect(url_for('login'))
+
+        logging.info(f"Form data: {form.data}\n")
 
         return render_template("register.html", form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
-
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -149,8 +166,8 @@ def login():
 
     try:
         # Log the request data for both GET and POST requests
-        print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}")
+        logging.info(f"Request method: {request.method}")
+        logging.info(f"Request form data: {request.form}\n")
 
         if form.validate_on_submit():
             time.sleep(2)
@@ -173,16 +190,20 @@ def login():
                     return redirect(url_for('login'))
                 # Email exists and password correct
                 else:
-                    login_user(user, remember=remember_me)
+                    # Ensure that the login_user function is called before redirecting
+                    if login_user(user, remember=form.remember_me.data):
+                        flash('Login successful!', 'success')
                     return redirect(url_for('conversation_answer'))
 
-        print(f"Form data: {form.data}")
+        logging.info(f"Form data: {form.data}\n")
 
         return render_template("login.html", form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route('/logout')
@@ -199,8 +220,8 @@ def home():
 
     try:
         # Log the request data for both GET and POST requests
-        print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}\n")
+        logging.info(f"Request method: {request.method}")
+        logging.info(f"Request form data: {request.form}\n")
 
         if writing_text_form.validate_on_submit():
             user_input = request.form['writing_text']
@@ -211,16 +232,18 @@ def home():
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
-        print(f"Form data: {writing_text_form.data}\n")
-        print(f"user_input: {user_input}")
-        print(f"response: {response}\n")
+        logging.info(f"Form data: {writing_text_form.data}\n")
+        logging.info(f"user_input: {user_input}")
+        logging.info(f"response: {response}\n")
 
         return render_template('index.html', writing_text_form=writing_text_form,
                                current_user=current_user, response=response, memory_buffer=memory_buffer,
                                memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
@@ -232,8 +255,8 @@ def conversation_answer():
 
     try:
         # Log the request data for both GET and POST requests
-        print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}")
+        logging.info(f"Request method: {request.method}")
+        logging.info(f"Request form data: {request.form}\n")
 
         if request.method == "POST" and writing_text_form.validate_on_submit():
             user_input = request.form['writing_text']
@@ -248,15 +271,17 @@ def conversation_answer():
         memory_load = memory.load_memory_variables({'owner_id': owner_id})
         summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
 
-        print(f"Form data: {writing_text_form.data}")
+        logging.info(f"Form data: {writing_text_form.data}")
 
         return render_template('conversation-answer.html', current_user=current_user,
                                writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
                                memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                                date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route('/answer', methods=['GET', 'POST'])
@@ -265,8 +290,8 @@ def answer():
 
     try:
         # Log the request data for both GET and POST requests
-        print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}")
+        logging.info(f"Request method: {request.method}")
+        logging.info(f"Request form data: {request.form}\n")
 
         if current_user.is_authenticated:
 
@@ -291,7 +316,7 @@ def answer():
 
             # Call llm ChatOpenAI
             response = conversation.predict(input=json.dumps(conversation_context))
-            print(f'conversation_context:\n{conversation_context}\n')
+            logging.info(f'conversation_context:\n{conversation_context}\n')
 
             # Check if the response is a string, and if so, use it as the assistant's reply
             if isinstance(response, str):
@@ -335,10 +360,10 @@ def answer():
                 db.commit()
                 db.refresh(new_memory)
 
-            print(f'User Name: {current_user.name} 😎')
-            print(f'User ID:{current_user.id} 😝')
-            print(f'User Input: {user_message} 😎')
-            print(f'LLM Response:\n{assistant_reply} 😝\n')
+            logging.info(f'User Name: {current_user.name} 😎')
+            logging.info(f'User ID:{current_user.id} 😝')
+            logging.info(f'User Input: {user_message} 😎')
+            logging.info(f'LLM Response:\n{assistant_reply} 😝\n')
 
             # Convert current_user to JSON-serializable format
             current_user_data = {
@@ -359,8 +384,10 @@ def answer():
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route('/audio')
@@ -378,8 +405,8 @@ def show_story():
 
     try:
         # Log the request data for both GET and POST requests
-        print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}")
+        logging.info(f"Request method: {request.method}")
+        logging.info(f"Request form data: {request.form}\n")
 
         if current_user.is_authenticated:
             owner_id = current_user.id
@@ -389,9 +416,9 @@ def show_story():
             memory_load = memory.load_memory_variables({'owner_id': owner_id})
             memory_buffer = f'{current_user.name}:\n{memory.buffer_as_str}'
 
-            print(f'memory_buffer_story:\n{memory_buffer}\n')
-            print(f'memory_load_story:\n{memory_load}\n')
-            print(f'summary_conversation_story:\n{summary_conversation}\n')
+            logging.info(f'memory_buffer_story:\n{memory_buffer}\n')
+            logging.info(f'memory_load_story:\n{memory_load}\n')
+            logging.info(f'summary_conversation_story:\n{summary_conversation}\n')
 
             return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
                                    memory_buffer=memory_buffer, summary_conversation=summary_conversation,
@@ -400,8 +427,10 @@ def show_story():
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route("/get-all-conversations")
@@ -410,8 +439,8 @@ def get_all_conversations():
 
     try:
         # Log the request data for both GET and POST requests
-        print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}")
+        logging.info(f"Request method: {request.method}")
+        logging.info(f"Request form data: {request.form}\n")
 
         if current_user.is_authenticated:
             with get_db() as db:
@@ -447,8 +476,10 @@ def get_all_conversations():
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
@@ -457,8 +488,8 @@ def select_conversation():
 
     try:
         # Log the request data for both GET and POST requests
-        print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}")
+        logging.info(f"Request method: {request.method}")
+        logging.info(f"Request form data: {request.form}\n")
 
         if current_user.is_authenticated:
             form = ConversationIdForm()
@@ -471,7 +502,7 @@ def select_conversation():
                 # Construct the URL string for the 'get_conversation' route
                 url = f'/conversation/{selected_conversation_id}'
 
-                print(f"Form data: {form.data}")
+                logging.info(f"Form data: {form.data}")
 
                 # Redirect to the route that will display the selected conversation
                 return redirect(url)
@@ -482,8 +513,10 @@ def select_conversation():
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route('/conversation/<int:conversation_id>')
@@ -492,8 +525,8 @@ def get_conversation(conversation_id):
 
     try:
         # Log the request data for both GET and POST requests
-        print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}")
+        logging.info(f"Request method: {request.method}")
+        logging.info(f"Request form data: {request.form}\n")
 
         # Retrieve the conversation by ID
         with get_db() as db:
@@ -522,11 +555,11 @@ def get_conversation(conversation_id):
                                        current_user=current_user,
                                        conversation_id=conversation_id,
                                        date=datetime.now().strftime("%a %d %B %Y")), 404
-
-    except NoResultFound:
-        return (f'<h1 style="color:purple; text-align:center; font-size:3.7rem;">'
-                f'An error occurred while retrieving the conversation with<br>ID 🔥{conversation_id}🔥<br>'
-                f'¡!¡ 😭 ¡!¡</h1>'), 500
+    except Exception as err:
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -535,8 +568,8 @@ def delete_conversation():
 
     try:
         # Log the request data for both GET and POST requests
-        print(f"Request method: {request.method}")
-        print(f"Request form data: {request.form}")
+        logging.info(f"Request method: {request.method}")
+        logging.info(f"Request form data: {request.form}\n")
 
         if current_user.is_authenticated:
             form = DeleteForm()
@@ -573,7 +606,7 @@ def delete_conversation():
 
                     return redirect(url_for('delete_conversation'))
 
-            print(f"Form data: {form.data}")
+            logging.info(f"Form data: {form.data}")
 
             return render_template('delete.html', current_user=current_user, form=form,
                                    date=datetime.now().strftime("%a %d %B %Y"))
@@ -581,8 +614,10 @@ def delete_conversation():
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
@@ -606,14 +641,16 @@ def get_conversations_jsonify():
 
         # Return the data in JSON format
         return jsonify({'conversations': conversations_list})
-
-    except NoResultFound:
-        return jsonify({'error': 'No conversations found'}), 404
+    except Exception as err:
+        logging.error(f"Unexpected error: {err}, {type(err)}")
+        # Log the stack trace for detailed debugging
+        logging.exception("Exception occurred")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    print(f"An error occurred: {str(e)}")
+    logging.info(f"An error occurred: {str(e)}")
     return "Internal Server Error", 500
 
 
