@@ -81,7 +81,7 @@
         <hr class="mb-5" style="color:red;">
 
         <div class="mb-3" style="margin:0 9%;">
-        <!--{{ wtf.form_field(writing_text_form.csrf_token) }}-->
+        {{ wtf.form_field(writing_text_form.csrf_token) }}
         <!--{{ writing_text_form.hidden_tag() }}-->
         {{ wtf.quick_form(writing_text_form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
         </div>
