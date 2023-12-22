@@ -362,7 +362,7 @@ def answer():
             print(f'User Name: {current_user.name} 😎')
             print(f'User ID:{current_user.id} 😝')
             print(f'User Input: {user_message} 😎')
-            print(f'LLM Response:\n{assistant_reply} 😝\n')
+            print(f'LLM Response:{assistant_reply} 😝\n')
 
             # Convert current_user to JSON-serializable format
             current_user_data = {

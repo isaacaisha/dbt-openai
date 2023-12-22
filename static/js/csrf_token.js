@@ -45,20 +45,22 @@ function handleFormSubmission(event) {
     // Get the form associated with the submit button
     const form = event.target.closest('form');
 
-    // Extract form data
-    const formData = new FormData(form);
+    if (form) {
+        // Extract form data
+        const formData = new FormData(form);
 
-    // Call the generic AJAX request function
-    makeAjaxRequest('POST', form.action, formData,
-        function (response) {
-            // Handle success response here
-            console.log(response);
-        },
-        function (status, statusText) {
-            // Handle error here
-            console.error('Error:', status, statusText);
-        }
-    );
+        // Call the generic AJAX request function
+        makeAjaxRequest('POST', form.action, formData,
+            function (response) {
+                // Handle success response here
+                console.log(response);
+            },
+            function (status, statusText) {
+                // Handle error here
+                console.error('Error:', status, statusText);
+            }
+        );
+    }
 }
 
 // Attach the handleFormSubmission function to all submit buttons in forms
