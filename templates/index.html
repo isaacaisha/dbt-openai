@@ -73,7 +73,7 @@
 
         <div class="mb-3" style="margin:0 9%;">
             <!--<span style="color:#fff;">{{ wtf.form_field(writing_text_form.csrf_token) }}</span>-->
-            <span style="color:blue;">{{ writing_text_form.csrf_token }}</span>
+            {{ writing_text_form.csrf_token }}
             {{ wtf.quick_form(writing_text_form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
         </div>
     </div>

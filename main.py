@@ -1,5 +1,4 @@
 import os
-import time
 import openai
 import json
 import secrets
@@ -13,6 +12,7 @@ from flask_cors import CORS
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, logout_user, current_user
+from werkzeug.exceptions import BadRequest
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from gtts import gTTS
@@ -133,6 +133,13 @@ def register():
 
         return render_template("register.html", form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -174,6 +181,13 @@ def login():
 
         return render_template("login.html", form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -212,6 +226,13 @@ def home():
         return render_template('index.html', writing_text_form=writing_text_form,
                                current_user=current_user, response=response, memory_buffer=memory_buffer,
                                memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -247,6 +268,13 @@ def conversation_answer():
                                writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
                                memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                                date=datetime.now().strftime("%a %d %B %Y"))
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -351,6 +379,13 @@ def answer():
         else:
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -391,6 +426,13 @@ def show_story():
         else:
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -437,6 +479,13 @@ def get_all_conversations():
         else:
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -470,6 +519,13 @@ def select_conversation():
         else:
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -509,6 +565,13 @@ def get_conversation(conversation_id):
                                        current_user=current_user,
                                        conversation_id=conversation_id,
                                        date=datetime.now().strftime("%a %d %B %Y")), 404
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -563,6 +626,13 @@ def delete_conversation():
         else:
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))
@@ -589,6 +659,13 @@ def get_conversations_jsonify():
 
         # Return the data in JSON format
         return jsonify({'conversations': conversations_list})
+
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        print(f"BadRequest error: {bad_request_err}")
+        flash("Invalid form submission. Please check your input.")
+        return render_template('error.html', error_message=f"Bad Request:\n{bad_request_err}"), 400
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err))

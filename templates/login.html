@@ -46,7 +46,7 @@
                     {% endwith %}
 
 
-                    <span style="">{{ form.csrf_token }}</span>
+                    {{ form.csrf_token }}
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
 
                 </div>
