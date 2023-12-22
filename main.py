@@ -36,15 +36,18 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-Bootstrap(app)
 csrf = CSRFProtect(app)
 CORS(app)
+Bootstrap(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
-openai_api_key = os.environ['OPENAI_API_KEY']
+try:
+    openai_api_key = os.environ['OPENAI_API_KEY']
+except KeyError:
+    raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
 # Set the OpenAI API key
 openai.api_key = openai_api_key
@@ -55,7 +58,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 app.config['WTF_CSRF_ENABLED'] = True
 
 # Generate a random secret key
-secret_key = secrets.token_hex(199)
+secret_key = secrets.token_hex(19)
 # Set it as the Flask application's secret key
 app.secret_key = secret_key
 
