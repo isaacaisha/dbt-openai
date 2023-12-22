@@ -35,6 +35,11 @@
 
     <hr class="mb-3" style="color:green;">
 
+    <!-- Add a button for scrolling -->
+    <div class="text-center">
+        <button class="btn btn-info mb-3 submit scroll-down" onclick="scrollDown()">Scroll Down</button>
+    </div>
+
     <div class="container conversations-details">
         <ul>
             {% for conversation_ in conversations %}
@@ -72,6 +77,16 @@
     </div>
 
     <hr class="mb-5" style="color:green;">
+
+    <!-- JavaScript for scrolling down -->
+    <script>
+        function scrollDown() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    </script>
 
 </div>
 
