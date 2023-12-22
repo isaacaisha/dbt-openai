@@ -36,8 +36,10 @@
     <hr class="mb-3" style="color:green;">
 
     <!-- Add a button for scrolling -->
-    <div class="text-center">
-        <button class="btn btn-info mb-3 submit scroll-down" onclick="scrollDown()">Scroll Down</button>
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-info mb-3 submit scroll-down " onclick="scrollDown()" id="scrollDownButton" style="position:fixed">
+            Scroll Down
+        </button>
     </div>
 
     <div class="container conversations-details">
@@ -61,7 +63,9 @@
 
     <!-- Add a button to trigger the display of serialized_histories -->
     <div class="text-center">
-        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">Show Conversations json</button>
+        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
+            Show Conversations json
+        </button>
     </div>
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesContainer" class="mb-3" style="display: none;">
@@ -78,17 +82,17 @@
 
     <hr class="mb-5" style="color:green;">
 
-    <!-- JavaScript for scrolling down -->
-    <script>
-        function scrollDown() {
-            window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: 'smooth'
-            });
-        }
-    </script>
-
 </div>
+
+<!-- JavaScript for scrolling down -->
+<script>
+    function scrollDown() {
+           window.scrollTo({
+               top: document.body.scrollHeight,
+               behavior: 'smooth'
+           });
+       }
+</script>
 
 {% endblock %}
 
