@@ -35,14 +35,13 @@
 
     <hr class="mb-3" style="color:green;">
 
-    <!-- Add a button for scrolling -->
-    <div class="d-flex justify-content-end">
-        <button class="btn btn-info mb-3 submit scroll-down " onclick="scrollDown()" id="scrollDownButton" style="position:fixed">
-            Scroll Down
-        </button>
-    </div>
 
     <div class="container conversations-details">
+        <div class="d-flex justify-content-end">
+            <button class="btn mb-3 submit scroll-down " onclick="scrollDown()" id="scrollDownButton" style="position:fixed">
+                ⇩
+            </button>
+        </div>
         <ul>
             {% for conversation_ in conversations %}
                 <li>
