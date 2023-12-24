@@ -91,23 +91,26 @@ def load_user(user_id):
 @app.errorhandler(Exception)
 def handle_exception(e):
     #logging.info(f"An error occurred: {str(e)}")
-    flash("Please Reload the page ¡!¡")
     #return "Internal Server Error", 500
+    flash("Please Reload the page ¡!¡")
+    pass
 
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(e):
     #flash("Invalid form submission. Please check your input.")
-    flash("Please Reload the page ¡!¡")
     #return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+    flash("Please Reload the page ¡!¡")
+    pass
 
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(e):
-    flash("Please Reload the page ¡!¡")
     #return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+    flash("Please Reload the page ¡!¡")
+    pass
 
 
 @app.route('/register', methods=['GET', 'POST'])
