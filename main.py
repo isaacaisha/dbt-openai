@@ -88,19 +88,26 @@ def load_user(user_id):
     return None
 
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    #logging.info(f"An error occurred: {str(e)}")
+    flash("Please Reload the page ¡!¡")
+    #return "Internal Server Error", 500
+
+
 @app.errorhandler(BadRequest)
 def handle_bad_request(e):
-    flash("Invalid form submission. Please check your input.")
-    return render_template('error.html', error_message=str(e),
-                           date=datetime.now().strftime("%a %d %B %Y")), 400
+    #flash("Invalid form submission. Please check your input.")
+    flash("Please Reload the page ¡!¡")
+    #return render_template('error.html', error_message=str(e),
+    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
 
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(e):
-    flash("Please Reload the page ¡!¡\nIf CSRF token is missing or invalid.\nRegister &/or Log-in")
+    flash("Please Reload the page ¡!¡")
     #return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-    pass
 
 
 @app.route('/register', methods=['GET', 'POST'])
