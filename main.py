@@ -10,7 +10,7 @@ from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, logout_user, current_user
-from werkzeug.exceptions import BadRequest, Unauthorized
+from werkzeug.exceptions import BadRequest
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from gtts import gTTS
@@ -102,13 +102,6 @@ def handle_csrf_error(e):
                            date=datetime.now().strftime("%a %d %B %Y")), 400
 
 
-@app.errorhandler(Unauthorized)
-def handle_unauthorized_error(e):
-    flash("Sorry You Are Not Authenticated ¡!¡")
-    return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y")), 401
-
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -142,10 +135,9 @@ def register():
             db.refresh(new_user)
             # Log in and authenticate the user after adding details to the database.
             login_user(new_user)
+            print(f"Form data: {form.data}")
 
             return redirect(url_for('login'))
-
-    print(f"Form data: {form.data}")
 
     return render_template("register.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -178,10 +170,9 @@ def login():
             # Email exists and password correct
             else:
                 login_user(user, remember=remember_me)
+                print(f"Form data: {form.data}")
 
                 return redirect(url_for('conversation_answer'))
-
-    print(f"Form data: {form.data}")
 
     return render_template("login.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -222,7 +213,7 @@ def conversation_answer():
     answer = None
     owner_id = None
 
-    if request.method == "POST" and writing_text_form.validate_on_submit():
+    if writing_text_form.validate_on_submit():
         user_input = request.form['writing_text']
         owner_id = current_user.id
 
@@ -328,9 +319,9 @@ def answer():
             "answer_audio_path": audio_file_path,
             "memory_id": new_memory.id
         })
-
-    return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y")), 401
+    else:
+        return render_template('authentication-error.html', current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
 @app.route('/audio')
@@ -344,20 +335,16 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    memory_load = None
-    memory_buffer = None
-    summary_conversation = None
-    if current_user.is_authenticated:
-        owner_id = current_user.id
+    owner_id = current_user.id
 
-        # Modify the query to filter records based on the current user's ID
-        summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
-        memory_load = memory.load_memory_variables({'owner_id': owner_id})
-        memory_buffer = f'{current_user.name}:\n{memory.buffer_as_str}'
+    # Modify the query to filter records based on the current user's ID
+    summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
+    memory_load = memory.load_memory_variables({'owner_id': owner_id})
+    memory_buffer = f'{current_user.name}:\n{memory.buffer_as_str}'
 
-        print(f'memory_buffer_story:\n{memory_buffer}\n')
-        print(f'memory_load_story:\n{memory_load}\n')
-        print(f'summary_conversation_story:\n{summary_conversation}\n')
+    print(f'memory_buffer_story:\n{memory_buffer}\n')
+    print(f'memory_load_story:\n{memory_load}\n')
+    print(f'summary_conversation_story:\n{summary_conversation}\n')
 
     return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
                            memory_buffer=memory_buffer, summary_conversation=summary_conversation,
@@ -366,50 +353,48 @@ def show_story():
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    # Create a list to store serialized data for each Memory object
-    serialized_conversations = []
+    with get_db() as db:
+        owner_id = current_user.id
+        conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
 
-    if current_user.is_authenticated:
-        with get_db() as db:
-            owner_id = current_user.id
-            conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
-            for conversation_ in conversations:
-                serialized_history = {
-                    "id": conversation_.id,
-                    "owner_id": conversation_.owner_id,
-                    "user_name": conversation_.user_name,
-                    "user_message": conversation_.user_message,
-                    "llm_response": conversation_.llm_response,
-                    "conversations_summary": conversation_.conversations_summary,
-                    'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
-                }
+        # Create a list to store serialized data for each Memory object
+        serialized_conversations = []
+        for conversation_ in conversations:
+            serialized_history = {
+                "id": conversation_.id,
+                "owner_id": conversation_.owner_id,
+                "user_name": conversation_.user_name,
+                "user_message": conversation_.user_message,
+                "llm_response": conversation_.llm_response,
+                "conversations_summary": conversation_.conversations_summary,
+                'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
+            }
 
-                serialized_conversations.append(serialized_history)
+            serialized_conversations.append(serialized_history)
 
-    return render_template('all-conversations.html',
-                           current_user=current_user,
-                           conversations=serialized_conversations,
-                           serialized_conversations=serialized_conversations,
-                           date=datetime.now().strftime("%a %d %B %Y")
-                           )
+        return render_template('all-conversations.html',
+                               current_user=current_user,
+                               conversations=serialized_conversations,
+                               serialized_conversations=serialized_conversations,
+                               date=datetime.now().strftime("%a %d %B %Y")
+                               )
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    if current_user.is_authenticated:
-        form = ConversationIdForm()
-        if form.validate_on_submit():
-            # Retrieve the selected conversation ID
-            selected_conversation_id = form.conversation_id.data
+    form = ConversationIdForm()
+    if form.validate_on_submit():
+        # Retrieve the selected conversation ID
+        selected_conversation_id = form.conversation_id.data
 
-            # Construct the URL string for the 'get_conversation' route
-            url = f'/conversation/{selected_conversation_id}'
+        # Construct the URL string for the 'get_conversation' route
+        url = f'/conversation/{selected_conversation_id}'
 
-            print(f"Form data: {form.data}")
+        print(f"Form data: {form.data}")
 
-            return redirect(url)
-        return render_template('conversation-by-id.html', form=form, current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+        return redirect(url)
+    return render_template('conversation-by-id.html', form=form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/conversation/<int:conversation_id>')
@@ -417,7 +402,7 @@ def get_conversation(conversation_id):
     with get_db() as db:
         conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
-        if conversation_ is not None and current_user.is_authenticated:
+        if conversation_ is not None:
             if conversation_.owner_id == current_user.id:
                 # Format created_at timestamp
                 formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
@@ -442,8 +427,10 @@ def get_conversation(conversation_id):
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     form = DeleteForm()
+    if form.validate_on_submit():
 
-    if current_user.is_authenticated and form.validate_on_submit():
+        print(f"Form data: {form.data}")
+
         with get_db() as db:
             # Get the conversation_id from the form
             conversation_id = form.conversation_id.data
@@ -471,8 +458,6 @@ def delete_conversation():
             flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎 ¡!¡')
 
             return redirect(url_for('delete_conversation'))
-
-    print(f"Form data: {form.data}")
 
     return render_template('delete.html', current_user=current_user, form=form,
                            date=datetime.now().strftime("%a %d %B %Y"))
