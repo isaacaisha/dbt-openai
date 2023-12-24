@@ -97,9 +97,10 @@ def handle_bad_request(e):
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(e):
-    flash("CSRF token is missing or invalid.")
-    return render_template('error.html', error_message=str(e),
-                           date=datetime.now().strftime("%a %d %B %Y")), 400
+    flash("Please Reload the page ¡!¡\nIf CSRF token is missing or invalid.\nRegister &/or Log-in")
+    #return render_template('error.html', error_message=str(e),
+    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+    pass
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -107,40 +108,41 @@ def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
+        print(f"Form data: {form.data}")
+
         # Check if the passwords match
         if form.password.data != form.confirm_password.data:
             flash("Passwords do not match. Please enter matching passwords 😭.")
             return redirect(url_for('register'))
 
         # If user's email already exists
-        with get_db() as db:
-            # if User.query.filter_by(email=form.email.data).first():
-            if db.query(User).filter_by(email=form.email.data).first():
-                # Send a flash message
-                flash("You've already signed up with that email, log in instead! 🤣.")
-                return redirect(url_for('login'))
-
-            hash_and_salted_password = generate_password_hash(
-                request.form.get('password'),
-                method='pbkdf2:sha256',
-                salt_length=8
-            )
-
-            new_user = User()
-            new_user.email = request.form['email']
-            new_user.name = request.form['name']
-            new_user.password = hash_and_salted_password
-            db.add(new_user)
-            db.commit()
-            db.refresh(new_user)
-            # Log in and authenticate the user after adding details to the database.
-            login_user(new_user)
-            print(f"Form data: {form.data}")
-
+        if User.query.filter_by(email=form.email.data).first():
+            # Send a flash message
+            flash("You've already signed up with that email, log in instead! 🤣.")
             return redirect(url_for('login'))
 
-    return render_template("register.html", form=form, current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+        hash_and_salted_password = generate_password_hash(
+            request.form.get('password'),
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
+
+        new_user = User()
+        new_user.email = request.form['email']
+        new_user.name = request.form['name']
+        new_user.password = hash_and_salted_password
+
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+        # Log in and authenticate the user after adding details to the database.
+        login_user(new_user)
+        return redirect(url_for('login'))
+
+    else:
+        return render_template("register.html", form=form, current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -148,31 +150,25 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
+        print(f"Form data: {form.data}")
+
         email = request.form.get('email')
         password = request.form.get('password')
         remember_me = form.remember_me.data
 
-        # Find user by email entered.
-        with get_db() as db:
-            # user = User.query.filter_by(email=email).first()
-            user = db.query(User).filter_by(email=email).first()
-
-            # Email doesn't exist
-            if not user:
-                flash("That email does not exist, please try again 😭 ¡!¡")
-                return redirect(url_for('login'))
-
-            # Password incorrect
-            elif not check_password_hash(user.password, password):
-                flash('Password incorrect, please try again 😭 ¡!¡')
-                return redirect(url_for('login'))
-
-            # Email exists and password correct
-            else:
-                login_user(user, remember=remember_me)
-                print(f"Form data: {form.data}")
-
-                return redirect(url_for('conversation_answer'))
+        user = User.query.filter_by(email=email).first()
+        # Email doesn't exist
+        if not user:
+            flash("That email does not exist, please try again 😭 ¡!¡")
+            return redirect(url_for('login'))
+        # Password incorrect
+        elif not check_password_hash(user.password, password):
+            flash('Password incorrect, please try again 😭 ¡!¡')
+            return redirect(url_for('login'))
+        # Email exists and password correct
+        else:
+            login_user(user, remember=remember_me)
+            return redirect(url_for('conversation_answer'))
 
     return render_template("login.html", form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -191,6 +187,8 @@ def home():
     user_input = None
 
     if writing_text_form.validate_on_submit():
+        print(f"Form data: {writing_text_form.data}\n")
+
         user_input = request.form['writing_text']
         # Use the LLM to generate a response based on user input
         response = conversation.predict(input=user_input)
@@ -198,7 +196,6 @@ def home():
     memory_buffer = memory.buffer_as_str
     memory_load = memory.load_memory_variables({})
 
-    print(f"Form data: {writing_text_form.data}\n")
     print(f"user_input: {user_input}")
     print(f"response: {response}\n")
 
@@ -214,6 +211,8 @@ def conversation_answer():
     owner_id = None
 
     if writing_text_form.validate_on_submit():
+        print(f"Form data: {writing_text_form.data}")
+
         user_input = request.form['writing_text']
         owner_id = current_user.id
 
@@ -224,8 +223,6 @@ def conversation_answer():
     memory_buffer = memory.buffer_as_str
     memory_load = memory.load_memory_variables({'owner_id': owner_id})
     summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
-
-    print(f"Form data: {writing_text_form.data}")
 
     return render_template('conversation-answer.html', current_user=current_user,
                            writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
@@ -353,111 +350,106 @@ def show_story():
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    with get_db() as db:
-        owner_id = current_user.id
-        conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
+    owner_id = current_user.id
+    conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
+    # Create a list to store serialized data for each Memory object
+    serialized_conversations = []
 
-        # Create a list to store serialized data for each Memory object
-        serialized_conversations = []
-        for conversation_ in conversations:
-            serialized_history = {
-                "id": conversation_.id,
-                "owner_id": conversation_.owner_id,
-                "user_name": conversation_.user_name,
-                "user_message": conversation_.user_message,
-                "llm_response": conversation_.llm_response,
-                "conversations_summary": conversation_.conversations_summary,
-                'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
-            }
+    for conversation_ in conversations:
+        serialized_history = {
+            "id": conversation_.id,
+            "owner_id": conversation_.owner_id,
+            "user_name": conversation_.user_name,
+            "user_message": conversation_.user_message,
+            "llm_response": conversation_.llm_response,
+            "conversations_summary": conversation_.conversations_summary,
+            'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
+        }
 
-            serialized_conversations.append(serialized_history)
+        serialized_conversations.append(serialized_history)
 
-        return render_template('all-conversations.html',
-                               current_user=current_user,
-                               conversations=serialized_conversations,
-                               serialized_conversations=serialized_conversations,
-                               date=datetime.now().strftime("%a %d %B %Y")
-                               )
+    return render_template('all-conversations.html',
+                           current_user=current_user,
+                           conversations=serialized_conversations,
+                           serialized_conversations=serialized_conversations,
+                           date=datetime.now().strftime("%a %d %B %Y")
+                           )
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
     form = ConversationIdForm()
     if form.validate_on_submit():
+        print(f"Form data: {form.data}")
+
         # Retrieve the selected conversation ID
         selected_conversation_id = form.conversation_id.data
 
         # Construct the URL string for the 'get_conversation' route
         url = f'/conversation/{selected_conversation_id}'
 
-        print(f"Form data: {form.data}")
-
         return redirect(url)
+
     return render_template('conversation-by-id.html', form=form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    with get_db() as db:
-        conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
+    conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
-        if conversation_ is not None:
-            if conversation_.owner_id == current_user.id:
-                # Format created_at timestamp
-                formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
-
-                return render_template('conversation-details.html', current_user=current_user,
-                                       conversation_=conversation_, formatted_created_at=formatted_created_at,
-                                       date=datetime.now().strftime("%a %d %B %Y"))
-            else:
-                # User doesn't have access, return a forbidden message
-                return render_template('conversation-forbidden.html',
-                                       current_user=current_user,
-                                       conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y")), 403
+    if conversation_ is not None:
+        if conversation_.owner_id == current_user.id:
+            # Format created_at timestamp
+            formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
+            return render_template('conversation-details.html', current_user=current_user,
+                                   conversation_=conversation_, formatted_created_at=formatted_created_at,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
         else:
-            # Conversation not found, return a not found message
-            return render_template('conversation-not-found.html',
+            # User doesn't have access, return a forbidden message
+            return render_template('conversation-forbidden.html',
                                    current_user=current_user,
                                    conversation_id=conversation_id,
-                                   date=datetime.now().strftime("%a %d %B %Y")), 404
+                                   date=datetime.now().strftime("%a %d %B %Y")), 403
+    else:
+        # Conversation not found, return a not found message
+        return render_template('conversation-not-found.html',
+                               current_user=current_user,
+                               conversation_id=conversation_id,
+                               date=datetime.now().strftime("%a %d %B %Y")), 404
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     form = DeleteForm()
     if form.validate_on_submit():
-
         print(f"Form data: {form.data}")
 
-        with get_db() as db:
-            # Get the conversation_id from the form
-            conversation_id = form.conversation_id.data
+        # Get the conversation_id from the form
+        conversation_id = form.conversation_id.data
 
-            # Query the database to get the conversation to be deleted
-            conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
+        # Query the database to get the conversation to be deleted
+        conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
 
-            # Check if the conversation exists
-            if not conversation_to_delete:
-                return render_template('conversation-delete-not-found.html',
-                                       current_user=current_user,
-                                       conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y")), 404
+        # Check if the conversation exists
+        if not conversation_to_delete:
+            return render_template('conversation-delete-not-found.html',
+                                   current_user=current_user,
+                                   conversation_id=conversation_id,
+                                   date=datetime.now().strftime("%a %d %B %Y")), 404
 
-            # Check if the current user is the owner of the conversation
-            if conversation_to_delete.owner_id != current_user.id:
-                return render_template('conversation-delete-forbidden.html',
-                                       current_user=current_user,
-                                       conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y")), 403
+        # Check if the current user is the owner of the conversation
+        if conversation_to_delete.owner_id != current_user.id:
+            return render_template('conversation-delete-forbidden.html',
+                                   current_user=current_user,
+                                   conversation_id=conversation_id,
+                                   date=datetime.now().strftime("%a %d %B %Y")), 403
 
-            # Delete the conversation
-            db.delete(conversation_to_delete)
-            db.commit()
-            flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎 ¡!¡')
-
-            return redirect(url_for('delete_conversation'))
+        # Delete the conversation
+        db.delete(conversation_to_delete)
+        db.commit()
+        flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎 ¡!¡')
+        return redirect(url_for('delete_conversation'))
 
     return render_template('delete.html', current_user=current_user, form=form,
                            date=datetime.now().strftime("%a %d %B %Y"))
