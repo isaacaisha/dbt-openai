@@ -289,22 +289,20 @@ def answer():
         conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
         current_time = datetime.now(pytz.timezone('Europe/Paris'))
 
-        # Access the database session using the get_db function
-        with get_db() as db:
-            # Create a new Memory object with the data
-            new_memory = Memory(
-                user_name=current_user.name,
-                owner_id=current_user.id,
-                user_message=user_message,
-                llm_response=assistant_reply,
-                conversations_summary=conversations_summary_str,
-                created_at=current_time
-            )
-            # Add the new memory to the session
-            db.add(new_memory)
-            # Commit changes to the database
-            db.commit()
-            db.refresh(new_memory)
+        # Create a new Memory object with the data
+        new_memory = Memory(
+            user_name=current_user.name,
+            owner_id=current_user.id,
+            user_message=user_message,
+            llm_response=assistant_reply,
+            conversations_summary=conversations_summary_str,
+            created_at=current_time
+        )
+        # Add the new memory to the session
+        db.add(new_memory)
+        # Commit changes to the database
+        db.commit()
+        db.refresh(new_memory)
 
         # Convert current_user to JSON-serializable format
         current_user_data = {
