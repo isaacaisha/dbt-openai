@@ -1,4 +1,6 @@
 import os
+import time
+
 import openai
 import json
 import secrets
@@ -92,7 +94,6 @@ def load_user(user_id):
 def handle_exception(e):
     # logging.info(f"An error occurred: {str(e)}")
     # return "Internal Server Error", 500
-    flash("Please Reload the page ¡!¡")
     pass
 
 
@@ -101,7 +102,6 @@ def handle_bad_request(e):
     # flash("Invalid form submission. Please check your input.")
     # return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-    flash("Please Reload the page ¡!¡")
     pass
 
 
@@ -109,12 +109,12 @@ def handle_bad_request(e):
 def handle_csrf_error(e):
     # return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-    flash("Please Reload the page ¡!¡")
     pass
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    time.sleep(1)
     form = RegisterForm()
 
     try:
@@ -162,6 +162,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    time.sleep(1)
     form = LoginForm()
 
     try:
@@ -202,6 +203,7 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    time.sleep(1)
     writing_text_form = TextAreaForm()
     response = None
     user_input = None
@@ -231,6 +233,7 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
+    time.sleep(1)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -262,6 +265,7 @@ def conversation_answer():
 
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
+    time.sleep(1)
     user_message = request.form['prompt']
 
     try:
@@ -372,6 +376,7 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
+    time.sleep(1)
     try:
         owner_id = current_user.id
 
@@ -395,6 +400,7 @@ def show_story():
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
+    time.sleep(1)
     try:
         owner_id = current_user.id
         conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -428,6 +434,7 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    time.sleep(1)
     form = ConversationIdForm()
 
     try:
@@ -452,6 +459,7 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
+    time.sleep(1)
     conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
     try:
@@ -482,6 +490,7 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    time.sleep(1)
     form = DeleteForm()
 
     try:
@@ -524,6 +533,7 @@ def delete_conversation():
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
+    time.sleep(1)
     # Retrieve all conversations from the database
     conversations = test
     # Convert the conversations to a list of dictionaries
