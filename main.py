@@ -355,8 +355,7 @@ def answer():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        return render_template('error.html', error_message=str(err)), 500
 
 
 @app.route('/audio')
