@@ -528,7 +528,7 @@ def get_conversations_jsonify():
     # Retrieve all conversations from the database
     conversations = test
     # Convert the conversations to a list of dictionaries
-    conversations_list = []
+    serialized_conversations = []
 
     for conversation in conversations:
         conversation_dict = {
@@ -539,13 +539,22 @@ def get_conversations_jsonify():
             'created_at': conversation.created_at.strftime("%a %d %B %Y"),
         }
 
-        conversations_list.append(conversation_dict)
+    #    conversations_list.append(conversation_dict)
+#
+    ## Use json.dumps to indent the JSON result
+    #indented_json = json.dumps({'conversations': conversations_list}, indent=4)
+#
+    ## Pass the indented JSON to jsonify
+    #return jsonify(json.loads(indented_json))
 
-    # Use json.dumps to indent the JSON result
-    indented_json = json.dumps({'conversations': conversations_list}, indent=4)
+        serialized_conversations.append(conversation_dict)
 
-    # Pass the indented JSON to jsonify
-    return jsonify(json.loads(indented_json))
+    return render_template('database-conversations.html',
+                           current_user=current_user,
+                           conversations=serialized_conversations,
+                           serialized_conversations=serialized_conversations,
+                           date=datetime.now().strftime("%a %d %B %Y")
+                           )
 
 
 if __name__ == '__main__':

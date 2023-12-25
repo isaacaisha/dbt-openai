@@ -1,0 +1,83 @@
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href='static/assets/images/favicon1.ico'>
+    {% include 'bootstrap/base.html' %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block content1 %}
+    <div class="container-fluid">
+        <div class="p-1 rounded-3 jumbotron">
+            <div class="py-1">
+                <h1 class="">Database Conversations ¡!¡</h1>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+
+  <!-- Page Header -->
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color:green">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <hr class="mb-3" style="color:green;">
+
+    <!--<div class="d-flex justify-content-end">-->
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-outline-info mb-3 submit scroll-down "
+                onclick="scrollDown()" id="scrollDownButton" style="position:fixed">
+            ⇩
+        </button>
+    </div>
+
+    <!--<hr class="mb-3" style="color:yellow;">-->
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <div class="text-center">
+        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
+            Show Conversations json
+        </button>
+    </div>
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesContainer" class="mb-3" style="display: none;">
+        <pre>
+            {{ serialized_conversations | tojson(indent=4) }}
+        </pre>
+    </div>
+
+    <hr class="mb-3" style="color:yellow;">
+
+    <div class="text-center">
+        <a href="{{ url_for('conversation_answer') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+    </div>
+
+    <hr class="mb-5" style="color:red;">
+
+</div>
+
+<!-- JavaScript for scrolling down -->
+<script>
+    function scrollDown() {
+           window.scrollTo({
+               top: document.body.scrollHeight,
+               behavior: 'smooth'
+           });
+       }
+</script>
+
+{% endblock %}
+
+{% block footer_ %} {% endblock %}

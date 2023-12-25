@@ -12,4 +12,4 @@ class TextAreaForm(FlaskForm):
         'Start Writing for testing:',
         [validators.InputRequired(message="Please, first enter a text.")]
     )
-    submit = SubmitField("Click for Response 🔥¡!¡🔥")
+    submit = SubmitField("Click for Response ¡!¡")
