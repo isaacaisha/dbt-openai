@@ -84,14 +84,13 @@ def load_user(user_id):
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(err):
     flash(f"RELOAD InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 500
-    return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))  # , 401
+    pass
 
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(err):
     flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
-    return None
+    pass
 
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
