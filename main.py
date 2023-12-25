@@ -128,15 +128,15 @@ def register():
             return render_template("register.html", form=form, current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('register'))
+
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('register'))
 
     except InternalServerError as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('register'))
-
-    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('register'))
 
@@ -170,15 +170,15 @@ def login():
         return render_template("login.html", form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('login'))
+
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('login'))
 
     except InternalServerError as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('login'))
-
-    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('login'))
 
@@ -213,15 +213,15 @@ def home():
                                current_user=current_user, response=response, memory_buffer=memory_buffer,
                                memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('home'))
+
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('home'))
 
     except InternalServerError as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
-
-    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('home'))
 
@@ -252,15 +252,15 @@ def conversation_answer():
                                memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('conversation_answer'))
+
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('conversation_answer'))
 
     except InternalServerError as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('conversation_answer'))
-
-    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('conversation_answer'))
 
@@ -357,6 +357,10 @@ def answer():
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('answer'))
+
     except BadRequest as bad_request_err:
         # Handle BadRequest (400) errors
         flash(f"RELOAD ¡!¡ Unexpected {bad_request_err=}, {type(bad_request_err)=}")
@@ -367,10 +371,6 @@ def answer():
         return render_template('error.html', error_message=str(err))  # , 500
 
     except InternalServerError as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('answer'))
-
-    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('answer'))
 
@@ -467,15 +467,15 @@ def select_conversation():
         return render_template('conversation-by-id.html', form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('select_conversation'))
+
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('select_conversation'))
 
     except InternalServerError as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('select_conversation'))
-
-    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('select_conversation'))
 
@@ -551,15 +551,15 @@ def delete_conversation():
         return render_template('delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('delete_conversation'))
+
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('delete_conversation'))
 
     except InternalServerError as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('delete_conversation'))
-
-    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('delete_conversation'))
 
