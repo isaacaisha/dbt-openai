@@ -81,29 +81,29 @@ def load_user(user_id):
     return None
 
 
-@app.errorhandler(InternalServerError)
-def handle_internal_server_error(e):
-    # return render_template('error.html', error_message=str(e),
-    #                       date=datetime.now().strftime("%a %d %B %Y")), 500
-    return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))  # , 401
-
-
-@app.errorhandler(BadRequest)
-def handle_bad_request(e):
-    # flash("Invalid form submission. Please check your input.")
-    # return render_template('error.html', error_message=str(e),
-    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-    # return flash("RELOAD ¡!¡")
-    pass
-
-
-@app.errorhandler(flask_wtf.csrf.CSRFError)
-def handle_csrf_error(e):
-    # return render_template('error.html', error_message=str(e),
-    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-    # return flash("RELOAD ¡!¡")
-    pass
+#@app.errorhandler(InternalServerError)
+#def handle_internal_server_error(e):
+#    # return render_template('error.html', error_message=str(e),
+#    #                       date=datetime.now().strftime("%a %d %B %Y")), 500
+#    return render_template('authentication-error.html', current_user=current_user,
+#                           date=datetime.now().strftime("%a %d %B %Y"))  # , 401
+#
+#
+#@app.errorhandler(BadRequest)
+#def handle_bad_request(e):
+#    # flash("Invalid form submission. Please check your input.")
+#    # return render_template('error.html', error_message=str(e),
+#    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+#    # return flash("RELOAD ¡!¡")
+#    pass
+#
+#
+#@app.errorhandler(flask_wtf.csrf.CSRFError)
+#def handle_csrf_error(e):
+#    # return render_template('error.html', error_message=str(e),
+#    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+#    # return flash("RELOAD ¡!¡")
+#    pass
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -149,9 +149,8 @@ def register():
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        return redirect(url_for('register'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -184,9 +183,8 @@ def login():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        return redirect(url_for('login'))
 
 
 @app.route('/logout')
@@ -220,9 +218,8 @@ def home():
                                memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        return redirect(url_for('home'))
 
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
@@ -252,9 +249,8 @@ def conversation_answer():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        return redirect(url_for('conversation_answer'))
 
 
 @app.route('/answer', methods=['GET', 'POST'])
@@ -386,9 +382,8 @@ def show_story():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        return redirect(url_for('show_story'))
 
 
 @app.route("/get-all-conversations")
@@ -420,9 +415,8 @@ def get_all_conversations():
                                )
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        return redirect(url_for('get_all_conversations'))
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
@@ -445,9 +439,8 @@ def select_conversation():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        return redirect(url_for('select_conversation'))
 
 
 @app.route('/conversation/<int:conversation_id>')
@@ -476,9 +469,8 @@ def get_conversation(conversation_id):
                                    date=datetime.now().strftime("%a %d %B %Y"))  # , 404
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        return redirect(url_for('get_conversation'))
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -519,9 +511,8 @@ def delete_conversation():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        # return render_template('error.html', error_message=str(err))
-        pass
+        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        return redirect(url_for('delete_conversation'))
 
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
