@@ -143,7 +143,7 @@ def register():
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('register'))
+        return None
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -177,7 +177,7 @@ def login():
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('login'))
+        return None
 
 
 @app.route('/logout')
@@ -212,7 +212,7 @@ def home():
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        return None
 
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
@@ -243,7 +243,7 @@ def conversation_answer():
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('conversation_answer'))
+        return None
 
 
 @app.route('/answer', methods=['GET', 'POST'])
@@ -376,7 +376,7 @@ def show_story():
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('show_story'))
+        return None
 
 
 @app.route("/get-all-conversations")
@@ -409,7 +409,7 @@ def get_all_conversations():
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('get_all_conversations'))
+        return None
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
@@ -433,7 +433,7 @@ def select_conversation():
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('select_conversation'))
+        return None
 
 
 @app.route('/conversation/<int:conversation_id>')
@@ -463,7 +463,7 @@ def get_conversation(conversation_id):
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('get_conversation'))
+        return None
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -505,7 +505,7 @@ def delete_conversation():
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('delete_conversation'))
+        return None
 
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
