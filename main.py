@@ -1,4 +1,5 @@
 import os
+import flask_wtf
 import openai
 import json
 import secrets
@@ -9,7 +10,7 @@ from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, logout_user, current_user
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from gtts import gTTS
@@ -80,6 +81,31 @@ def load_user(user_id):
     return None
 
 
+@app.errorhandler(InternalServerError)
+def handle_internal_server_error(e):
+    # return render_template('error.html', error_message=str(e),
+    #                       date=datetime.now().strftime("%a %d %B %Y")), 500
+    flash("RELOAD ¡!¡")
+    pass
+
+
+@app.errorhandler(BadRequest)
+def handle_bad_request(e):
+    # flash("Invalid form submission. Please check your input.")
+    # return render_template('error.html', error_message=str(e),
+    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+    flash("RELOAD ¡!¡")
+    pass
+
+
+@app.errorhandler(flask_wtf.csrf.CSRFError)
+def handle_csrf_error(e):
+    # return render_template('error.html', error_message=str(e),
+    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+    flash("RELOAD ¡!¡")
+    pass
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -124,7 +150,7 @@ def register():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
@@ -159,7 +185,7 @@ def login():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
@@ -195,7 +221,7 @@ def home():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
@@ -227,7 +253,7 @@ def conversation_answer():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
@@ -329,7 +355,7 @@ def answer():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
@@ -362,7 +388,7 @@ def show_story():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
@@ -396,7 +422,7 @@ def get_all_conversations():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
@@ -421,7 +447,7 @@ def select_conversation():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
@@ -452,7 +478,7 @@ def get_conversation(conversation_id):
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
@@ -495,7 +521,7 @@ def delete_conversation():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        #return render_template('error.html', error_message=str(err))
+        # return render_template('error.html', error_message=str(err))
         pass
 
 
