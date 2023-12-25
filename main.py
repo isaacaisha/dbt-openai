@@ -85,10 +85,8 @@ def load_user(user_id):
 def handle_internal_server_error(e):
     # return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 500
-    # return render_template('authentication-error.html', current_user=current_user,
-    #                       date=datetime.now().strftime("%a %d %B %Y"))  # , 401
-    # return flash("RELOAD ¡!¡")
-    pass
+    return render_template('authentication-error.html', current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))  # , 401
 
 
 @app.errorhandler(BadRequest)
