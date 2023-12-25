@@ -81,21 +81,9 @@ def load_user(user_id):
     return None
 
 
-#@app.errorhandler(InternalServerError)
-#def handle_internal_server_error(err):
-#    # return flash(f"RELOAD InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 500
-#    return render_template('authentication-error.html', current_user=current_user,
-#                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
 @app.errorhandler(BadRequest)
 def handle_bad_request(err):
     return flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
-
-
-@app.errorhandler(flask_wtf.csrf.CSRFError)
-def handle_csrf_error(err):
-    return flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -148,6 +136,10 @@ def register():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('register'))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('register'))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -183,6 +175,10 @@ def login():
         return redirect(url_for('login'))
 
     except InternalServerError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('login'))
+
+    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('login'))
 
@@ -225,6 +221,10 @@ def home():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('home'))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('home'))
+
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
@@ -257,6 +257,10 @@ def conversation_answer():
         return redirect(url_for('conversation_answer'))
 
     except InternalServerError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('conversation_answer'))
+
+    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('conversation_answer'))
 
@@ -366,6 +370,10 @@ def answer():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('answer'))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('answer'))
+
 
 @app.route('/audio')
 def serve_audio():
@@ -467,6 +475,10 @@ def select_conversation():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('select_conversation'))
 
+    except flask_wtf.csrf.CSRFError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('select_conversation'))
+
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
@@ -544,6 +556,10 @@ def delete_conversation():
         return redirect(url_for('delete_conversation'))
 
     except InternalServerError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('delete_conversation'))
+
+    except flask_wtf.csrf.CSRFError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('delete_conversation'))
 
