@@ -81,6 +81,21 @@ def load_user(user_id):
     return None
 
 
+@app.errorhandler(InternalServerError)
+def handle_internal_server_error(err):
+    return flash(f"RELOAD InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 500
+
+
+@app.errorhandler(BadRequest)
+def handle_bad_request(err):
+    return flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
+
+
+@app.errorhandler(flask_wtf.csrf.CSRFError)
+def handle_csrf_error(err):
+    return flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
