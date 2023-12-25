@@ -4,16 +4,14 @@ import json
 import secrets
 import warnings
 import pytz
-import flask_wtf
 from flask_wtf.csrf import CSRFProtect
-from flask_cors import CORS
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, logout_user, current_user
 from werkzeug.exceptions import BadRequest
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
@@ -33,9 +31,7 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-#csrf = flask_wtf.csrf.CSRFProtect(app)
 csrf = CSRFProtect(app)
-#CORS(app)
 Bootstrap(app)
 
 login_manager = LoginManager(app)
@@ -49,11 +45,6 @@ except KeyError:
 
 # Set the OpenAI API key
 openai.api_key = openai_api_key
-
-#app.config['SESSION_TYPE'] = 'filesystem'
-#app.config['SESSION_PERMANENT'] = True
-#app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-#app.config['WTF_CSRF_ENABLED'] = True
 
 # Generate a random secret key
 secret_key = secrets.token_hex(19)
