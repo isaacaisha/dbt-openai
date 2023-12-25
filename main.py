@@ -85,8 +85,10 @@ def load_user(user_id):
 def handle_internal_server_error(e):
     # return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 500
-    return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y")), 401
+    # return render_template('authentication-error.html', current_user=current_user,
+    #                       date=datetime.now().strftime("%a %d %B %Y"))  # , 401
+    # return flash("RELOAD ¡!¡")
+    pass
 
 
 @app.errorhandler(BadRequest)
@@ -94,14 +96,16 @@ def handle_bad_request(e):
     # flash("Invalid form submission. Please check your input.")
     # return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-    return flash("RELOAD ¡!¡")
+    # return flash("RELOAD ¡!¡")
+    pass
 
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(e):
     # return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-    return flash("RELOAD ¡!¡")
+    # return flash("RELOAD ¡!¡")
+    pass
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -538,14 +542,6 @@ def get_conversations_jsonify():
             'llm_response': conversation.llm_response,
             'created_at': conversation.created_at.strftime("%a %d %B %Y"),
         }
-
-    #    conversations_list.append(conversation_dict)
-#
-    ## Use json.dumps to indent the JSON result
-    #indented_json = json.dumps({'conversations': conversations_list}, indent=4)
-#
-    ## Pass the indented JSON to jsonify
-    #return jsonify(json.loads(indented_json))
 
         serialized_conversations.append(conversation_dict)
 
