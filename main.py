@@ -4,7 +4,7 @@ import json
 import secrets
 import warnings
 import pytz
-import flask_wtf.csrf
+from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
@@ -32,7 +32,7 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-csrf = flask_wtf.csrf.CSRFProtect(app)
+#csrf = flask_wtf.csrf.CSRFProtect(app)
 #CORS(app)
 Bootstrap(app)
 
@@ -69,6 +69,7 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+csrf = CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
@@ -85,31 +86,6 @@ def load_user(user_id):
         # Check if the user_id is a non-empty string of digits
         return User.query.get(int(user_id))
     return None
-
-
-#@app.errorhandler(Exception)
-#def handle_exception(e):
-#    # logging.info(f"An error occurred: {str(e)}")
-#    # return "Internal Server Error", 500
-#    flash("RELOAD ¡!¡")
-#    pass
-#
-#
-#@app.errorhandler(BadRequest)
-#def handle_bad_request(e):
-#    # flash("Invalid form submission. Please check your input.")
-#    # return render_template('error.html', error_message=str(e),
-#    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-#    flash("RELOAD ¡!¡")
-#    pass
-#
-#
-#@app.errorhandler(flask_wtf.csrf.CSRFError)
-#def handle_csrf_error(e):
-#    # return render_template('error.html', error_message=str(e),
-#    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-#    flash("RELOAD ¡!¡")
-#    pass
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -156,7 +132,8 @@ def register():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -190,7 +167,8 @@ def login():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route('/logout')
@@ -225,7 +203,8 @@ def home():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
@@ -256,7 +235,8 @@ def conversation_answer():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route('/answer', methods=['GET', 'POST'])
@@ -357,7 +337,8 @@ def answer():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route('/audio')
@@ -389,7 +370,8 @@ def show_story():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route("/get-all-conversations")
@@ -422,7 +404,8 @@ def get_all_conversations():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
@@ -446,7 +429,8 @@ def select_conversation():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route('/conversation/<int:conversation_id>')
@@ -466,17 +450,18 @@ def get_conversation(conversation_id):
                 return render_template('conversation-forbidden.html',
                                        current_user=current_user,
                                        conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y")), 403
+                                       date=datetime.now().strftime("%a %d %B %Y"))  # , 403
         else:
             # Conversation not found, return a not found message
             return render_template('conversation-not-found.html',
                                    current_user=current_user,
                                    conversation_id=conversation_id,
-                                   date=datetime.now().strftime("%a %d %B %Y")), 404
+                                   date=datetime.now().strftime("%a %d %B %Y"))  # , 404
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -498,14 +483,14 @@ def delete_conversation():
                 return render_template('conversation-delete-not-found.html',
                                        current_user=current_user,
                                        conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y")), 404
+                                       date=datetime.now().strftime("%a %d %B %Y"))  # , 404
 
             # Check if the current user is the owner of the conversation
             if conversation_to_delete.owner_id != current_user.id:
                 return render_template('conversation-delete-forbidden.html',
                                        current_user=current_user,
                                        conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y")), 403
+                                       date=datetime.now().strftime("%a %d %B %Y"))  # , 403
 
             # Delete the conversation
             db.delete(conversation_to_delete)
@@ -518,7 +503,8 @@ def delete_conversation():
 
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        #return render_template('error.html', error_message=str(err))
+        pass
 
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
