@@ -40,12 +40,6 @@
 
 <!-- Navbar -->
 <nav class="navbar nav-home">
-<!--
-    <a class="navbar-brand col" href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs">SìįSí Dbt ¡!¡</a>
-    <button class="navbar-toggler mx-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
--->
     <div class="" id="navbarSupportedContent">
         <ul class="navbar-nav" style="display: inline-block;">
             <li class="nav-item" style="display: inline-block;">
@@ -71,14 +65,13 @@
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
-                    <p style="color:#17a2b8;">{{ message }}</p>
+                    <p class="text-center" style="color:#17a2b8;">{{ message }}</p>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
 
         <div class="mb-3" style="margin:0 9%;">
-            <!--<span style="color:#fff;">{{ wtf.form_field(writing_text_form.csrf_token) }}</span>-->
             {{ writing_text_form.csrf_token }}
             {{ wtf.quick_form(writing_text_form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
         </div>
