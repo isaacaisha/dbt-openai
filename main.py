@@ -83,20 +83,17 @@ def load_user(user_id):
 
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(err):
-    flash(f"RELOAD InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 500
-    pass
+    return flash(f"RELOAD InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 500
 
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(err):
-    flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
-    pass
+    return flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
 
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(err):
-    flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
-    pass
+    return flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -142,8 +139,8 @@ def register():
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('register'))
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return redirect(url_for('register'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -176,8 +173,8 @@ def login():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('login'))
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return redirect(url_for('login'))
 
 
 @app.route('/logout')
@@ -211,8 +208,8 @@ def home():
                                memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return redirect(url_for('home'))
 
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
@@ -242,8 +239,8 @@ def conversation_answer():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('conversation_answer'))
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return redirect(url_for('conversation_answer'))
 
 
 @app.route('/answer', methods=['POST'])
@@ -299,24 +296,20 @@ def answer():
 
             current_time = datetime.now(pytz.timezone('Europe/Paris'))
 
-            # Access the database session using the get_db function
-            with get_db() as db:
-                # Create a new Memory object with the data
-                new_memory = Memory(
-                    user_name=current_user.name,
-                    owner_id=current_user.id,
-                    user_message=user_message,
-                    llm_response=assistant_reply,
-                    conversations_summary=conversations_summary_str,
-                    created_at=current_time
-                )
-
-                # Add the new memory to the session
-                db.add(new_memory)
-
-                # Commit changes to the database
-                db.commit()
-                db.refresh(new_memory)
+            # Create a new Memory object with the data
+            new_memory = Memory(
+                user_name=current_user.name,
+                owner_id=current_user.id,
+                user_message=user_message,
+                llm_response=assistant_reply,
+                conversations_summary=conversations_summary_str,
+                created_at=current_time
+            )
+            # Add the new memory to the session
+            db.add(new_memory)
+            # Commit changes to the database
+            db.commit()
+            db.refresh(new_memory)
 
             # Convert current_user to JSON-serializable format
             current_user_data = {
@@ -344,12 +337,12 @@ def answer():
 
     except BadRequest as bad_request_err:
         # Handle BadRequest (400) errors
-        flash(f"RELOAD ¡!¡ Unexpected {bad_request_err=}, {type(bad_request_err)=}")
-        return render_template('error.html', error_message=bad_request_err.description)  # , 400
+        return flash(f"RELOAD ¡!¡ Unexpected {bad_request_err=}, {type(bad_request_err)=}")
+        #return render_template('error.html', error_message=bad_request_err.description), 400
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))  # , 500
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return render_template('error.html', error_message=str(err)), 500
 
 
 @app.route('/audio')
@@ -380,8 +373,8 @@ def show_story():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('show_story'))
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return redirect(url_for('show_story'))
 
 
 @app.route("/get-all-conversations")
@@ -413,8 +406,8 @@ def get_all_conversations():
                                )
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('get_all_conversations'))
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return redirect(url_for('get_all_conversations'))
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
@@ -437,8 +430,8 @@ def select_conversation():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('select_conversation'))
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return redirect(url_for('select_conversation'))
 
 
 @app.route('/conversation/<int:conversation_id>')
@@ -467,8 +460,8 @@ def get_conversation(conversation_id):
                                    date=datetime.now().strftime("%a %d %B %Y"))  # , 404
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('get_conversation'))
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return redirect(url_for('get_conversation'))
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -509,8 +502,8 @@ def delete_conversation():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('delete_conversation'))
+        return flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        #return redirect(url_for('delete_conversation'))
 
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
