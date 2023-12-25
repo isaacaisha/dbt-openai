@@ -81,11 +81,6 @@ def load_user(user_id):
     return None
 
 
-@app.errorhandler(BadRequest)
-def handle_bad_request(err):
-    return flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
-
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -132,11 +127,15 @@ def register():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('register'))
 
-    except Exception as err:
+    except BadRequest as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('register'))
 
     except InternalServerError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('register'))
+
+    except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('register'))
 
@@ -174,11 +173,15 @@ def login():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('login'))
 
-    except Exception as err:
+    except BadRequest as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('login'))
 
     except InternalServerError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('login'))
+
+    except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('login'))
 
@@ -217,11 +220,15 @@ def home():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('home'))
 
-    except Exception as err:
+    except BadRequest as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('home'))
 
     except InternalServerError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('home'))
+
+    except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('home'))
 
@@ -256,11 +263,15 @@ def conversation_answer():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('conversation_answer'))
 
-    except Exception as err:
+    except BadRequest as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('register'))
+
+    except InternalServerError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('conversation_answer'))
 
-    except InternalServerError as err:
+    except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('conversation_answer'))
 
@@ -364,15 +375,15 @@ def answer():
     except BadRequest as bad_request_err:
         # Handle BadRequest (400) errors
         flash(f"RELOAD ¡!¡ Unexpected {bad_request_err=}, {type(bad_request_err)=}")
-        return render_template('error.html', error_message=bad_request_err.description)  # , 400
-
-    except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))  # , 500
+        return redirect(url_for('answer'))  # , 400
 
     except InternalServerError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('answer'))
+
+    except Exception as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return render_template('error.html', error_message=str(err))  # , 500
 
 
 @app.route('/audio')
@@ -402,11 +413,11 @@ def show_story():
                                memory_buffer=memory_buffer, summary_conversation=summary_conversation,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
-    except Exception as err:
+    except InternalServerError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('show_story'))
 
-    except InternalServerError as err:
+    except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('show_story'))
 
@@ -439,11 +450,11 @@ def get_all_conversations():
                                date=datetime.now().strftime("%a %d %B %Y")
                                )
 
-    except Exception as err:
+    except InternalServerError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('get_all_conversations'))
 
-    except InternalServerError as err:
+    except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('get_all_conversations'))
 
@@ -471,11 +482,15 @@ def select_conversation():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('select_conversation'))
 
-    except Exception as err:
+    except BadRequest as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('select_conversation'))
 
     except InternalServerError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('select_conversation'))
+
+    except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('select_conversation'))
 
@@ -505,11 +520,11 @@ def get_conversation(conversation_id):
                                    conversation_id=conversation_id,
                                    date=datetime.now().strftime("%a %d %B %Y"))  # , 404
 
-    except Exception as err:
+    except InternalServerError as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('get_conversation'))
 
-    except InternalServerError as err:
+    except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('get_conversation'))
 
@@ -555,11 +570,15 @@ def delete_conversation():
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('delete_conversation'))
 
-    except Exception as err:
+    except BadRequest as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('delete_conversation'))
 
     except InternalServerError as err:
+        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return redirect(url_for('delete_conversation'))
+
+    except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('delete_conversation'))
 
