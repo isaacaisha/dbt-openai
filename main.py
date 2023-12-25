@@ -1,25 +1,22 @@
 import os
+import flask_wtf
 import openai
 import json
 import secrets
 import warnings
 import pytz
-import flask_wtf
 from flask_wtf.csrf import CSRFProtect
-from flask_cors import CORS
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, logout_user, current_user
-from werkzeug.exceptions import BadRequest
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
-
 from app.databases.database import get_db
 from app.models.memory import Memory, db, User
 from app.forms.conversation_id_form import ConversationIdForm
@@ -32,10 +29,8 @@ warnings.filterwarnings('ignore')
 
 _ = load_dotenv(find_dotenv())  # read local .env file
 
-app = Flask(__name__, template_folder='templates')
-#csrf = flask_wtf.csrf.CSRFProtect(app)
+app = Flask(__name__)
 csrf = CSRFProtect(app)
-#CORS(app)
 Bootstrap(app)
 
 login_manager = LoginManager(app)
@@ -49,11 +44,6 @@ except KeyError:
 
 # Set the OpenAI API key
 openai.api_key = openai_api_key
-
-#app.config['SESSION_TYPE'] = 'filesystem'
-#app.config['SESSION_PERMANENT'] = True
-#app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-#app.config['WTF_CSRF_ENABLED'] = True
 
 # Generate a random secret key
 secret_key = secrets.token_hex(19)
@@ -87,6 +77,14 @@ def load_user(user_id):
         # Check if the user_id is a non-empty string of digits
         return User.query.get(int(user_id))
     return None
+
+
+@app.errorhandler(flask_wtf.csrf.CSRFError)
+def handle_csrf_error(e):
+    # return render_template('error.html', error_message=str(e),
+    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+    flash("RELOAD ¡!¡")
+    pass
 
 
 @app.route('/register', methods=['GET', 'POST'])
