@@ -1,10 +1,10 @@
  body {
-     <!--font-family: Arial, sans-serif;-->
-     text-align: center;
-     color: white;
-     background-image: url('../images/space.jpg');
-     background-size: cover;
-     background-position: center;
+    /*font-family: Arial, sans-serif;
+    text-align: center;*/
+    color: #fff;
+    background-image: url('../images/space.jpg');
+    background-size: cover;
+    background-position: center;
     padding: 1rem;
  }
 
