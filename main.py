@@ -81,9 +81,21 @@ def load_user(user_id):
     return None
 
 
+@app.errorhandler(InternalServerError)
+def handle_internal_server_error(err):
+    flash(f"RELOAD InternalServerError ¡!¡\nUnexpected {err=}, {type(err)=}"), 500
+    pass
+
+
+@app.errorhandler(BadRequest)
+def handle_bad_request(err):
+    flash(f"RELOAD BadRequest ¡!¡\nUnexpected {err=}, {type(err)=}"), 400
+    pass
+
+
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(err):
-    flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}"), 400
+    flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡\nUnexpected {err=}, {type(err)=}"), 400
     pass
 
 
@@ -130,7 +142,7 @@ def register():
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return redirect(url_for('register'))
 
 
@@ -164,7 +176,7 @@ def login():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return redirect(url_for('login'))
 
 
@@ -199,7 +211,7 @@ def home():
                                memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return redirect(url_for('home'))
 
 
@@ -230,7 +242,7 @@ def conversation_answer():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return redirect(url_for('conversation_answer'))
 
 
@@ -331,7 +343,7 @@ def answer():
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
 
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err)), 500
 
 
@@ -363,7 +375,7 @@ def show_story():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return redirect(url_for('show_story'))
 
 
@@ -396,7 +408,7 @@ def get_all_conversations():
                                )
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return redirect(url_for('get_all_conversations'))
 
 
@@ -420,7 +432,7 @@ def select_conversation():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return redirect(url_for('select_conversation'))
 
 
@@ -450,7 +462,7 @@ def get_conversation(conversation_id):
                                    date=datetime.now().strftime("%a %d %B %Y"))  # , 404
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return redirect(url_for('get_conversation'))
 
 
@@ -492,7 +504,7 @@ def delete_conversation():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡<br>\nUnexpected {err=}, {type(err)=}")
+        flash(f"RELOAD ¡!¡\nUnexpected {err=}, {type(err)=}")
         return redirect(url_for('delete_conversation'))
 
 
