@@ -83,19 +83,19 @@ def load_user(user_id):
 
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(err):
-    flash(f"RELOAD InternalServerError ¡!¡\nUnexpected {err=}, {type(err)=}"), 500
+    flash(f"RELOAD InternalServerError ¡!¡\nUnexpected {err=}, {type(err)=}")  # , 500
     pass
 
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(err):
-    flash(f"RELOAD BadRequest ¡!¡\nUnexpected {err=}, {type(err)=}"), 400
+    flash(f"RELOAD BadRequest ¡!¡\nUnexpected {err=}, {type(err)=}")  # , 400
     pass
 
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(err):
-    flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡\nUnexpected {err=}, {type(err)=}"), 400
+    flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡\nUnexpected {err=}, {type(err)=}")  # , 400
     pass
 
 
@@ -515,13 +515,13 @@ def get_conversations_jsonify():
     # Convert the conversations to a list of dictionaries
     serialized_conversations = []
 
-    for conversation in conversations:
+    for conversation_ in conversations:
         conversation_dict = {
-            'id': conversation.id,
-            'user_name': conversation.user_name,
-            'user_message': conversation.user_message,
-            'llm_response': conversation.llm_response,
-            'created_at': conversation.created_at.strftime("%a %d %B %Y"),
+            'id': conversation_.id,
+            'user_name': conversation_.user_name,
+            'user_message': conversation_.user_message,
+            'llm_response': conversation_.llm_response,
+            'created_at': conversation_.created_at.strftime("%a %d %B %Y"),
         }
 
         serialized_conversations.append(conversation_dict)
