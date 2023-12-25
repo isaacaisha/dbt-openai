@@ -94,6 +94,7 @@ def load_user(user_id):
 def handle_exception(e):
     # logging.info(f"An error occurred: {str(e)}")
     # return "Internal Server Error", 500
+    flash("RELOAD ¡!¡")
     pass
 
 
@@ -102,6 +103,7 @@ def handle_bad_request(e):
     # flash("Invalid form submission. Please check your input.")
     # return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+    flash("RELOAD ¡!¡")
     pass
 
 
@@ -109,6 +111,7 @@ def handle_bad_request(e):
 def handle_csrf_error(e):
     # return render_template('error.html', error_message=str(e),
     #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+    flash("RELOAD ¡!¡")
     pass
 
 
@@ -118,7 +121,7 @@ def register():
 
     try:
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(2)
             print(f"Form data: {form.data}")
 
             # Check if the passwords match
@@ -166,7 +169,7 @@ def login():
 
     try:
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(2)
             print(f"Form data: {form.data}")
 
             email = request.form.get('email')
@@ -209,7 +212,7 @@ def home():
 
     try:
         if writing_text_form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(2)
             print(f"Form data: {writing_text_form.data}\n")
 
             user_input = request.form['writing_text']
@@ -334,11 +337,6 @@ def answer():
                 db.commit()
                 db.refresh(new_memory)
 
-            print(f'User Name: {current_user.name} 😎')
-            print(f'User ID:{current_user.id} 😝')
-            print(f'User Input: {user_message} 😎')
-            print(f'LLM Response:{assistant_reply} 😝\n')
-
             # Convert current_user to JSON-serializable format
             current_user_data = {
                 "id": current_user.id,
@@ -346,6 +344,11 @@ def answer():
                 "user_email": current_user.email,
                 "user_password": current_user.password,
             }
+
+            print(f'User Name: {current_user.name} 😎')
+            print(f'User ID:{current_user.id} 😝')
+            print(f'User Input: {user_message} 😎')
+            print(f'LLM Response:{assistant_reply} 😝\n')
 
             # Return the response as JSON, including both text and the path to the audio file
             return jsonify({
@@ -374,7 +377,6 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
-    time.sleep(3)
     try:
         owner_id = current_user.id
 
@@ -398,7 +400,6 @@ def show_story():
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    time.sleep(3)
     try:
         owner_id = current_user.id
         conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
@@ -436,7 +437,7 @@ def select_conversation():
 
     try:
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(2)
             print(f"Form data: {form.data}")
 
             # Retrieve the selected conversation ID
@@ -457,7 +458,7 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    time.sleep(3)
+    time.sleep(2)
     conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
     try:
@@ -492,7 +493,7 @@ def delete_conversation():
 
     try:
         if form.validate_on_submit():
-            time.sleep(3)
+            time.sleep(2)
             print(f"Form data: {form.data}")
 
             # Get the conversation_id from the form
@@ -531,7 +532,6 @@ def delete_conversation():
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
-    time.sleep(3)
     # Retrieve all conversations from the database
     conversations = test
     # Convert the conversations to a list of dictionaries
