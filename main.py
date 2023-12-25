@@ -4,6 +4,7 @@ import json
 import secrets
 import warnings
 import pytz
+import flask_wtf
 from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
 from dotenv import load_dotenv, find_dotenv
@@ -33,6 +34,7 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
 #csrf = flask_wtf.csrf.CSRFProtect(app)
+csrf = CSRFProtect(app)
 #CORS(app)
 Bootstrap(app)
 
@@ -69,7 +71,6 @@ app.config[
                                   f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-csrf = CSRFProtect(app)
 
 with app.app_context():
     db.create_all()
