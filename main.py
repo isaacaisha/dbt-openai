@@ -1,6 +1,4 @@
 import os
-import time
-
 import openai
 import json
 import secrets
@@ -23,7 +21,6 @@ from langchain.memory import ConversationSummaryBufferMemory
 
 from app.databases.database import get_db
 from app.models.memory import Memory, db, User
-# from app.schemas.schemas import schemas_bp
 from app.forms.conversation_id_form import ConversationIdForm
 from app.forms.delete_form import DeleteForm
 from app.forms.login_form import LoginForm
@@ -36,7 +33,7 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
 csrf = flask_wtf.csrf.CSRFProtect(app)
-CORS(app)
+#CORS(app)
 Bootstrap(app)
 
 login_manager = LoginManager(app)
@@ -51,10 +48,10 @@ except KeyError:
 # Set the OpenAI API key
 openai.api_key = openai_api_key
 
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-app.config['WTF_CSRF_ENABLED'] = True
+#app.config['SESSION_TYPE'] = 'filesystem'
+#app.config['SESSION_PERMANENT'] = True
+#app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+#app.config['WTF_CSRF_ENABLED'] = True
 
 # Generate a random secret key
 secret_key = secrets.token_hex(19)
@@ -90,29 +87,29 @@ def load_user(user_id):
     return None
 
 
-@app.errorhandler(Exception)
-def handle_exception(e):
-    # logging.info(f"An error occurred: {str(e)}")
-    # return "Internal Server Error", 500
-    flash("RELOAD ¡!¡")
-    pass
-
-
-@app.errorhandler(BadRequest)
-def handle_bad_request(e):
-    # flash("Invalid form submission. Please check your input.")
-    # return render_template('error.html', error_message=str(e),
-    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-    flash("RELOAD ¡!¡")
-    pass
-
-
-@app.errorhandler(flask_wtf.csrf.CSRFError)
-def handle_csrf_error(e):
-    # return render_template('error.html', error_message=str(e),
-    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
-    flash("RELOAD ¡!¡")
-    pass
+#@app.errorhandler(Exception)
+#def handle_exception(e):
+#    # logging.info(f"An error occurred: {str(e)}")
+#    # return "Internal Server Error", 500
+#    flash("RELOAD ¡!¡")
+#    pass
+#
+#
+#@app.errorhandler(BadRequest)
+#def handle_bad_request(e):
+#    # flash("Invalid form submission. Please check your input.")
+#    # return render_template('error.html', error_message=str(e),
+#    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+#    flash("RELOAD ¡!¡")
+#    pass
+#
+#
+#@app.errorhandler(flask_wtf.csrf.CSRFError)
+#def handle_csrf_error(e):
+#    # return render_template('error.html', error_message=str(e),
+#    #                       date=datetime.now().strftime("%a %d %B %Y")), 400
+#    flash("RELOAD ¡!¡")
+#    pass
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -121,7 +118,6 @@ def register():
 
     try:
         if form.validate_on_submit():
-            time.sleep(2)
             print(f"Form data: {form.data}")
 
             # Check if the passwords match
@@ -169,7 +165,6 @@ def login():
 
     try:
         if form.validate_on_submit():
-            time.sleep(2)
             print(f"Form data: {form.data}")
 
             email = request.form.get('email')
@@ -212,7 +207,6 @@ def home():
 
     try:
         if writing_text_form.validate_on_submit():
-            time.sleep(2)
             print(f"Form data: {writing_text_form.data}\n")
 
             user_input = request.form['writing_text']
@@ -437,7 +431,6 @@ def select_conversation():
 
     try:
         if form.validate_on_submit():
-            time.sleep(2)
             print(f"Form data: {form.data}")
 
             # Retrieve the selected conversation ID
@@ -458,7 +451,6 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    time.sleep(2)
     conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
     try:
@@ -493,7 +485,6 @@ def delete_conversation():
 
     try:
         if form.validate_on_submit():
-            time.sleep(2)
             print(f"Form data: {form.data}")
 
             # Get the conversation_id from the form
