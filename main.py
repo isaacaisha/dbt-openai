@@ -82,21 +82,23 @@ def load_user(user_id):
 
 
 @app.errorhandler(InternalServerError)
-def handle_internal_server_error():
+def handle_internal_server_error(err):
+    flash(f"RELOAD InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 500
     return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))  # , 500
+                           date=datetime.now().strftime("%a %d %B %Y"))  # , 401
 
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(err):
-    pass
-    #return flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
+    flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
+    return None
 
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(err):
+    flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
     pass
-    #return flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
+    return None
 
 
 @app.route('/register', methods=['GET', 'POST'])
