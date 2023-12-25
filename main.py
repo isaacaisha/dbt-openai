@@ -85,12 +85,12 @@ def load_user(user_id):
 def handle_internal_server_error(err):
     flash(f"RELOAD InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 500
     return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))  # , 401
+                           date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(err):
-    flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
+    flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}"), 400
     return None
 
 
@@ -343,6 +343,11 @@ def answer():
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y")), 401
 
+    except BadRequest as bad_request_err:
+        # Handle BadRequest (400) errors
+        flash(f"RELOAD ¡!¡ Unexpected {bad_request_err=}, {type(bad_request_err)=}")
+        return render_template('error.html', error_message=bad_request_err.description), 400
+
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err)), 500
@@ -498,7 +503,7 @@ def delete_conversation():
             # Delete the conversation
             db.delete(conversation_to_delete)
             db.commit()
-            flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎 ¡!¡')
+            flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully ¡!¡ 😎 ¡!¡')
             return redirect(url_for('delete_conversation'))
 
         return render_template('delete.html', current_user=current_user, form=form,
