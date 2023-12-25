@@ -114,11 +114,11 @@ def handle_csrf_error(e):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    time.sleep(3)
     form = RegisterForm()
 
     try:
         if form.validate_on_submit():
+            time.sleep(3)
             print(f"Form data: {form.data}")
 
             # Check if the passwords match
@@ -162,11 +162,11 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    time.sleep(3)
     form = LoginForm()
 
     try:
         if form.validate_on_submit():
+            time.sleep(3)
             print(f"Form data: {form.data}")
 
             email = request.form.get('email')
@@ -203,13 +203,13 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    time.sleep(3)
     writing_text_form = TextAreaForm()
     response = None
     user_input = None
 
     try:
         if writing_text_form.validate_on_submit():
+            time.sleep(3)
             print(f"Form data: {writing_text_form.data}\n")
 
             user_input = request.form['writing_text']
@@ -233,7 +233,6 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    time.sleep(3)
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -265,7 +264,6 @@ def conversation_answer():
 
 @app.route('/answer', methods=['GET', 'POST'])
 def answer():
-    time.sleep(1)
     user_message = request.form['prompt']
 
     try:
@@ -434,11 +432,11 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    time.sleep(3)
     form = ConversationIdForm()
 
     try:
         if form.validate_on_submit():
+            time.sleep(3)
             print(f"Form data: {form.data}")
 
             # Retrieve the selected conversation ID
@@ -459,7 +457,7 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    time.sleep(1)
+    time.sleep(3)
     conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
     try:
@@ -490,11 +488,11 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    time.sleep(3)
     form = DeleteForm()
 
     try:
         if form.validate_on_submit():
+            time.sleep(3)
             print(f"Form data: {form.data}")
 
             # Get the conversation_id from the form
@@ -533,7 +531,7 @@ def delete_conversation():
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
-    time.sleep(1)
+    time.sleep(3)
     # Retrieve all conversations from the database
     conversations = test
     # Convert the conversations to a list of dictionaries
