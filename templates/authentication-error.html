@@ -28,20 +28,27 @@
 
 {% block content %}
 
-<hr class="mb-3" style="color:green;">
+<div class="content">
 
-<div id="resultMemo" style="" class="text-center mb-3">
-    <h3><span style="color:gold;">GO BACK, TRY AGAIN</span><br>or<br><span  style="color:crimson">Sorry Not Authenticated</span></h3>
-    <h3>Register & Log In &<br>enjoy<br>¡!¡ 😇 ¡!¡</h3>
+    <!-- Page Header -->
+
+    <hr class="mb-3" style="color:green;">
+
+    <div id="resultMemo" style="" class="text-center mb-3">
+        <h3><span style="color:gold;">GO BACK, TRY AGAIN</span><br>or<br><span  style="color:crimson">Sorry Not Authenticated</span></h3>
+        <h3>Register & Log In<br>enjoy<br>¡!¡ 😇 ¡!¡</h3>
+    </div>
+
+    <hr class="mb-3" style="color:yellow;">
+
+    <div class="text-center">
+        <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+        <!--<a href="{{ url_for('home') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>-->
+    </div>
+
+    <hr class="mb-5" style="color:red;">
+
 </div>
-
-<hr class="mb-3" style="color:yellow;">
-
-<div class="text-center">
-    <a href="{{ url_for('home') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
-</div>
-
-<hr class="mb-5" style="color:red;">
 
 {% endblock %}
 
