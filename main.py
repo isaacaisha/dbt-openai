@@ -85,9 +85,12 @@ def load_user(user_id):
 
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(err):
+    # Get the URL of the request that caused the error
+    referring_url = request.referrer
     flash(f"RELOAD InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 500
-    return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))  # , 401
+
+    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
+    return redirect(referring_url or url_for('authentication_error'))
 
 
 @app.errorhandler(BadRequest)
@@ -101,6 +104,12 @@ def handle_csrf_error(err):
     flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
     pass
     return None
+
+
+@app.route('/authentication-error', methods=['GET', 'POST'])
+def authentication_error():
+    return render_template('authentication-error.html', current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))  # , 401
 
 
 @app.route('/register', methods=['GET', 'POST'])
