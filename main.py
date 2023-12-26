@@ -83,12 +83,12 @@ def load_user(user_id):
     return None
 
 
+# ------------------------------------------ @app.errorhandler functions ----------------------------------------------#
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
-    #flash(f"RELOAD InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 500
-    flash(f"RETRY ¡!¡")
+    flash(f"RETRY (InternalServerError) ¡!¡"), 500
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
     return redirect(referring_url or url_for('authentication_error'))
@@ -98,8 +98,7 @@ def handle_internal_server_error(err):
 def handle_bad_request(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
-    #flash(f"RELOAD BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
-    flash(f"RETRY ¡!¡")
+    flash(f"RETRY (BadRequest) ¡!¡"), 400
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
     return redirect(referring_url or url_for('authentication_error'))
@@ -109,18 +108,52 @@ def handle_bad_request(err):
 def handle_csrf_error(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
-    #flash(f"RELOAD flask_wtf.csrf.CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")  # , 400
-    flash(f"RETRY ¡!¡")
+    flash(f"RETRY (CSRFError) ¡!¡"), 400
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
     return redirect(referring_url or url_for('authentication_error'))
 
+
+# ------------------------------------------ @app.errorhandler pages --------------------------------------------------#
 @app.route('/authentication-error', methods=['GET', 'POST'])
 def authentication_error():
     return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y"))  # , 401
+                           date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
+@app.route('/conversation-forbidden', methods=['GET', 'POST'])
+def conversation_forbidden(conversation_id):
+    return render_template('conversation-forbidden.html',
+                           current_user=current_user,
+                           conversation_id=conversation_id,
+                           date=datetime.now().strftime("%a %d %B %Y")), 403
+
+
+@app.route('/conversation-not-found', methods=['GET', 'POST'])
+def conversation_not_found(conversation_id):
+    return render_template('conversation-not-found.html',
+                           current_user=current_user,
+                           conversation_id=conversation_id,
+                           date=datetime.now().strftime("%a %d %B %Y")), 404
+
+
+@app.route('/conversation-delete-forbidden', methods=['GET', 'POST'])
+def conversation_delete_forbidden(conversation_id):
+    return render_template('conversation-delete-forbidden.html',
+                           current_user=current_user,
+                           conversation_id=conversation_id,
+                           date=datetime.now().strftime("%a %d %B %Y")), 403
+
+
+@app.route('/conversation-delete-not-found', methods=['GET', 'POST'])
+def conversation_delete_not_found(conversation_id):
+    return render_template('conversation-delete-not-found.html',
+                           current_user=current_user,
+                           conversation_id=conversation_id,
+                           date=datetime.now().strftime("%a %d %B %Y")), 404
+
+
+# ------------------------------------------ @app.routes --------------------------------------------------------------#
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -164,7 +197,7 @@ def register():
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('register'))
 
 
@@ -198,7 +231,7 @@ def login():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('login'))
 
 
@@ -233,7 +266,7 @@ def home():
                                memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('home'))
 
 
@@ -264,7 +297,7 @@ def conversation_answer():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('conversation_answer'))
 
 
@@ -357,25 +390,11 @@ def answer():
                 "memory_id": new_memory.id
             })
         else:
-            return render_template('authentication-error.html', current_user=current_user,
-                                   date=datetime.now().strftime("%a %d %B %Y")), 401
-
-    #except flask_wtf.csrf.CSRFError as err:
-    #    flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-    #    return redirect(url_for('answer'))
-#
-    #except BadRequest as bad_request_err:
-    #    # Handle BadRequest (400) errors
-    #    flash(f"RELOAD ¡!¡ Unexpected {bad_request_err=}, {type(bad_request_err)=}")
-    #    return redirect(url_for('answer'))  # , 400
-#
-    #except InternalServerError as err:
-    #    flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-    #    return redirect(url_for('answer'))
+            return redirect(url_for('authentication_error'))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))  # , 500
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return render_template('error.html', error_message=str(err))
 
 
 @app.route('/audio')
@@ -406,7 +425,7 @@ def show_story():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('show_story'))
 
 
@@ -439,7 +458,7 @@ def get_all_conversations():
                                )
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('get_all_conversations'))
 
 
@@ -463,7 +482,7 @@ def select_conversation():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('select_conversation'))
 
 
@@ -481,19 +500,13 @@ def get_conversation(conversation_id):
                                        date=datetime.now().strftime("%a %d %B %Y"))
             else:
                 # User doesn't have access, return a forbidden message
-                return render_template('conversation-forbidden.html',
-                                       current_user=current_user,
-                                       conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y"))  # , 403
+                return redirect(url_for('conversation_forbidden'))
         else:
             # Conversation not found, return a not found message
-            return render_template('conversation-not-found.html',
-                                   current_user=current_user,
-                                   conversation_id=conversation_id,
-                                   date=datetime.now().strftime("%a %d %B %Y"))  # , 404
+            return redirect(url_for('conversation_not_found'))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('get_conversation'))
 
 
@@ -511,31 +524,25 @@ def delete_conversation():
             # Query the database to get the conversation to be deleted
             conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
 
-            # Check if the conversation exists
-            if not conversation_to_delete:
-                return render_template('conversation-delete-not-found.html',
-                                       current_user=current_user,
-                                       conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y"))  # , 404
-
             # Check if the current user is the owner of the conversation
             if conversation_to_delete.owner_id != current_user.id:
-                return render_template('conversation-delete-forbidden.html',
-                                       current_user=current_user,
-                                       conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y"))  # , 403
+                return redirect(url_for('conversation_delete_forbidden'))
+
+            # Check if the conversation exists
+            if not conversation_to_delete:
+                return redirect(url_for('conversation_delete_not_found'))
 
             # Delete the conversation
             db.delete(conversation_to_delete)
             db.commit()
-            flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully ¡!¡ 😎 ¡!¡')
+            flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
             return redirect(url_for('delete_conversation'))
 
         return render_template('delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('delete_conversation'))
 
 
