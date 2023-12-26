@@ -5,6 +5,7 @@ import json
 import secrets
 import warnings
 import pytz
+from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
@@ -34,6 +35,7 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 app = Flask(__name__, template_folder='templates')
 csrf = CSRFProtect(app)
 Bootstrap(app)
+CORS(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
