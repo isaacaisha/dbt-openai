@@ -89,6 +89,7 @@ def handle_internal_server_error(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
     flash(f"RETRY (InternalServerError) ¡!¡"), 500
+    print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
     return redirect(referring_url or url_for('authentication_error'))
@@ -99,6 +100,7 @@ def handle_bad_request(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
     flash(f"RETRY (BadRequest) ¡!¡"), 400
+    print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
     return redirect(referring_url or url_for('authentication_error'))
@@ -109,6 +111,7 @@ def handle_csrf_error(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
     flash(f"RETRY (CSRFError) ¡!¡"), 400
+    print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
     return redirect(referring_url or url_for('authentication_error'))
@@ -122,35 +125,39 @@ def authentication_error():
 
 
 @app.route('/conversation-forbidden', methods=['GET', 'POST'])
-def conversation_forbidden(conversation_id):
-    return render_template('conversation-forbidden.html',
-                           current_user=current_user,
-                           conversation_id=conversation_id,
-                           date=datetime.now().strftime("%a %d %B %Y")), 403
+def conversation_forbidden():
+    # Retrieve the selected conversation ID from the query parameter
+    selected_conversation_id = request.args.get('conversation_id')
+
+    return render_template('conversation-forbidden.html', current_user=current_user,
+                           conversation_id=selected_conversation_id, date=datetime.now().strftime("%a %d %B %Y")), 403
 
 
 @app.route('/conversation-not-found', methods=['GET', 'POST'])
-def conversation_not_found(conversation_id):
-    return render_template('conversation-not-found.html',
-                           current_user=current_user,
-                           conversation_id=conversation_id,
-                           date=datetime.now().strftime("%a %d %B %Y")), 404
+def conversation_not_found():
+    # Retrieve the selected conversation ID from the query parameter
+    selected_conversation_id = request.args.get('conversation_id')
+
+    return render_template('conversation-not-found.html', current_user=current_user,
+                           conversation_id=selected_conversation_id, date=datetime.now().strftime("%a %d %B %Y")), 404
 
 
 @app.route('/conversation-delete-forbidden', methods=['GET', 'POST'])
-def conversation_delete_forbidden(conversation_id):
-    return render_template('conversation-delete-forbidden.html',
-                           current_user=current_user,
-                           conversation_id=conversation_id,
-                           date=datetime.now().strftime("%a %d %B %Y")), 403
+def conversation_delete_forbidden():
+    # Retrieve the selected conversation ID from the query parameter
+    selected_conversation_id = request.args.get('conversation_id')
+
+    return render_template('conversation-delete-forbidden.html', current_user=current_user,
+                           conversation_id=selected_conversation_id, date=datetime.now().strftime("%a %d %B %Y")), 403
 
 
 @app.route('/conversation-delete-not-found', methods=['GET', 'POST'])
-def conversation_delete_not_found(conversation_id):
-    return render_template('conversation-delete-not-found.html',
-                           current_user=current_user,
-                           conversation_id=conversation_id,
-                           date=datetime.now().strftime("%a %d %B %Y")), 404
+def conversation_delete_not_found():
+    # Retrieve the selected conversation ID from the query parameter
+    selected_conversation_id = request.args.get('conversation_id')
+
+    return render_template('conversation-delete-not-found.html', current_user=current_user,
+                           conversation_id=selected_conversation_id, date=datetime.now().strftime("%a %d %B %Y")), 404
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
@@ -500,14 +507,14 @@ def get_conversation(conversation_id):
                                        date=datetime.now().strftime("%a %d %B %Y"))
             else:
                 # User doesn't have access, return a forbidden message
-                return redirect(url_for('conversation_forbidden'))
+                return redirect(url_for('conversation_forbidden', conversation_id=conversation_id))
         else:
             # Conversation not found, return a not found message
-            return redirect(url_for('conversation_not_found'))
+            return redirect(url_for('conversation_not_found', conversation_id=conversation_id))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('get_conversation'))
+        return redirect(url_for('get_conversation', conversation_id=conversation_id))
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -524,13 +531,13 @@ def delete_conversation():
             # Query the database to get the conversation to be deleted
             conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
 
-            # Check if the current user is the owner of the conversation
-            if conversation_to_delete.owner_id != current_user.id:
-                return redirect(url_for('conversation_delete_forbidden'))
-
             # Check if the conversation exists
             if not conversation_to_delete:
-                return redirect(url_for('conversation_delete_not_found'))
+                return redirect(url_for('conversation_delete_not_found', conversation_id=conversation_id))
+
+            # Check if the current user is the owner of the conversation
+            if conversation_to_delete.owner_id != current_user.id:
+                return redirect(url_for('conversation_delete_forbidden', conversation_id=conversation_id))
 
             # Delete the conversation
             db.delete(conversation_to_delete)
