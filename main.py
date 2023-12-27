@@ -433,7 +433,7 @@ def show_story():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('show_story'))
+        return redirect(url_for('authentication_error'))
 
 
 @app.route("/get-all-conversations")
