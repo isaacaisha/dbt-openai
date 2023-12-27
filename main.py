@@ -13,7 +13,7 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, logout_user, current_user
 from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
@@ -40,6 +40,11 @@ CORS(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.init_app(app)
+
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+app.config['WTF_CSRF_ENABLED'] = True
 
 try:
     openai_api_key = os.environ['OPENAI_API_KEY']
