@@ -5,10 +5,12 @@ import json
 import secrets
 import warnings
 import pytz
+import requests
+from flask_babel import Babel
 from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort, g
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, logout_user, current_user
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -34,8 +36,9 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
 csrf = CSRFProtect(app)
-Bootstrap(app)
 CORS(app)
+babel = Babel(app)
+Bootstrap(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -59,6 +62,8 @@ secret_key = secrets.token_hex(19)
 # Set it as the Flask application's secret key
 app.secret_key = secret_key
 
+ipstack_api_key = os.environ['IPSTACK_API_KEY']
+
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
@@ -78,6 +83,31 @@ with app.app_context():
 with get_db() as db:
     # memories = db.query(Memory).all()
     test = db.query(Memory).all()
+
+
+def get_geographic_info(ip):
+    url = f'https://api.ipstack.com/{ip}?access_key={ipstack_api_key}'
+    response = requests.get(url)
+    data = response.json()
+    print(f'get_geographic_info data:\n{data}')
+    return data
+
+
+def get_locale():
+    # Get the user geographic info
+    user_ip = request.remote_addr
+    geographic_info = get_geographic_info(user_ip)
+
+    # Determine the country and return the corresponding language
+    country = geographic_info.get('country_code')
+    return 'es' if country == 'ES' else 'fr'
+
+
+@app.before_request
+def before_request():
+    locale = get_locale()
+    if locale:
+        g.locale = locale
 
 
 @login_manager.user_loader
