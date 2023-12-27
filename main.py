@@ -512,6 +512,10 @@ def get_conversation(conversation_id):
             # Conversation not found, return a not found message
             return redirect(url_for('conversation_not_found', conversation_id=conversation_id))
 
+    except AttributeError:
+        flash(f"LOG-IN (AttributeError) ¡!¡")
+        return redirect(url_for('select_conversation'))
+
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('get_conversation', conversation_id=conversation_id))
@@ -547,6 +551,10 @@ def delete_conversation():
 
         return render_template('delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
+
+    except AttributeError:
+        flash(f"LOG-IN (AttributeError) ¡!¡")
+        return redirect(url_for('delete_conversation'))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
