@@ -12,6 +12,11 @@
 {% endblock %}
 
 {% block content1 %}
+
+<!-- Include CSRF token -->
+<span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
+<span style="display: none;">{{ wtf.form_field(writing_text_form.csrf_token) }}</span>
+
 <div class="container-fluid">
     <div class="p-1 rounded-3 jumbotron">
         <div class="container-fluid py-1">
@@ -60,7 +65,6 @@
 
 <div class="container">
     <form id="prompt-form" method="POST" action="{{ url_for('answer') }}">
-        <span style="display: none;">{{ wtf.form_field(writing_text_form.csrf_token) }}</span>
         <!--{{ writing_text_form.hidden_tag() }}-->
         {% if error_message %}
             <div class="alert alert-info text-center">

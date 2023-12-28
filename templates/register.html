@@ -24,51 +24,55 @@
 
 {% block content %}
 
-<div class="content">
+    <div class="content">
 
-    <!-- Page Header -->
-    <h5 class="text-center conversations-details">Welcome<br>¡!¡ Register ¡!¡<br>
-        To Interact with the<br>¡!¡ Artificial Intelligence ¡!¡</h5>
+        <!-- Include CSRF token -->
+        <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
+        <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
 
-    <hr class="mb-3" style="color:green;">
+        <!-- Page Header -->
+        <h5 class="text-center conversations-details">Welcome<br>¡!¡ Register ¡!¡<br>
+            To Interact with the<br>¡!¡ Artificial Intelligence ¡!¡</h5>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-md-10 mx-auto mb-3">
+        <hr class="mb-3" style="color:green;">
 
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for message in messages %}
-                            <p class="text-center" style="color:#17a2b8;">{{ message }}</p>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto mb-3">
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <p class="text-center" style="color:#17a2b8;">{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
 
 
-    <h1>{{ greeting }}</h1>
-    <p>{{ content }}</p>
+        <h1>{{ greeting }}</h1>
+        <p>{{ content }}</p>
 
-                <div class="">
+                    <div class="">
 
-                    {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
+                        {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
 
-                    <div class="mt-4">
-                      <p style="color:gray;">Already have an account? <a href="/login">Log in here</a>.</p>
+                        <div class="mt-4">
+                          <p style="color:gray;">Already have an account? <a href="/login">Log in here</a>.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <hr class="mb-3" style="color:yellow;">
+
+        <div class="text-center">
+            <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+        </div>
+
+        <hr class="mb-5" style="color:red;">
+
     </div>
-
-    <hr class="mb-3" style="color:yellow;">
-
-    <div class="text-center">
-        <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
-    </div>
-
-    <hr class="mb-5" style="color:red;">
-
-</div>
 
 {% endblock %}
 

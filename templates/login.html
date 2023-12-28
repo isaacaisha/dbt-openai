@@ -26,6 +26,10 @@
 
     <div class="content">
 
+        <!-- Include CSRF token -->
+        <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
+        <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
+
         <!-- Page Header -->
         <h5 class="text-center conversations-details">Welcome Back<br>-∞- ¡!¡ Log In ¡!¡ -∞-<br>
             To Interact with the<br>¡!¡ Artificial Intelligence ¡!¡</h5>
@@ -51,8 +55,6 @@
             </div>
         </div>
 
-    </div>
-
     <hr class="mb-3" style="color:yellow;">
 
     <div class="text-center">
@@ -60,6 +62,8 @@
     </div>
 
     <hr class="mb-5" style="color:red;">
+
+    </div>
 
 {% endblock %}
 
