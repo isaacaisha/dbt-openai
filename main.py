@@ -88,6 +88,24 @@ def load_user(user_id):
     return None
 
 
+# ------------------------------------------------ Users Languages ----------------------------------------------------#
+translations = {
+    'en': {'greeting': 'Hello!', 'content': 'Welcome to SìįSí Dbt AI'},
+    'fr': {'greeting': 'Bonjour !', 'content': 'Bienvenue dans SìįSí Dbt AI'},
+    'es': {'greeting': '¡Hola!', 'content': 'Bienvenido a SìįSí Dbt AI'},
+    'pt': {'greeting': 'Olá!', 'content': 'Bem-vindo à SìįSí Dbt AI'},
+    'ar': {'greeting': 'مرحبًا!', 'content': 'مرحبًا بك في SìįSí Dbt AI'},
+}
+
+
+def get_user_language():
+    accept_language = request.headers.get('Accept-Language')
+    if accept_language:
+        user_language = accept_language.split(',')[0].strip().lower()
+        return user_language.split('-')[0]
+    return 'en'
+
+
 # ------------------------------------------ @app.errorhandler functions ----------------------------------------------#
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(err):
@@ -255,6 +273,9 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    user_language = get_user_language()
+    translation = translations.get(user_language, translations['en'])
+
     writing_text_form = TextAreaForm()
     response = None
     user_input = None
@@ -275,7 +296,8 @@ def home():
 
         return render_template('index.html', writing_text_form=writing_text_form,
                                current_user=current_user, response=response, memory_buffer=memory_buffer,
-                               memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
+                               memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"),
+                               greeting=translation['greeting'], content=translation['content'])
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -284,6 +306,9 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
+    user_language = get_user_language()
+    translation = translations.get(user_language, translations['en'])
+
     writing_text_form = TextAreaForm()
     answer = None
     owner_id = None
@@ -306,7 +331,8 @@ def conversation_answer():
         return render_template('conversation-answer.html', current_user=current_user,
                                writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
                                memory_buffer=memory_buffer, summary_buffer=summary_buffer,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               date=datetime.now().strftime("%a %d %B %Y"),
+                               greeting=translation['greeting'], content=translation['content'])
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -420,7 +446,11 @@ def serve_audio():
 
 @app.route('/show-history')
 def show_story():
+    user_language = get_user_language()
+    translation = translations.get(user_language, translations['en'])
+
     try:
+
         owner_id = current_user.id
 
         # Modify the query to filter records based on the current user's ID
@@ -434,7 +464,8 @@ def show_story():
 
         return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
                                memory_buffer=memory_buffer, summary_conversation=summary_conversation,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               date=datetime.now().strftime("%a %d %B %Y"),
+                               greeting=translation['greeting'], content=translation['content'])
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -443,7 +474,11 @@ def show_story():
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
+    user_language = get_user_language()
+    translation = translations.get(user_language, translations['en'])
+
     try:
+
         owner_id = current_user.id
         conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
         # Create a list to store serialized data for each Memory object
@@ -466,8 +501,8 @@ def get_all_conversations():
                                current_user=current_user,
                                conversations=serialized_conversations,
                                serialized_conversations=serialized_conversations,
-                               date=datetime.now().strftime("%a %d %B %Y")
-                               )
+                               date=datetime.now().strftime("%a %d %B %Y"),
+                               greeting=translation['greeting'], content=translation['content'])
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -476,6 +511,9 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    user_language = get_user_language()
+    translation = translations.get(user_language, translations['en'])
+
     form = ConversationIdForm()
 
     try:
@@ -491,7 +529,8 @@ def select_conversation():
             return redirect(url)
 
         return render_template('conversation-by-id.html', form=form, current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               date=datetime.now().strftime("%a %d %B %Y"),
+                               greeting=translation['greeting'], content=translation['content'])
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -500,6 +539,9 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
+    user_language = get_user_language()
+    translation = translations.get(user_language, translations['en'])
+
     conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
     try:
@@ -509,7 +551,8 @@ def get_conversation(conversation_id):
                 formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
                 return render_template('conversation-details.html', current_user=current_user,
                                        conversation_=conversation_, formatted_created_at=formatted_created_at,
-                                       date=datetime.now().strftime("%a %d %B %Y"))
+                                       date=datetime.now().strftime("%a %d %B %Y"),
+                                       greeting=translation['greeting'], content=translation['content'])
             else:
                 # User doesn't have access, return a forbidden message
                 return redirect(url_for('conversation_forbidden', conversation_id=conversation_id))
@@ -528,6 +571,9 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    user_language = get_user_language()
+    translation = translations.get(user_language, translations['en'])
+
     form = DeleteForm()
 
     try:
@@ -555,7 +601,8 @@ def delete_conversation():
             return redirect(url_for('delete_conversation'))
 
         return render_template('delete.html', current_user=current_user, form=form,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               date=datetime.now().strftime("%a %d %B %Y"),
+                               greeting=translation['greeting'], content=translation['content'])
 
     except AttributeError:
         flash(f"LOG-IN (AttributeError) ¡!¡")
@@ -568,6 +615,9 @@ def delete_conversation():
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
+    user_language = get_user_language()
+    translation = translations.get(user_language, translations['en'])
+
     # Retrieve all conversations from the database
     conversations = test
     # Convert the conversations to a list of dictionaries
@@ -588,8 +638,8 @@ def get_conversations_jsonify():
                            current_user=current_user,
                            conversations=serialized_conversations,
                            serialized_conversations=serialized_conversations,
-                           date=datetime.now().strftime("%a %d %B %Y")
-                           )
+                           date=datetime.now().strftime("%a %d %B %Y"),
+                           greeting=translation['greeting'], content=translation['content'])
 
 
 if __name__ == '__main__':

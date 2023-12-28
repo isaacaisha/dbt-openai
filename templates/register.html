@@ -44,6 +44,10 @@
                     {% endif %}
                 {% endwith %}
 
+
+    <h1>{{ greeting }}</h1>
+    <p>{{ content }}</p>
+
                 <div class="">
 
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
