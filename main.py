@@ -307,9 +307,6 @@ def conversation_answer():
             response = conversation.predict(input=user_input)
             answer = response['output'] if response else None
 
-            # Set start_writing to True when the button is clicked
-            form.start_writing.data = True
-
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({'owner_id': owner_id})
         summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
