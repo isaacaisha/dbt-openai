@@ -97,7 +97,7 @@ def handle_internal_server_error(err):
     print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error')), 500
+    return redirect(referring_url or url_for('authentication_error'))  # , 500
 
 
 @app.errorhandler(BadRequest)
@@ -108,7 +108,7 @@ def handle_bad_request(err):
     print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error')), 400
+    return redirect(referring_url or url_for('authentication_error'))  # , 400
 
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)

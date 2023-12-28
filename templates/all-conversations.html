@@ -72,11 +72,14 @@
             Show Conversations json
         </button>
     </div>
+
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesContainer" class="mb-3" style="display: none;">
-        <pre>
-            {{ serialized_conversations | tojson(indent=4) }}
-        </pre>
+        {% for conversation in serialized_conversations %}
+            <pre>
+                {{ conversation|safe }}
+            </pre>
+        {% endfor %}
     </div>
 
     <hr class="mb-3" style="color:red;">
