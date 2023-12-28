@@ -59,42 +59,40 @@
 </div>
 
 <div class="container">
-    <form id="prompt-form" method="POST" action="{{ url_for('answer') }}">
-        <span style="display: none;">{{ wtf.form_field(writing_text_form.csrf_token) }}</span>
-        <!--{{ writing_text_form.hidden_tag() }}-->
-        {% if error_message %}
-            <div class="alert alert-info text-center">
-                {{ error_message }}
-            </div>
+    {% if error_message %}
+        <div class="alert alert-info text-center">
+            {{ error_message }}
+        </div>
+    {% endif %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p class="text-center" style="color:green">{{ message }}</p>
+            {% endfor %}
         {% endif %}
+    {% endwith %}
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="text-center" style="color:green">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <div class="text-center">
-            <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
+    <div class="text-center">
+        <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
             <div class="mb-3">
-                <button id="start-button" type="button" class="btn mb-3"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                <button id="start-button" type="button" class="btn mb-3" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
                     Click to Start Writing ¡!¡
                 </button>
                 <hr style="color:green;">
             </div>
-
             <!-- Add a button for speech recognition -->
             <button id="speechRecognitionButton" type="button" class="btn mb-3"
                     style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
                 Start Speech Recognition
                 <img class="micro" src="{{ url_for('static', filename='assets/images/micro.png') }}"> ¡!¡
             </button>
-        </div>
-        <!--<label for="userInput" class="label_">Write Your Text, below:</label>-->
+    </div>
+
+    <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}{{ form.hidden_tag() }}</span>
+    <form id="prompt-form" method="POST" action="{{ url_for('answer') }}">
         <div class="mb-3" id="textarea-container" style="display: none;">
+            <label for="userInput" class="label_">Write Your Text, below:</label>
             <textarea class="form-control" id="userInput" name="prompt"
                       placeholder="T😎 ASK M€, WRITE  HERE¡!¡:" oninput="capitalizeSentences(this)"></textarea>
         </div>
@@ -104,8 +102,8 @@
         <div class="text-center">
             <button id="generateButton" class="mb-3 btn generate-text" type="submit"
                 style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-            Click for Response 🔥¡!¡🔥
-        </button>
+                Click for Response 🔥¡!¡🔥
+            </button>
         </div>
     </form>
 
@@ -133,7 +131,6 @@
                 </audio>
             </button>
         </div>
-
     </div>
 
 

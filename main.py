@@ -263,13 +263,13 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    writing_text_form = TextAreaForm()
+    form = TextAreaForm()
     response = None
     user_input = None
 
     try:
-        if writing_text_form.validate_on_submit():
-            print(f"Form data: {writing_text_form.data}\n")
+        if form.validate_on_submit():
+            print(f"Form data: {form.data}\n")
 
             user_input = request.form['writing_text']
             # Use the LLM to generate a response based on user input
@@ -281,7 +281,7 @@ def home():
         print(f"user_input: {user_input}")
         print(f"response: {response}\n")
 
-        return render_template('index.html', writing_text_form=writing_text_form,
+        return render_template('index.html', form=form,
                                current_user=current_user, response=response, memory_buffer=memory_buffer,
                                memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -292,13 +292,13 @@ def home():
 
 @app.route("/conversation-answer", methods=["GET", "POST"])
 def conversation_answer():
-    writing_text_form = TextAreaForm()
+    form = TextAreaForm()
     answer = None
     owner_id = None
 
     try:
-        if writing_text_form.validate_on_submit():
-            print(f"Form data: {writing_text_form.data}")
+        if form.validate_on_submit():
+            print(f"Form data: {form.data}")
 
             user_input = request.form['writing_text']
             owner_id = current_user.id
@@ -307,12 +307,15 @@ def conversation_answer():
             response = conversation.predict(input=user_input)
             answer = response['output'] if response else None
 
+            # Set start_writing to True when the button is clicked
+            form.start_writing.data = True
+
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({'owner_id': owner_id})
         summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
 
         return render_template('conversation-answer.html', current_user=current_user,
-                               writing_text_form=writing_text_form, answer=answer, memory_load=memory_load,
+                               form=form, answer=answer, memory_load=memory_load,
                                memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
