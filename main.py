@@ -409,7 +409,8 @@ def answer():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err))
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/audio')
@@ -474,7 +475,7 @@ def get_all_conversations():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('get_all_conversations'))
+        return redirect(url_for('authentication_error'))
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
@@ -503,25 +504,26 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
+    # Use get() method to retrieve the conversation, returns None if not found
+    conversation_ = Memory.query.get(conversation_id)
 
     try:
-        if conversation_ is not None:
-            if conversation_.owner_id == current_user.id:
-                # Format created_at timestamp
-                formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
-                return render_template('conversation-details.html', current_user=current_user,
-                                       conversation_=conversation_, formatted_created_at=formatted_created_at,
-                                       date=datetime.now().strftime("%a %d %B %Y"))
-            else:
-                # User doesn't have access, return a forbidden message
-                return redirect(url_for('conversation_forbidden', conversation_id=conversation_id))
-        else:
+        if not conversation_:
             # Conversation not found, return a not found message
             return redirect(url_for('conversation_not_found', conversation_id=conversation_id))
 
+        if conversation_.owner_id != current_user.id:
+            # User doesn't have access, return a forbidden message
+            return redirect(url_for('conversation_forbidden', conversation_id=conversation_id))
+
+        # Format created_at timestamp
+        formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
+        return render_template('conversation-details.html', current_user=current_user,
+                               conversation_=conversation_, formatted_created_at=formatted_created_at,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+
     except AttributeError:
-        flash(f"LOG-IN (AttributeError) ¡!¡")
+        flash(f"RELOAD (AttributeError) ¡!¡")
         return redirect(url_for('select_conversation'))
 
     except Exception as err:
@@ -561,7 +563,7 @@ def delete_conversation():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except AttributeError:
-        flash(f"LOG-IN (AttributeError) ¡!¡")
+        flash(f"RELOAD (AttributeError) ¡!¡")
         return redirect(url_for('delete_conversation'))
 
     except Exception as err:
