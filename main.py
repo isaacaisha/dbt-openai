@@ -119,7 +119,7 @@ def handle_csrf_error(err):
     print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error')), 401
+    return redirect(referring_url or url_for('authentication_error'))  # , 401
 
 
 # ------------------------------------------ @app.errorhandler pages --------------------------------------------------#
