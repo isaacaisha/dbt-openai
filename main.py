@@ -237,7 +237,10 @@ def login():
             # Email exists and password correct
             else:
                 login_user(user, remember=remember_me)
-                return redirect(url_for('conversation_answer'))
+
+                # Redirect to the desired page after login
+                next_page = request.args.get('next') or url_for('conversation_answer')
+                return redirect(next_page)
 
         return render_template("login.html", form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
