@@ -6,7 +6,7 @@
 
 {% block head %}
     {{ super() }}
-    <link rel="shortcut icon" type="image/x-icon" href='static/assets/images/favicon.ico'>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon.ico') }}">
     {% include 'bootstrap/base.html' %}
 {% endblock %}
 
@@ -23,10 +23,6 @@
 {% block content %}
 
 <div class="content">
-
-    <!-- Include CSRF token -->
-    <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
-    <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
 
     <!-- Page Header -->
 
@@ -54,7 +50,7 @@
     <hr class="mb-3" style="color:yellow;">
 
     <div class="text-center">
-        <a href="conversation-answer" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+        <a href="{{ url_for('conversation_answer') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
     </div>
 
     <hr class="mb-5" style="color:red;">

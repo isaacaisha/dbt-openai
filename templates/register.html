@@ -6,7 +6,7 @@
 
 {% block head %}
     {{ super() }}
-    <link rel="shortcut icon" type="image/x-icon" href='static/assets/images/favicon1.ico'>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
     {% include 'bootstrap/base.html' %}
 {% endblock %}
 
@@ -26,10 +26,6 @@
 
     <div class="content">
 
-        <!-- Include CSRF token -->
-        <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
-        <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
-
         <!-- Page Header -->
         <h5 class="text-center conversations-details">Welcome<br>¡!¡ Register ¡!¡<br>
             To Interact with the<br>¡!¡ Artificial Intelligence ¡!¡</h5>
@@ -48,10 +44,6 @@
                         {% endif %}
                     {% endwith %}
 
-
-        <h1>{{ greeting }}</h1>
-        <p>{{ content }}</p>
-
                     <div class="">
 
                         {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
@@ -67,7 +59,7 @@
         <hr class="mb-3" style="color:yellow;">
 
         <div class="text-center">
-            <a href="/" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+            <a href="{{ url_for('home') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
         </div>
 
         <hr class="mb-5" style="color:red;">

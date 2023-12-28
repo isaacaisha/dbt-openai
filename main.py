@@ -80,12 +80,17 @@ with get_db() as db:
     test = db.query(Memory).all()
 
 
+# @login_manager.user_loader
+# def load_user(user_id):
+#    if user_id is not None and user_id.isdigit():
+#        # Check if the user_id is a non-empty string of digits
+#        return User.query.get(int(user_id))
+#    return None
+
+
 @login_manager.user_loader
 def load_user(user_id):
-    if user_id is not None and user_id.isdigit():
-        # Check if the user_id is a non-empty string of digits
-        return User.query.get(int(user_id))
-    return None
+    return User.query.get(user_id)
 
 
 # ------------------------------------------ @app.errorhandler functions ----------------------------------------------#
@@ -504,8 +509,10 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    # Use get() method to retrieve the conversation, returns None if not found
-    conversation_ = Memory.query.get(conversation_id)
+    conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
+
+    ## Use get() method to retrieve the conversation, returns None if not found
+    # conversation_ = Memory.query.get(conversation_id)
 
     try:
         if not conversation_:
