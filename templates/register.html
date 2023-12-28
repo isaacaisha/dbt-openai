@@ -46,7 +46,9 @@
 
                     <div class="">
 
-                        {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
+                        <div class="mb-3" style="margin:0 9%;">
+                            {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
+                        </div>
 
                         <div class="mt-4">
                           <p style="color:gray;">Already have an account? <a href="/login">Log in here</a>.</p>

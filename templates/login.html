@@ -45,7 +45,9 @@
                         {% endif %}
                     {% endwith %}
 
-                    {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
+                    <div class="mb-3" style="margin:0 9%;">
+                        {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
+                    </div>
 
                 </div>
             </div>

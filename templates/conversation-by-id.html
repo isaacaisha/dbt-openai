@@ -42,7 +42,6 @@
                 {% endwith %}
 
                 <div class="mb-3" style="margin:0 9%;">
-                    <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}{{ form.hidden_tag() }}</span>
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
                 </div>
 
