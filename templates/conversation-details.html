@@ -38,11 +38,15 @@
 
     <div class="container conversations-details">
         <h3>Conversation Details</h3>
+                    <!--
                     <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
                     <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
-                    <span style="color:#30ABB7;"><strong>Username:</strong> {{ conversation_.user_name }}</span><br>
-                    <span style="color:#9A30F3;"><strong>User Message:</strong> {{ conversation_.user_message }}</span><br>
-                    <span style="color:#1295FA;"><strong>LLM Response:</strong> {{ conversation_.llm_response }}</span><br>
+                    <span style="color:#30ABB7;">
+                    <strong>Username:</strong> {{ conversation_.user_name }}
+                    </span><br>
+                    -->
+                    <span style="color:#9A30F3;"><strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message }}</span><br>
+                    <span style="color:#1295FA;"><strong>SìįSí Dbt Response:</strong> {{ conversation_.llm_response }}</span><br>
                     <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary }}</span><br>
                     <span><strong>Created At:</strong> {{ formatted_created_at }}</span><br><br>
 
