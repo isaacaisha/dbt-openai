@@ -54,10 +54,12 @@
                 ⇩
             </button>
         </div>
+        {% for conversation in serialized_conversations %}
+            <pre>
+                {{ conversation|safe }}
+            </pre>
+        {% endfor %}
 
-        <pre>
-            {{ serialized_conversations | tojson(indent=4) }}
-        </pre>
     </div>
 
     <hr class="mb-3" style="color:yellow;">

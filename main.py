@@ -80,17 +80,12 @@ with get_db() as db:
     test = db.query(Memory).all()
 
 
-# @login_manager.user_loader
-# def load_user(user_id):
-#    if user_id is not None and user_id.isdigit():
-#        # Check if the user_id is a non-empty string of digits
-#        return User.query.get(int(user_id))
-#    return None
-
-
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    if user_id is not None and user_id.isdigit():
+        # Check if the user_id is a non-empty string of digits
+        return User.query.get(int(user_id))
+    return None
 
 
 # ------------------------------------------ @app.errorhandler functions ----------------------------------------------#
@@ -98,33 +93,33 @@ def load_user(user_id):
 def handle_internal_server_error(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
-    flash(f"RETRY (InternalServerError) ¡!¡"), 500
-    print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+    flash(f"RETRY (InternalServerError) ¡!¡")
+    print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error'))
+    return redirect(referring_url or url_for('authentication_error')), 500
 
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
-    flash(f"RETRY (BadRequest) ¡!¡"), 400
-    print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+    flash(f"RETRY (BadRequest) ¡!¡")
+    print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error'))
+    return redirect(referring_url or url_for('authentication_error')), 400
 
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
-    flash(f"RETRY (CSRFError) ¡!¡"), 400
-    print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+    flash(f"RETRY (CSRFError) ¡!¡")
+    print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error'))
+    return redirect(referring_url or url_for('authentication_error')), 401
 
 
 # ------------------------------------------ @app.errorhandler pages --------------------------------------------------#
@@ -509,10 +504,10 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
+    #conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
-    ## Use get() method to retrieve the conversation, returns None if not found
-    # conversation_ = Memory.query.get(conversation_id)
+    # Use get() method to retrieve the conversation, returns None if not found
+    conversation_ = Memory.query.get(conversation_id)
 
     try:
         if not conversation_:
