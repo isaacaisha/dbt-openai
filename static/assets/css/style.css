@@ -134,6 +134,11 @@ large-image {
     margin: 0;
 }
 
+/* register form field: Name */
+body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth-child(5) {
+    margin-bottom: 1.9rem !important;
+}
+
 #content > h3, #content > div:nth-child(4) > h3,
 #resultMemo > h3:nth-child(2), #resultMemo > h3,
 .conversations-details {
