@@ -1,6 +1,6 @@
 // Function to retrieve the CSRF token from the hidden span
 function getCSRFToken() {
-    return document.getElementById('csrf-token').textContent;
+    return document.querySelector('#csrf-token').textContent;
 }
 
 // Function to handle AJAX requests with CSRF token inclusion

@@ -1,4 +1,6 @@
 import os
+import time
+
 import flask_wtf
 import openai
 import json
@@ -493,20 +495,18 @@ def select_conversation():
 
             # Construct the URL string for the 'get_conversation' route
             url = f'/conversation/{selected_conversation_id}'
+            time.sleep(3)
 
-            return redirect(url, code=302)
+            return redirect(url)
 
-        return render_template('conversation-by-id.html', form=form, current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+        else:
+            return render_template('conversation-by-id.html', form=form, current_user=current_user,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
-
-    #except Exception as err:
-    #    print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-    #    return redirect(url_for('get_conversation', conversation_id=conversation_id))
 
 
 @app.route('/conversation/<int:conversation_id>')
@@ -522,19 +522,17 @@ def get_conversation(conversation_id):
             # User doesn't have access, return a forbidden message
             return redirect(url_for('conversation_forbidden', conversation_id=conversation_id))
 
-        # Format created_at timestamp
-        formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
-        return render_template('conversation-details.html', current_user=current_user,
-                               conversation_=conversation_, formatted_created_at=formatted_created_at,
-                               conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
-
-    except AttributeError:
-        flash(f"RELOAD (AttributeError) ¡!¡")
-        return redirect(url_for('select_conversation'))
+        else:
+            # Format created_at timestamp
+            formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
+            return render_template('conversation-details.html', current_user=current_user,
+                                   conversation_=conversation_, formatted_created_at=formatted_created_at,
+                                   conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('get_conversation', conversation_id=conversation_id))
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
@@ -550,6 +548,7 @@ def delete_conversation():
 
             # Query the database to get the conversation to be deleted
             conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
+            time.sleep(3)
 
             # Check if the conversation exists
             if not conversation_to_delete:
@@ -559,12 +558,13 @@ def delete_conversation():
             if conversation_to_delete.owner_id != current_user.id:
                 return redirect(url_for('conversation_delete_forbidden', conversation_id=conversation_id))
 
-            # Delete the conversation
-            db.delete(conversation_to_delete)
-            db.commit()
-            db.rollback()  # Rollback in case of commit failure
-            flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
-            return redirect(url_for('delete_conversation'))
+            else:
+                # Delete the conversation
+                db.delete(conversation_to_delete)
+                db.commit()
+                db.rollback()  # Rollback in case of commit failure
+                flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
+                return redirect(url_for('delete_conversation'))
 
         return render_template('conversation-delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
