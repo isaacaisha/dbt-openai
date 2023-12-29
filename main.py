@@ -199,6 +199,7 @@ def register():
             db.add(new_user)
             db.commit()
             db.refresh(new_user)
+            db.rollback()  # Rollback in case of commit failure
 
             # Log in and authenticate the user after adding details to the database.
             login_user(new_user)
@@ -383,6 +384,7 @@ def answer():
             # Commit changes to the database
             db.commit()
             db.refresh(new_memory)
+            db.rollback()  # Rollback in case of commit failure
 
             # Convert current_user to JSON-serializable format
             current_user_data = {
@@ -504,10 +506,10 @@ def select_conversation():
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    #conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
+    conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
-    # Use get() method to retrieve the conversation, returns None if not found
-    conversation_ = Memory.query.get(conversation_id)
+    # # Use get() method to retrieve the conversation, returns None if not found
+    # conversation_ = Memory.query.get(conversation_id)
 
     try:
         if not conversation_:
@@ -521,7 +523,7 @@ def get_conversation(conversation_id):
         # Format created_at timestamp
         formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
         return render_template('conversation-details.html', current_user=current_user,
-                               conversation_=conversation_, formatted_created_at=formatted_created_at, conversation_id=conversation_id,
+                               conversation_=conversation_, formatted_created_at=formatted_created_at,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except AttributeError:
@@ -558,6 +560,7 @@ def delete_conversation():
             # Delete the conversation
             db.delete(conversation_to_delete)
             db.commit()
+            db.rollback()  # Rollback in case of commit failure
             flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
             return redirect(url_for('delete_conversation'))
 
