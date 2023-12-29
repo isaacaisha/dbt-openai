@@ -564,7 +564,7 @@ def delete_conversation():
             flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
             return redirect(url_for('delete_conversation'))
 
-        return render_template('delete.html', current_user=current_user, form=form,
+        return render_template('conversation-delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except AttributeError:

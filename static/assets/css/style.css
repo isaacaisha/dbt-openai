@@ -129,6 +129,11 @@ large-image {
     font-size: 2.71rem;
 }
 
+/* register title */
+.p-1.rounded-3.jumbotron {
+    margin: 0;
+}
+
 #content > h3, #content > div:nth-child(4) > h3,
 #resultMemo > h3:nth-child(2), #resultMemo > h3,
 .conversations-details {
