@@ -494,22 +494,24 @@ def select_conversation():
             # Construct the URL string for the 'get_conversation' route
             url = f'/conversation/{selected_conversation_id}'
 
-            return redirect(url)
+            return redirect(url, code=302)
 
         return render_template('conversation-by-id.html', form=form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('select_conversation'))
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+
+    #except Exception as err:
+    #    print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+    #    return redirect(url_for('get_conversation', conversation_id=conversation_id))
 
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
-
-    # # Use get() method to retrieve the conversation, returns None if not found
-    # conversation_ = Memory.query.get(conversation_id)
 
     try:
         if not conversation_:
@@ -524,7 +526,7 @@ def get_conversation(conversation_id):
         formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
         return render_template('conversation-details.html', current_user=current_user,
                                conversation_=conversation_, formatted_created_at=formatted_created_at,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
     except AttributeError:
         flash(f"RELOAD (AttributeError) ¡!¡")
@@ -596,7 +598,6 @@ def get_conversations_jsonify():
 
     return render_template('database-conversations.html',
                            current_user=current_user,
-                           conversations=serialized_conversations,
                            serialized_conversations=serialized_conversations,
                            date=datetime.now().strftime("%a %d %B %Y")
                            )
