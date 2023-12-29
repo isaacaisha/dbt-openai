@@ -1,6 +1,4 @@
 import os
-import time
-
 import flask_wtf
 import openai
 import json
@@ -495,7 +493,6 @@ def select_conversation():
 
             # Construct the URL string for the 'get_conversation' route
             url = f'/conversation/{selected_conversation_id}'
-            time.sleep(3)
 
             return redirect(url)
 
@@ -548,7 +545,6 @@ def delete_conversation():
 
             # Query the database to get the conversation to be deleted
             conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
-            time.sleep(3)
 
             # Check if the conversation exists
             if not conversation_to_delete:
@@ -569,13 +565,10 @@ def delete_conversation():
         return render_template('conversation-delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
-    except AttributeError:
-        flash(f"RELOAD (AttributeError) ¡!¡")
-        return redirect(url_for('delete_conversation'))
-
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('delete_conversation'))
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/api/conversations-jsonify', methods=['GET'])
