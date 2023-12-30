@@ -10,6 +10,8 @@ from .forms.text_area_form import text_area_form_bp
 
 from .models.memory import memory_bp, Memory, User, db
 
+from .routes.auth import auth_bp
+
 from .schemas.schemas import schemas_bp
 
 
@@ -25,5 +27,7 @@ app.register_blueprint(register_form_bp, name='register_form')
 app.register_blueprint(text_area_form_bp, name='text_area_form')
 
 app.register_blueprint(memory_bp, name='memory')
+
+app.register_blueprint(auth_bp, name='auth')
 
 app.register_blueprint(schemas_bp, name='schemas')

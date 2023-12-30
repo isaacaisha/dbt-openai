@@ -10,9 +10,8 @@ from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
-from flask_login import LoginManager, login_user, logout_user, current_user
+from flask_login import LoginManager, current_user
 from werkzeug.exceptions import BadRequest, InternalServerError
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
@@ -20,12 +19,11 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 
+from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.databases.database import get_db
 from app.models.memory import Memory, db, User
 from app.forms.conversation_id_form import ConversationIdForm
 from app.forms.delete_form import DeleteForm
-from app.forms.login_form import LoginForm
-from app.forms.register_form import RegisterForm
 from app.forms.text_area_form import TextAreaForm
 
 warnings.filterwarnings('ignore')
@@ -168,93 +166,17 @@ def conversation_delete_not_found():
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm()
-
-    try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}")
-
-            # Check if the passwords match
-            if form.password.data != form.confirm_password.data:
-                flash("Passwords do not match. Please enter matching passwords 😭.")
-                return redirect(url_for('register'))
-
-            # If user's email already exists
-            if User.query.filter_by(email=form.email.data).first():
-                # Send a flash message
-                flash("You've already signed up with that email, log in instead! 🤣.")
-                return redirect(url_for('login'))
-
-            hash_and_salted_password = generate_password_hash(
-                request.form.get('password'),
-                method='pbkdf2:sha256',
-                salt_length=8
-            )
-
-            new_user = User()
-            new_user.email = request.form['email']
-            new_user.name = request.form['name']
-            new_user.password = hash_and_salted_password
-
-            db.add(new_user)
-            db.commit()
-            db.refresh(new_user)
-            db.rollback()  # Rollback in case of commit failure
-
-            # Log in and authenticate the user after adding details to the database.
-            login_user(new_user)
-            return redirect(url_for('login'))
-
-        else:
-            return render_template("register.html", form=form, current_user=current_user,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('register'))
+    return auth_register()
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-
-    try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}")
-
-            email = request.form.get('email')
-            password = request.form.get('password')
-            remember_me = form.remember_me.data
-
-            user = User.query.filter_by(email=email).first()
-            # Email doesn't exist
-            if not user:
-                flash("That email does not exist, please try again 😭 ¡!¡")
-                return redirect(url_for('login'))
-            # Password incorrect
-            elif not check_password_hash(user.password, password):
-                flash('Password incorrect, please try again 😭 ¡!¡')
-                return redirect(url_for('login'))
-            # Email exists and password correct
-            else:
-                login_user(user, remember=remember_me)
-
-                # Redirect to the desired page after login
-                next_page = request.args.get('next') or url_for('conversation_answer')
-                return redirect(next_page)
-
-        return render_template("login.html", form=form, current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('login'))
+    return auth_login()
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    logout_user()
-    return redirect(url_for('home'))
+    return auth_logout()
 
 
 @app.route("/", methods=["GET", "POST"])
