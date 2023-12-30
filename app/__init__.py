@@ -1,7 +1,5 @@
 from flask import Flask
 
-from .app_creates.app_config import app_config_bp
-
 from .databases.database import database_bp
 
 from .forms.app_forms import app_form_bp
@@ -15,8 +13,6 @@ from .schemas.schemas import schemas_bp
 
 
 app = Flask(__name__)
-
-app.register_blueprint(app_config_bp, name='configure')
 
 app.register_blueprint(database_bp, name='database')
 
