@@ -22,9 +22,7 @@ from langchain.memory import ConversationSummaryBufferMemory
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.databases.database import get_db
 from app.models.memory import Memory, db, User
-from app.forms.conversation_id_form import ConversationIdForm
-from app.forms.delete_form import DeleteForm
-from app.forms.text_area_form import TextAreaForm
+from app.forms.app_forms import ConversationIdForm, TextAreaForm, DeleteForm
 
 warnings.filterwarnings('ignore')
 
