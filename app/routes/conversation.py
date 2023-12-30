@@ -11,7 +11,7 @@ from app.models.memory import Memory, db
 
 from app.forms.app_forms import TextAreaForm
 
-conversation_bp = Blueprint('conversation', __name__)
+conversation_bp = Blueprint('conversation', __name__, template_folder='templates')
 
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")

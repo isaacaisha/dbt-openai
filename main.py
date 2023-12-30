@@ -20,7 +20,6 @@ from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
-from app.databases.database import get_db
 from app.models.memory import Memory, db, User
 from app.forms.app_forms import ConversationIdForm, DeleteForm
 from app.routes.conversation import (home as home_conversation, conversation_answer as answer_conversation,
@@ -33,31 +32,6 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-csrf = CSRFProtect(app)
-Bootstrap(app)
-CORS(app)
-
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.init_app(app)
-
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-app.config['WTF_CSRF_ENABLED'] = True
-
-try:
-    openai_api_key = os.environ['OPENAI_API_KEY']
-except KeyError:
-    raise ValueError("OPENAI_API_KEY environment variable is not set.")
-
-# Set the OpenAI API key
-openai.api_key = openai_api_key
-
-# Generate a random secret key
-secret_key = secrets.token_hex(19)
-# Set it as the Flask application's secret key
-app.secret_key = secret_key
 
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
@@ -65,104 +39,140 @@ memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
-app.config[
-    'SQLALCHEMY_DATABASE_URI'] = (f"postgresql://{os.environ['user']}:{os.environ['password']}@"
-                                  f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
 
-with app.app_context():
-    db.create_all()
-
-# Fetch memories from the database
-with get_db() as db:
-    # memories = db.query(Memory).all()
-    test = db.query(Memory).all()
+def configure_app():
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_PERMANENT'] = True
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+    app.config['WTF_CSRF_ENABLED'] = True
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    if user_id is not None and user_id.isdigit():
-        # Check if the user_id is a non-empty string of digits
-        return User.query.get(int(user_id))
-    return None
+configure_app()
 
 
-# ------------------------------------------ @app.errorhandler functions ----------------------------------------------#
-@app.errorhandler(InternalServerError)
-def handle_internal_server_error(err):
-    # Get the URL of the request that caused the error
-    referring_url = request.referrer
-    flash(f"RETRY (InternalServerError) ¡!¡")
-    print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
+def initialize_app():
+    CSRFProtect(app)
+    Bootstrap(app)
+    CORS(app)
 
-    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error'))  # , 500
+    login_manager = LoginManager(app)
+    login_manager.login_view = 'login'
+    login_manager.init_app(app)
 
+    @login_manager.user_loader
+    def load_user(user_id):
+        if user_id is not None and user_id.isdigit():
+            # Check if the user_id is a non-empty string of digits
+            return User.query.get(int(user_id))
+        return None
 
-@app.errorhandler(BadRequest)
-def handle_bad_request(err):
-    # Get the URL of the request that caused the error
-    referring_url = request.referrer
-    flash(f"RETRY (BadRequest) ¡!¡")
-    print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
+    try:
+        openai_api_key = os.environ['OPENAI_API_KEY']
+    except KeyError:
+        raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
-    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error'))  # , 400
+    # Set the OpenAI API key
+    openai.api_key = openai_api_key
 
-
-@app.errorhandler(flask_wtf.csrf.CSRFError)
-def handle_csrf_error(err):
-    # Get the URL of the request that caused the error
-    referring_url = request.referrer
-    flash(f"RETRY (CSRFError) ¡!¡")
-    print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
-
-    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error'))  # , 401
+    # Generate a random secret key
+    secret_key = secrets.token_hex(19)
+    # Set it as the Flask application's secret key
+    app.secret_key = secret_key
 
 
-# ------------------------------------------ @app.errorhandler pages --------------------------------------------------#
-@app.route('/authentication-error', methods=['GET', 'POST'])
-def authentication_error():
-    return render_template('authentication-error.html', current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y")), 401
+initialize_app()
 
 
-@app.route('/conversation-forbidden', methods=['GET', 'POST'])
-def conversation_forbidden():
-    # Retrieve the selected conversation ID from the query parameter
-    selected_conversation_id = request.args.get('conversation_id')
+def configure_error_handlers():
+    # -------------------------------------- @app.errorhandler functions ----------------------------------------------#
+    @app.errorhandler(InternalServerError)
+    def handle_internal_server_error(err):
+        # Get the URL of the request that caused the error
+        referring_url = request.referrer
+        flash(f"RETRY (InternalServerError) ¡!¡")
+        print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
 
-    return render_template('conversation-forbidden.html', current_user=current_user,
-                           conversation_id=selected_conversation_id, date=datetime.now().strftime("%a %d %B %Y")), 403
+        # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
+        return redirect(referring_url or url_for('authentication_error'))  # , 500
+
+    @app.errorhandler(BadRequest)
+    def handle_bad_request(err):
+        # Get the URL of the request that caused the error
+        referring_url = request.referrer
+        flash(f"RETRY (BadRequest) ¡!¡")
+        print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
+
+        # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
+        return redirect(referring_url or url_for('authentication_error'))  # , 400
+
+    @app.errorhandler(flask_wtf.csrf.CSRFError)
+    def handle_csrf_error(err):
+        # Get the URL of the request that caused the error
+        referring_url = request.referrer
+        flash(f"RETRY (CSRFError) ¡!¡")
+        print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
+
+        # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
+        return redirect(referring_url or url_for('authentication_error'))  # , 401
+
+    # -------------------------------------- @app.errorhandler pages --------------------------------------------------#
+    @app.route('/authentication-error', methods=['GET', 'POST'])
+    def authentication_error():
+        return render_template('authentication-error.html', current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
+
+    @app.route('/conversation-forbidden', methods=['GET', 'POST'])
+    def conversation_forbidden():
+        # Retrieve the selected conversation ID from the query parameter
+        selected_conversation_id = request.args.get('conversation_id')
+
+        return render_template('conversation-forbidden.html', current_user=current_user,
+                               conversation_id=selected_conversation_id,
+                               date=datetime.now().strftime("%a %d %B %Y")), 403
+
+    @app.route('/conversation-not-found', methods=['GET', 'POST'])
+    def conversation_not_found():
+        # Retrieve the selected conversation ID from the query parameter
+        selected_conversation_id = request.args.get('conversation_id')
+
+        return render_template('conversation-not-found.html', current_user=current_user,
+                               conversation_id=selected_conversation_id,
+                               date=datetime.now().strftime("%a %d %B %Y")), 404
+
+    @app.route('/conversation-delete-forbidden', methods=['GET', 'POST'])
+    def conversation_delete_forbidden():
+        # Retrieve the selected conversation ID from the query parameter
+        selected_conversation_id = request.args.get('conversation_id')
+
+        return render_template('conversation-delete-forbidden.html', current_user=current_user,
+                               conversation_id=selected_conversation_id,
+                               date=datetime.now().strftime("%a %d %B %Y")), 403
+
+    @app.route('/conversation-delete-not-found', methods=['GET', 'POST'])
+    def conversation_delete_not_found():
+        # Retrieve the selected conversation ID from the query parameter
+        selected_conversation_id = request.args.get('conversation_id')
+
+        return render_template('conversation-delete-not-found.html', current_user=current_user,
+                               conversation_id=selected_conversation_id,
+                               date=datetime.now().strftime("%a %d %B %Y")), 404
 
 
-@app.route('/conversation-not-found', methods=['GET', 'POST'])
-def conversation_not_found():
-    # Retrieve the selected conversation ID from the query parameter
-    selected_conversation_id = request.args.get('conversation_id')
-
-    return render_template('conversation-not-found.html', current_user=current_user,
-                           conversation_id=selected_conversation_id, date=datetime.now().strftime("%a %d %B %Y")), 404
+configure_error_handlers()
 
 
-@app.route('/conversation-delete-forbidden', methods=['GET', 'POST'])
-def conversation_delete_forbidden():
-    # Retrieve the selected conversation ID from the query parameter
-    selected_conversation_id = request.args.get('conversation_id')
+def configure_database():
+    app.config[
+        'SQLALCHEMY_DATABASE_URI'] = (f"postgresql://{os.environ['user']}:{os.environ['password']}@"
+                                      f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
 
-    return render_template('conversation-delete-forbidden.html', current_user=current_user,
-                           conversation_id=selected_conversation_id, date=datetime.now().strftime("%a %d %B %Y")), 403
+    with app.app_context():
+        db.create_all()
 
 
-@app.route('/conversation-delete-not-found', methods=['GET', 'POST'])
-def conversation_delete_not_found():
-    # Retrieve the selected conversation ID from the query parameter
-    selected_conversation_id = request.args.get('conversation_id')
-
-    return render_template('conversation-delete-not-found.html', current_user=current_user,
-                           conversation_id=selected_conversation_id, date=datetime.now().strftime("%a %d %B %Y")), 404
+configure_database()
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#

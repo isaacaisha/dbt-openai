@@ -1,6 +1,4 @@
 from flask import Blueprint
-from sqlalchemy import Column, String, Integer, ForeignKey
-from sqlalchemy.sql.sqltypes import TIMESTAMP
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
