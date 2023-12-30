@@ -3,7 +3,8 @@ from flask import Blueprint, render_template, redirect, url_for, Flask, flash, r
 from flask_login import login_user, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.forms.app_forms import LoginForm, RegisterForm
-from app.models.memory import db, User
+from app.models.memory import User
+from app.routes.conversation import db
 
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
