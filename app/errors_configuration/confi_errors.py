@@ -30,7 +30,7 @@ def configure_error_handlers():
         flash(f"RETRY (CSRFError) ¡!¡")
         print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y")), 401
+                               date=datetime.now().strftime("%a %d %B %Y")), 400
 
     # -------------------------------------- @app.errorhandler pages --------------------------------------------------#
     @errors_confi_bp.route('/authentication-error', methods=['GET', 'POST'])
