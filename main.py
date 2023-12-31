@@ -85,15 +85,18 @@ def configure_app():
 configure_app()
 
 
-def configure_database():
-    app.config[
-        'SQLALCHEMY_DATABASE_URI'] = (f"postgresql://{os.environ['user']}:{os.environ['password']}@"
-                                      f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
-
+def initialize_database():
     with app.app_context():
         db.create_all()
+
+
+def configure_database():
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"postgresql://{os.environ['user']}:{os.environ['password']}@"
+        f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
+    initialize_database()
 
 
 configure_database()
