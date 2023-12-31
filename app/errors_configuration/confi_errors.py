@@ -1,46 +1,13 @@
 from datetime import datetime
 
-import flask_wtf
-from flask import Blueprint, request, flash, redirect, url_for, render_template
+from flask import Blueprint, render_template
 from flask_login import current_user
-from werkzeug.exceptions import InternalServerError, BadRequest
 
 
 errors_confi_bp = Blueprint('errors', __name__)
 
 
 def configure_error_handlers():
-    # -------------------------------------- @app.errorhandler functions ----------------------------------------------#
-    @errors_confi_bp.errorhandler(InternalServerError)
-    def handle_internal_server_error(err):
-        # Get the URL of the request that caused the error
-        referring_url = request.referrer
-        flash(f"RETRY (InternalServerError) ¡!¡")
-        print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
-
-        # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-        return redirect(referring_url or url_for('authentication_error'))  # , 500
-
-    @errors_confi_bp.errorhandler(BadRequest)
-    def handle_bad_request(err):
-        # Get the URL of the request that caused the error
-        referring_url = request.referrer
-        flash(f"RETRY (BadRequest) ¡!¡")
-        print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
-
-        # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-        return redirect(referring_url or url_for('authentication_error'))  # , 400
-
-    @errors_confi_bp.errorhandler(flask_wtf.csrf.CSRFError)
-    def handle_csrf_error(err):
-        # Get the URL of the request that caused the error
-        referring_url = request.referrer
-        flash(f"RETRY (CSRFError) ¡!¡")
-        print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
-
-        # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-        return redirect(referring_url or url_for('authentication_error'))  # , 401
-
     # -------------------------------------- @app.errorhandler pages --------------------------------------------------#
     @errors_confi_bp.route('/authentication-error', methods=['GET', 'POST'])
     def authentication_error():

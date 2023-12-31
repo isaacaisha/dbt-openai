@@ -1,18 +1,21 @@
 import os
+
+import flask_wtf
 import openai
 import secrets
 import warnings
 from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask
+from flask import Flask, flash, render_template
 from flask_bootstrap import Bootstrap
-from flask_login import LoginManager
-from datetime import timedelta
+from flask_login import LoginManager, current_user
+from datetime import timedelta, datetime
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
+from werkzeug.exceptions import InternalServerError, BadRequest
 
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.databases.database import get_db
@@ -99,6 +102,31 @@ configure_database()
 with get_db() as db:
     # memories = db.query(Memory).all()
     test = db.query(Memory).all()
+
+
+# ------------------------------------------ @app.errorhandler functions ----------------------------------------------#
+@app.errorhandler(InternalServerError)
+def handle_internal_server_error(err):
+    flash(f"RETRY (InternalServerError) ¡!¡")
+    print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
+    return render_template('error.html', error_message=str(err), current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y")), 500
+
+
+@app.errorhandler(BadRequest)
+def handle_bad_request(err):
+    flash(f"RETRY (BadRequest) ¡!¡")
+    print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
+    return render_template('error.html', error_message=str(err), current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y")), 400
+
+
+@app.errorhandler(flask_wtf.csrf.CSRFError)
+def handle_csrf_error(err):
+    flash(f"RETRY (CSRFError) ¡!¡")
+    print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
+    return render_template('error.html', error_message=str(err), current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
