@@ -7,7 +7,7 @@ import warnings
 from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, flash, render_template
+from flask import Flask, flash, render_template, request, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, current_user
 from datetime import timedelta, datetime
@@ -104,29 +104,36 @@ with get_db() as db:
     test = db.query(Memory).all()
 
 
-# ------------------------------------------ @app.errorhandler functions ----------------------------------------------#
+# -------------------------------------- @app.errorhandler functions ----------------------------------------------#
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(err):
+    # Get the URL of the request that caused the error
+    referring_url = request.referrer
     flash(f"RETRY (InternalServerError) ¡!¡")
-    print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
-    return render_template('error.html', error_message=str(err), current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y")), 500
+    print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}"
 
+    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
+    return redirect(referring_url or url_for('authentication_error'))  # , 500
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(err):
+    # Get the URL of the request that caused the error
+    referring_url = request.referrer
     flash(f"RETRY (BadRequest) ¡!¡")
     print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
-    return render_template('error.html', error_message=str(err), current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y")), 400
 
+     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
+    return redirect(referring_url or url_for('authentication_error'))  # , 400
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(err):
+    # Get the URL of the request that caused the error
+    referring_url = request.referrer
     flash(f"RETRY (CSRFError) ¡!¡")
     print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
-    return render_template('error.html', error_message=str(err), current_user=current_user,
-                           date=datetime.now().strftime("%a %d %B %Y")), 401
+
+    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
+    return redirect(referring_url or url_for('authentication_error'))  # , 401
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
