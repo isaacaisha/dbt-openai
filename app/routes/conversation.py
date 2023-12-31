@@ -55,7 +55,8 @@ def home():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('home'))
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_bp.route("/conversation-answer", methods=["GET", "POST"])
@@ -86,7 +87,8 @@ def conversation_answer():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('conversation_answer'))
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_bp.route('/answer', methods=['POST'])
@@ -179,7 +181,8 @@ def answer():
                 "memory_id": new_memory.id
             })
         else:
-            return redirect(url_for('authentication_error'))
+            return render_template('authentication-error.html', current_user=current_user,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -216,7 +219,8 @@ def show_story():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('authentication_error'))
+        return render_template('authentication-error.html', current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_bp.route("/get-all-conversations")
@@ -249,7 +253,8 @@ def get_all_conversations():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('authentication_error'))
+        return render_template('authentication-error.html', current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_bp.route('/select-conversation-id', methods=['GET', 'POST'])
@@ -338,7 +343,9 @@ def delete_conversation():
                 db.commit()
                 db.rollback()  # Rollback in case of commit failure
                 flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
-                return redirect(url_for('delete_conversation'))
+                return render_template('conversation-delete-forbidden.html',
+                                       current_user=current_user, form=form, conversation_id=conversation_id,
+                                       date=datetime.now().strftime("%a %d %B %Y"))
 
         return render_template('conversation-delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
