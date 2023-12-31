@@ -7,10 +7,10 @@ import warnings
 from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, flash, render_template, request, redirect, url_for
+from flask import Flask, flash, request, redirect, url_for
 from flask_bootstrap import Bootstrap
-from flask_login import LoginManager, current_user
-from datetime import timedelta, datetime
+from flask_login import LoginManager
+from datetime import timedelta
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
@@ -110,10 +110,11 @@ def handle_internal_server_error(err):
     # Get the URL of the request that caused the error
     referring_url = request.referrer
     flash(f"RETRY (InternalServerError) ¡!¡")
-    print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}"
+    print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
 
     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
     return redirect(referring_url or url_for('authentication_error'))  # , 500
+
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(err):
@@ -122,8 +123,9 @@ def handle_bad_request(err):
     flash(f"RETRY (BadRequest) ¡!¡")
     print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
 
-     # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
+    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
     return redirect(referring_url or url_for('authentication_error'))  # , 400
+
 
 @app.errorhandler(flask_wtf.csrf.CSRFError)
 def handle_csrf_error(err):
