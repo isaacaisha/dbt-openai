@@ -111,6 +111,10 @@ large-image {
     margin: 0 1rem;
     padding: 1.3rem;
     transform: rotate(7deg);
+
+    /* Set a fixed width */
+    width: 150px; /* Adjust the width based on your design */
+    box-sizing: border-box; /* Include padding and border in the element's total width */
 }
 
 #navbarSupportedContent > ul > li:nth-child(3) > a.log-in-home {
