@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 
+import flask_wtf
 import pytz
 from flask import Blueprint, render_template, redirect, url_for, request, jsonify, abort, send_file, flash
 from flask_login import current_user
@@ -53,6 +54,13 @@ def home():
                                current_user=current_user, response=response, memory_buffer=memory_buffer,
                                memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
 
+    except flask_wtf.csrf.CSRFError as csrf_err:
+        # Handle CSRF error explicitly
+        flash(f"RETRY (CSRFError) ¡!¡")
+        print(f"CSRFError ¡!¡ Unexpected {csrf_err=}, {type(csrf_err)=}")
+        return render_template('error.html', error_message=str(csrf_err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
+
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
@@ -84,6 +92,13 @@ def conversation_answer():
                                form=form, answer=answer, memory_load=memory_load,
                                memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                                date=datetime.now().strftime("%a %d %B %Y"))
+
+    except flask_wtf.csrf.CSRFError as csrf_err:
+        # Handle CSRF error explicitly
+        flash(f"RETRY (CSRFError) ¡!¡")
+        print(f"CSRFError ¡!¡ Unexpected {csrf_err=}, {type(csrf_err)=}")
+        return render_template('error.html', error_message=str(csrf_err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -184,6 +199,13 @@ def answer():
             return render_template('authentication-error.html', current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
+    except flask_wtf.csrf.CSRFError as csrf_err:
+        # Handle CSRF error explicitly
+        flash(f"RETRY (CSRFError) ¡!¡")
+        print(f"CSRFError ¡!¡ Unexpected {csrf_err=}, {type(csrf_err)=}")
+        return render_template('error.html', error_message=str(csrf_err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
+
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
@@ -277,6 +299,13 @@ def select_conversation():
             return render_template('conversation-by-id.html', form=form, current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
+    except flask_wtf.csrf.CSRFError as csrf_err:
+        # Handle CSRF error explicitly
+        flash(f"RETRY (CSRFError) ¡!¡")
+        print(f"CSRFError ¡!¡ Unexpected {csrf_err=}, {type(csrf_err)=}")
+        return render_template('error.html', error_message=str(csrf_err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
+
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
@@ -349,6 +378,13 @@ def delete_conversation():
 
         return render_template('conversation-delete.html', current_user=current_user, form=form,
                                date=datetime.now().strftime("%a %d %B %Y"))
+
+    except flask_wtf.csrf.CSRFError as csrf_err:
+        # Handle CSRF error explicitly
+        flash(f"RETRY (CSRFError) ¡!¡")
+        print(f"CSRFError ¡!¡ Unexpected {csrf_err=}, {type(csrf_err)=}")
+        return render_template('error.html', error_message=str(csrf_err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
