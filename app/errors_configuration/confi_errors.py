@@ -16,21 +16,21 @@ def configure_error_handlers():
         flash(f"RETRY (InternalServerError) ¡!¡")
         print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))   # , 500
+                               date=datetime.now().strftime("%a %d %B %Y")), 500
 
     @errors_confi_bp.errorhandler(BadRequest)
     def handle_bad_request(err):
         flash(f"RETRY (BadRequest) ¡!¡")
         print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))  # , 400
+                               date=datetime.now().strftime("%a %d %B %Y")), 400
 
     @errors_confi_bp.errorhandler(flask_wtf.csrf.CSRFError)
     def handle_csrf_error(err):
         flash(f"RETRY (CSRFError) ¡!¡")
         print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))  # , 401
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
     # -------------------------------------- @app.errorhandler pages --------------------------------------------------#
     @errors_confi_bp.route('/authentication-error', methods=['GET', 'POST'])

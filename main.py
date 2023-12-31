@@ -52,7 +52,8 @@ def initialize_app():
         if user_id is not None and user_id.isdigit():
             # Check if the user_id is a non-empty string of digits
             return User.query.get(int(user_id))
-        return None
+        else:
+            return None
 
     try:
         openai_api_key = os.environ['OPENAI_API_KEY']
