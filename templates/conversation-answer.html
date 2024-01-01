@@ -61,7 +61,7 @@
 <div class="container">
     {% if error_message %}
         <div class="alert alert-info text-center">
-            {{ error_message }}
+            <p style="color:crimson">{{ error_message }}</p>
         </div>
     {% endif %}
 
@@ -69,7 +69,7 @@
         {% if messages %}
             <ul class="flashes">
                 {% for message in messages %}
-                    <li>{{ message }}</li>
+                    <li style="color:crimson">{{ message }}</li>
                 {% endfor %}
             </ul>
         {% endif %}
@@ -93,8 +93,6 @@
     </div>
 
     <form id="prompt-form" method="POST" action="{{ url_for('conversation') }}">
-        <!-- Include CSRF token -->
-        <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
 
         <div class="mb-3" id="textarea-container" style="display: none;">
             <label for="userInput" class="label_">Write Your Text, below:</label>
