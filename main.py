@@ -329,13 +329,19 @@ def answer():
 
 @app.route('/audio')
 def serve_audio():
-    audio_file_path = f'temp_audio{current_user.id}.mp3'
+    try:
+        audio_file_path = f'temp_audio{current_user.id}.mp3'
 
-    # Check if the file exists
-    if not os.path.exists(audio_file_path):
-        abort(404, description=f"Audio file not found")
+        # Check if the file exists
+        if not os.path.exists(audio_file_path):
+            abort(404, description="Audio file not found")
 
-    return send_file(audio_file_path, as_attachment=True)
+        return send_file(audio_file_path, as_attachment=True)
+    except AttributeError:
+        # Handle the case where current_user is not authenticated
+        flash("You need to log in to access this feature.", "warning")
+        print("You need to log in to access this feature.")
+        return redirect(url_for('conversation_answer'))
 
 
 @app.route('/show-history')
