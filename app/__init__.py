@@ -12,7 +12,7 @@ from .routes.conversation import conversation_bp
 from .schemas.schemas import schemas_bp
 
 
-from main import app
+app = Flask(__name__)
 
 app.register_blueprint(database_bp, name='database')
 
