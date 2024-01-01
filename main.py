@@ -201,6 +201,8 @@ def conversation_answer():
     owner_id = None
 
     try:
+        if not current_user.is_authenticated:
+            flash("RETRY OR RELOAD THE PAGE 😭 ¡!¡")
         if form.validate_on_submit():
             print(f"Form data: {form.data}")
 
@@ -222,7 +224,8 @@ def conversation_answer():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        flash(f'RETRY OR RELOAD THE PAGE 😭 ¡!¡\nUnexpected {err=}, {type(err)=} 😭')
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=} 😭")
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -241,13 +244,13 @@ def answer():
             conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
             # Combine the first 1 and last 9 entries into a valid JSON array
-            qdocs = f"[{','.join(conversation_strings[-3:])}]"
+            qdocs = f"[{','.join(conversation_strings[-1:])}]"
 
             # Convert 'created_at' values to string
             created_at_list = [str(memory.created_at) for memory in user_conversations]
 
             conversation_context = {
-                "created_at": created_at_list[-3:],
+                "created_at": created_at_list[-1:],
                 "conversations": qdocs,
                 "user_name": current_user.name,
                 "user_message": user_message,
@@ -271,7 +274,7 @@ def answer():
             tts = gTTS(assistant_reply)
 
             # Create a temporary audio file
-            audio_file_path = f'temp_audio.mp3'
+            audio_file_path = f'temp_audio{current_user.id}.mp3'
             tts.save(audio_file_path)
 
             memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
@@ -316,18 +319,17 @@ def answer():
                 "answer_audio_path": audio_file_path,
                 "memory_id": new_memory.id
             })
-        else:
-            flash(f'RETRY OR RELOAD THE PAGE 😭 ¡!¡')
 
     except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        flash(f'RETRY OR RELOAD THE PAGE 😭 ¡!¡\nUnexpected {err=}, {type(err)=} 😭')
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=} 😭")
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route('/audio')
 def serve_audio():
-    audio_file_path = f'temp_audio.mp3'
+    audio_file_path = f'temp_audio{current_user.id}.mp3'
 
     # Check if the file exists
     if not os.path.exists(audio_file_path):
@@ -349,7 +351,7 @@ def show_story():
             memory_load = memory.load_memory_variables({'owner_id': owner_id})
 
             # Assuming memory is an instance of ConversationBufferMemory
-            memory_buffer = f'\n{current_user.name}(owner_id:{owner_id}):\n{memory.buffer_as_str}'
+            memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n{memory.buffer_as_str}'
 
             print(f'memory_buffer_story:\n{memory_buffer}\n')
             print(f'memory_load_story:\n{memory_load}\n')
