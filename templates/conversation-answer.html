@@ -129,7 +129,7 @@
         {% endif %}
 
         <div class="text-center">
-            <button class="btn text-center">
+            <button class="btn text-center mb-3">
                 <audio controls>
                     <source src="{{ url_for('serve_audio', memory_id=current_user.id) }}" type="audio/mp3">
                     Your browser does not support the audio element.
@@ -138,9 +138,11 @@
         </div>
     </div>
 
+    <hr class="mb-5" style="color:red">
 
 </div>
 
+<!--
 <div class="container">
     <h3 class="mb-1 h3_result"></h3>
     <hr class="mb-3" style="color:red">
@@ -169,7 +171,7 @@
     <hr class="mb-3" style="color:yellow;">
 </div>
 
-<!-- Add a button to show the history -->
+<!- Add a button to show the history ->
 <div class="container text-center">
     <button id="showResultButton" type="button" class="btn text-center btn-story mb-3" onclick="toggleResultMemo()"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
@@ -191,7 +193,7 @@
     {% endfor %}
     <hr class="mb-5" style="color:green">
 </div>
-
+-->
 {% endblock %}
 
 {% block footer %} {% endblock %}
