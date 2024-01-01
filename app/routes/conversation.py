@@ -195,7 +195,7 @@ def conversation():
 
 @conversation_bp.route('/audio')
 def serve_audio():
-    audio_file_path = f'temp_audio{current_user.id}.mp3'
+    audio_file_path = f'temp_audio.mp3'
 
     # Check if the file exists
     if not os.path.exists(audio_file_path):
