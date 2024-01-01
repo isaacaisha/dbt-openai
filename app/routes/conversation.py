@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 import pytz
-from flask import Blueprint, render_template, redirect, url_for, request, jsonify, abort, send_file, flash
+from flask import Blueprint, render_template, redirect, request, jsonify, abort, send_file, flash
 from flask_login import current_user
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
@@ -11,7 +11,7 @@ from langchain.memory import ConversationBufferMemory, ConversationSummaryBuffer
 from langchain.chains import ConversationChain
 
 from app.databases.database import get_db
-from app.models.memory import Memory, db
+from app.models.memory import Memory
 
 from app.forms.app_forms import TextAreaForm, ConversationIdForm, DeleteForm
 
@@ -20,7 +20,7 @@ conversation_bp = Blueprint('conversation', __name__, template_folder='templates
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
-conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
+siisi_conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 # Fetch memories from the database
@@ -39,9 +39,10 @@ def home():
         if form.validate_on_submit():
             print(f"Form data: {form.data}\n")
 
-            user_input = request.form['writing_text']
+            # Retrieve form data using the correct key
+            user_input = form.writing_text.data
             # Use the LLM to generate a response based on user input
-            response = conversation.predict(input=user_input)
+            response = siisi_conversation.predict(input=user_input)
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
@@ -50,8 +51,9 @@ def home():
         print(f"response: {response}\n")
 
         return render_template('index.html', form=form,
-                               current_user=current_user, response=response, memory_buffer=memory_buffer,
-                               memory_load=memory_load, date=datetime.now().strftime("%a %d %B %Y"))
+                               current_user=current_user, user_input=user_input, response=response,
+                               memory_buffer=memory_buffer, memory_load=memory_load,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -59,8 +61,8 @@ def home():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@conversation_bp.route("/conversation-answer", methods=["GET", "POST"])
-def conversation_answer():
+@conversation_bp.route("/conversation", methods=["GET", "POST"])
+def conversation():
     form = TextAreaForm()
     answer = None
     owner_id = None
@@ -69,57 +71,26 @@ def conversation_answer():
         if form.validate_on_submit():
             print(f"Form data: {form.data}")
 
-            user_input = request.form['writing_text']
+            user_input = form.writing_text.data
             owner_id = current_user.id
 
             # Use the LLM to generate a response based on user input
             response = conversation.predict(input=user_input)
             answer = response['output'] if response else None
 
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({'owner_id': owner_id})
-        summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
-
-        return render_template('conversation-answer.html', current_user=current_user,
-                               form=form, answer=answer, memory_load=memory_load,
-                               memory_buffer=memory_buffer, summary_buffer=summary_buffer,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@conversation_bp.route('/answer', methods=['POST'])
-def answer():
-    user_message = request.form['prompt']
-
-    try:
-        if current_user.is_authenticated:
+        elif request.method == 'POST':
 
             # Get conversations only for the current user
             user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-            # Create a list of JSON strings for each conversation
-            conversation_strings = [memory.conversations_summary for memory in user_conversations]
-
-            # Combine the first 1 and last 9 entries into a valid JSON array
-            qdocs = f"[{','.join(conversation_strings[-3:])}]"
-
-            # Convert 'created_at' values to string
-            created_at_list = [str(memory.created_at) for memory in user_conversations]
-
-            conversation_context = {
-                "created_at": created_at_list[-3:],
-                "conversations": qdocs,
+            # Call llm ChatOpenAI for additional processing
+            user_message = request.form['prompt']
+            response = siisi_conversation.predict(input=json.dumps({
+                "created_at": [str(memory.created_at) for memory in user_conversations][-3:],
+                "conversations": f"[{','.join([memory.conversations_summary for memory in user_conversations][-3:])}]",
                 "user_name": current_user.name,
                 "user_message": user_message,
-            }
-
-            # Call llm ChatOpenAI
-            response = conversation.predict(input=json.dumps(conversation_context))
-            print(f'conversation_context:\n{conversation_context}\n')
+            }))
 
             # Check if the response is a string, and if so, use it as the assistant's reply
             if isinstance(response, str):
@@ -135,7 +106,7 @@ def answer():
             tts = gTTS(assistant_reply)
 
             # Create a temporary audio file
-            audio_file_path = 'temp_audio.mp3'
+            audio_file_path = f'temp_audio_{current_user.id}.mp3'
             tts.save(audio_file_path)
 
             memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
@@ -176,12 +147,20 @@ def answer():
             # Return the response as JSON, including both text and the path to the audio file
             return jsonify({
                 "current_user": current_user_data,
+                "user_message": user_message,
                 "answer_text": assistant_reply,
                 "answer_audio_path": audio_file_path,
-                "memory_id": new_memory.id
+                "memory_id": new_memory.id,
             })
-        else:
-            return redirect(url_for('authentication_error'))
+
+        memory_buffer = memory.buffer_as_str
+        memory_load = memory.load_memory_variables({'owner_id': owner_id})
+        summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
+
+        return render_template('conversation-answer.html', current_user=current_user,
+                               form=form, answer=answer, memory_load=memory_load,
+                               memory_buffer=memory_buffer, summary_buffer=summary_buffer,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -191,34 +170,49 @@ def answer():
 
 @conversation_bp.route('/audio')
 def serve_audio():
-    audio_file_path = 'temp_audio.mp3'
+    audio_file_path = f'temp_audio_{current_user.id}.mp3'
+
     # Check if the file exists
     if not os.path.exists(audio_file_path):
         abort(404, description=f"Audio file not found")
+
     return send_file(audio_file_path, as_attachment=True)
 
 
 @conversation_bp.route('/show-history')
 def show_story():
     try:
-        owner_id = current_user.id
+        # Flask-Login for user authentication
+        if current_user.is_authenticated:
+            owner_id = current_user.id
 
-        # Modify the query to filter records based on the current user's ID
-        summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
-        memory_load = memory.load_memory_variables({'owner_id': owner_id})
-        memory_buffer = f'{current_user.name}:\n{memory.buffer_as_str}'
+            # Assuming memory, llm, and memory_summary are instantiated within your Flask app context
+            # Modify the query to filter records based on the current user's ID
+            summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
+            memory_load = memory.load_memory_variables({'owner_id': owner_id})
 
-        print(f'memory_buffer_story:\n{memory_buffer}\n')
-        print(f'memory_load_story:\n{memory_load}\n')
-        print(f'summary_conversation_story:\n{summary_conversation}\n')
+            # Assuming memory is an instance of ConversationBufferMemory
+            memory_buffer = f'\n{current_user.name}(owner_id:{owner_id}):\n{memory.buffer_as_str}'
 
-        return render_template('show-history.html', current_user=current_user, memory_load=memory_load,
-                               memory_buffer=memory_buffer, summary_conversation=summary_conversation,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+            print(f'memory_buffer_story:\n{memory_buffer}\n')
+            print(f'memory_load_story:\n{memory_load}\n')
+            print(f'summary_conversation_story:\n{summary_conversation}\n')
+
+            return render_template('show-history.html', current_user=current_user, owner_id=owner_id,
+                                   memory_load=memory_load, memory_buffer=memory_buffer,
+                                   summary_conversation=summary_conversation,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
+
+        # If the user is not authenticated, you may want to handle this case (redirect, show an error, etc.)
+        else:
+            return render_template('authentication-error.html', error_message='User not authenticated',
+                                   current_user=current_user,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('authentication_error'))
+        # Handle exceptions appropriately
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_bp.route("/get-all-conversations")
@@ -243,15 +237,15 @@ def get_all_conversations():
             serialized_conversations.append(serialized_history)
 
         return render_template('all-conversations.html',
-                               current_user=current_user,
-                               conversations=serialized_conversations,
+                               current_user=current_user, owner_id=owner_id, conversations=serialized_conversations,
                                serialized_conversations=serialized_conversations,
                                date=datetime.now().strftime("%a %d %B %Y")
                                )
 
     except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('authentication_error'))
+        flash(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        return render_template('authentication-error.html', error_message='User not authenticated',
+                               current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_bp.route('/select-conversation-id', methods=['GET', 'POST'])
@@ -288,14 +282,14 @@ def get_conversation(conversation_id):
         if not conversation_:
             # Conversation not found, return a not found message
             return render_template('conversation-not-found.html', current_user=current_user,
-                                   conversation_=conversation_,
-                                   conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
+                                   conversation_=conversation_, conversation_id=conversation_id,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
 
         if conversation_.owner_id != current_user.id:
             # User doesn't have access, return a forbidden message
             return render_template('conversation-forbidden.html', current_user=current_user,
-                                   conversation_=conversation_,
-                                   conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
+                                   conversation_=conversation_, conversation_id=conversation_id,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
 
         else:
             # Format created_at timestamp
@@ -311,7 +305,7 @@ def get_conversation(conversation_id):
 
 
 @conversation_bp.route('/delete-conversation', methods=['GET', 'POST'])
-def delete_conversation():
+def delete_conversation(conversation_id=None):
     form = DeleteForm()
 
     try:
@@ -340,12 +334,12 @@ def delete_conversation():
                 db.commit()
                 db.rollback()  # Rollback in case of commit failure
                 flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
-                return render_template('conversation-delete-forbidden.html',
+                return render_template('conversation-delete.html',
                                        current_user=current_user, form=form, conversation_id=conversation_id,
                                        date=datetime.now().strftime("%a %d %B %Y"))
 
         return render_template('conversation-delete.html', current_user=current_user, form=form,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")

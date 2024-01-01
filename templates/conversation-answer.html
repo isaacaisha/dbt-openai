@@ -89,7 +89,7 @@
             </button>
     </div>
 
-    <form id="prompt-form" method="POST" action="{{ url_for('answer') }}">
+    <form id="prompt-form" method="POST" action="{{ url_for('conversation') }}">
         <!-- Include CSRF token -->
         <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
 

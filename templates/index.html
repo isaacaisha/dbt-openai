@@ -52,7 +52,7 @@
                     </li>
                     <li class="nav-item" style="display: inline-block;">
                         <a class="nav-link active log-in-home" aria-current="page"
-                           href="{{ url_for('login') }}" style="color:#1295FA;">Log ~ In</a>
+                           href="{{ url_for('login') }}" style="color:#1295FA;">Login</a>
                     </li>
                 </ul>
                 <p class="text-center" style="color:gold;">🔥∞To Use All Features∞🔥</p>
@@ -87,7 +87,7 @@
                     <textarea class="form-control result mb-5" style="color:purple;">{{ response|safe }}</textarea>
                     <hr style="color:red;">
                     <h3>Conversation</h3>
-                    <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
+                    <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer|safe }}</textarea>
                 </div>
             {% endif %}
         </div>

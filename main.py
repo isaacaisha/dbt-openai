@@ -1,5 +1,4 @@
 import os
-
 import flask_wtf
 import openai
 import secrets
@@ -9,21 +8,19 @@ from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, flash, request, redirect, url_for
 from flask_bootstrap import Bootstrap
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from datetime import timedelta
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 from werkzeug.exceptions import InternalServerError, BadRequest
-
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.databases.database import get_db
 from app.models.memory import Memory, db, User
-from app.errors_configuration.confi_errors import configure_error_handlers as configure_errors
-from app.routes.conversation import (home as home_conversation, conversation_answer as answer_conversation,
-                                     show_story as show_story_conversation, answer as siisi_respone,
-                                     serve_audio as audio_response, get_all_conversations as whole_conversations,
+from app.routes.conversation import (home as home_conversation, conversation as answer_conversation,
+                                     serve_audio as audio_response, show_story as show_story_conversation,
+                                     get_all_conversations as whole_conversations,
                                      select_conversation as conversation_selected,
                                      get_conversation as id_conversation, delete_conversation as conversation_deleted,
                                      get_conversations_jsonify as jsonify_conversation)
@@ -142,11 +139,6 @@ def handle_csrf_error(err):
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
-@app.route('/configure-error-handlers', methods=['GET', 'POST'])
-def configure_error_handlers():
-    return configure_errors()
-
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     return auth_register()
@@ -167,14 +159,9 @@ def home():
     return home_conversation()
 
 
-@app.route('/conversation-answer', methods=['GET', 'POST'])
-def conversation_answer():
+@app.route('/conversation', methods=['GET', 'POST'])
+def conversation():
     return answer_conversation()
-
-
-@app.route('/answer', methods=['GET', 'POST'])
-def answer():
-    return siisi_respone()
 
 
 @app.route('/audio', methods=['GET', 'POST'])
@@ -214,7 +201,7 @@ def get_conversations_jsonify():
 
 if __name__ == '__main__':
     # Clean up any previous temporary audio files
-    temp_audio_file = 'temp_audio.mp3'
+    temp_audio_file = f'temp_audio_.mp3'
     if os.path.exists(temp_audio_file):
         os.remove(temp_audio_file)
 

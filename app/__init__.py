@@ -2,8 +2,6 @@ from flask import Flask
 
 from .databases.database import database_bp
 
-from .errors_configuration.confi_errors import errors_confi_bp
-
 from .forms.app_forms import app_form_bp
 
 from .models.memory import memory_bp, Memory, User, db
@@ -17,8 +15,6 @@ from .schemas.schemas import schemas_bp
 app = Flask(__name__)
 
 app.register_blueprint(database_bp, name='database')
-
-app.register_blueprint(errors_confi_bp, name='errors')
 
 app.register_blueprint(app_form_bp, name='forms')
 
