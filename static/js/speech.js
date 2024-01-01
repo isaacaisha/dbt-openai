@@ -4,7 +4,7 @@ function sendRequest(prompt) {
     xhr.open('POST', '/answer', true);
 
     // Get CSRF token
-    var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
+    var csrfTokenInput = document.querySelector('meta[name="csrf_token"]').content;
     var csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
 
     // Print CSRF token for testing

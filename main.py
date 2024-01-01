@@ -227,7 +227,7 @@ def conversation_answer():
         flash(f'RETRY OR RELOAD THE PAGE 😭 ¡!¡\nUnexpected {err=}, {type(err)=} 😭')
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=} 😭")
         return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               date=datetime.now().strftime("%a %d %B %Y")), 500
 
 
 @app.route('/answer', methods=['POST'])
@@ -324,7 +324,7 @@ def answer():
         flash(f'RETRY OR RELOAD THE PAGE 😭 ¡!¡\nUnexpected {err=}, {type(err)=} 😭')
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=} 😭")
         return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               date=datetime.now().strftime("%a %d %B %Y")), 500
 
 
 @app.route('/audio')
