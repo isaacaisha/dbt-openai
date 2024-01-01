@@ -67,11 +67,14 @@
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            {% for message in messages %}
-                <p class="text-center" style="color:green">{{ message }}</p>
-            {% endfor %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
         {% endif %}
     {% endwith %}
+
 
     <div class="text-center">
         <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
@@ -91,7 +94,7 @@
 
     <form id="prompt-form" method="POST" action="{{ url_for('conversation') }}">
         <!-- Include CSRF token -->
-        <span style="display: none;">{{ form.csrf_token }}</span>
+        <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
 
         <div class="mb-3" id="textarea-container" style="display: none;">
             <label for="userInput" class="label_">Write Your Text, below:</label>

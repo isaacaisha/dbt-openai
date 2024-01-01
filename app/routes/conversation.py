@@ -166,6 +166,7 @@ def conversation():
 
     except CSRFError as csrf_error:
         # Flash a message indicating the CSRF error
+        #<span style="display: none;">{{ form.csrf_token }}</span>
         flash(f"CSRF Error: The form submission is invalid. Please try again.\n{csrf_error}")
         return render_template('conversation-answer.html', current_user=current_user,
                                form=form, answer=answer, date=datetime.now().strftime("%a %d %B %Y"))
