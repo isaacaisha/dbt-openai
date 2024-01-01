@@ -92,7 +92,6 @@ def conversation():
                 "user_name": current_user.name,
                 "user_message": user_message,
             }))
-            print(f'user_message:\n{user_message}\nresponse:\n{response} 😝')
 
             # Check if the response is a string, and if so, use it as the assistant's reply
             if isinstance(response, str):
@@ -166,8 +165,7 @@ def conversation():
 
     except CSRFError as csrf_error:
         # Flash a message indicating the CSRF error
-        #<span style="display: none;">{{ form.csrf_token }}</span>
-        flash(f"CSRF Error: The form submission is invalid. Please try again.\n{csrf_error}")
+        flash(f"RETRY\nCSRF Error: The form submission is invalid. Please try again.\n{csrf_error}")
         return render_template('conversation-answer.html', current_user=current_user,
                                form=form, answer=answer, date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -179,7 +177,7 @@ def conversation():
 
 @conversation_bp.route('/audio')
 def serve_audio():
-    audio_file_path = f'temp_audio_{current_user.id}.mp3'
+    audio_file_path = f'temp_audio_.mp3'
 
     # Check if the file exists
     if not os.path.exists(audio_file_path):
