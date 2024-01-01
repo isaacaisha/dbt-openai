@@ -205,13 +205,12 @@ def conversation_answer():
             print(f"Form data: {form.data}")
 
             user_input = request.form['writing_text']
-            #user_input = form.writing_text.data
+            # user_input = form.writing_text.data
             owner_id = current_user.id
 
             # Use the LLM to generate a response based on user input
             response = siisi_conversation.predict(input=user_input)
             answer = response['output'] if response else None
-
         if not current_user.is_authenticated:
             flash("RETRY OR RELOAD THE PAGE 😭 ¡!¡")
 
@@ -275,7 +274,7 @@ def answer():
             tts = gTTS(assistant_reply)
 
             # Create a temporary audio file
-            audio_file_path = f'temp_audio{current_user.id}.mp3'
+            audio_file_path = f'temp_audio.mp3'
             tts.save(audio_file_path)
 
             memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
@@ -330,30 +329,11 @@ def answer():
 
 @app.route('/audio')
 def serve_audio():
-    try:
-        audio_file_path = f'temp_audio{current_user.id}.mp3'
-
-        # Check if the file exists
-        if not os.path.exists(audio_file_path):
-            abort(404, description="Audio file not found")
-
-        return send_file(audio_file_path, as_attachment=True)
-    except AttributeError:
-        # Handle the case where current_user is not authenticated
-        flash("You need to log in to access this feature.", "warning")
-        print("You need to log in to access this feature.")
-        return redirect(url_for('conversation_answer'))
-
-
-def cleanup_temp_audio():
-    if current_user and current_user.is_authenticated:
-        temp_audio_file = f'temp_audio{current_user.id}.mp3'
-        if os.path.exists(temp_audio_file):
-            os.remove(temp_audio_file)
-    else:
-        temp_audio_file = 'temp_audio.mp3'
-        if os.path.exists(temp_audio_file):
-            os.remove(temp_audio_file)
+    audio_file_path = 'temp_audio.mp3'
+    # Check if the file exists
+    if not os.path.exists(audio_file_path):
+        abort(404, description=f"Audio file not found")
+    return send_file(audio_file_path, as_attachment=True)
 
 
 @app.route('/show-history')
