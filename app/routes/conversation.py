@@ -5,6 +5,7 @@ from datetime import datetime
 import pytz
 from flask import Blueprint, render_template, redirect, request, jsonify, abort, send_file, flash
 from flask_login import current_user
+from flask_wtf.csrf import CSRFError
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
@@ -91,6 +92,7 @@ def conversation():
                 "user_name": current_user.name,
                 "user_message": user_message,
             }))
+            print(f'user_message:\n{user_message}\nresponse:\n{response} 😝')
 
             # Check if the response is a string, and if so, use it as the assistant's reply
             if isinstance(response, str):
@@ -162,6 +164,12 @@ def conversation():
                                memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
+    except CSRFError as csrf_error:
+        # Flash a message indicating the CSRF error
+        flash(f"CSRF Error: The form submission is invalid. Please try again.\n{csrf_error}")
+        return render_template('conversation-answer.html', current_user=current_user,
+                               form=form, answer=answer, date=datetime.now().strftime("%a %d %B %Y"))
+
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
@@ -211,6 +219,7 @@ def show_story():
 
     except Exception as err:
         # Handle exceptions appropriately
+        flash(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
