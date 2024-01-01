@@ -93,6 +93,7 @@
     </div>
 
     <form id="prompt-form" method="POST" action="{{ url_for('conversation') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
         <div class="mb-3" id="textarea-container" style="display: none;">
             <label for="userInput" class="label_">Write Your Text, below:</label>

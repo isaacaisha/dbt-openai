@@ -15,6 +15,8 @@ from app.databases.database import get_db
 from app.models.memory import Memory
 
 from app.forms.app_forms import TextAreaForm, ConversationIdForm, DeleteForm
+from flask_wtf.csrf import generate_csrf
+
 
 conversation_bp = Blueprint('conversation', __name__, template_folder='templates')
 
@@ -30,8 +32,13 @@ with get_db() as db:
     test = db.query(Memory).all()
 
 
+def get_csrf_token():
+    return generate_csrf()
+
+
 @conversation_bp.route("/", methods=["GET", "POST"])
 def home():
+    csrf_token = get_csrf_token()
     form = TextAreaForm()
     response = None
     user_input = None
@@ -51,7 +58,7 @@ def home():
         print(f"user_input: {user_input}")
         print(f"response: {response}\n")
 
-        return render_template('index.html', form=form,
+        return render_template('index.html', csrf_token=csrf_token, form=form,
                                current_user=current_user, user_input=user_input, response=response,
                                memory_buffer=memory_buffer, memory_load=memory_load,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -64,13 +71,14 @@ def home():
 
 @conversation_bp.route("/conversation", methods=["GET", "POST"])
 def conversation():
+    csrf_token = get_csrf_token()
     form = TextAreaForm()
     answer = None
     owner_id = None
 
     try:
         if form.validate_on_submit():
-            print(f"Form data: {form.data}")
+            print(f"Form data SUBMIT: {form.data}")
 
             user_input = form.writing_text.data
             owner_id = current_user.id
@@ -80,6 +88,7 @@ def conversation():
             answer = response['output'] if response else None
 
         elif request.method == 'POST':
+            print(f"Form data POST: {form.data}")
 
             # Get conversations only for the current user
             user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
@@ -158,8 +167,8 @@ def conversation():
         memory_load = memory.load_memory_variables({'owner_id': owner_id})
         summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
 
-        return render_template('conversation-answer.html', current_user=current_user,
-                               form=form, answer=answer, memory_load=memory_load,
+        return render_template('conversation-answer.html', csrf_token=csrf_token,
+                               current_user=current_user, form=form, answer=answer, memory_load=memory_load,
                                memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -177,7 +186,7 @@ def conversation():
 
 @conversation_bp.route('/audio')
 def serve_audio():
-    audio_file_path = f'temp_audio_.mp3'
+    audio_file_path = f'temp_audio_{current_user.id}.mp3'
 
     # Check if the file exists
     if not os.path.exists(audio_file_path):
@@ -258,6 +267,7 @@ def get_all_conversations():
 
 @conversation_bp.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    csrf_token = get_csrf_token()
     form = ConversationIdForm()
 
     try:
@@ -274,7 +284,7 @@ def select_conversation():
 
         else:
             return render_template('conversation-by-id.html', form=form, current_user=current_user,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
+                                   csrf_token=csrf_token, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -314,6 +324,7 @@ def get_conversation(conversation_id):
 
 @conversation_bp.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation(conversation_id=None):
+    csrf_token = get_csrf_token()
     form = DeleteForm()
 
     try:
@@ -342,7 +353,7 @@ def delete_conversation(conversation_id=None):
                 db.commit()
                 db.rollback()  # Rollback in case of commit failure
                 flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
-                return render_template('conversation-delete.html',
+                return render_template('conversation-delete.html', csrf_token=csrf_token,
                                        current_user=current_user, form=form, conversation_id=conversation_id,
                                        date=datetime.now().strftime("%a %d %B %Y"))
 
