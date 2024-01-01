@@ -71,7 +71,7 @@ def conversation_answer():
         if form.validate_on_submit():
             print(f"Form data: {form.data}")
 
-            #user_input = request.form['writing_text']
+            # user_input = request.form['writing_text']
             user_input = form.writing_text.data
             owner_id = current_user.id
 
