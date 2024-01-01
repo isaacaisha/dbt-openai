@@ -8,7 +8,7 @@ from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, flash, request, redirect, url_for
 from flask_bootstrap import Bootstrap
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager
 from datetime import timedelta
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain

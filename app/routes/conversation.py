@@ -3,9 +3,9 @@ import os
 from datetime import datetime
 
 import pytz
+from main import initialize_app
 from flask import Blueprint, render_template, redirect, request, jsonify, abort, send_file, flash
 from flask_login import current_user
-from flask_wtf.csrf import CSRFError
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
@@ -15,10 +15,10 @@ from app.databases.database import get_db
 from app.models.memory import Memory
 
 from app.forms.app_forms import TextAreaForm, ConversationIdForm, DeleteForm
-from flask_wtf.csrf import generate_csrf
 
 conversation_bp = Blueprint('conversation', __name__, template_folder='templates')
 
+initialize_app()
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
