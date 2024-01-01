@@ -3,18 +3,18 @@ function sendRequest(prompt) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/conversation', true);
 
-    // Get CSRF token
-    var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
-    var csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
-
-    // Print CSRF token for testing
-    console.log('CSRF Token:', csrfToken);
-
-    // Set request headers, including the CSRF token
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    if (csrfToken) {
-        xhr.setRequestHeader('X-CSRFToken', csrfToken);
-    }
+    //// Get CSRF token
+    //var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
+    //var csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+//
+    //// Print CSRF token for testing
+    //console.log('CSRF Token:', csrfToken);
+//
+    //// Set request headers, including the CSRF token
+    //xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    //if (csrfToken) {
+    //    xhr.setRequestHeader('X-CSRFToken', csrfToken);
+    //}
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
