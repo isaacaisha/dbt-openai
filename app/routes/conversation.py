@@ -17,7 +17,6 @@ from app.models.memory import Memory
 from app.forms.app_forms import TextAreaForm, ConversationIdForm, DeleteForm
 from flask_wtf.csrf import generate_csrf
 
-
 conversation_bp = Blueprint('conversation', __name__, template_folder='templates')
 
 # Initialize an empty conversation chain
@@ -64,37 +63,67 @@ def home():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@conversation_bp.route("/conversation", methods=["GET", "POST"])
-def conversation():
+@conversation_bp.route("/conversation-answer", methods=["GET", "POST"])
+def conversation_answer():
     form = TextAreaForm()
     answer = None
     owner_id = None
 
     try:
         if form.validate_on_submit():
-            print(f"Form data SUBMIT: {form.data}")
+            print(f"Form data: {form.data}")
 
-            user_input = form.writing_text.data
+            user_input = request.form['writing_text']
             owner_id = current_user.id
 
             # Use the LLM to generate a response based on user input
-            response = conversation.predict(input=user_input)
+            response = siisi_conversation.predict(input=user_input)
             answer = response['output'] if response else None
 
-        elif request.method == 'POST':
-            print(f"Form data POST: {form.data}")
+        memory_buffer = memory.buffer_as_str
+        memory_load = memory.load_memory_variables({'owner_id': owner_id})
+        summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
+
+        return render_template('conversation-answer.html', current_user=current_user,
+                               form=form, answer=answer, memory_load=memory_load,
+                               memory_buffer=memory_buffer, summary_buffer=summary_buffer,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+
+    except Exception as err:
+        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@conversation_bp.route('/answer', methods=['POST'])
+def conversation():
+    user_message = request.form['prompt']
+
+    try:
+        if current_user.is_authenticated:
 
             # Get conversations only for the current user
             user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-            # Call llm ChatOpenAI for additional processing
-            user_message = request.form['prompt']
-            response = siisi_conversation.predict(input=json.dumps({
-                "created_at": [str(memory.created_at) for memory in user_conversations][-3:],
-                "conversations": f"[{','.join([memory.conversations_summary for memory in user_conversations][-3:])}]",
+            # Create a list of JSON strings for each conversation
+            conversation_strings = [memory.conversations_summary for memory in user_conversations]
+
+            # Combine the first 1 and last 9 entries into a valid JSON array
+            qdocs = f"[{','.join(conversation_strings[-3:])}]"
+
+            # Convert 'created_at' values to string
+            created_at_list = [str(memory.created_at) for memory in user_conversations]
+
+            conversation_context = {
+                "created_at": created_at_list[-3:],
+                "conversations": qdocs,
                 "user_name": current_user.name,
                 "user_message": user_message,
-            }))
+            }
+
+            # Call llm ChatOpenAI
+            response = siisi_conversation.predict(input=json.dumps(conversation_context))
+            print(f'conversation_context:\n{conversation_context}\n')
 
             # Check if the response is a string, and if so, use it as the assistant's reply
             if isinstance(response, str):
@@ -151,27 +180,12 @@ def conversation():
             # Return the response as JSON, including both text and the path to the audio file
             return jsonify({
                 "current_user": current_user_data,
-                "user_message": user_message,
                 "answer_text": assistant_reply,
                 "answer_audio_path": audio_file_path,
-                "memory_id": new_memory.id,
+                "memory_id": new_memory.id
             })
-
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({'owner_id': owner_id})
-        summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
-
-        return render_template('conversation-answer.html',
-                               current_user=current_user, form=form, answer=answer, memory_load=memory_load,
-                               memory_buffer=memory_buffer, summary_buffer=summary_buffer,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    except CSRFError as csrf_error:
-        # Flash a message indicating the CSRF error
-        print(f"CSRFError: {csrf_error}")
-        flash(f"RETRY\nCSRF Error: The form submission is invalid. Please try again.\n{csrf_error}")
-        return render_template('conversation-answer.html', current_user=current_user,
-                               form=form, answer=answer, date=datetime.now().strftime("%a %d %B %Y")), 400
+        else:
+            flash(f'RETRY OR RELOAD THE PAGE 😭 ¡!¡')
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -181,7 +195,7 @@ def conversation():
 
 @conversation_bp.route('/audio')
 def serve_audio():
-    audio_file_path = f'temp_audio.mp3'
+    audio_file_path = f'temp_audio{current_user.id}.mp3'
 
     # Check if the file exists
     if not os.path.exists(audio_file_path):

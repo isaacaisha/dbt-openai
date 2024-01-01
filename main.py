@@ -17,9 +17,10 @@ from langchain.memory import ConversationSummaryBufferMemory
 from werkzeug.exceptions import InternalServerError, BadRequest
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.databases.database import get_db
-from app.models.memory import Memory, db, User
-from app.routes.conversation import (home as home_conversation, conversation as answer_conversation,
-                                     serve_audio as audio_response, show_story as show_story_conversation,
+from app.models.memory import Memory, User, db
+from app.routes.conversation import (home as home_conversation, conversation_answer as response_conversation,
+                                     conversation as answer_conversation, serve_audio as audio_response,
+                                     show_story as show_story_conversation,
                                      get_all_conversations as whole_conversations,
                                      select_conversation as conversation_selected,
                                      get_conversation as id_conversation, delete_conversation as conversation_deleted,
@@ -157,6 +158,11 @@ def logout():
 @app.route('/', methods=['GET', 'POST'])
 def home():
     return home_conversation()
+
+
+@app.route('/conversation-answer', methods=['GET', 'POST'])
+def conversation_answer():
+    return response_conversation()
 
 
 @app.route('/conversation', methods=['GET', 'POST'])
