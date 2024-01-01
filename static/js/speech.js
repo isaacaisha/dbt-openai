@@ -1,7 +1,7 @@
 // Function to send a POST request to the server
 function sendRequest(prompt) {
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/conversation', true);
+    xhr.open('POST', '/answer', true);
 
     // Get CSRF token
     var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
