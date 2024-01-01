@@ -206,7 +206,7 @@ def conversation_answer():
         if form.validate_on_submit():
             print(f"Form data: {form.data}")
 
-            #user_input = request.form['writing_text']
+            # user_input = request.form['writing_text']
             user_input = form.writing_text.data
             owner_id = current_user.id
 
@@ -342,6 +342,17 @@ def serve_audio():
         flash("You need to log in to access this feature.", "warning")
         print("You need to log in to access this feature.")
         return redirect(url_for('conversation_answer'))
+
+
+def cleanup_temp_audio():
+    if current_user and current_user.is_authenticated:
+        temp_audio_file = f'temp_audio{current_user.id}.mp3'
+        if os.path.exists(temp_audio_file):
+            os.remove(temp_audio_file)
+    else:
+        temp_audio_file = 'temp_audio.mp3'
+        if os.path.exists(temp_audio_file):
+            os.remove(temp_audio_file)
 
 
 @app.route('/show-history')
