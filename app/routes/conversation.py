@@ -73,7 +73,8 @@ def conversation_answer():
         if form.validate_on_submit():
             print(f"Form data: {form.data}")
 
-            user_input = request.form['writing_text']
+            #user_input = request.form['writing_text']
+            user_input = form.writing_text.data
             owner_id = current_user.id
 
             # Use the LLM to generate a response based on user input
@@ -85,7 +86,7 @@ def conversation_answer():
         summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
 
         return render_template('conversation-answer.html', current_user=current_user,
-                               form=form, answer=answer, memory_load=memory_load,
+                               form=form, answer=answer, memory_load=memory_load, owner_id=owner_id,
                                memory_buffer=memory_buffer, summary_buffer=summary_buffer,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -139,7 +140,7 @@ def conversation():
             tts = gTTS(assistant_reply)
 
             # Create a temporary audio file
-            audio_file_path = f'temp_audio{current_user.id}.mp3'
+            audio_file_path = f'temp_audio.mp3'
             tts.save(audio_file_path)
 
             memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
