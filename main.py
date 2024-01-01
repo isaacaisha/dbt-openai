@@ -201,7 +201,7 @@ def get_conversations_jsonify():
 
 if __name__ == '__main__':
     # Clean up any previous temporary audio files
-    temp_audio_file = f'temp_audio_.mp3'
+    temp_audio_file = 'temp_audio.mp3'
     if os.path.exists(temp_audio_file):
         os.remove(temp_audio_file)
 

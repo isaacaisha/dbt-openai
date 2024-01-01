@@ -118,7 +118,7 @@ def conversation():
             tts = gTTS(assistant_reply)
 
             # Create a temporary audio file
-            audio_file_path = f'temp_audio_{current_user.id}.mp3'
+            audio_file_path = f'temp_audio{current_user.id}.mp3'
             tts.save(audio_file_path)
 
             memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
@@ -191,7 +191,7 @@ def conversation():
 
 @conversation_bp.route('/audio')
 def serve_audio():
-    audio_file_path = f'temp_audio_.mp3'
+    audio_file_path = f'temp_audio{current_user.id}.mp3'
 
     # Check if the file exists
     if not os.path.exists(audio_file_path):
