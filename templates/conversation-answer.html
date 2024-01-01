@@ -93,6 +93,8 @@
     </div>
 
     <form id="prompt-form" method="POST" action="{{ url_for('conversation') }}">
+        <!-- Include CSRF token -->
+        <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
 
         <div class="mb-3" id="textarea-container" style="display: none;">
             <label for="userInput" class="label_">Write Your Text, below:</label>
@@ -103,8 +105,6 @@
         <hr style="color:yellow">
 
         <div class="text-center">
-            <!-- Include CSRF token -->
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <button id="generateButton" class="mb-3 btn generate-text" type="submit"
                 style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
                 Click for Response 🔥¡!¡🔥

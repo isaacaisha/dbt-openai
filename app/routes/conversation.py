@@ -79,6 +79,7 @@ def conversation():
     try:
         if form.validate_on_submit():
             print(f"Form data SUBMIT: {form.data}")
+            print(f"csrf_token: {csrf_token}")
 
             user_input = form.writing_text.data
             owner_id = current_user.id
@@ -89,6 +90,7 @@ def conversation():
 
         elif request.method == 'POST':
             print(f"Form data POST: {form.data}")
+            print(f"csrf_token: {csrf_token}")
 
             # Get conversations only for the current user
             user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
@@ -149,6 +151,8 @@ def conversation():
                 "user_password": current_user.password,
             }
 
+            print(f"Form data POST: {form.data}")
+            print(f"csrf_token: {csrf_token}")
             print(f'User Name: {current_user.name} 😎')
             print(f'User ID:{current_user.id} 😝')
             print(f'User Input: {user_message} 😎')
@@ -174,9 +178,10 @@ def conversation():
 
     except CSRFError as csrf_error:
         # Flash a message indicating the CSRF error
+        print(f"CSRFError: {csrf_error}")
         flash(f"RETRY\nCSRF Error: The form submission is invalid. Please try again.\n{csrf_error}")
         return render_template('conversation-answer.html', current_user=current_user,
-                               form=form, answer=answer, date=datetime.now().strftime("%a %d %B %Y"))
+                               form=form, answer=answer, date=datetime.now().strftime("%a %d %B %Y")), 400
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
