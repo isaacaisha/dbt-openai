@@ -201,8 +201,6 @@ def conversation_answer():
     owner_id = None
 
     try:
-        if not current_user.is_authenticated:
-            flash("RETRY OR RELOAD THE PAGE 😭 ¡!¡")
         if form.validate_on_submit():
             print(f"Form data: {form.data}")
 
@@ -213,6 +211,9 @@ def conversation_answer():
             # Use the LLM to generate a response based on user input
             response = siisi_conversation.predict(input=user_input)
             answer = response['output'] if response else None
+
+        if not current_user.is_authenticated:
+            flash("RETRY OR RELOAD THE PAGE 😭 ¡!¡")
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({'owner_id': owner_id})
