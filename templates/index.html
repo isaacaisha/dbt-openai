@@ -75,8 +75,8 @@
 
                 <div class="mb-3" style="margin:0 9%;">
                     <!-- Include CSRF token -->
-                    {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
                     {{ form.hidden_tag() }}
+                    {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
                 </div>
             </div>
 
