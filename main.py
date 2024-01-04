@@ -212,6 +212,8 @@ def conversation_interface():
     try:
         if request.method == "POST" and form.validate_on_submit():
             print(f"Form data: {form.data}\n")
+            print(f"Request Method: {request.method}\n")
+
             # Retrieve form data using the correct key
             user_input = form.writing_text.data
             # Use the LLM to generate a response based on user input
@@ -246,11 +248,11 @@ def conversation_interface():
             jsonify_ = jsonify({
                 "user_input": user_input,
                 "response": response,
-                "audio_path": audio_file_path,
                 "conversations_summary_str": conversations_summary_str,
-                "memory_id": new_memory.id
+                "audio_path": audio_file_path,
             })
-            print(f"jsonify_: {jsonify_.json_module}\n")
+            print(f"User name: {current_user.name}\nuser_input: {user_input}\nresponse: {response}\n"
+                  f"conversations_summary_str: {conversations_summary_str}")
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
@@ -266,138 +268,6 @@ def conversation_interface():
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
-
-#@app.route("/conversation-answer", methods=["GET", "POST"])
-#def conversation_answer():
-#    form = TextAreaForm()
-#    answer = None
-#    owner_id = None
-#
-#    try:
-#        if form.validate_on_submit():
-#            print(f"Form data: {form.data}")
-#
-#            user_message = form.writing_text.data
-#            owner_id = current_user.id
-#
-#            # Use the LLM to generate a response based on user input
-#            response = siisi_conversation.predict(input=user_message)
-#            answer = response['output'] if response else None
-#        if not current_user.is_authenticated:
-#            flash("¡!¡ 😭 RETRY OR RELOAD THE PAGE 😭 ¡!¡")
-#
-#        memory_buffer = memory.buffer_as_str
-#        memory_load = memory.load_memory_variables({'owner_id': owner_id})
-#        summary_buffer = memory_summary.load_memory_variables({'owner_id': owner_id})
-#
-#        return render_template('conversation-answer.html', current_user=current_user,
-#                               form=form, answer=answer, memory_load=memory_load, owner_id=owner_id,
-#                               memory_buffer=memory_buffer, summary_buffer=summary_buffer,
-#                               date=datetime.now().strftime("%a %d %B %Y"))
-#
-#    except Exception as err:
-#        flash(f'RETRY OR RELOAD THE PAGE 😭 ¡!¡\nUnexpected {err=}, {type(err)=} 😭')
-#        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=} 😭")
-#        return render_template('error.html', error_message=str(err), current_user=current_user,
-#                               date=datetime.now().strftime("%a %d %B %Y")), 500
-#
-#
-#@app.route('/answer', methods=['POST'])
-#def answer():
-#    user_message = request.form.get('prompt')
-#
-#    try:
-#        if current_user.is_authenticated:
-#
-#            # Get conversations only for the current user
-#            user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
-#
-#            # Create a list of JSON strings for each conversation
-#            conversation_strings = [memory.conversations_summary for memory in user_conversations]
-#
-#            # Combine the first 1 and last 9 entries into a valid JSON array
-#            qdocs = f"[{','.join(conversation_strings[-1:])}]"
-#
-#            # Convert 'created_at' values to string
-#            created_at_list = [str(memory.created_at) for memory in user_conversations]
-#
-#            conversation_context = {
-#                "created_at": created_at_list[-1:],
-#                "conversations": qdocs,
-#                "user_name": current_user.name,
-#                "user_message": user_message,
-#            }
-#
-#            # Call llm ChatOpenAI
-#            response = siisi_conversation.predict(input=json.dumps(conversation_context))
-#            print(f'conversation_context:\n{conversation_context}\n')
-#
-#            # Check if the response is a string, and if so, use it as the assistant's reply
-#            if isinstance(response, str):
-#                assistant_reply = response
-#            else:
-#                # If it's not a string, access the assistant's reply appropriately
-#                if isinstance(response, dict) and 'choices' in response:
-#                    assistant_reply = response['choices'][0]['message']['content']
-#                else:
-#                    assistant_reply = None
-#
-#            # Convert the text response to speech using gTTS
-#            tts = gTTS(assistant_reply)
-#
-#            # Create a temporary audio file
-#            audio_file_path = f'temp_audio.mp3'
-#            tts.save(audio_file_path)
-#
-#            memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
-#            conversations_summary = memory_summary.load_memory_variables({})
-#            conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
-#
-#            current_time = datetime.now(pytz.timezone('Europe/Paris'))
-#
-#            # Create a new Memory object with the data
-#            new_memory = Memory(
-#                user_name=current_user.name,
-#                owner_id=current_user.id,
-#                user_message=user_message,
-#                llm_response=assistant_reply,
-#                conversations_summary=conversations_summary_str,
-#                created_at=current_time
-#            )
-#            # Add the new memory to the session
-#            db.add(new_memory)
-#            # Commit changes to the database
-#            db.commit()
-#            db.refresh(new_memory)
-#            db.rollback()  # Rollback in case of commit failure
-#
-#            # Convert current_user to JSON-serializable format
-#            current_user_data = {
-#                "id": current_user.id,
-#                "username": current_user.name,
-#                "user_email": current_user.email,
-#                "user_password": current_user.password,
-#            }
-#
-#            print(f'User Name: {current_user.name} 😎')
-#            print(f'User ID:{current_user.id} 😝')
-#            print(f'User Input: {user_message} 😎')
-#            print(f'LLM Response:{assistant_reply} 😝\n')
-#
-#            # Return the response as JSON, including both text and the path to the audio file
-#            return jsonify({
-#                "current_user": current_user_data,
-#                "answer_text": assistant_reply,
-#                "answer_audio_path": audio_file_path,
-#                "memory_id": new_memory.id
-#            })
-#
-#    except Exception as err:
-#        flash(f'RETRY OR RELOAD THE PAGE 😭 ¡!¡\nUnexpected {err=}, {type(err)=} 😭')
-#        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=} 😭")
-#        return render_template('error.html', error_message=str(err), current_user=current_user,
-#                               date=datetime.now().strftime("%a %d %B %Y")), 500
-#
 
 @app.route('/audio')
 def serve_audio():

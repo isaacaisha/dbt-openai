@@ -28,7 +28,7 @@
 {% block content %}
 <div class="text-center mb-1">
     <hr style="color:green;">
-<!--
+
     <h3 class="mb-5">1°Click on your Favorite Language</h3>
     <div>
         <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5"
@@ -85,65 +85,55 @@
                 </button>
                 <hr style="color:green;">
             </div>
-            <!- Add a button for speech recognition ->
+            <!-- Add a button for speech recognition -->
             <button id="speechRecognitionButton" type="button" class="btn mb-3"
                     style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
                 Start Speech Recognition
                 <img class="micro" src="{{ url_for('static', filename='assets/images/micro.png') }}"> ¡!¡
             </button>
     </div>
-<!-
-    <form id="prompt-form" method="POST"">
-        <!- Include CSRF token ->
-        <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
 
-        <div class="mb-3" id="textarea-container" style="display: none;">
-            <label for="userInput" class="label_">Write Your Text, below:</label>
-            <textarea class="form-control" id="userInput" name="prompt"
-                      placeholder="T😎 ASK M€, WRITE  HERE¡!¡:" oninput="capitalizeSentences(this)"></textarea>
+    <div class="mb-3" id="textarea-container" style="display: none;">
+        <div class="mb-3 text-center conversations-details">
+            <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Y😎UR· Message:</h3>
+
+            <form action="{{ url_for('conversation_interface') }}" method="post" class="form" role="form" novalidate="" id="conversationInterfaceForm">
+            <!-- Include CSRF token -->
+            <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
+            {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
+            </form>
+
         </div>
-
-        <hr style="color:yellow">
-
-        <div class="text-center">
-            <button id="generateButton" class="mb-3 btn generate-text" type="submit"
-                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-                Click for Response 🔥¡!¡🔥
-            </button>
-        </div>
-    </form>
--->
-
-    <div class="mb-3 text-center" style="margin:0 9%;">
-        <h3 style="color:#AEFAFC;">Your Message:</h3>
-        <!-- Include CSRF token -->
-        <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
-        {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
     </div>
+
+    <hr class="mb-3" style="color:yellow;">
 
     {% if response %}
         <!-- Display the text response -->
-        <div id="resultMemo" style="" class="text-center mb-3">
+        <div id="resultMemo" class="text-center mb-3">
+            <h3>·SìįSí· Response:</h3>
+            <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ response|safe }}</textarea>
             <hr style="color:red;">
-            <h3>…·SìįSí·…(LLM) Response:</h3>
-            <textarea class="form-control result mb-5" style="color:purple;">{{ response|safe }}</textarea>
+            <h3 style="color:#AEFAFC;">History:</h3>
+            <textarea class="textarea-memory result mb-3" style="color:purple;">{{ memory_buffer|safe }}</textarea>
+            <hr class="mb-3" style="color:yellow">
         </div>
     {% endif %}
 
     <div>
-        <hr class="mb-3" style="color:yellow">
 
         <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
 
         {% if response %}
         <!-- Display the text response -->
-        <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ response|safe }} 💪🏿😇👌🏿</div>
+        <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ response|safe }}<br> 💪🏿😇👌🏿</div>
+        <hr class="mb-3" style="color:green">
         {% endif %}
 
         {% if response %}
         <!-- Play the audio response -->
         <audio id="response-audio" controls style="display: none;">
-            <source src="{{ url_for('serve_audio', memory_id=current_user.id) }}" type="audio/mp3">
+            <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
                 Your browser does not support the audio element.
         </audio>
         {% endif %}
@@ -161,98 +151,6 @@
     <hr class="mb-5" style="color:red">
 
 </div>
-
-<!--
-<div class="container">
-    <h3 class="mb-1 h3_result"></h3>
-    <hr class="mb-3" style="color:red">
-    <div class="container">
-        <div class="text-center">
-            <button id="final_result_speech" type="button" class="btn mb-3"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-                Show Speech prompt ¡!¡
-            </button>
-        </div>
-        <textarea class="form-control result" id="final-result-speech-content" style="display: none;"></textarea>
-    </div>
-    <hr class="mb-3" style="color:green">
-</div>
-
-<div class="container">
-    <div class="container">
-        <div class="mb-3 text-center">
-            <button id="final_result" type="button" class="btn"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-                Show Writing prompt ¡!¡
-            </button>
-        </div>
-        <textarea class="form-control result" id="final-result-content" style="display: none;"></textarea>
-    </div>
-    <hr class="mb-3" style="color:yellow;">
-</div>
-
-<!- Add a button to show the history ->
-<div class="container text-center">
-    <button id="showResultButton" type="button" class="btn text-center btn-story mb-3" onclick="toggleResultMemo()"
-            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-        Show History ¡!¡
-    </button>
-    <hr class="mb-3" style="color:red">
-</div>
-
-<div id="resultMemo" style="display: none;" class="text-center">
-    {% for messages in memory_load %}
-        <h3>Conversation</h3>
-        <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
-
-    <hr class="mb-3" style="color:yellow;">
-
-    <h3>Summary</h3>
-    <textarea class="textarea-memory mb-3" style="color:purple;">{{ summary_buffer }}</textarea>
-
-    {% endfor %}
-    <hr class="mb-5" style="color:green">
-</div>
--->
-<script>
-    $(document).ready(function() {
-    $("#generateButton").on("click", function() {
-        var userInput = $("#writing_text").val();
-
-        // Use fetch API to send a POST request with JSON data
-        fetch("/conversation-interface", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ writing_text: userInput }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response here
-            console.log(data);
-
-            // Update relevant elements on the page
-            $("#resultMemo textarea").text(data.response);
-
-            var audio = document.getElementById('response-audio');
-            audio.src = "data:audio/mp3;base64," + data.answer_audio;
-            audio.style.display = 'block';
-            audio.oncanplay = function () {
-                audio.play();
-            };
-        })
-        .catch(error => {
-            console.error("Error:", error);
-        });
-    });
-
-    // Prevent form submission
-    $("#prompt-form").on("submit", function(event) {
-        event.preventDefault();
-    });
-});
-</script>
 
 {% endblock %}
 

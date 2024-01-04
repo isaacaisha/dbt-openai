@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Get DOM elements
     const speechRecognitionButton = document.getElementById('speechRecognitionButton');
-    const userInput = document.getElementById('userInput');
+    const userInput = document.getElementById('writing_text');
     let userSpeechData = "";
     let recognition;
 

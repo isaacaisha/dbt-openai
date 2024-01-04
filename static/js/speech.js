@@ -1,20 +1,11 @@
-// Hide the "Final Result" content if it exists
-var finalResultSpeechContent = document.getElementById('final-result-speech-content');
-if (finalResultSpeechContent) {
-    finalResultSpeechContent.style.display = 'none';
-}
-
 // Function to send a POST request to the server
 function sendRequest(prompt) {
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/answer', true);
+    xhr.open('POST', '/conversation-interface', true);
 
     // Get CSRF token
     var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
     var csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
-
-    // Print CSRF token for testing
-    console.log('CSRF Token:', csrfToken);
 
     // Set request headers, including the CSRF token
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -83,29 +74,16 @@ function sendRequest(prompt) {
     };
 
     // Include the CSRF token in the request body
-    var requestBody = 'prompt=' + encodeURIComponent(prompt);
+    var requestBody = 'writing_text=' + encodeURIComponent(prompt);
     if (csrfToken) {
         requestBody += '&csrf_token=' + encodeURIComponent(csrfToken);
     }
     xhr.send(requestBody);
 }
 
-// Add click event listeners to the language buttons to set the active button
-var languageButtons = document.querySelectorAll('.language-btn');
-languageButtons.forEach(function (button) {
-    button.addEventListener('click', function () {
-        // Remove the 'active' class from all buttons
-        languageButtons.forEach(function (btn) {
-            btn.classList.remove('active');
-        });
-        // Add the 'active' class to the clicked button
-        button.classList.add('active');
-    });
-});
-
 // Add an event listener to the form for submitting
 document.getElementById('prompt-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    var prompt = document.getElementById('userInput').value; // Get text from the textarea
+    var prompt = document.getElementById('writing_text').value; // Get text from the textarea
     sendRequest(prompt);
 });
