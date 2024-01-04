@@ -94,7 +94,7 @@
 
     <form id="prompt-form" method="POST" action="{{ url_for('answer') }}">
         <!-- Include CSRF token -->
-        <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <div class="mb-3" id="textarea-container" style="display: none;">
             <label for="userInput" class="label_">Write Your Text, below:</label>
@@ -142,58 +142,6 @@
 
 </div>
 
-<!--
-<div class="container">
-    <h3 class="mb-1 h3_result"></h3>
-    <hr class="mb-3" style="color:red">
-    <div class="container">
-        <div class="text-center">
-            <button id="final_result_speech" type="button" class="btn mb-3"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-                Show Speech prompt ¡!¡
-            </button>
-        </div>
-        <textarea class="form-control result" id="final-result-speech-content" style="display: none;"></textarea>
-    </div>
-    <hr class="mb-3" style="color:green">
-</div>
-
-<div class="container">
-    <div class="container">
-        <div class="mb-3 text-center">
-            <button id="final_result" type="button" class="btn"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-                Show Writing prompt ¡!¡
-            </button>
-        </div>
-        <textarea class="form-control result" id="final-result-content" style="display: none;"></textarea>
-    </div>
-    <hr class="mb-3" style="color:yellow;">
-</div>
-
-<!- Add a button to show the history ->
-<div class="container text-center">
-    <button id="showResultButton" type="button" class="btn text-center btn-story mb-3" onclick="toggleResultMemo()"
-            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-        Show History ¡!¡
-    </button>
-    <hr class="mb-3" style="color:red">
-</div>
-
-<div id="resultMemo" style="display: none;" class="text-center">
-    {% for messages in memory_load %}
-        <h3>Conversation</h3>
-        <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ memory_buffer }}</textarea>
-
-    <hr class="mb-3" style="color:yellow;">
-
-    <h3>Summary</h3>
-    <textarea class="textarea-memory mb-3" style="color:purple;">{{ summary_buffer }}</textarea>
-
-    {% endfor %}
-    <hr class="mb-5" style="color:green">
-</div>
--->
 {% endblock %}
 
 {% block footer %} {% endblock %}

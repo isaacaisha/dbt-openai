@@ -231,7 +231,7 @@ def conversation_answer():
 
 @app.route('/answer', methods=['POST'])
 def answer():
-    user_message = request.form['prompt']
+    user_message = request.form.get('prompt')
 
     try:
         if current_user.is_authenticated:

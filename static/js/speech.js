@@ -1,3 +1,9 @@
+// Hide the "Final Result" content if it exists
+var finalResultSpeechContent = document.getElementById('final-result-speech-content');
+if (finalResultSpeechContent) {
+    finalResultSpeechContent.style.display = 'none';
+}
+
 // Function to send a POST request to the server
 function sendRequest(prompt) {
     var xhr = new XMLHttpRequest();
@@ -18,7 +24,9 @@ function sendRequest(prompt) {
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
+            console.log(xhr.status);
             if (xhr.status === 200) {
+                console.log(xhr.responseText);
                 var response = JSON.parse(xhr.responseText);
 
                 // Display the text response in the textarea
