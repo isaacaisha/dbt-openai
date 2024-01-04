@@ -3,14 +3,8 @@ function sendRequest(prompt) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/conversation-interface', true);
 
-    // Get CSRF token
-    var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
-    var csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
-
     // Set request headers, including the CSRF token
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    if (csrfToken) {
-        xhr.setRequestHeader('X-CSRFToken', csrfToken);
     }
 
     xhr.onreadystatechange = function () {
@@ -75,15 +69,7 @@ function sendRequest(prompt) {
 
     // Include the CSRF token in the request body
     var requestBody = 'writing_text=' + encodeURIComponent(prompt);
-    if (csrfToken) {
-        requestBody += '&csrf_token=' + encodeURIComponent(csrfToken);
     }
     xhr.send(requestBody);
 }
 
-// Add an event listener to the form for submitting
-document.getElementById('prompt-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var prompt = document.getElementById('writing_text').value; // Get text from the textarea
-    sendRequest(prompt);
-});

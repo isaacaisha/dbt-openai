@@ -47,19 +47,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Click event listener for the "Final Result" button
-    document.getElementById('final_result_speech').addEventListener('click', function () {
-        if (userSpeechData.trim() === "") {
-            // Display an error message if no speech data
-            document.getElementById('error-message').textContent = "Please,\nYou Have To Speech\nFirst\n ¡!¡ 😝 ¡!¡";
-            document.getElementById('error-message').style.display = 'block';
-            document.getElementById('final-result-speech-content').style.display = 'none';
-        } else {
-            // Display the final speech result
-            document.getElementById('error-message').textContent = "";
-            document.getElementById('error-message').style.display = 'none';
-            document.getElementById('final-result-speech-content').textContent = userSpeechData;
-            document.getElementById('final-result-speech-content').style.display = 'block';
-        }
-    });
 });
