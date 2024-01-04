@@ -204,11 +204,11 @@ def conversation_answer():
         if form.validate_on_submit():
             print(f"Form data: {form.data}")
 
-            user_input = form.writing_text.data
+            user_message = form.writing_text.data
             owner_id = current_user.id
 
             # Use the LLM to generate a response based on user input
-            response = siisi_conversation.predict(input=user_input)
+            response = siisi_conversation.predict(input=user_message)
             answer = response['output'] if response else None
         if not current_user.is_authenticated:
             flash("¡!¡ 😭 RETRY OR RELOAD THE PAGE 😭 ¡!¡")
