@@ -1,4 +1,4 @@
-<!--{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% extends 'header.html' %}
 
@@ -26,8 +26,9 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="text-center mb-1">
+    <hr style="color:green;">
+<!--
     <h3 class="mb-5">1°Click on your Favorite Language</h3>
     <div>
         <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5"
@@ -91,8 +92,8 @@
                 <img class="micro" src="{{ url_for('static', filename='assets/images/micro.png') }}"> ¡!¡
             </button>
     </div>
-
-    <form id="prompt-form" method="POST" action="{{ url_for('answer') }}">
+<!-
+    <form id="prompt-form" method="POST"">
         <!- Include CSRF token ->
         <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
 
@@ -111,17 +112,36 @@
             </button>
         </div>
     </form>
+-->
+
+    <div class="mb-3 text-center" style="margin:0 9%;">
+        <h3 style="color:#AEFAFC;">Your Message:</h3>
+        <!-- Include CSRF token -->
+        <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
+        {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
+    </div>
+
+    {% if response %}
+        <!-- Display the text response -->
+        <div id="resultMemo" style="" class="text-center mb-3">
+            <hr style="color:red;">
+            <h3>…·SìįSí·…(LLM) Response:</h3>
+            <textarea class="form-control result mb-5" style="color:purple;">{{ response|safe }}</textarea>
+        </div>
+    {% endif %}
 
     <div>
+        <hr class="mb-3" style="color:yellow">
+
         <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
 
-        {% if answer %}
-        <!- Display the text response ->
-        <div id="response-text">{{ answer|safe }} 💪🏿😇👌🏿</div>
+        {% if response %}
+        <!-- Display the text response -->
+        <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ response|safe }} 💪🏿😇👌🏿</div>
         {% endif %}
 
-        {% if answer %}
-        <!- Play the audio response ->
+        {% if response %}
+        <!-- Play the audio response -->
         <audio id="response-audio" controls style="display: none;">
             <source src="{{ url_for('serve_audio', memory_id=current_user.id) }}" type="audio/mp3">
                 Your browser does not support the audio element.
@@ -129,7 +149,7 @@
         {% endif %}
 
         <div class="text-center">
-            <button class="btn text-center mb-3">
+            <button class="btn submit text-center mb-3">
                 <audio controls>
                     <source src="{{ url_for('serve_audio', memory_id=current_user.id) }}" type="audio/mp3">
                     Your browser does not support the audio element.
@@ -142,7 +162,7 @@
 
 </div>
 
-<!-
+<!--
 <div class="container">
     <h3 class="mb-1 h3_result"></h3>
     <hr class="mb-3" style="color:red">
@@ -194,6 +214,46 @@
     <hr class="mb-5" style="color:green">
 </div>
 -->
+<script>
+    $(document).ready(function() {
+    $("#generateButton").on("click", function() {
+        var userInput = $("#writing_text").val();
+
+        // Use fetch API to send a POST request with JSON data
+        fetch("/conversation-interface", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ writing_text: userInput }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response here
+            console.log(data);
+
+            // Update relevant elements on the page
+            $("#resultMemo textarea").text(data.response);
+
+            var audio = document.getElementById('response-audio');
+            audio.src = "data:audio/mp3;base64," + data.answer_audio;
+            audio.style.display = 'block';
+            audio.oncanplay = function () {
+                audio.play();
+            };
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    });
+
+    // Prevent form submission
+    $("#prompt-form").on("submit", function(event) {
+        event.preventDefault();
+    });
+});
+</script>
+
 {% endblock %}
 
 {% block footer %} {% endblock %}
