@@ -46,7 +46,7 @@ function sendRequest(prompt) {
                 audio.style.display = 'block';
 
                 // Auto-play the audio when it's ready
-                audio.oncanplay = function () {
+                audio.onloadedmetadata = function () {
                     audio.play();
                 };
 
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
     sendRequest('');
 
     // Auto-play the audio when it's ready
-    document.getElementById('response-audio').oncanplay = function () {
+    document.getElementById('response-audio').onloadedmetadata = function () {
         this.play();
     };
 
