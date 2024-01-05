@@ -8,7 +8,7 @@ import warnings
 
 import pytz
 from flask_cors import CORS
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, flash, request, redirect, url_for, render_template, jsonify, abort, send_file
 from flask_bootstrap import Bootstrap
@@ -105,6 +105,12 @@ configure_database()
 with get_db() as db:
     # memories = db.query(Memory).all()
     test = db.query(Memory).all()
+
+
+@app.route('/get_csrf_token', methods=['GET'])
+def get_csrf_token():
+    token = generate_csrf()
+    return jsonify({'csrf_token': token})
 
 
 # -------------------------------------- @app.errorhandler functions ----------------------------------------------#
