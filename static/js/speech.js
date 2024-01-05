@@ -5,8 +5,6 @@ function sendRequest(prompt) {
 
     // Set request headers, including the CSRF token
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    if (csrfToken) {
-        xhr.setRequestHeader('X-CSRFToken', csrfToken);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -70,9 +68,6 @@ function sendRequest(prompt) {
 
     // Include the CSRF token in the request body
     var requestBody = 'writing_text=' + encodeURIComponent(prompt);
-    if (csrfToken) {
-        requestBody += '&csrf_token=' + encodeURIComponent(csrfToken);
-    }
     xhr.send(requestBody);
 }
 
