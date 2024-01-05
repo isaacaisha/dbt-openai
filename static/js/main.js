@@ -92,3 +92,9 @@ document.getElementById('prompt-form').addEventListener('submit', function (e) {
     var prompt = document.getElementById('writing_text').value; // Get text from the textarea
     sendRequest(prompt);
 });
+
+// JavaScript function to toggle the visibility of the histories container
+function toggleHistoriesJson() {
+    var container = document.getElementById('historiesContainerJson');
+    container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+}

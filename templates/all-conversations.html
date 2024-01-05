@@ -67,13 +67,13 @@
 
     <!-- Add a button to trigger the display of serialized_histories -->
     <div class="text-center">
-        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
+        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistoriesJson()">
             Show Conversations json
         </button>
     </div>
 
     <!-- Add a div to contain the serialized histories -->
-    <div id="historiesContainer" class="mb-3" style="display: none;">
+    <div id="historiesContainerJson" class="mb-3" style="display: none;">
         {% for conversation in serialized_conversations %}
             <pre>
                 {{ conversation }}

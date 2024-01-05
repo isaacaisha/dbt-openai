@@ -207,12 +207,10 @@ def conversation_interface():
     form = TextAreaForm()
     response = None
     user_input = None
-    jsonify_ = None
 
     try:
         if request.method == "POST" and form.validate_on_submit():
             print(f"Form data: {form.data}\n")
-            print(f"Request Method: {request.method}\n")
 
             # Retrieve form data using the correct key
             user_input = form.writing_text.data
@@ -259,7 +257,7 @@ def conversation_interface():
 
         return render_template('conversation-interface.html', form=form,
                                current_user=current_user, user_input=user_input, response=response,
-                               memory_buffer=memory_buffer, memory_load=memory_load, jsonify_=jsonify_,
+                               memory_buffer=memory_buffer, memory_load=memory_load,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:

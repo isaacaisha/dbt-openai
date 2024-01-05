@@ -141,7 +141,7 @@
         <div class="text-center">
             <button class="btn submit text-center mb-3">
                 <audio controls>
-                    <source src="{{ url_for('serve_audio', memory_id=current_user.id) }}" type="audio/mp3">
+                    <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
                     Your browser does not support the audio element.
                 </audio>
             </button>
