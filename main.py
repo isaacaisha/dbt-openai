@@ -107,12 +107,6 @@ with get_db() as db:
     test = db.query(Memory).all()
 
 
-@app.route('/get_csrf_token', methods=['GET'])
-def get_csrf_token():
-    token = generate_csrf()
-    return jsonify({'csrf_token': token})
-
-
 # -------------------------------------- @app.errorhandler functions ----------------------------------------------#
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(err):
@@ -200,6 +194,7 @@ def conversation_interface():
     form = TextAreaForm()
     response = None
     user_input = None
+    jsonify_ = None
 
     try:
         if request.method == "POST" and form.validate_on_submit():
@@ -248,7 +243,7 @@ def conversation_interface():
 
         return render_template('conversation-interface.html', form=form,
                                current_user=current_user, user_input=user_input, response=response,
-                               memory_buffer=memory_buffer, memory_load=memory_load,
+                               memory_buffer=memory_buffer, memory_load=memory_load, jsonify_=jsonify_,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
