@@ -5,7 +5,6 @@ function sendRequest(prompt) {
 
     // Set request headers, including the CSRF token
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    }
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -69,10 +68,7 @@ function sendRequest(prompt) {
 
     // Include the CSRF token in the request body
     var requestBody = 'writing_text=' + encodeURIComponent(prompt);
-    }
     xhr.send(requestBody);
-}
-
 }
 
 // Send a request with an empty prompt to trigger the response on page load
@@ -84,9 +80,9 @@ document.addEventListener("DOMContentLoaded", function () {
         this.play();
     };
 
-    // Add click event listener to the Speak Response button
-    document.getElementById('speakButton').addEventListener('click', function () {
-        var responseText = document.getElementById('generatedText').value;
-        speakResponse(responseText);
+    // Add click event listener to the Play Audio button
+    document.getElementById('playAudioButton').addEventListener('click', function () {
+        var audio = document.getElementById('response-audio');
+        audio.play();
     });
 });

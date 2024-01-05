@@ -91,6 +91,8 @@
                 Start Speech Recognition
                 <img class="micro" src="{{ url_for('static', filename='assets/images/micro.png') }}"> ¡!¡
             </button>
+
+            <hr class="mb-3" style="color:yellow">
     </div>
 
     <div class="mb-3" id="textarea-container" style="display: none;">
@@ -98,15 +100,14 @@
             <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Y😎UR· Message:</h3>
 
             <form action="{{ url_for('conversation_interface') }}" method="post" class="form" role="form" novalidate="" id="conversationInterfaceForm">
-            <!-- Include CSRF token -->
-            <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
-            {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
+                <!-- Include CSRF token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
             </form>
 
         </div>
+        <hr class="mb-3" style="color:yellow;">
     </div>
-
-    <hr class="mb-3" style="color:yellow;">
 
     {% if response %}
         <!-- Display the text response -->
@@ -138,26 +139,16 @@
         </audio>
         {% endif %}
 
-        <div class="text-center">
-            <button class="btn submit text-center mb-3">
-                <audio controls>
-                    <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
-            </button>
-        </div>
     </div>
 
-    <hr class="mb-3" style="color:red">
-
     <div class="text-center mb-3">
-        <button id="speakButton" data-lang="fr-FR" type="button" class="btn btn-outline-info"
+        <button id="playAudioButton" type="button" class="submit btn btn-outline-info"
                 style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;border: solid .1rem">
             Play Audio ¡!¡
         </button>
     </div>
 
-    <hr class="mb-5" style="color:yellow">
+    <hr class="mb-5" style="color:red">
 
 </div>
 

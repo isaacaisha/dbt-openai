@@ -11,7 +11,8 @@ function makeAjaxRequest(method, url, data, successCallback, errorCallback) {
     // Define the type of request, the URL, and whether the request should be asynchronous
     xhr.open(method, url, true);
 
-    // Set the request header to include the CSRF token
+    // Set the request header to include the CSRF token and set content type
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('X-CSRFToken', getCSRFToken());
 
     // Define the callback functions to handle the response
@@ -60,6 +61,9 @@ function handleFormSubmission(event) {
                 console.error('Error:', status, statusText);
             }
         );
+
+        // Optionally disable the button after submission to prevent multiple submissions
+        event.target.disabled = true;
     }
 }
 
