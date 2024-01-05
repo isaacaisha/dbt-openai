@@ -63,7 +63,7 @@ function handleFormSubmission(event) {
         );
 
         // Optionally disable the button after submission to prevent multiple submissions
-        event.target.disabled = true;
+        //event.target.disabled = true;
     }
 }
 
