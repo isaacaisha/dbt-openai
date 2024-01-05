@@ -3,14 +3,8 @@ function sendRequest(prompt) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/conversation-interface', true);
 
-    // Get CSRF token
-    var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
-    var csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
-
     // Set request headers, including the CSRF token
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    if (csrfToken) {
-        xhr.setRequestHeader('X-CSRFToken', csrfToken);
     }
 
     xhr.onreadystatechange = function () {
@@ -75,25 +69,6 @@ function sendRequest(prompt) {
 
     // Include the CSRF token in the request body
     var requestBody = 'writing_text=' + encodeURIComponent(prompt);
-    if (csrfToken) {
-        requestBody += '&csrf_token=' + encodeURIComponent(csrfToken);
     }
     xhr.send(requestBody);
 }
-
-//// Send a request with an empty prompt to trigger the response on page load
-//document.addEventListener("DOMContentLoaded", function () {
-//    sendRequest('');
-//
-//    // Auto-play the audio when it's ready
-//    document.getElementById('response-audio').onloadedmetadata = function () {
-//        this.play();
-//    };
-//
-//    // Add click event listener to the Speak Response button
-//    document.getElementById('speakButton').addEventListener('click', function () {
-//        var responseText = document.getElementById('generatedText').value;
-//        speakResponse(responseText);
-//    });
-//});
-//
