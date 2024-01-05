@@ -8,7 +8,7 @@ import warnings
 
 import pytz
 from flask_cors import CORS
-from flask_wtf.csrf import CSRFProtect, generate_csrf
+from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, flash, request, redirect, url_for, render_template, jsonify, abort, send_file
 from flask_bootstrap import Bootstrap
@@ -107,12 +107,6 @@ with get_db() as db:
     test = db.query(Memory).all()
 
 
-@app.route('/get_csrf_token', methods=['GET'])
-def get_csrf_token():
-    token = generate_csrf()
-    return jsonify({'csrf_token': token})
-
-
 # -------------------------------------- @app.errorhandler functions ----------------------------------------------#
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(err):
@@ -202,8 +196,6 @@ def conversation_interface():
     user_input = None
 
     try:
-        if not current_user.is_authenticated:
-            flash("¡!¡ 😭 RETRY OR RELOAD THE PAGE 😭 ¡!¡")
         if request.method == "POST" and form.validate_on_submit():
             print(f"Form data: {form.data}\n")
 
@@ -244,8 +236,6 @@ def conversation_interface():
                 "conversations_summary_str": conversations_summary_str,
                 "audio_path": audio_file_path,
             })
-            print(f"User name: {current_user.name}\nuser_input: {user_input}\nresponse: {response}\n"
-                  f"conversations_summary_str: {conversations_summary_str}")
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
