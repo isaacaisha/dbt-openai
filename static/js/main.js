@@ -87,8 +87,8 @@ function capitalizeSentences(textarea) {
 }
 
 // Add an event listener to the form for submitting
-document.getElementById('prompt-form').addEventListener('submit', function (e) {
-    e.preventDefault();
+document.getElementById('prompt-form').addEventListener('submit', function (event) {
+    event.preventDefault();
     var prompt = document.getElementById('writing_text').value; // Get text from the textarea
     sendRequest(prompt);
 });

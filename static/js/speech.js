@@ -5,7 +5,6 @@ function sendRequest(prompt) {
 
     // Set request headers, including the CSRF token
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    }
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -47,7 +46,7 @@ function sendRequest(prompt) {
                 audio.style.display = 'block';
 
                 // Auto-play the audio when it's ready
-                audio.onloadedmetadata = function () {
+                audio.oncanplay = function () {
                     audio.play();
                 };
 
@@ -72,15 +71,12 @@ function sendRequest(prompt) {
     xhr.send(requestBody);
 }
 
-
-
-
 // Send a request with an empty prompt to trigger the response on page load
 document.addEventListener("DOMContentLoaded", function () {
     sendRequest('');
 
     // Auto-play the audio when it's ready
-    document.getElementById('response-audio').onloadedmetadata = function () {
+    document.getElementById('response-audio').oncanplay = function () {
         this.play();
     };
 

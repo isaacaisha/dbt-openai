@@ -8,7 +8,7 @@ import warnings
 
 import pytz
 from flask_cors import CORS
-from flask_wtf.csrf import CSRFProtect, generate_csrf
+from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, flash, request, redirect, url_for, render_template, jsonify, abort, send_file
 from flask_bootstrap import Bootstrap
@@ -26,15 +26,8 @@ from app.forms.app_forms import TextAreaForm, ConversationIdForm, DeleteForm
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.databases.database import get_db
 from app.models.memory import Memory, User, db
-from app.routes.conversation import (home as home_conversation, conversation_answer as response_conversation,
-                                     conversation as answer_conversation, serve_audio as audio_response,
-                                     show_story as show_story_conversation,
-                                     get_all_conversations as whole_conversations,
-                                     select_conversation as conversation_selected,
-                                     get_conversation as id_conversation, delete_conversation as conversation_deleted,
-                                     get_conversations_jsonify as jsonify_conversation)
 
-#logging.basicConfig(level=logging.DEBUG)
+
 warnings.filterwarnings('ignore')
 
 _ = load_dotenv(find_dotenv())  # read local .env file
@@ -112,12 +105,6 @@ configure_database()
 with get_db() as db:
     # memories = db.query(Memory).all()
     test = db.query(Memory).all()
-
-
-@app.route('/get_csrf_token', methods=['GET'])
-def get_csrf_token():
-    token = generate_csrf()
-    return jsonify({'csrf_token': token})
 
 
 # -------------------------------------- @app.errorhandler functions ----------------------------------------------#
@@ -209,6 +196,8 @@ def conversation_interface():
     user_input = None
 
     try:
+        if not current_user.is_authenticated:
+            flash("¡!¡ 😭 RETRY OR RELOAD THE PAGE 😭 ¡!¡")
         if request.method == "POST" and form.validate_on_submit():
             print(f"Form data: {form.data}\n")
 
