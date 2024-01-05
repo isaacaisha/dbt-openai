@@ -47,7 +47,7 @@ function sendRequest(prompt) {
                 audio.style.display = 'block';
 
                 // Auto-play the audio when it's ready
-                audio.oncanplay = function () {
+                audio.onloadedmetadata = function () {
                     audio.play();
                 };
 
@@ -72,3 +72,21 @@ function sendRequest(prompt) {
     }
     xhr.send(requestBody);
 }
+
+}
+
+// Send a request with an empty prompt to trigger the response on page load
+document.addEventListener("DOMContentLoaded", function () {
+    sendRequest('');
+
+    // Auto-play the audio when it's ready
+    document.getElementById('response-audio').onloadedmetadata = function () {
+        this.play();
+    };
+
+    // Add click event listener to the Speak Response button
+    document.getElementById('speakButton').addEventListener('click', function () {
+        var responseText = document.getElementById('generatedText').value;
+        speakResponse(responseText);
+    });
+});
