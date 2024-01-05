@@ -61,9 +61,6 @@ function handleFormSubmission(event) {
                 console.error('Error:', status, statusText);
             }
         );
-
-        // Optionally disable the button after submission to prevent multiple submissions
-        //event.target.disabled = true;
     }
 }
 
