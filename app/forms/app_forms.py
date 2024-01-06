@@ -22,6 +22,14 @@ class LoginForm(FlaskForm):
     submit = SubmitField("LET M€ IN ¡!¡")
 
 
+class TextAreaFormIndex(FlaskForm):
+    text_writing = TextAreaField(
+        'Start Writing For Testing:',
+        [validators.InputRequired(message="Please, first enter a text.")]
+    )
+    submit = SubmitField("Click for Response ¡!¡")
+
+
 class TextAreaForm(FlaskForm):
     writing_text = TextAreaField(
         'Start Writing:',

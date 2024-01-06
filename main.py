@@ -22,7 +22,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 from werkzeug.exceptions import InternalServerError, BadRequest
 
-from app.forms.app_forms import TextAreaForm, ConversationIdForm, DeleteForm
+from app.forms.app_forms import TextAreaFormIndex, TextAreaForm, ConversationIdForm, DeleteForm
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.databases.database import get_db
 from app.models.memory import Memory, User, db
@@ -159,7 +159,7 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    form = TextAreaForm()
+    form = TextAreaFormIndex()
     response = None
     user_input = None
 
@@ -168,7 +168,7 @@ def home():
             print(f"Form data: {form.data}\n")
 
             # Retrieve form data using the correct key
-            user_input = form.writing_text.data
+            user_input = form.text_writing.data
             # Use the LLM to generate a response based on user input
             response = siisi_conversation.predict(input=user_input)
 
