@@ -94,4 +94,5 @@ document.addEventListener("DOMContentLoaded", function () {
         var audio = document.getElementById('response-audio');
         audio.play();
     });
+    sendRequest(requestBody);
 });

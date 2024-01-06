@@ -71,21 +71,21 @@ document.getElementById('conversationInterfaceForm').addEventListener('submit', 
     }
 });
 
-function capitalizeSentences(writing_text) {
-    // Get the current value of the textarea
-    let currentValue = textarea.value;
-
-    // Split the text into sentences based on periods followed by a space
-    let sentences = currentValue.split('. ');
-
-    // Capitalize the first letter of each sentence and join them back together
-    let capitalizedText = sentences.map(function (sentence) {
-        return sentence.charAt(0).toUpperCase() + sentence.slice(1);
-    }).join('. ');
-
-    // Set the updated value
-    textarea.value = capitalizedText;
-}
+//function capitalizeSentences(writing_text) {
+//    // Get the current value of the textarea
+//    let currentValue = textarea.value;
+//
+//    // Split the text into sentences based on periods followed by a space
+//    let sentences = currentValue.split('. ');
+//
+//    // Capitalize the first letter of each sentence and join them back together
+//    let capitalizedText = sentences.map(function (sentence) {
+//        return sentence.charAt(0).toUpperCase() + sentence.slice(1);
+//    }).join('. ');
+//
+//    // Set the updated value
+//    textarea.value = capitalizedText;
+//}
 
 // JavaScript function to toggle the visibility of the histories container
 function toggleHistoriesJson() {
@@ -94,10 +94,10 @@ function toggleHistoriesJson() {
 }
 
 //document.getElementById('start-button').addEventListener('click', handleStartButtonClick);
-
-// Add an event listener to the form for submitting
-document.getElementById('prompt-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var prompt = document.getElementById('writing_text').value; // Get text from the textarea
-    sendRequest(prompt);
-});
+//
+//// Add an event listener to the form for submitting
+//document.getElementById('prompt-form').addEventListener('submit', function (e) {
+//    e.preventDefault();
+//    var prompt = document.getElementById('writing_text').value; // Get text from the textarea
+//    sendRequest(prompt);
+//});
