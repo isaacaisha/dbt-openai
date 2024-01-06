@@ -100,7 +100,7 @@
             <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Your· Message:</h3>
             <form action="{{ url_for('conversation_interface') }}" method="post" class="form" role="form" novalidate="" id="conversationInterfaceForm">
                 <!-- Include CSRF token -->
-                <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
+                    <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
                 {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
             </form>
         </div>
