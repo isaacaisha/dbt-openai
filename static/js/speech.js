@@ -84,6 +84,7 @@ function handleOtherError(status) {
 
 // Send a request with an empty prompt to trigger the response on page load
 document.addEventListener("DOMContentLoaded", function () {
+    sendRequest(requestBody);
     // Auto-play the audio when it's ready
     document.getElementById('response-audio').onloadedmetadata = function () {
         this.play();
@@ -94,5 +95,4 @@ document.addEventListener("DOMContentLoaded", function () {
         var audio = document.getElementById('response-audio');
         audio.play();
     });
-    sendRequest(requestBody);
 });
