@@ -26,9 +26,9 @@
 {% endblock %}
 
 {% block content %}
-<!--
 <div class="text-center mb-1">
     <hr style="color:green;">
+
     <h3 class="mb-5">1°Click on your Favorite Language</h3>
     <div>
         <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5"
@@ -58,7 +58,7 @@
         French ¡!¡
     </button>
 </div>
--->
+
 <div class="container">
     {% if error_message %}
         <div class="alert alert-info text-center">
@@ -76,7 +76,6 @@
         {% endif %}
     {% endwith %}
 
-    <hr class="mb-3" style="color:green;">
 
     <div class="text-center">
         <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
@@ -84,7 +83,7 @@
                 <button id="start-button" type="button" class="btn mb-3" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
                     Click to Start Writing ¡!¡
                 </button>
-                <hr style="color:yellow;">
+                <hr style="color:green;">
             </div>
             <!-- Add a button for speech recognition -->
             <button id="speechRecognitionButton" type="button" class="btn mb-3"
@@ -98,14 +97,12 @@
 
     <div class="mb-3" id="textarea-container" style="display: none;">
         <div class="mb-3 text-center conversations-details">
-            <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Your· Message:</h3>
-
+            <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Y😎UR· Message:</h3>
             <form action="{{ url_for('conversation_interface') }}" method="post" class="form" role="form" novalidate="" id="conversationInterfaceForm">
-                    <!-- Include CSRF token -->
-                    <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
-                    {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
+                <!-- Include CSRF token -->
+                <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
+                {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
             </form>
-
         </div>
         <hr class="mb-3" style="color:yellow;">
     </div>

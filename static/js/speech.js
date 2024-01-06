@@ -9,15 +9,29 @@ function sendRequest(prompt) {
     xhr.open('POST', API_ENDPOINT, true);
     xhr.setRequestHeader('Content-Type', CONTENT_TYPE);
 
+    // Get CSRF token
+    const csrfTokenInput = document.querySelector('input[name="csrf_token"]');
+    const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+
+    if (csrfToken) {
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+    }
+
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             handleResponse(xhr);
         }
     };
 
-    // Include the CSRF token in the request body
-    const requestBody = 'writing_text=' + encodeURIComponent(prompt);
-    xhr.send(requestBody);
+    // Include the CSRF token in the request body using URLSearchParams
+    const requestBody = new URLSearchParams();
+    requestBody.append('writing_text', encodeURIComponent(prompt));
+
+    if (csrfToken) {
+        requestBody.append('csrf_token', encodeURIComponent(csrfToken));
+    }
+
+    xhr.send(requestBody.toString());
 }
 
 // Function to handle the server response
