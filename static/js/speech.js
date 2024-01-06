@@ -84,7 +84,7 @@ function handleOtherError(status) {
 
 // Send a request with an empty prompt to trigger the response on page load
 document.addEventListener("DOMContentLoaded", function () {
-    sendRequest(requestBody);
+    //sendRequest(requestBody);
     // Auto-play the audio when it's ready
     document.getElementById('response-audio').onloadedmetadata = function () {
         this.play();
