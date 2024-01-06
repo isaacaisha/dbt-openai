@@ -26,9 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Event handler when speech recognition ends
         recognition.onend = function () {
             speechRecognitionButton.textContent = 'Start Speech Recognition';
-        // Show the textarea container
-        const textareaContainer = document.getElementById('textarea-container');
-        textareaContainer.style.display = 'block';
         };
 
         // Event handler for speech recognition errors
