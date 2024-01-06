@@ -91,11 +91,6 @@ document.addEventListener('DOMContentLoaded', function () {
         textarea.value = capitalizedText;
     }
 
-    function toggleHistoriesJson() {
-        var container = document.getElementById('historiesContainerJson');
-        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
-    }
-
     document.getElementById('prompt-form').addEventListener('submit', function (e) {
         e.preventDefault();
         var prompt = document.getElementById('writing_text').value;
@@ -189,3 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+function toggleHistoriesJson() {
+    var container = document.getElementById('historiesContainerJson');
+    container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+}
