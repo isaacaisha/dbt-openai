@@ -45,6 +45,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             recognition.start();
         }
+
+        // Show the textarea container
+        const textareaContainer = document.getElementById('textarea-container');
+        textareaContainer.style.display = 'block';
     });
 
 });

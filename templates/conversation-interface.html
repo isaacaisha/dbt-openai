@@ -32,8 +32,8 @@
         <span style="color:crimson;">sorry<br>not authenticated<br>¡!¡ RELOAD THE PAGE ¡!¡</span>
     {% endif %}
 </div>
-<!--
-<div class="text-center mb-1">
+
+<div class="container text-center mb-1">
     <hr style="color:green;">
 
     <h3 class="mb-5">1°Click on your Favorite Language</h3>
@@ -65,7 +65,7 @@
         French ¡!¡
     </button>
 </div>
--->
+
 <div class="container">
     {% if error_message %}
         <div class="alert alert-info text-center">
@@ -83,16 +83,16 @@
         {% endif %}
     {% endwith %}
 
-    <hr class="mb-3" style="color:green;">
+    <hr class="mb-3" style="color:yellow;">
 
     <div class="text-center">
         <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
-            <!--<div class="mb-3">
+            <div class="mb-3">
                 <button id="start-button" type="button" class="btn mb-3" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
                     Click to Start Writing ¡!¡
                 </button>
-                <hr style="color:green;">
-            </div>-->
+                <hr style="color:red;">
+            </div>
             <!-- Add a button for speech recognition -->
             <button id="speechRecognitionButton" type="button" class="btn mb-3"
                     style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
@@ -103,7 +103,7 @@
             <hr class="mb-3" style="color:yellow">
     </div>
 
-    <!--<div class="mb-3" id="textarea-container" style="display: ;">-->
+    <div class="mb-3" id="textarea-container" style="display: none;">
         <div class="mb-3 text-center conversations-details">
             <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Your· Message:</h3>
             <form action="{{ url_for('conversation_interface') }}" method="post" class="form" role="form" novalidate="" id="conversationInterfaceForm">
@@ -113,7 +113,7 @@
             </form>
         </div>
         <hr class="mb-3" style="color:yellow;">
-    <!--</div>-->
+    </div>
 
     {% if response %}
         <!-- Display the text response -->
@@ -161,7 +161,7 @@
         </button>
     </div>
 
-    <hr class="mb-5" style="color:red">
+    <hr class="mb-5" style="color:green">
 
 </div>
 
