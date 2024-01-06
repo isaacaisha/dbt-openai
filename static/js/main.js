@@ -14,25 +14,12 @@ languageButtons.forEach(function (button) {
         // Add the 'active' class to the clicked button
         button.classList.add('active');
 
-        // Capture the selected language
-        var selectedLang = button.getAttribute('data-lang');
-
-        // Check if a prompt is available
-        var prompt = document.getElementById('writing_text').value.trim();
-
-        // Only send the request if a prompt is available
-        if (prompt !== "") {
-            // Pass the selected language to sendRequest function
-            sendRequest(prompt, selectedLang);
-        }
-
         // Enable all buttons with the class "btn"
         document.querySelectorAll('.btn').forEach(function (btn) {
             btn.disabled = false;
         });
     });
 });
-
 
 document.getElementById('start-button').addEventListener('click', handleStartButtonClick);
 
@@ -44,9 +31,6 @@ function handleStartButtonClick() {
     // Show the textarea container
     const textareaContainer = document.getElementById('textarea-container');
     textareaContainer.style.display = 'block';
-
-    // Capitalize sentences
-    capitalizeSentences(textarea);
 
     // Focus on the textarea
     const textarea = document.getElementById('writing_text');

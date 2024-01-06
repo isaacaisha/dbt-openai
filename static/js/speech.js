@@ -4,24 +4,10 @@ const CONTENT_TYPE = 'application/x-www-form-urlencoded';
 const DEFAULT_LANGUAGE = 'en-US';
 
 // Function to send a POST request to the server
-function sendRequest(prompt, selectedLang) {
+function sendRequest(prompt) {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', API_ENDPOINT, true);
     xhr.setRequestHeader('Content-Type', CONTENT_TYPE);
-
-    // Get CSRF token
-    const csrfTokenInput = document.querySelector('input[name="csrf_token"]');
-    const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
-
-    if (csrfToken) {
-        xhr.setRequestHeader('X-CSRFToken', csrfToken);
-    }
-
-    // Include the selected language in the request payload
-    const requestData = {
-        prompt: prompt,
-        lang: selectedLang
-    };
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -29,12 +15,9 @@ function sendRequest(prompt, selectedLang) {
         }
     };
 
-    // Include the CSRF token in the request body using URLSearchParams
-    const requestBody = new URLSearchParams();
-    requestBody.append('writing_text', encodeURIComponent(prompt));
-    requestBody.append('csrf_token', encodeURIComponent(csrfToken || ''));  // Make sure csrfToken is not null
-
-    xhr.send(requestBody.toString());
+    // Include the CSRF token in the request body
+    const requestBody = 'writing_text=' + encodeURIComponent(prompt);
+    xhr.send(requestBody);
 }
 
 // Function to handle the server response
