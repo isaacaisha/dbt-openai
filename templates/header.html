@@ -94,14 +94,12 @@
                 </div>
 
             </nav>
+            {% endblock %}
 
             <div class="text-center mb-3">
                 {% if current_user.is_authenticated %}
-                    <span style="color:#fff;">¡!¡ Welcome, {{ current_user.name }} ¡!¡</span>
-                {% else %}
-                    <span style="color:#1295FA;">NOT AUTHENTICATED<br>PLEASE<br>¡!¡ RELOAD THE PAGE ¡!¡</span>
+                    <span style="color:#1295FA;">¡!¡ Welcome, {{ current_user.name }} ¡!¡</span>
                 {% endif %}
-                {% endblock %}
             </div>
 
             <!-- Content -->

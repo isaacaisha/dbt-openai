@@ -194,10 +194,9 @@ def conversation_interface():
     form = TextAreaForm()
     response = None
     user_input = None
-    jsonify_ = None
 
     try:
-        if request.method == "POST" and form.validate_on_submit():
+        if form.validate_on_submit():
             print(f"Form data: {form.data}\n")
 
             # Retrieve form data using the correct key
@@ -230,9 +229,22 @@ def conversation_interface():
             db.commit()
             db.refresh(new_memory)
 
+            # Convert current_user to JSON-serializable format
+            current_user_data = {
+                "id": current_user.id,
+                "username": current_user.name,
+                "user_email": current_user.email,
+                "user_password": current_user.password,
+            }
+
+            print(f'User ID:{current_user.id} 😎')
+            print(f'User Name: {current_user.name} 😝')
+            print(f'User Input: {user_input} 😎')
+            print(f'LLM Response:{response} 😝\n')
+
             # Return the response as JSON, including both text and the path to the audio file
-            jsonify_ = jsonify({
-                "user_input": user_input,
+            jsonify({
+                "current_user": current_user_data,
                 "response": response,
                 "conversations_summary_str": conversations_summary_str,
                 "audio_path": audio_file_path,
@@ -243,7 +255,7 @@ def conversation_interface():
 
         return render_template('conversation-interface.html', form=form,
                                current_user=current_user, user_input=user_input, response=response,
-                               memory_buffer=memory_buffer, memory_load=memory_load, jsonify_=jsonify_,
+                               memory_buffer=memory_buffer, memory_load=memory_load, jsonify=jsonify,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:

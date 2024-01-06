@@ -97,7 +97,7 @@
 
     <div class="mb-3" id="textarea-container" style="display: none;">
         <div class="mb-3 text-center conversations-details">
-            <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Y😎UR· Message:</h3>
+            <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Your· Message:</h3>
             <form action="{{ url_for('conversation_interface') }}" method="post" class="form" role="form" novalidate="" id="conversationInterfaceForm">
                 <!-- Include CSRF token -->
                 <span style="display: none;">{{ wtf.form_field(form.csrf_token) }}</span>
