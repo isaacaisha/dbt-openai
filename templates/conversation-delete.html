@@ -45,7 +45,6 @@
 
                 <div class="mb-3" style="margin:0 9%;">
                     <!-- Include CSRF token -->
-                    <span style="display: none;" id="csrf-token">{{ csrf_token() }}</span>
                     {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'danger btn-block submit'}) }}
                 </div>
 
