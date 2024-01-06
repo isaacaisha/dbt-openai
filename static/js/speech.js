@@ -9,6 +9,16 @@ function sendRequest(prompt) {
     xhr.open('POST', API_ENDPOINT, true);
     xhr.setRequestHeader('Content-Type', CONTENT_TYPE);
 
+    // Get CSRF token
+    var csrfTokenInput = document.querySelector('input[name="csrf_token"]');
+    var csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+
+    // Set request headers, including the CSRF token
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    if (csrfToken) {
+        xhr.setRequestHeader('X-CSRFToken', csrfToken);
+    }
+
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             handleResponse(xhr);
@@ -17,6 +27,9 @@ function sendRequest(prompt) {
 
     // Include the CSRF token in the request body
     const requestBody = 'writing_text=' + encodeURIComponent(prompt);
+    if (csrfToken) {
+        requestBody += '&csrf_token=' + encodeURIComponent(csrfToken);
+    }
     xhr.send(requestBody);
 }
 
