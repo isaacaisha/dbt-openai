@@ -119,7 +119,7 @@
         <div id="resultMemo" class="text-center mb-3">
             <h3>·SìįSí· Response:</h3>
             <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ response|safe }}</textarea>
-            <hr style="color:red;">
+            <hr style="color:green;">
             <h3 style="color:#AEFAFC;">History:</h3>
             <textarea class="textarea-memory result mb-3" style="color:purple;">{{ memory_buffer|safe }}</textarea>
             <hr class="mb-3" style="color:yellow">
@@ -133,7 +133,7 @@
         {% if response %}
         <!-- Display the text response -->
         <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ response|safe }}<br> 💪🏿😇👌🏿</div>
-        <hr class="mb-3" style="color:green">
+        <hr class="mb-3" style="color:red">
         {% endif %}
 
         {% if response %}
