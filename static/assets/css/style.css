@@ -155,9 +155,9 @@ label {
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
-/* home textarea */
-#writing_text {
-    color: green;
+/* inputs textarea */
+#email, #name, #writing_text, #text_writing {
+    color: #1295FA;
 }
 
 #submit.success.btn.submit {
