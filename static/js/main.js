@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const writingText = document.getElementById('writing_text').value.trim();
 
         if (writingText === "") {
-            document.getElementById('error-message').textContent = "Please,\nYou Have To Speech or Enter Text\nFirst\n¡!¡ 😝 ¡!¡";
+            document.getElementById('error-message').textContent = "Please,\nYou Have To Speech or\nEnter Text First\n¡!¡ 😝 ¡!¡";
             document.getElementById('error-message').style.display = 'block';
 
             event.preventDefault();

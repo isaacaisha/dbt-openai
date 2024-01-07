@@ -191,23 +191,57 @@ def home():
 
 @app.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
+    global memory
     form = TextAreaForm()
     response = None
-    user_input = None
+    jsonify_ = None
+
+    # Retrieve form data using the correct key
+    user_input = form.writing_text.data
 
     try:
         if form.validate_on_submit():
             print(f"Form data: {form.data}\n")
 
-            # Retrieve form data using the correct key
-            user_input = form.writing_text.data
-            # Use the LLM to generate a response based on user input
-            response = siisi_conversation.predict(input=user_input)
+            # Get conversations only for the current user
+            user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+
+            # Create a list of JSON strings for each conversation
+            conversation_strings = [memory.conversations_summary for memory in user_conversations]
+
+            # Combine the first 1 and last 9 entries into a valid JSON array
+            qdocs = f"[{','.join(conversation_strings[-3:])}]"
+
+            # Convert 'created_at' values to string
+            created_at_list = [str(memory.created_at) for memory in user_conversations]
+
+            # Include 'created_at' in the conversation context
+            conversation_context = {
+                "created_at": created_at_list[-3:],
+                "conversations": qdocs,
+                "user_name": current_user.name,
+                "user_message": user_input,
+            }
+
+            # Call llm ChatOpenAI
+            response = siisi_conversation.predict(input=json.dumps(conversation_context))
+            print(f'conversation_context:\n{conversation_context}\n')
+
+            # Check if the response is a string, and if so, use it as the assistant's reply
+            if isinstance(response, str):
+                assistant_reply = response
+            else:
+                # If it's not a string, access the assistant's reply appropriately
+                if isinstance(response, dict) and 'choices' in response:
+                    assistant_reply = response['choices'][0]['message']['content']
+                else:
+                    assistant_reply = None
 
             # Convert the text response to speech using gTTS
-            tts = gTTS(response)
+            tts = gTTS(assistant_reply)
+
             # Create a temporary audio file
-            audio_file_path = f'temp_audio.mp3'
+            audio_file_path = 'temp_audio.mp3'
             tts.save(audio_file_path)
 
             memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
@@ -243,7 +277,7 @@ def conversation_interface():
             print(f'LLM Response:{response} 😝\n')
 
             # Return the response as JSON, including both text and the path to the audio file
-            jsonify({
+            jsonify_ = jsonify({
                 "current_user": current_user_data,
                 "response": response,
                 "conversations_summary_str": conversations_summary_str,
@@ -254,8 +288,8 @@ def conversation_interface():
         memory_load = memory.load_memory_variables({})
 
         return render_template('conversation-interface.html', form=form,
-                               current_user=current_user, user_input=user_input, response=response,
-                               memory_buffer=memory_buffer, memory_load=memory_load, jsonify=jsonify,
+                               current_user=current_user, user_input=form.writing_text.data, response=response,
+                               memory_buffer=memory_buffer, memory_load=memory_load, jsonify=jsonify_,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
