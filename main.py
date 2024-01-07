@@ -194,7 +194,6 @@ def conversation_interface():
     global memory
     form = TextAreaForm()
     response = None
-    jsonify_ = None
 
     # Retrieve form data using the correct key
     user_input = form.writing_text.data
@@ -276,20 +275,12 @@ def conversation_interface():
             print(f'User Input: {user_input} 😎')
             print(f'LLM Response:{response} 😝\n')
 
-            # Return the response as JSON, including both text and the path to the audio file
-            jsonify_ = jsonify({
-                "current_user": current_user_data,
-                "response": response,
-                "conversations_summary_str": conversations_summary_str,
-                "audio_path": audio_file_path,
-            })
-
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
         return render_template('conversation-interface.html', form=form,
                                current_user=current_user, user_input=form.writing_text.data, response=response,
-                               memory_buffer=memory_buffer, memory_load=memory_load, jsonify=jsonify_,
+                               memory_buffer=memory_buffer, memory_load=memory_load,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
