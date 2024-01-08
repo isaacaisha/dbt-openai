@@ -33,7 +33,7 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-CSRFProtect(app)
+csrf = CSRFProtect(app)
 Bootstrap(app)
 CORS(app)
 
@@ -142,21 +142,25 @@ def handle_csrf_error(err):
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
+@csrf.exempt
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     return auth_register()
 
 
+@csrf.exempt
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     return auth_login()
 
 
+@csrf.exempt
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     return auth_logout()
 
 
+@csrf.exempt
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = TextAreaFormIndex()
