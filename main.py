@@ -34,8 +34,6 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
 csrf = CSRFProtect(app)
-Bootstrap(app)
-CORS(app)
 
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
@@ -43,21 +41,33 @@ memory = ConversationBufferMemory()
 siisi_conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.init_app(app)
+
+def configure_app():
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_PERMANENT'] = True
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+    app.config['WTF_CSRF_ENABLED'] = True
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    if user_id is not None and user_id.isdigit():
-        # Check if the user_id is a non-empty string of digits
-        return User.query.get(int(user_id))
-    else:
-        return None
+configure_app()
 
 
 def initialize_app():
+    Bootstrap(app)
+    CORS(app)
+
+    login_manager = LoginManager(app)
+    login_manager.login_view = 'login'
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        if user_id is not None and user_id.isdigit():
+            # Check if the user_id is a non-empty string of digits
+            return User.query.get(int(user_id))
+        else:
+            return None
+
     try:
         openai_api_key = os.environ['OPENAI_API_KEY']
     except KeyError:
@@ -73,16 +83,6 @@ def initialize_app():
 
 
 initialize_app()
-
-
-def configure_app():
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_PERMANENT'] = True
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-    app.config['WTF_CSRF_ENABLED'] = True
-
-
-configure_app()
 
 
 def initialize_database():
