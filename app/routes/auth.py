@@ -7,8 +7,10 @@ from app.models.memory import User, db
 
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
+app = Flask(__name__, template_folder='templates')
 
-@auth_bp.route('/register', methods=['GET', 'POST'])
+
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
 
@@ -56,7 +58,7 @@ def register():
         return redirect(url_for('register'))
 
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
 
@@ -93,7 +95,7 @@ def login():
         return redirect(url_for('login'))
 
 
-@auth_bp.route('/logout')
+@app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('home'))

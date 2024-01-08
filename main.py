@@ -8,9 +8,9 @@ import warnings
 
 import pytz
 from flask_cors import CORS
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, flash, request, redirect, url_for, render_template, abort, send_file
+from flask import Flask, flash, request, redirect, url_for, render_template, jsonify, abort, send_file
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, current_user
 from datetime import timedelta, datetime
@@ -33,9 +33,6 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-csrf = CSRFProtect(app)
-Bootstrap(app)
-CORS(app)
 
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
@@ -45,6 +42,9 @@ memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 
 def initialize_app():
+    CSRFProtect(app)
+    Bootstrap(app)
+    CORS(app)
 
     login_manager = LoginManager(app)
     login_manager.login_view = 'login'
@@ -142,25 +142,21 @@ def handle_csrf_error(err):
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
-@csrf.exempt
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     return auth_register()
 
 
-@csrf.exempt
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     return auth_login()
 
 
-@csrf.exempt
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     return auth_logout()
 
 
-@csrf.exempt
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = TextAreaFormIndex()
@@ -265,6 +261,14 @@ def conversation_interface():
             # Commit changes to the database
             db.commit()
             db.refresh(new_memory)
+
+            # Convert current_user to JSON-serializable format
+            current_user_data = {
+                "id": current_user.id,
+                "username": current_user.name,
+                "user_email": current_user.email,
+                "user_password": current_user.password,
+            }
 
             print(f'User ID:{current_user.id} 😎')
             print(f'User Name: {current_user.name} 😝')
