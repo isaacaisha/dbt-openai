@@ -12,7 +12,7 @@ from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, flash, request, redirect, url_for, render_template, abort, send_file
 from flask_bootstrap import Bootstrap
-from flask_login import LoginManager, current_user, login_user, logout_user
+from flask_login import LoginManager, current_user
 from datetime import timedelta, datetime
 
 from gtts import gTTS
@@ -21,17 +21,21 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 from werkzeug.exceptions import InternalServerError, BadRequest
-from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.forms.app_forms import TextAreaFormIndex, TextAreaForm, ConversationIdForm, DeleteForm, RegisterForm, LoginForm
+from app.forms.app_forms import TextAreaFormIndex, TextAreaForm, ConversationIdForm, DeleteForm
+from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.databases.database import get_db
 from app.models.memory import Memory, User, db
+
 
 warnings.filterwarnings('ignore')
 
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
+csrf = CSRFProtect(app)
+Bootstrap(app)
+CORS(app)
 
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
@@ -39,24 +43,21 @@ memory = ConversationBufferMemory()
 siisi_conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id is not None and user_id.isdigit():
+        # Check if the user_id is a non-empty string of digits
+        return User.query.get(int(user_id))
+    else:
+        return None
+
 
 def initialize_app():
-    CSRFProtect(app)
-    Bootstrap(app)
-    CORS(app)
-
-    login_manager = LoginManager(app)
-    login_manager.login_view = 'login'
-    login_manager.init_app(app)
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        if user_id is not None and user_id.isdigit():
-            # Check if the user_id is a non-empty string of digits
-            return User.query.get(int(user_id))
-        else:
-            return None
-
     try:
         openai_api_key = os.environ['OPENAI_API_KEY']
     except KeyError:
@@ -141,97 +142,25 @@ def handle_csrf_error(err):
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
+@csrf.exempt
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm()
-
-    try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}")
-
-            # Check if the passwords match
-            if form.password.data != form.confirm_password.data:
-                flash("Passwords do not match. Please enter matching passwords 😭.")
-                return redirect(url_for('register'))
-
-            # If user's email already exists
-            if User.query.filter_by(email=form.email.data).first():
-                # Send a flash message
-                flash("You've already signed up with that email, log in instead! 🤣.")
-                return redirect(url_for('login'))
-
-            hash_and_salted_password = generate_password_hash(
-                request.form.get('password'),
-                method='pbkdf2:sha256',
-                salt_length=8
-            )
-
-            new_user = User()
-            new_user.email = request.form['email']
-            new_user.name = request.form['name']
-            new_user.password = hash_and_salted_password
-
-            db.add(new_user)
-            db.commit()
-            db.refresh(new_user)
-            db.rollback()  # Rollback in case of commit failure
-
-            # Log in and authenticate the user after adding details to the database.
-            login_user(new_user)
-            return redirect(url_for('login'))
-
-        else:
-            return render_template("register.html", form=form, current_user=current_user,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('register'))
+    return auth_register()
 
 
+@csrf.exempt
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-
-    try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}")
-
-            email = request.form.get('email')
-            password = request.form.get('password')
-            remember_me = form.remember_me.data
-
-            user = User.query.filter_by(email=email).first()
-            # Email doesn't exist
-            if not user:
-                flash("That email does not exist, please try again 😭 ¡!¡")
-                return redirect(url_for('login'))
-            # Password incorrect
-            elif not check_password_hash(user.password, password):
-                flash('Password incorrect, please try again 😭 ¡!¡')
-                return redirect(url_for('login'))
-            # Email exists and password correct
-            else:
-                login_user(user, remember=remember_me)
-
-                # Redirect to the desired page after login
-                next_page = request.args.get('next') or url_for('conversation_interface')
-                return redirect(next_page)
-
-        return render_template("login.html", form=form, current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('login'))
+    return auth_login()
 
 
-@app.route('/logout')
+@csrf.exempt
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    logout_user()
-    return redirect(url_for('home'))
+    return auth_logout()
 
 
+@csrf.exempt
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = TextAreaFormIndex()
@@ -336,14 +265,6 @@ def conversation_interface():
             # Commit changes to the database
             db.commit()
             db.refresh(new_memory)
-
-            # Convert current_user to JSON-serializable format
-            current_user_data = {
-                "id": current_user.id,
-                "username": current_user.name,
-                "user_email": current_user.email,
-                "user_password": current_user.password,
-            }
 
             print(f'User ID:{current_user.id} 😎')
             print(f'User Name: {current_user.name} 😝')
