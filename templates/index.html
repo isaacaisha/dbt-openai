@@ -28,6 +28,7 @@
 {% block navbar %}{% endblock %}
 
 {% block content %}
+{% autoescape true %}
 
     <div class="content">
         <!-- Page Header -->
@@ -95,6 +96,7 @@
 
     </div>
 
+{% endautoescape %}
 {% endblock %}
 
 {% block footer %} {% endblock %}

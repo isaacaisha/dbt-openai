@@ -22,6 +22,7 @@
 {% endblock %}
 
 {% block content %}
+{% autoescape true %}
 
 <div class="text-center mb-3">
     {% if not current_user.is_authenticated %}
@@ -68,6 +69,7 @@
 
 </div>
 
+{% endautoescape %}
 {% endblock %}
 
 {% block footer_ %} {% endblock %}

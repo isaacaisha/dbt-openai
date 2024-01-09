@@ -26,6 +26,7 @@
 {% endblock %}
 
 {% block content %}
+{% autoescape true %}
 
 <div class="text-center mb-3">
     {% if not current_user.is_authenticated %}
@@ -107,6 +108,7 @@
             <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Your· Message:</h3>
             <form action="{{ url_for('conversation_interface') }}" method="post" class="form" role="form" novalidate="" id="conversationInterfaceForm">
                 <!-- Include CSRF token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
             </form>
         </div>
@@ -120,7 +122,7 @@
             <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ response|safe }}</textarea>
             <hr style="color:green;">
             <h3 style="color:#AEFAFC;">History:</h3>
-            <textarea class="textarea-memory result mb-3" style="color:purple;">{{ memory_buffer|safe }}</textarea>
+            <textarea class="textarea-memory result mb-3" style="color:purple;">{{ memory_buffer|tojson(indent=4)|safe }}</textarea>
             <hr class="mb-3" style="color:yellow">
         </div>
     {% endif %}
@@ -164,6 +166,7 @@
 
 </div>
 
+{% endautoescape %}
 {% endblock %}
 
 {% block footer %} {% endblock %}

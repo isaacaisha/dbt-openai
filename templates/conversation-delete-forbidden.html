@@ -23,7 +23,8 @@
 </div>
 {% endblock %}
 
-{% block content %}
+{% block content %}%}
+{% autoescape true %}
 
 <hr class="mb-3" style="color:green;">
 
@@ -49,6 +50,7 @@
 
 <hr class="mb-5" style="color:red;">
 
+{% endautoescape %}
 {% endblock %}
 
 {% block footer %} {% endblock %}
