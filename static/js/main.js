@@ -34,10 +34,19 @@ function addLanguageButtonClickListeners() {
 
             // Log the classList of the clicked button after adding 'active' class
             console.log('Button classes after adding "active":', button.classList);
+
+            // Get the selected language
+            var selectedLang = button.getAttribute('data-lang');
+
+            // Log the selected language for debugging
+            console.log('Selected language:', selectedLang);
+
+            // Call sendRequest with the prompt and selected language
+            const formData = new FormData(document.getElementById('conversationInterfaceForm'));
+            sendRequest(formData, selectedLang);
         });
     });
 }
-
 
 // Function to capitalize sentences in a textarea
 function capitalizeSentences(textarea) {
@@ -102,10 +111,45 @@ function initializeSpeechRecognition() {
     });
 }
 
+function sendRequest(prompt, selectedLang) {
+    var xhr = new XMLHttpRequest();
+
+    // Include the selected language in the prompt data
+    prompt.set('selected_language', selectedLang);
+
+    var requestData = new URLSearchParams(prompt).toString();
+
+    xhr.open('POST', '/conversation-interface', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    // Log the selected language for debugging
+    console.log('Selected language in sendRequest:', selectedLang);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+
+                // ... (rest of the code)
+            } else if (xhr.status === 401) {
+                // User is not authenticated, display the error message
+                var errorMessage = document.getElementById('error-message');
+                errorMessage.innerText = 'You must be logged in\nto use this feature.\nPlease register and log in.\nOr reload the page, thanks\n¡!¡ 😇 ¡!¡';
+                errorMessage.style.display = 'block';
+            } else {
+                // Handle other HTTP error statuses if needed
+                console.error('HTTP error! Status:', xhr.status);
+            }
+        }
+    };
+
+    // Send the requestData
+    xhr.send(requestData);
+}
+
 
 // Function to handle audio playback
 function initializeAudioPlayback() {
-    // The rest of your code (audio playback, toggleHistoriesJson, etc.) goes here...
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('response-audio').onloadedmetadata = function () {
             this.play();
@@ -117,7 +161,6 @@ function initializeAudioPlayback() {
         });
     });
 }
-
 
 // Function to toggle histories JSON container
 function toggleHistoriesJson() {
@@ -148,11 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sendRequest(formData);
         }
     });
-});
 
-
-// Function to handle audio playback
-document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('response-audio').onloadedmetadata = function () {
         this.play();
     };
