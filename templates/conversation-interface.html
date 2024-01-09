@@ -107,8 +107,6 @@
         <div class="mb-3 text-center conversations-details">
             <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Your· Message:</h3>
             <form action="{{ url_for('conversation_interface') }}" method="post" class="form" role="form" novalidate="" id="conversationInterfaceForm">
-                <!-- Include CSRF token -->
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
             </form>
         </div>
