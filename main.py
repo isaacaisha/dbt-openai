@@ -33,6 +33,7 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
+CSRFProtect(app)
 CORS(app)
 
 # Initialize an empty conversation chain
@@ -53,7 +54,6 @@ configure_app()
 
 
 def initialize_app():
-    CSRFProtect(app)
     Bootstrap(app)
 
     login_manager = LoginManager(app)
