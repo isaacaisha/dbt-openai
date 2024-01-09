@@ -33,7 +33,7 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-csrf = CSRFProtect(app)
+CORS(app)
 
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
@@ -53,8 +53,8 @@ configure_app()
 
 
 def initialize_app():
+    CSRFProtect(app)
     Bootstrap(app)
-    CORS(app)
 
     login_manager = LoginManager(app)
     login_manager.login_view = 'login'
