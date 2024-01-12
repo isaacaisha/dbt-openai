@@ -5,7 +5,6 @@ import secrets
 import warnings
 
 from flask_cors import CORS
-from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, flash, request, redirect, url_for, render_template, abort, send_file, jsonify
 from flask_bootstrap import Bootstrap
@@ -29,7 +28,6 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-csrf = CSRFProtect(app)
 CORS(app)
 
 # Initialize an empty conversation chain
