@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, render_template, redirect, url_for, Flask, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.forms.app_forms import LoginForm, RegisterForm
@@ -10,19 +10,19 @@ auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    form_register = RegisterForm()
+    register_form = RegisterForm()
 
     try:
-        if form_register.validate_on_submit():
-            print(f"Form data: {form_register.data}")
+        if register_form.validate_on_submit():
+            print(f"Form data: {register_form.data}")
 
             # Check if the passwords match
-            if form_register.password.data != form_register.confirm_password.data:
+            if register_form.password.data != register_form.confirm_password.data:
                 flash("Passwords do not match. Please enter matching passwords 😭.")
                 return redirect(url_for('register'))
 
             # If user's email already exists
-            if User.query.filter_by(email=form_register.email.data).first():
+            if User.query.filter_by(email=register_form.email.data).first():
                 # Send a flash message
                 flash("You've already signed up with that email, log in instead! 🤣.")
                 return redirect(url_for('login'))
@@ -48,8 +48,8 @@ def register():
             return redirect(url_for('login'))
 
         else:
-            return render_template("register.html", form_register=form_register, current_user=current_user,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
+            return render_template("register.html", register_form=register_form,
+                                   current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -58,15 +58,15 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    form_login = LoginForm()
+    login_form = LoginForm()
 
     try:
-        if form_login.validate_on_submit():
-            print(f"Form data: {form_login.data}")
+        if login_form.validate_on_submit():
+            print(f"Form data: {login_form.data}")
 
             email = request.form.get('email')
             password = request.form.get('password')
-            remember_me = form_login.remember_me.data
+            remember_me = login_form.remember_me.data
 
             user = User.query.filter_by(email=email).first()
             # Email doesn't exist
@@ -85,7 +85,7 @@ def login():
                 next_page = request.args.get('next') or url_for('conversation_interface')
                 return redirect(next_page)
 
-        return render_template("login.html", form_login=form_login, current_user=current_user,
+        return render_template("login.html", login_form=login_form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:

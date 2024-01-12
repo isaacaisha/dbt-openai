@@ -23,6 +23,8 @@
 {% block content %}
 {% autoescape true %}
 
+{{ select_conversation_form.csrf_token }}
+
 <div class="text-center mb-3">
     {% if not current_user.is_authenticated %}
         <span style="color:#1295FA;">😭<br>sorry<br>not authenticated<br>¡!¡ RELOAD THE PAGE ¡!¡</span>
@@ -50,7 +52,7 @@
 
                 <div class="mb-3" style="margin:0 9%;">
                     <!-- Include CSRF token -->
-                    {{ wtf.quick_form(form_select_conversation, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
+                    {{ wtf.quick_form(select_conversation_form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
                 </div>
 
             </div>

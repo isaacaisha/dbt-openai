@@ -30,6 +30,8 @@
 {% block content %}
 {% autoescape true %}
 
+{{ home_form.csrf_token }}
+
     <div class="content">
         <!-- Page Header -->
 
@@ -76,7 +78,7 @@
 
                 <div class="mb-3" style="margin:0 9%; color:#1295FA;">
                     <!-- Include CSRF token -->
-                    {{ wtf.quick_form(form_home, novalidate=True, button_map={'submit': 'success btn submit'}) }}
+                    {{ wtf.quick_form(home_form, novalidate=True, button_map={'submit': 'success btn submit'}) }}
                 </div>
             </div>
 

@@ -28,6 +28,8 @@
 {% block content %}
 {% autoescape true %}
 
+{{ writing_text_form.csrf_token }}
+
 <div class="text-center mb-3">
     {% if not current_user.is_authenticated %}
         <span style="color:#1295FA;">😭<br>sorry<br>not authenticated<br>¡!¡ RELOAD THE PAGE ¡!¡</span>
@@ -38,129 +40,99 @@
     <hr style="color:green;">
 
     <h3 class="mb-5">1°Click on your Favorite Language</h3>
+
     <div>
         <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         عربي ¡!¡ Arabic
         </button>
     </div>
+
     <button id="langEn" data-lang="en-US" type="button" class="btn language-btn"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         English ¡!¡
     </button>
+
     <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+
     <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         Spanish ¡!¡
     </button>
 </div>
+
 <div class="text-center mb-2">
     <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         Brazil ¡!¡
     </button>
 </div>
-<div class="text-center mb-3">
+
+<div class="text-center mb-5">
     <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn"
             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
         French ¡!¡
     </button>
 </div>
 
-<div class="container mb-3">
-    {% if error_message %}
-        <div class="alert alert-info text-center">
-            <p class="text-center" style="color:crimson"> 🤣{{ error_message }}¡!¡</p>
-        </div>
-    {% endif %}
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class="flashes">
-                {% for message in messages %}
-                    <li class="text-center" style="color:crimson">🤣 {{ message }} 🤣 </li>
-                {% endfor %}
-            </ul>
+<div class="container">
+    <form id="prompt-form" method="POST">
+        {% if error_message %}
+            <div class="alert alert-info">
+                {{ error_message }}
+            </div>
         {% endif %}
-    {% endwith %}
-
-    <hr class="mb-3" style="color:yellow;">
-
-    <div class="text-center">
-        <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
-            <div class="mb-3">
-                <button id="start-button" type="button" class="btn mb-3" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        <div class="text-center">
+            <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
+            <div>
+                <button id="start-button" type="button" class="btn mb-3"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
                     Click to Start Writing ¡!¡
                 </button>
-                <hr style="color:red;">
             </div>
+
+            <hr class="mb-3" style="color:yellow;">
+
             <!-- Add a button for speech recognition -->
             <button id="speechRecognitionButton" type="button" class="btn mb-3"
                     style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-                Start Speech Recognition
-                <img class="micro" src="{{ url_for('static', filename='assets/images/micro.png') }}"> ¡!¡
+                Start Speech Recognition ¡!¡
             </button>
-            <hr class="mb-3" style="color:yellow">
-    </div>
-
-    <div class="mb-3" id="textarea-container" style="display: none;">
-        <div class="mb-3 text-center conversations-details">
-            <h3 style="font-family: 'Lora', 'Times New Roman', serif;">·Your· Message:</h3>
-            <form action="{{ url_for('conversation_interface') }}" method="post" class="form" role="form" novalidate="" id="conversationInterfaceForm">
-                {{ wtf.quick_form(form_interface, novalidate=True, button_map={'submit': 'success btn submit', 'generate': 'btn generate-text'}) }}
-            </form>
         </div>
-        <hr class="mb-3" style="color:yellow;">
-    </div>
 
-    {% if response %}
-        <!-- Display the text response -->
-        <div id="resultMemo" class="text-center mb-3">
-            <h3>·SìįSí· Response:</h3>
-            <textarea class="textarea-memory mb-3" id="memoryTextarea">{{ response|safe }}</textarea>
-            <hr style="color:green;">
-            <h3 style="color:#AEFAFC;">History:</h3>
-            <textarea class="textarea-memory result mb-3" style="color:purple;">{{ memory_buffer|tojson(indent=4)|safe }}</textarea>
-            <hr class="mb-3" style="color:yellow">
+        <hr class="mb-1" style="color:red;">
+
+        <div id="textarea-container" style="display: none;">
+            <label for="userInput" class="label_ text-center">Write Your Text, below:</label>
+            <textarea class="form-control mb-3" id="userInput" name="writing_text"
+                      placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
+            <hr style="display: block; color:yellow">
         </div>
-    {% endif %}
+
+        <div class="text-center">
+            <button id="generateButton" class="mb-3 btn generate-text" type="submit"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+            Click for Response 🔥¡!¡🔥
+        </button>
+        </div>
+    </form>
 
     <div>
-
         <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
 
-        {% if response %}
-        <!-- Display the text response -->
-        <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ response|safe }}<br> 💪🏿😇👌🏿</div>
-        <hr class="mb-3" style="color:red">
-        {% endif %}
+        {% if answer %}
+            <!-- Display the text response -->
+            <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
 
-        {% if response %}
-        <!-- Play the audio response -->
-        <audio id="response-audio" controls style="display: none;">
-            <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
-                Your browser does not support the audio element.
-        </audio>
+            <!-- Play the audio response -->
+            <audio id="response-audio" controls style="display: none;">
+                <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
+                    Your browser does not support the audio element.
+            </audio>
         {% endif %}
-
     </div>
 
-    {% if response %}
-    <div class="text-center">
-        <button id="playAudioButton" type="button" class="submit btn btn-outline-info mb-3"
-                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;border: solid .1rem">
-            Play Audio ¡!¡
-        </button>
-        <br>
-        <button  id="" type="button" class="submit btn btn-outline-info">
-            <audio controls >
-            <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
-                Your browser does not support the audio element.
-        </audio>
-        </button>
-    </div>
     <hr class="mb-5" style="color:green">
-    {% endif %}
 
 </div>
 

@@ -1,156 +1,129 @@
-// Function to disable all buttons except language selection buttons
-function disableButtons() {
-    document.querySelectorAll('.btn:not(.language-btn, .submit)').forEach(btn => {
-        btn.disabled = true;
-    });
-}
+// Disable all buttons with the class "btn" except language selection buttons
+document.querySelectorAll('.btn:not(.language-btn, .submit)').forEach(function(btn) {
+    btn.disabled = true;
+});
 
-// Function to enable all buttons
-function enableButtons() {
-    document.querySelectorAll('.btn').forEach(btn => {
-        btn.disabled = false;
-    });
-}
+// Add click event listeners to language buttons
+var languageButtons = document.querySelectorAll('.language-btn');
+languageButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+        // Remove the 'active' class from all buttons
+        languageButtons.forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        // Add the 'active' class to the clicked button
+        button.classList.add('active');
 
-// Function to add click event listeners to language buttons
-function addLanguageButtonClickListeners() {
-    const languageButtons = document.querySelectorAll('.language-btn');
-    languageButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Log button click for debugging
-            console.log('Button clicked:', button);
-
-            // Remove the 'active' class from all buttons
-            languageButtons.forEach(btn => {
-                btn.classList.remove('active');
-                // Log the classList of each button for debugging
-                console.log('Button classes after removal:', btn.classList);
-            });
-
-            // Add the 'active' class to the clicked button
-            button.classList.add('active');
-            // Enable all buttons with the class "btn"
-            enableButtons();
-
-            // Log the classList of the clicked button after adding 'active' class
-            console.log('Button classes after adding "active":', button.classList);
+        // Enable all buttons with the class "btn"
+        document.querySelectorAll('.btn').forEach(function(btn) {
+            btn.disabled = false;
         });
     });
-}
+});
 
-// Function to capitalize sentences in a textarea
 function capitalizeSentences(textarea) {
-    let currentValue = textarea.value;
-    let sentences = currentValue.split('. ');
-    let capitalizedText = sentences.map(sentence => sentence.charAt(0).toUpperCase() + sentence.slice(1)).join('. ');
-    textarea.value = capitalizedText;
-}
+            // Get the current value of the textarea
+            let currentValue = textarea.value;
+
+            // Split the text into sentences based on periods followed by a space
+            let sentences = currentValue.split('. ');
+
+            // Capitalize the first letter of each sentence and join them back together
+            let capitalizedText = sentences.map(sentence => {
+                return sentence.charAt(0).toUpperCase() + sentence.slice(1);
+            }).join('. ');
+
+            // Set the updated value
+            textarea.value = capitalizedText;
+        }
+
+let userTextData = ""; // Initialize a variable to store the text data
+let typingTimeout; // Initialize a variable to track typing timeout
 
 // Function to handle the "Start" button click
-function handleStartButtonClick() {
+document.getElementById('start-button').addEventListener('click', function () {
+    // Show the textarea container
     const textareaContainer = document.getElementById('textarea-container');
     textareaContainer.style.display = 'block';
-    const textarea = document.getElementById('writing_text');
+
+    // Focus on the textarea
+    const textarea = document.getElementById('userInput');
     textarea.focus();
-    textarea.addEventListener('input', function() {
-        capitalizeSentences(textarea);
+
+    // Listen for input in the textarea
+    textarea.addEventListener('input', function () {
+        // Clear any previous typing timeout
         clearTimeout(typingTimeout);
-        typingTimeout = setTimeout(function() {
+
+        // Set a new typing timeout
+        typingTimeout = setTimeout(function () {
+            // If the user hasn't typed for 19 seconds, clear the textarea
             textarea.value = "";
-        }, 9000);
+        }, 19000); // 19000 milliseconds (19 seconds)
     });
-}
+});
 
-// Function to handle speech recognition
-function initializeSpeechRecognition() {
-    const speechRecognitionButton = document.getElementById('speechRecognitionButton');
-    const userInput = document.getElementById('writing_text');
-    let userSpeechData = "";
-    let recognition;
+document.getElementById('generateButton').addEventListener('click', function (event) {
+    const speechData = userSpeechData.trim(); // Get the trimmed speech data
+    const inputText = userInput.value.trim(); // Get the trimmed input text
 
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.onstart = function() {
-            speechRecognitionButton.textContent = 'Listening...';
-        };
-        recognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript;
-            userSpeechData = transcript;
-            userInput.value = transcript;
-            console.log('Speech data:', userSpeechData);
-        };
-        recognition.onend = function() {
-            speechRecognitionButton.textContent = 'Start Speech Recognition';
-        };
-        recognition.onerror = function(event) {
-            console.error('Speech recognition error:', event.error);
-        };
+    if (speechData === "" && inputText === "") {
+        // Display an error message if both fields are empty
+        document.getElementById('error-message').textContent = "Please,\nYou Have To Speech or Enter Text\nFirst 😝";
+        document.getElementById('error-message').style.display = 'block';
+
+        // Hide the "Final Result" content since there's no recognized speech or input text
+        document.getElementById('final-result-speech-content').style.display = 'none';
+
+        // Prevent the form from submitting when both fields are empty
+        event.preventDefault();
     } else {
-        speechRecognitionButton.disabled = true;
-        speechRecognitionButton.textContent = 'Speech Recognition Not Supported';
+        // Clear any previous error message
+        document.getElementById('error-message').textContent = "";
+        document.getElementById('error-message').style.display = 'none';
+
+        // Display the content in the "Final Result" section
+        document.getElementById('final-result-content').textContent = userTextData;
+        document.getElementById('final-result-content').style.display = 'block';
     }
+});
 
-    speechRecognitionButton.addEventListener('click', function() {
-        if (recognition && recognition.state === 'listening') {
-            recognition.stop();
-        } else {
-            recognition.start();
-        }
-        const textareaContainer = document.getElementById('textarea-container');
-        textareaContainer.style.display = 'block';
-    });
-}
+// Add a click event listener to the "Final Result" button
+document.getElementById('final_result').addEventListener('click', function () {
+    // Check if the textarea is empty
+    if (userTextData.trim() === "") {
+        // Display an error message
+        document.getElementById('error-message').textContent = "Please,\nYou Have To Write\nFirst 😝";
+        document.getElementById('error-message').style.display = 'block';
 
-// Function to handle audio playback
-function initializeAudioPlayback() {
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById('response-audio').onloadedmetadata = function () {
-            this.play();
-        };
+        // Hide the "Final Result" content since there's no text
+        document.getElementById('final-result-content').style.display = 'none';
+    } else {
+        // Clear any previous error message
+        document.getElementById('error-message').textContent = "";
+        document.getElementById('error-message').style.display = 'none';
 
-        document.getElementById('playAudioButton').addEventListener('click', function () {
-            var audio = document.getElementById('response-audio');
-            audio.play();
-        });
-    });
-}
+        // Display the content in the "Final Result" section
+        document.getElementById('final-result-content').textContent = userTextData;
+        document.getElementById('final-result-content').style.display = 'block';
+    }
+});
 
-// Function to toggle histories JSON container
-function toggleHistoriesJson() {
-    var container = document.getElementById('historiesContainerJson');
-    container.style.display = (container.style.display === 'none') ? 'block' : 'none';
-}
+// Listen for input in the textarea and store the text
+document.getElementById('userInput').addEventListener('input', function () {
+    userTextData = document.getElementById('userInput').value;
+});
 
-// Main entry point
-document.addEventListener('DOMContentLoaded', function() {
-    disableButtons();
-    addLanguageButtonClickListeners();
-    initializeSpeechRecognition();
-    initializeAudioPlayback();
-    // ... (add other initialization logic)
+// Initially, hide the "Final Result" content and error message
+document.getElementById('final-result-content').style.display = 'none';
+document.getElementById('error-message').style.display = 'none';
 
-    document.getElementById('start-button').addEventListener('click', handleStartButtonClick);
-
-    document.getElementById('conversationInterfaceForm').addEventListener('submit', function(event) {
-        const writingText = document.getElementById('writing_text').value.trim();
-        if (writingText === "") {
-            document.getElementById('error-message').textContent = "Please, You Have To Speech or Enter Text First ¡!¡ 😝 ¡!¡";
-            document.getElementById('error-message').style.display = 'block';
-            event.preventDefault();
-        } else {
-            document.getElementById('error-message').textContent = "";
-            document.getElementById('error-message').style.display = 'none';
-            const formData = new FormData(document.getElementById('conversationInterfaceForm'));
-            sendRequest(formData);
-        }
-    });
-
-    document.getElementById('response-audio').onloadedmetadata = function () {
-        this.play();
-    };
-
-    document.getElementById('playAudioButton').addEventListener('click', function () {
-        var audio = document.getElementById('response-audio');
-        audio.play();
-    });
+// JavaScript to toggle the visibility of the memory-load btn
+document.getElementById("showResultButton").addEventListener("click", function() {
+    var resultDiv = document.getElementById("resultDiv");
+    if (resultDiv.style.display === "none") {
+        resultDiv.style.display = "block";
+    } else {
+        resultDiv.style.display = "none";
+    }
 });

@@ -1,16 +1,13 @@
-import json
-import logging
 import os
 import flask_wtf
 import openai
 import secrets
 import warnings
 
-import pytz
 from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, flash, request, redirect, url_for, render_template, abort, send_file
+from flask import Flask, flash, request, redirect, url_for, render_template, abort, send_file, jsonify
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, current_user
 from datetime import timedelta, datetime
@@ -27,13 +24,12 @@ from app.routes.auth import register as auth_register, login as auth_login, logo
 from app.databases.database import get_db
 from app.models.memory import Memory, User, db
 
-
 warnings.filterwarnings('ignore')
 
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-CSRFProtect(app)
+csrf = CSRFProtect(app)
 CORS(app)
 
 # Initialize an empty conversation chain
@@ -159,16 +155,16 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    form_home = TextAreaFormIndex()
+    home_form = TextAreaFormIndex()
     response = None
     user_input = None
 
     try:
-        if form_home.validate_on_submit():
-            print(f"Form data: {form_home.data}\n")
+        if home_form.validate_on_submit():
+            print(f"Form data: {home_form.data}\n")
 
             # Retrieve form data using the correct key
-            user_input = form_home.text_writing.data
+            user_input = home_form.text_writing.data
             # Use the LLM to generate a response based on user input
             response = siisi_conversation.predict(input=user_input)
 
@@ -178,7 +174,7 @@ def home():
         print(f"user_input: {user_input}")
         print(f"response: {response}\n")
 
-        return render_template('index.html', form_home=form_home,
+        return render_template('index.html', home_form=home_form,
                                current_user=current_user, user_input=user_input, response=response,
                                memory_buffer=memory_buffer, memory_load=memory_load,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -191,103 +187,156 @@ def home():
 
 @app.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
-    global memory
-    form_interface = TextAreaForm()
-    response = None
+    writing_text_form = TextAreaForm()
+    error_message = None
+    answer = None
 
-    # Retrieve form data using the correct key
-    user_input = form_interface.writing_text.data
+    if request.method == "POST" and writing_text_form.validate_on_submit():
+        user_input = request.form['writing_text']
 
-    try:
-        if form_interface.validate_on_submit():
-            print(f"Form data: {form_interface.data}\n")
+        # Use the LLM to generate a response based on user input
+        response = siisi_conversation.predict(input=user_input)
+        answer = response['output']
 
-            # Get conversations only for the current user
-            user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+        print(f'User ID:{current_user.id} 😎')
+        print(f'User Name: {current_user.name} 😝')
+        print(f'User Input: {user_input} 😎')
+        print(f'LLM Response:{answer} 😝\n')
 
-            # Create a list of JSON strings for each conversation
-            conversation_strings = [memory.conversations_summary for memory in user_conversations]
+    return render_template('conversation-interface.html', writing_text_form=writing_text_form,
+                           answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
+                           current_user=current_user)
 
-            # Combine the first 1 and last 9 entries into a valid JSON array
-            qdocs = f"[{','.join(conversation_strings[-3:])}]"
 
-            # Convert 'created_at' values to string
-            created_at_list = [str(memory.created_at) for memory in user_conversations]
+@app.route('/answer', methods=['POST'])
+def answer():
+    user_message = request.form['prompt']
+    print(f'User Input:\n{user_message} 😎\n')
 
-            # Include 'created_at' in the conversation context
-            conversation_context = {
-                "created_at": created_at_list[-3:],
-                "conversations": qdocs,
-                "user_name": current_user.name,
-                "user_message": user_input,
-            }
+    # Extend the conversation with the user's message
+    response = siisi_conversation.predict(input=user_message)
 
-            # Call llm ChatOpenAI
-            response = siisi_conversation.predict(input=json.dumps(conversation_context))
-            print(f'conversation_context:\n{conversation_context}\n')
+    # Check if the response is a string, and if so, use it as the assistant's reply
+    if isinstance(response, str):
+        assistant_reply = response
+    else:
+        # If it's not a string, access the assistant's reply as you previously did
+        assistant_reply = response.choices[0].message['content']
 
-            # Check if the response is a string, and if so, use it as the assistant's reply
-            if isinstance(response, str):
-                assistant_reply = response
-            else:
-                # If it's not a string, access the assistant's reply appropriately
-                if isinstance(response, dict) and 'choices' in response:
-                    assistant_reply = response['choices'][0]['message']['content']
-                else:
-                    assistant_reply = None
+    # Convert the text response to speech using gTTS
+    tts = gTTS(assistant_reply)
 
-            # Convert the text response to speech using gTTS
-            tts = gTTS(assistant_reply)
+    # Create a temporary audio file
+    audio_file_path = 'temp_audio.mp3'
+    tts.save(audio_file_path)
+    print(f'LLM Response:\n{assistant_reply} 😝\n')
 
-            # Create a temporary audio file
-            audio_file_path = 'temp_audio.mp3'
-            tts.save(audio_file_path)
+    # Return the response as JSON, including both text and the path to the audio file
+    return jsonify({
+        "answer_text": assistant_reply,
+        "answer_audio_path": audio_file_path,
+    })
 
-            memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
-            conversations_summary = memory_summary.load_memory_variables({})
-            conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
-            # Create a new Memory object with the data
-            new_memory = Memory(
-                user_name=current_user.name,
-                owner_id=current_user.id,
-                user_message=user_input,
-                llm_response=response,
-                conversations_summary=conversations_summary_str,
-                created_at=datetime.now(pytz.timezone('Europe/Paris'))
-            )
-            # Add the new memory to the session
-            db.add(new_memory)
-            # Commit changes to the database
-            db.commit()
-            db.refresh(new_memory)
-
-            print(f'User ID:{current_user.id} 😎')
-            print(f'User Name: {current_user.name} 😝')
-            print(f'User Input: {user_input} 😎')
-            print(f'LLM Response:{response} 😝\n')
-
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({})
-
-        return render_template('conversation-interface.html', form_interface=form_interface,
-                               current_user=current_user, user_input=form_interface.writing_text.data, response=response,
-                               memory_buffer=memory_buffer, memory_load=memory_load,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        logging.exception("Unexpected error occurred.")
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
+# @app.route("/conversation-interface", methods=["GET", "POST"])
+# def conversation_interface():
+#    global memory
+#    form_interface = TextAreaForm()
+#    response = None
+#
+#    # Retrieve form data using the correct key
+#    user_input = form_interface.writing_text.data
+#
+#    try:
+#        if form_interface.validate_on_submit():
+#            print(f"Form data: {form_interface.data}\n")
+#
+#            # Get conversations only for the current user
+#            user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+#
+#            # Create a list of JSON strings for each conversation
+#            conversation_strings = [memory.conversations_summary for memory in user_conversations]
+#
+#            # Combine the first 1 and last 9 entries into a valid JSON array
+#            qdocs = f"[{','.join(conversation_strings[-3:])}]"
+#
+#            # Convert 'created_at' values to string
+#            created_at_list = [str(memory.created_at) for memory in user_conversations]
+#
+#            # Include 'created_at' in the conversation context
+#            conversation_context = {
+#                "created_at": created_at_list[-3:],
+#                "conversations": qdocs,
+#                "user_name": current_user.name,
+#                "user_message": user_input,
+#            }
+#
+#            # Call llm ChatOpenAI
+#            response = siisi_conversation.predict(input=json.dumps(conversation_context))
+#            print(f'conversation_context:\n{conversation_context}\n')
+#
+#            # Check if the response is a string, and if so, use it as the assistant's reply
+#            if isinstance(response, str):
+#                assistant_reply = response
+#            else:
+#                # If it's not a string, access the assistant's reply appropriately
+#                if isinstance(response, dict) and 'choices' in response:
+#                    assistant_reply = response['choices'][0]['message']['content']
+#                else:
+#                    assistant_reply = None
+#
+#            # Convert the text response to speech using gTTS
+#            tts = gTTS(assistant_reply)
+#
+#            # Create a temporary audio file
+#            audio_file_path = 'temp_audio.mp3'
+#            tts.save(audio_file_path)
+#
+#            memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
+#            conversations_summary = memory_summary.load_memory_variables({})
+#            conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
+#
+#            # Create a new Memory object with the data
+#            new_memory = Memory(
+#                user_name=current_user.name,
+#                owner_id=current_user.id,
+#                user_message=user_input,
+#                llm_response=response,
+#                conversations_summary=conversations_summary_str,
+#                created_at=datetime.now(pytz.timezone('Europe/Paris'))
+#            )
+#            # Add the new memory to the session
+#            db.add(new_memory)
+#            # Commit changes to the database
+#            db.commit()
+#            db.refresh(new_memory)
+#
+#            print(f'User ID:{current_user.id} 😎')
+#            print(f'User Name: {current_user.name} 😝')
+#            print(f'User Input: {user_input} 😎')
+#            print(f'LLM Response:{response} 😝\n')
+#
+#        memory_buffer = memory.buffer_as_str
+#        memory_load = memory.load_memory_variables({})
+#
+#        return render_template('conversation-interface.html', form_interface=form_interface,
+#                               current_user=current_user, user_input=form_interface.writing_text.data, response=response,
+#                               memory_buffer=memory_buffer, memory_load=memory_load,
+#                               date=datetime.now().strftime("%a %d %B %Y"))
+#
+#    except Exception as err:
+#        logging.exception("Unexpected error occurred.")
+#        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+#        return render_template('error.html', error_message=str(err), current_user=current_user,
+#                               date=datetime.now().strftime("%a %d %B %Y"))
+#
 
 @app.route('/audio')
 def serve_audio():
     audio_file_path = 'temp_audio.mp3'
-    # Check if the file exists
-    if not os.path.exists(audio_file_path):
-        abort(404, description=f"Audio file not found")
+    ## Check if the file exists
+    # if not os.path.exists(audio_file_path):
+    #    abort(404, description=f"Audio file not found")
     return send_file(audio_file_path, as_attachment=True)
 
 
@@ -363,14 +412,14 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    form_select_conversation = ConversationIdForm()
+    select_conversation_form = ConversationIdForm()
 
     try:
-        if form_select_conversation.validate_on_submit():
-            print(f"Form data: {form_select_conversation.data}")
+        if select_conversation_form.validate_on_submit():
+            print(f"Form data: {select_conversation_form.data}")
 
             # Retrieve the selected conversation ID
-            selected_conversation_id = form_select_conversation.conversation_id.data
+            selected_conversation_id = select_conversation_form.conversation_id.data
 
             # Construct the URL string for the 'get_conversation' route
             url = f'/conversation/{selected_conversation_id}'
@@ -379,7 +428,7 @@ def select_conversation():
 
         else:
             return render_template('conversation-by-id.html',
-                                   form_select_conversation=form_select_conversation, current_user=current_user,
+                                   select_conversation_form=select_conversation_form, current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
@@ -420,14 +469,14 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation(conversation_id=None):
-    form_delete_conversation = DeleteForm()
+    delete_conversation_form = DeleteForm()
 
     try:
-        if form_delete_conversation.validate_on_submit():
-            print(f"Form data: {form_delete_conversation.data}")
+        if delete_conversation_form.validate_on_submit():
+            print(f"Form data: {delete_conversation_form.data}")
 
             # Get the conversation_id from the form
-            conversation_id = form_delete_conversation.conversation_id.data
+            conversation_id = delete_conversation_form.conversation_id.data
 
             # Query the database to get the conversation to be deleted
             conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
@@ -449,11 +498,12 @@ def delete_conversation(conversation_id=None):
                 db.rollback()  # Rollback in case of commit failure
                 flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
                 return render_template('conversation-delete.html',
-                                       current_user=current_user, form_delete_conversation=form_delete_conversation,
+                                       current_user=current_user, delete_conversation_form=delete_conversation_form,
                                        conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
-        return render_template('conversation-delete.html', current_user=current_user, form=form_delete_conversation,
-                               conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
+        return render_template('conversation-delete.html', current_user=current_user,
+                               delete_conversation_form=delete_conversation_form, conversation_id=conversation_id,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
