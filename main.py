@@ -201,9 +201,12 @@ def conversation_interface():
         print(f'User Input: {user_input} 😎')
         print(f'LLM Response:{answer} 😝\n')
 
+    memory_buffer = memory.buffer_as_str
+    memory_load = memory.load_memory_variables({})
+
     return render_template('conversation-interface.html', writing_text_form=writing_text_form,
                            answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
-                           current_user=current_user)
+                           current_user=current_user, memory_buffer=memory_buffer, memory_load=memory_load)
 
 
 @app.route('/answer', methods=['POST'])

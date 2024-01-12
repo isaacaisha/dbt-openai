@@ -1,0 +1,170 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
+
+{% block title %} Welcom€ to{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
+    {% include 'bootstrap/base.html' %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block content1 %}
+        <div class="container-fluid mb-3">
+            <div class="p-1 rounded-3 jumbotron">
+                <div class="container-fluid py-1">
+                    <h1 class="">
+                        <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+                        SìįSí DBT OpenAI
+                        <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+                    </h1>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+    <div class="content">
+        <!-- Page Header -->
+
+        <hr style="color:green;">
+
+        <h3 class="text-center log-register-h3">Interact  With<br>
+            <span class="artificial-intelligence">SìįSí</span><br>Register & Log in
+        </h3>
+
+        <hr class="mb-3" style="color:yellow;">
+
+        <!-- Navbar -->
+        <nav class="navbar nav-home">
+            <div class="" id="navbarSupportedContent">
+                <ul class="navbar-nav" style="display: inline-block;">
+                    <li class="nav-item" style="display: inline-block;">
+                        <a class="nav-link register-home" href="{{ url_for('register') }}" style="color:#1295FA;">Register</a>
+                    </li>
+                    <li class="nav-item" style="display: none;">
+                        <a class="nav-link register &-home" href="">&</a>
+                    </li>
+                    <li class="nav-item" style="display: inline-block;">
+                        <a class="nav-link active log-in-home" aria-current="page"
+                           href="{{ url_for('login') }}" style="color:#1295FA;">Login</a>
+                    </li>
+                </ul>
+                <p class="text-center" style="color:gold;">🔥∞To Use All Features∞🔥</p>
+            </div>
+
+        </nav>
+
+        <hr class="mb-5" style="color:yellow;">
+
+{{ home_form.csrf_token }}
+
+<div class="container text-center mb-1">
+
+    <h3 class="mb-5" style="color:#AEFAFC;">1°Click on your Favorite Language</h3>
+
+    <div>
+        <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        عربي ¡!¡ Arabic
+        </button>
+    </div>
+
+    <button id="langEn" data-lang="en-US" type="button" class="btn language-btn"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        English ¡!¡
+    </button>
+
+    <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+
+    <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        Spanish ¡!¡
+    </button>
+</div>
+
+<div class="text-center mb-2">
+    <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        Brazil ¡!¡
+    </button>
+</div>
+
+<div class="text-center mb-5">
+    <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn"
+            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+        French ¡!¡
+    </button>
+</div>
+
+<div class="container">
+    <form id="prompt-form" method="POST">
+        {% if error_message %}
+            <div class="alert alert-info">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <div class="text-center">
+            <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
+            <div>
+                <button id="start-button" type="button" class="btn mb-3"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                    Click to Start Writing ¡!¡
+                </button>
+            </div>
+
+            <hr class="mb-3" style="color:green;">
+
+            <!-- Add a button for speech recognition -->
+            <button id="speechRecognitionButton" type="button" class="btn mb-3"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                Start Speech Recognition ¡!¡
+            </button>
+        </div>
+
+        <hr class="mb-1" style="color:yellow;">
+
+        <div id="textarea-container" style="display: none;">
+            <label for="userInput" class="label_ text-center">Write Your Text, below:</label>
+            <textarea class="form-control mb-3" id="userInput" name="text_writing"
+                      placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
+            <hr style="display: block; color:red">
+        </div>
+
+        <div class="text-center">
+            <button id="generateButton" class="mb-3 btn generate-text" type="submit"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+            Click for Response 🔥¡!¡🔥
+        </button>
+        </div>
+    </form>
+
+    <div>
+        <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
+
+        {% if answer %}
+            <!-- Display the text response -->
+            <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
+
+            <!-- Play the audio response -->
+            <audio id="response-audio" controls style="display: none;">
+                <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
+                    Your browser does not support the audio element.
+            </audio>
+        {% endif %}
+    </div>
+
+    <hr class="mb-5" style="color:green">
+</div>
+</div>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer %} {% endblock %}
