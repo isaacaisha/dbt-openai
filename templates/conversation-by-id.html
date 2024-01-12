@@ -50,7 +50,8 @@
 
                 <div class="mb-3" style="margin:0 9%;">
                     <!-- Include CSRF token -->
-                    {{ wtf.quick_form(form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
+                    {{ wtf.quick_form(form_select_conversation, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
+                    {{ form_select_conversation.csrf_token }}
                 </div>
 
             </div>

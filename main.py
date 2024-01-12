@@ -159,16 +159,16 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    form = TextAreaFormIndex()
+    form_home = TextAreaFormIndex()
     response = None
     user_input = None
 
     try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}\n")
+        if form_home.validate_on_submit():
+            print(f"Form data: {form_home.data}\n")
 
             # Retrieve form data using the correct key
-            user_input = form.text_writing.data
+            user_input = form_home.text_writing.data
             # Use the LLM to generate a response based on user input
             response = siisi_conversation.predict(input=user_input)
 
@@ -178,7 +178,7 @@ def home():
         print(f"user_input: {user_input}")
         print(f"response: {response}\n")
 
-        return render_template('index.html', form=form,
+        return render_template('index.html', form_home=form_home,
                                current_user=current_user, user_input=user_input, response=response,
                                memory_buffer=memory_buffer, memory_load=memory_load,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -192,15 +192,15 @@ def home():
 @app.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
     global memory
-    form = TextAreaForm()
+    form_interface = TextAreaForm()
     response = None
 
     # Retrieve form data using the correct key
-    user_input = form.writing_text.data
+    user_input = form_interface.writing_text.data
 
     try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}\n")
+        if form_interface.validate_on_submit():
+            print(f"Form data: {form_interface.data}\n")
 
             # Get conversations only for the current user
             user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
@@ -270,8 +270,8 @@ def conversation_interface():
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
-        return render_template('conversation-interface.html', form=form,
-                               current_user=current_user, user_input=form.writing_text.data, response=response,
+        return render_template('conversation-interface.html', form_interface=form_interface,
+                               current_user=current_user, user_input=form_interface.writing_text.data, response=response,
                                memory_buffer=memory_buffer, memory_load=memory_load,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -363,14 +363,14 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    form = ConversationIdForm()
+    form_select_conversation = ConversationIdForm()
 
     try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}")
+        if form_select_conversation.validate_on_submit():
+            print(f"Form data: {form_select_conversation.data}")
 
             # Retrieve the selected conversation ID
-            selected_conversation_id = form.conversation_id.data
+            selected_conversation_id = form_select_conversation.conversation_id.data
 
             # Construct the URL string for the 'get_conversation' route
             url = f'/conversation/{selected_conversation_id}'
@@ -378,7 +378,8 @@ def select_conversation():
             return redirect(url)
 
         else:
-            return render_template('conversation-by-id.html', form=form, current_user=current_user,
+            return render_template('conversation-by-id.html',
+                                   form_select_conversation=form_select_conversation, current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
@@ -419,14 +420,14 @@ def get_conversation(conversation_id):
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation(conversation_id=None):
-    form = DeleteForm()
+    form_delete_conversation = DeleteForm()
 
     try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}")
+        if form_delete_conversation.validate_on_submit():
+            print(f"Form data: {form_delete_conversation.data}")
 
             # Get the conversation_id from the form
-            conversation_id = form.conversation_id.data
+            conversation_id = form_delete_conversation.conversation_id.data
 
             # Query the database to get the conversation to be deleted
             conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
@@ -448,10 +449,10 @@ def delete_conversation(conversation_id=None):
                 db.rollback()  # Rollback in case of commit failure
                 flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
                 return render_template('conversation-delete.html',
-                                       current_user=current_user, form=form, conversation_id=conversation_id,
-                                       date=datetime.now().strftime("%a %d %B %Y"))
+                                       current_user=current_user, form_delete_conversation=form_delete_conversation,
+                                       conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
-        return render_template('conversation-delete.html', current_user=current_user, form=form,
+        return render_template('conversation-delete.html', current_user=current_user, form=form_delete_conversation,
                                conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
