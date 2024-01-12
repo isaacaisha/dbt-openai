@@ -10,19 +10,19 @@ auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm()
+    form_register = RegisterForm()
 
     try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}")
+        if form_register.validate_on_submit():
+            print(f"Form data: {form_register.data}")
 
             # Check if the passwords match
-            if form.password.data != form.confirm_password.data:
+            if form_register.password.data != form_register.confirm_password.data:
                 flash("Passwords do not match. Please enter matching passwords 😭.")
                 return redirect(url_for('register'))
 
             # If user's email already exists
-            if User.query.filter_by(email=form.email.data).first():
+            if User.query.filter_by(email=form_register.email.data).first():
                 # Send a flash message
                 flash("You've already signed up with that email, log in instead! 🤣.")
                 return redirect(url_for('login'))
@@ -48,7 +48,7 @@ def register():
             return redirect(url_for('login'))
 
         else:
-            return render_template("register.html", form=form, current_user=current_user,
+            return render_template("register.html", form_register=form_register, current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
@@ -58,15 +58,15 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
+    form_login = LoginForm()
 
     try:
-        if form.validate_on_submit():
-            print(f"Form data: {form.data}")
+        if form_login.validate_on_submit():
+            print(f"Form data: {form_login.data}")
 
             email = request.form.get('email')
             password = request.form.get('password')
-            remember_me = form.remember_me.data
+            remember_me = form_login.remember_me.data
 
             user = User.query.filter_by(email=email).first()
             # Email doesn't exist
@@ -85,7 +85,7 @@ def login():
                 next_page = request.args.get('next') or url_for('conversation_interface')
                 return redirect(next_page)
 
-        return render_template("login.html", form=form, current_user=current_user,
+        return render_template("login.html", form_login=form_login, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
