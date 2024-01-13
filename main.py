@@ -90,7 +90,7 @@ def logout():
     return auth_logout()
 
 
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def home():
     return home_llm()
 
