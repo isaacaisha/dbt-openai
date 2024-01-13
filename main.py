@@ -179,90 +179,96 @@ def conversation_interface():
 @app.route('/answer', methods=['POST'])
 def answer():
     global memory
-    user_input = request.form['prompt']
-    print(f'User Input:\n{user_input} 😎\n')
 
     try:
-        # Get conversations only for the current user
-        user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+        # Check if the user is authenticated
+        if current_user.is_authenticated:
+            user_input = request.form['prompt']
+            print(f'User Input:\n{user_input} 😎\n')
 
-        # Create a list of JSON strings for each conversation
-        conversation_strings = [memory.conversations_summary for memory in user_conversations]
+            # Get conversations only for the current user
+            user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-        # Combine the first 1 and last 9 entries into a valid JSON array
-        qdocs = f"[{','.join(conversation_strings[-3:])}]"
+            # Create a list of JSON strings for each conversation
+            conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
-        # Convert 'created_at' values to string
-        created_at_list = [str(memory.created_at) for memory in user_conversations]
+            # Combine the first 1 and last 9 entries into a valid JSON array
+            qdocs = f"[{','.join(conversation_strings[-3:])}]"
 
-        # Include 'created_at' in the conversation context
-        conversation_context = {
-            "created_at": created_at_list[-3:],
-            "conversations": qdocs,
-            "user_name": current_user.name,
-            "user_message": user_input,
-        }
+            # Convert 'created_at' values to string
+            created_at_list = [str(memory.created_at) for memory in user_conversations]
 
-        # Call llm ChatOpenAI
-        response = siisi_conversation.predict(input=json.dumps(conversation_context))
-        print(f'conversation_context:\n{conversation_context}\n')
+            # Include 'created_at' in the conversation context
+            conversation_context = {
+                "created_at": created_at_list[-3:],
+                "conversations": qdocs,
+                "user_name": current_user.name,
+                "user_message": user_input,
+            }
 
-        # Check if the response is a string, and if so, use it as the assistant's reply
-        if isinstance(response, str):
-            assistant_reply = response
-        else:
-            # If it's not a string, access the assistant's reply appropriately
-            if isinstance(response, dict) and 'choices' in response:
-                assistant_reply = response['choices'][0]['message']['content']
+            # Call llm ChatOpenAI
+            response = siisi_conversation.predict(input=json.dumps(conversation_context))
+            print(f'conversation_context:\n{conversation_context}\n')
+
+            # Check if the response is a string, and if so, use it as the assistant's reply
+            if isinstance(response, str):
+                assistant_reply = response
             else:
-                assistant_reply = None
+                # If it's not a string, access the assistant's reply appropriately
+                if isinstance(response, dict) and 'choices' in response:
+                    assistant_reply = response['choices'][0]['message']['content']
+                else:
+                    assistant_reply = None
 
-        # Convert the text response to speech using gTTS
-        tts = gTTS(assistant_reply)
+            # Convert the text response to speech using gTTS
+            tts = gTTS(assistant_reply)
 
-        # Create a temporary audio file
-        audio_file_path = 'temp_audio.mp3'
-        tts.save(audio_file_path)
+            # Create a temporary audio file
+            audio_file_path = 'temp_audio.mp3'
+            tts.save(audio_file_path)
 
-        memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
-        conversations_summary = memory_summary.load_memory_variables({})
-        conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
+            memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
+            conversations_summary = memory_summary.load_memory_variables({})
+            conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
-        created_at = datetime.now(pytz.timezone('Europe/Paris'))
+            created_at = datetime.now(pytz.timezone('Europe/Paris'))
 
-        # Create a new Memory object with the data
-        new_memory = Memory(
-            user_name=current_user.name,
-            owner_id=current_user.id,
-            user_message=user_input,
-            llm_response=response,
-            conversations_summary=conversations_summary_str,
-            created_at=created_at
-        )
-        # Add the new memory to the session
-        db.add(new_memory)
-        # Commit changes to the database
-        db.commit()
-        db.refresh(new_memory)
+            # Create a new Memory object with the data
+            new_memory = Memory(
+                user_name=current_user.name,
+                owner_id=current_user.id,
+                user_message=user_input,
+                llm_response=response,
+                conversations_summary=conversations_summary_str,
+                created_at=created_at
+            )
+            # Add the new memory to the session
+            db.add(new_memory)
+            # Commit changes to the database
+            db.commit()
+            db.refresh(new_memory)
 
-        print(f'User ID:{current_user.id} 😎')
-        print(f'User Name: {current_user.name} 😝')
-        print(f'User Input: {user_input} 😎')
-        print(f'LLM Response:{response} 😝\n')
+            print(f'User ID:{current_user.id} 😎')
+            print(f'User Name: {current_user.name} 😝')
+            print(f'User Input: {user_input} 😎')
+            print(f'LLM Response:{response} 😝\n')
 
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({})
+            memory_buffer = memory.buffer_as_str
+            memory_load = memory.load_memory_variables({})
 
-        # Return the response as JSON, including both text and the path to the audio file
-        return jsonify({
-            "answer_text": assistant_reply,
-            "answer_audio_path": audio_file_path,
-            "memory_buffer": memory_buffer,
-            "memory_load": memory_load,
-        })
+            # Return the response as JSON, including both text and the path to the audio file
+            return jsonify({
+                "answer_text": assistant_reply,
+                "answer_audio_path": audio_file_path,
+                "memory_buffer": memory_buffer,
+                "memory_load": memory_load,
+            })
+        else:
+            # Handle the case where the user is not authenticated
+            return flash("User not authenticated. Please log in.", "info")
 
     except AttributeError as e:
-        flash("An error occurred. Please retry.")
+        flash("An error occurred. Please reload & retry...", "info")
         print(f"AttributeError: {e}")
         return redirect(url_for('conversation_interface'))
 
