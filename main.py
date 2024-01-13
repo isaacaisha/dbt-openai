@@ -1,9 +1,11 @@
+import json
 import os
 import flask_wtf
 import openai
 import secrets
 import warnings
 
+import pytz
 from dotenv import load_dotenv, find_dotenv
 from flask_cors import CORS
 from flask import Flask, flash, request, redirect, url_for, render_template, send_file, jsonify
@@ -189,18 +191,43 @@ def conversation_interface():
 
 @app.route('/answer', methods=['POST'])
 def answer():
-    user_message = request.form['prompt']
-    print(f'User Input:\n{user_message} 😎\n')
+    global memory
+    user_input = request.form['prompt']
+    print(f'User Input:\n{user_input} 😎\n')
 
-    # Extend the conversation with the user's message
-    response = siisi_conversation.predict(input=user_message)
+    # Get conversations only for the current user
+    user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+
+    # Create a list of JSON strings for each conversation
+    conversation_strings = [memory.conversations_summary for memory in user_conversations]
+
+    # Combine the first 1 and last 9 entries into a valid JSON array
+    qdocs = f"[{','.join(conversation_strings[-3:])}]"
+
+    # Convert 'created_at' values to string
+    created_at_list = [str(memory.created_at) for memory in user_conversations]
+
+    # Include 'created_at' in the conversation context
+    conversation_context = {
+        "created_at": created_at_list[-3:],
+        "conversations": qdocs,
+        "user_name": current_user.name,
+        "user_message": user_input,
+    }
+
+    # Call llm ChatOpenAI
+    response = siisi_conversation.predict(input=json.dumps(conversation_context))
+    print(f'conversation_context:\n{conversation_context}\n')
 
     # Check if the response is a string, and if so, use it as the assistant's reply
     if isinstance(response, str):
         assistant_reply = response
     else:
-        # If it's not a string, access the assistant's reply as you previously did
-        assistant_reply = response.choices[0].message['content']
+        # If it's not a string, access the assistant's reply appropriately
+        if isinstance(response, dict) and 'choices' in response:
+            assistant_reply = response['choices'][0]['message']['content']
+        else:
+            assistant_reply = None
 
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply)
@@ -208,107 +235,42 @@ def answer():
     # Create a temporary audio file
     audio_file_path = 'temp_audio.mp3'
     tts.save(audio_file_path)
-    print(f'LLM Response:\n{assistant_reply} 😝\n')
+
+    memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
+    conversations_summary = memory_summary.load_memory_variables({})
+    conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
+
+    # Create a new Memory object with the data
+    new_memory = Memory(
+        user_name=current_user.name,
+        owner_id=current_user.id,
+        user_message=user_input,
+        llm_response=response,
+        conversations_summary=conversations_summary_str,
+        created_at=datetime.now(pytz.timezone('Europe/Paris'))
+    )
+    # Add the new memory to the session
+    db.add(new_memory)
+    # Commit changes to the database
+    db.commit()
+    db.refresh(new_memory)
+
+    print(f'User ID:{current_user.id} 😎')
+    print(f'User Name: {current_user.name} 😝')
+    print(f'User Input: {user_input} 😎')
+    print(f'LLM Response:{response} 😝\n')
+
+    memory_buffer = memory.buffer_as_str
+    memory_load = memory.load_memory_variables({})
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
         "answer_audio_path": audio_file_path,
+        "memory_buffer": memory_buffer,
+        "memory_load": memory_load,
     })
 
-
-# @app.route("/conversation-interface", methods=["GET", "POST"])
-# def conversation_interface():
-#    global memory
-#    form_interface = TextAreaForm()
-#    response = None
-#
-#    # Retrieve form data using the correct key
-#    user_input = form_interface.writing_text.data
-#
-#    try:
-#        if form_interface.validate_on_submit():
-#            print(f"Form data: {form_interface.data}\n")
-#
-#            # Get conversations only for the current user
-#            user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
-#
-#            # Create a list of JSON strings for each conversation
-#            conversation_strings = [memory.conversations_summary for memory in user_conversations]
-#
-#            # Combine the first 1 and last 9 entries into a valid JSON array
-#            qdocs = f"[{','.join(conversation_strings[-3:])}]"
-#
-#            # Convert 'created_at' values to string
-#            created_at_list = [str(memory.created_at) for memory in user_conversations]
-#
-#            # Include 'created_at' in the conversation context
-#            conversation_context = {
-#                "created_at": created_at_list[-3:],
-#                "conversations": qdocs,
-#                "user_name": current_user.name,
-#                "user_message": user_input,
-#            }
-#
-#            # Call llm ChatOpenAI
-#            response = siisi_conversation.predict(input=json.dumps(conversation_context))
-#            print(f'conversation_context:\n{conversation_context}\n')
-#
-#            # Check if the response is a string, and if so, use it as the assistant's reply
-#            if isinstance(response, str):
-#                assistant_reply = response
-#            else:
-#                # If it's not a string, access the assistant's reply appropriately
-#                if isinstance(response, dict) and 'choices' in response:
-#                    assistant_reply = response['choices'][0]['message']['content']
-#                else:
-#                    assistant_reply = None
-#
-#            # Convert the text response to speech using gTTS
-#            tts = gTTS(assistant_reply)
-#
-#            # Create a temporary audio file
-#            audio_file_path = 'temp_audio.mp3'
-#            tts.save(audio_file_path)
-#
-#            memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
-#            conversations_summary = memory_summary.load_memory_variables({})
-#            conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
-#
-#            # Create a new Memory object with the data
-#            new_memory = Memory(
-#                user_name=current_user.name,
-#                owner_id=current_user.id,
-#                user_message=user_input,
-#                llm_response=response,
-#                conversations_summary=conversations_summary_str,
-#                created_at=datetime.now(pytz.timezone('Europe/Paris'))
-#            )
-#            # Add the new memory to the session
-#            db.add(new_memory)
-#            # Commit changes to the database
-#            db.commit()
-#            db.refresh(new_memory)
-#
-#            print(f'User ID:{current_user.id} 😎')
-#            print(f'User Name: {current_user.name} 😝')
-#            print(f'User Input: {user_input} 😎')
-#            print(f'LLM Response:{response} 😝\n')
-#
-#        memory_buffer = memory.buffer_as_str
-#        memory_load = memory.load_memory_variables({})
-#
-#        return render_template('conversation-interface.html', form_interface=form_interface,
-#                               current_user=current_user, user_input=form_interface.writing_text.data, response=response,
-#                               memory_buffer=memory_buffer, memory_load=memory_load,
-#                               date=datetime.now().strftime("%a %d %B %Y"))
-#
-#    except Exception as err:
-#        logging.exception("Unexpected error occurred.")
-#        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-#        return render_template('error.html', error_message=str(err), current_user=current_user,
-#                               date=datetime.now().strftime("%a %d %B %Y"))
-#
 
 @app.route('/audio')
 def serve_audio():
