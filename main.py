@@ -282,16 +282,12 @@ def serve_audio():
 @app.route('/show-history')
 def show_story():
     try:
-        # Flask-Login for user authentication
         if current_user.is_authenticated:
             owner_id = current_user.id
 
-            # Assuming memory, llm, and memory_summary are instantiated within your Flask app context
-            # Modify the query to filter records based on the current user's ID
             summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
             memory_load = memory.load_memory_variables({'owner_id': owner_id})
 
-            # Assuming memory is an instance of ConversationBufferMemory
             memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n{memory.buffer_as_str}'
 
             print(f'memory_buffer_story:\n{memory_buffer}\n')
@@ -303,14 +299,12 @@ def show_story():
                                    summary_conversation=summary_conversation,
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
-        # If the user is not authenticated, you may want to handle this case (redirect, show an error, etc.)
         else:
             return render_template('authentication-error.html', error_message='User not authenticated',
                                    current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        # Handle exceptions appropriately
         flash(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -382,7 +376,7 @@ def get_conversation(conversation_id):
 
     try:
         if not conversation_:
-            # Conversation not found, return a not found message
+            # Conversation isn't found, return a not found message
             return render_template('conversation-not-found.html', current_user=current_user,
                                    conversation_=conversation_, conversation_id=conversation_id,
                                    date=datetime.now().strftime("%a %d %B %Y"))
@@ -399,7 +393,6 @@ def get_conversation(conversation_id):
             return render_template('conversation-details.html', current_user=current_user,
                                    conversation_=conversation_, formatted_created_at=formatted_created_at,
                                    conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
-
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('error.html', error_message=str(err), current_user=current_user,
@@ -452,7 +445,7 @@ def delete_conversation():
 @app.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
     # Retrieve all conversations from the database
-    conversations = test
+    conversations = db.query(Memory).all()
     # Convert the conversations to a list of dictionaries
     serialized_conversations = []
 
@@ -467,11 +460,8 @@ def get_conversations_jsonify():
 
         serialized_conversations.append(conversation_dict)
 
-    return render_template('database-conversations.html',
-                           current_user=current_user,
-                           serialized_conversations=serialized_conversations,
-                           date=datetime.now().strftime("%a %d %B %Y")
-                           )
+    return render_template('database-conversations.html', date=datetime.now().strftime("%a %d %B %Y"),
+                           current_user=current_user, serialized_conversations=serialized_conversations)
 
 
 if __name__ == '__main__':
