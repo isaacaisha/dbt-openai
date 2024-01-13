@@ -3,24 +3,27 @@ import os
 import openai
 import secrets
 import warnings
-
 import pytz
+
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, flash, request, redirect, url_for, render_template, send_file, jsonify
 from flask_login import LoginManager, current_user
 from flask_bootstrap import Bootstrap
+from gtts import gTTS
 from datetime import datetime
 
-from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 
-from app.forms.app_forms import TextAreaFormIndex, TextAreaForm, ConversationIdForm, DeleteForm
-from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.databases.database import get_db
 from app.models.memory import Memory, User, db
+from app.forms.app_forms import ConversationIdForm, DeleteForm
+from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
+from app.routes.llm_conversation import (home as home_llm, conversation_interface as interface_llm,
+                                         show_story as story_llm, get_all_conversations as all_conversation_llm,
+                                         get_conversations_jsonify as conversation_jsonify_llm)
 
 warnings.filterwarnings('ignore')
 
@@ -28,7 +31,6 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
 Bootstrap(app)
-
 
 try:
     openai_api_key = os.environ['OPENAI_API_KEY']
@@ -60,7 +62,7 @@ def load_user(user_id):
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
-siisi_conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
+conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 with app.app_context():
@@ -88,36 +90,9 @@ def logout():
     return auth_logout()
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route('/home', methods=['GET', 'POST'])
 def home():
-    home_form = TextAreaFormIndex()
-    response = None
-    user_input = None
-
-    try:
-        if request.method == "POST" and home_form.validate_on_submit():
-            print(f"Form data: {home_form.data}\n")
-
-            # Retrieve form data using the correct key
-            user_input = request.form['text_writing']
-            # Use the LLM to generate a response based on user input
-            response = siisi_conversation.predict(input=user_input)
-
-            print(f"user_input: {user_input}")
-            print(f"response: {response}\n")
-
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({})
-
-        return render_template('index.html', home_form=home_form,
-                               current_user=current_user, user_input=user_input, response=response,
-                               memory_buffer=memory_buffer, memory_load=memory_load,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+    return home_llm()
 
 
 @app.route('/home/answer', methods=['POST'])
@@ -126,7 +101,7 @@ def home_answer():
     print(f'User Input:\n{user_message} 😎\n')
 
     # Extend the conversation with the user's message
-    response = siisi_conversation.predict(input=user_message)
+    response = conversation.predict(input=user_message)
 
     # Check if the response is a string, and if so, use it as the assistant's reply
     if isinstance(response, str):
@@ -150,30 +125,9 @@ def home_answer():
     })
 
 
-@app.route("/conversation-interface", methods=["GET", "POST"])
+@app.route('/conversation-interface', methods=['GET', 'POST'])
 def conversation_interface():
-    writing_text_form = TextAreaForm()
-    error_message = None
-    answer = None
-
-    if request.method == "POST" and writing_text_form.validate_on_submit():
-        user_input = request.form['writing_text']
-
-        # Use the LLM to generate a response based on user input
-        response = siisi_conversation.predict(input=user_input)
-        answer = response['output']
-
-        print(f'User ID:{current_user.id} 😎')
-        print(f'User Name: {current_user.name} 😝')
-        print(f'User Input: {user_input} 😎')
-        print(f'LLM Response:{answer} 😝\n')
-
-    memory_buffer = memory.buffer_as_str
-    memory_load = memory.load_memory_variables({})
-
-    return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                           answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
-                           current_user=current_user, memory_buffer=memory_buffer, memory_load=memory_load)
+    return interface_llm()
 
 
 @app.route('/answer', methods=['POST'])
@@ -207,7 +161,7 @@ def answer():
             }
 
             # Call llm ChatOpenAI
-            response = siisi_conversation.predict(input=json.dumps(conversation_context))
+            response = conversation.predict(input=json.dumps(conversation_context))
             print(f'conversation_context:\n{conversation_context}\n')
 
             # Check if the response is a string, and if so, use it as the assistant's reply
@@ -279,68 +233,14 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
-@app.route('/show-history')
+@app.route('/show-history', methods=['GET', 'POST'])
 def show_story():
-    try:
-        if current_user.is_authenticated:
-            owner_id = current_user.id
-
-            summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
-            memory_load = memory.load_memory_variables({'owner_id': owner_id})
-
-            memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n{memory.buffer_as_str}'
-
-            print(f'memory_buffer_story:\n{memory_buffer}\n')
-            print(f'memory_load_story:\n{memory_load}\n')
-            print(f'summary_conversation_story:\n{summary_conversation}\n')
-
-            return render_template('show-history.html', current_user=current_user, owner_id=owner_id,
-                                   memory_load=memory_load, memory_buffer=memory_buffer,
-                                   summary_conversation=summary_conversation,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-
-        else:
-            return render_template('authentication-error.html', error_message='User not authenticated',
-                                   current_user=current_user,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        flash(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+    return story_llm()
 
 
 @app.route("/get-all-conversations")
 def get_all_conversations():
-    try:
-        owner_id = current_user.id
-        conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
-        # Create a list to store serialized data for each Memory object
-        serialized_conversations = []
-
-        for conversation_ in conversations:
-            serialized_history = {
-                "id": conversation_.id,
-                "owner_id": conversation_.owner_id,
-                "user_name": conversation_.user_name,
-                "user_message": conversation_.user_message,
-                "llm_response": conversation_.llm_response,
-                "conversations_summary": conversation_.conversations_summary,
-                'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
-            }
-
-            serialized_conversations.append(serialized_history)
-
-        return render_template('all-conversations.html',
-                               current_user=current_user, owner_id=owner_id, conversations=serialized_conversations,
-                               serialized_conversations=serialized_conversations,
-                               date=datetime.now().strftime("%a %d %B %Y")
-                               )
-
-    except Exception as err:
-        flash(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
-        return render_template('authentication-error.html', error_message='User not authenticated',
-                               current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
+    return all_conversation_llm()
 
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
@@ -434,7 +334,7 @@ def delete_conversation():
                                        conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
         return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
-                               current_user=current_user, delete_conversation_form=delete_conversation_form,)
+                               current_user=current_user, delete_conversation_form=delete_conversation_form, )
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
@@ -442,26 +342,9 @@ def delete_conversation():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@app.route('/api/conversations-jsonify', methods=['GET'])
+@app.route("/api/conversations-jsonify")
 def get_conversations_jsonify():
-    # Retrieve all conversations from the database
-    conversations = db.query(Memory).all()
-    # Convert the conversations to a list of dictionaries
-    serialized_conversations = []
-
-    for conversation_ in conversations:
-        conversation_dict = {
-            'id': conversation_.id,
-            'user_name': conversation_.user_name,
-            'user_message': conversation_.user_message,
-            'llm_response': conversation_.llm_response,
-            'created_at': conversation_.created_at.strftime("%a %d %B %Y"),
-        }
-
-        serialized_conversations.append(conversation_dict)
-
-    return render_template('database-conversations.html', date=datetime.now().strftime("%a %d %B %Y"),
-                           current_user=current_user, serialized_conversations=serialized_conversations)
+    return conversation_jsonify_llm()
 
 
 if __name__ == '__main__':
