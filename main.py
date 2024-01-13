@@ -4,9 +4,8 @@ import openai
 import secrets
 import warnings
 
-from flask_cors import CORS
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, flash, request, redirect, url_for, render_template, abort, send_file, jsonify
+from flask import Flask, flash, request, redirect, url_for, render_template, send_file, jsonify
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, current_user
 from datetime import timedelta, datetime
@@ -28,72 +27,49 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-CORS(app)
+Bootstrap(app)
 
-# Initialize an empty conversation chain
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+app.config['WTF_CSRF_ENABLED'] = True
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.init_app(app)
+
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
 siisi_conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 
-def configure_app():
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_PERMANENT'] = True
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-    app.config['WTF_CSRF_ENABLED'] = True
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 
-configure_app()
+try:
+    openai_api_key = os.environ['OPENAI_API_KEY']
+except KeyError:
+    raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
+# Set the OpenAI API key
+openai.api_key = openai_api_key
 
-def initialize_app():
-    Bootstrap(app)
+# Generate a random secret key
+secret_key = secrets.token_hex(19)
+# Set it as the Flask application's secret key
+app.secret_key = secret_key
 
-    login_manager = LoginManager(app)
-    login_manager.login_view = 'login'
-    login_manager.init_app(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"postgresql://{os.environ['user']}:{os.environ['password']}@"
+    f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        if user_id is not None and user_id.isdigit():
-            # Check if the user_id is a non-empty string of digits
-            return User.query.get(int(user_id))
-        else:
-            return None
-
-    try:
-        openai_api_key = os.environ['OPENAI_API_KEY']
-    except KeyError:
-        raise ValueError("OPENAI_API_KEY environment variable is not set.")
-
-    # Set the OpenAI API key
-    openai.api_key = openai_api_key
-
-    # Generate a random secret key
-    secret_key = secrets.token_hex(19)
-    # Set it as the Flask application's secret key
-    app.secret_key = secret_key
-
-
-initialize_app()
-
-
-def initialize_database():
-    with app.app_context():
-        db.create_all()
-
-
-def configure_database():
-    app.config['SQLALCHEMY_DATABASE_URI'] = (
-        f"postgresql://{os.environ['user']}:{os.environ['password']}@"
-        f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
-    initialize_database()
-
-
-configure_database()
+with app.app_context():
+    db.create_all()
 
 # Fetch memories from the database
 with get_db() as db:
@@ -335,9 +311,6 @@ def answer():
 @app.route('/audio')
 def serve_audio():
     audio_file_path = 'temp_audio.mp3'
-    ## Check if the file exists
-    # if not os.path.exists(audio_file_path):
-    #    abort(404, description=f"Audio file not found")
     return send_file(audio_file_path, as_attachment=True)
 
 
