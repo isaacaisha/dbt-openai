@@ -48,19 +48,6 @@ function sendRequest(prompt) {
     xhr.send('prompt=' + encodeURIComponent(prompt));
 }
 
-// Add click event listeners to the language buttons to set the active button
-var languageButtons = document.querySelectorAll('.language-btn');
-languageButtons.forEach(function(button) {
-    button.addEventListener('click', function() {
-        // Remove the 'active' class from all buttons
-        languageButtons.forEach(function(btn) {
-            btn.classList.remove('active');
-        });
-        // Add the 'active' class to the clicked button
-        button.classList.add('active');
-    });
-});
-
 // Add an event listener to the form for submitting
 document.getElementById('prompt-form').addEventListener('submit', function (e) {
     e.preventDefault();

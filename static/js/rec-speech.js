@@ -47,25 +47,7 @@ speechRecognitionButton.addEventListener('click', function () {
         // If recognition is not running, start it
         recognition.start();
     }
-});
-
-// Add an event listener to the "Final Result" button
-document.getElementById('final_result_speech').addEventListener('click', function () {
-    // Check if the userSpeechData variable contains recognized speech
-    if (userSpeechData.trim() === "") {
-        // Display an error message if there's no recognized speech
-        document.getElementById('error-message').textContent = "Please,\nYou Have To Speech\nFirst 😝";
-        document.getElementById('error-message').style.display = 'block';
-
-        // Hide the "Final Result" content since there's no recognized speech
-        document.getElementById('final-result-speech-content').style.display = 'none';
-    } else {
-        // Clear any previous error message
-        document.getElementById('error-message').textContent = "";
-        document.getElementById('error-message').style.display = 'none';
-
-        // Display the recognized speech in the "Final Result" section
-        document.getElementById('final-result-speech-content').textContent = userSpeechData;
-        document.getElementById('final-result-speech-content').style.display = 'block';
-    }
+    // Show the textarea container
+    const textareaContainer = document.getElementById('textarea-container');
+    textareaContainer.style.display = 'block';
 });

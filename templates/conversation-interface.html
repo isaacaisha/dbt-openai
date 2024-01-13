@@ -30,12 +30,6 @@
 
 {{ writing_text_form.csrf_token }}
 
-<div class="text-center mb-3">
-    {% if not current_user.is_authenticated %}
-        <span style="color:#1295FA;">😭<br>sorry<br>not authenticated<br>¡!¡ RELOAD THE PAGE ¡!¡</span>
-    {% endif %}
-</div>
-
 <div class="container text-center mb-1">
     <hr style="color:green;">
 
@@ -100,16 +94,16 @@
             </button>
         </div>
 
-        <hr class="mb-1" style="color:red;">
+        <hr class="mb-5" style="color:yellow;">
 
         <div id="textarea-container" style="display: none;">
             <label for="userInput" class="label_ text-center">Write Your Text, below:</label>
-            <textarea class="form-control mb-3" id="userInput" name="writing_text"
+            <textarea class="form-control mb-5" id="userInput" name="writing_text"
                       placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
-            <hr style="display: block; color:yellow">
         </div>
 
         <div class="text-center">
+            <hr style="color:red">
             <button id="generateButton" class="mb-3 btn generate-text" type="submit"
                 style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
             Click for Response 🔥¡!¡🔥
@@ -117,8 +111,11 @@
         </div>
     </form>
 
-    <div>
-        <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
+    <hr class="mb-5" style="color:red">
+
+    <div class="text-center">
+        <label>…·SìįSí·…(Dbt) Response:</label>
+        <textarea id="generatedText" class="mb-5 form-control result" style="display: none;"></textarea>
 
         {% if answer %}
             <!-- Display the text response -->

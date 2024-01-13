@@ -81,49 +81,10 @@ document.getElementById('generateButton').addEventListener('click', function (ev
         // Clear any previous error message
         document.getElementById('error-message').textContent = "";
         document.getElementById('error-message').style.display = 'none';
-
-        // Display the content in the "Final Result" section
-        document.getElementById('final-result-content').textContent = userTextData;
-        document.getElementById('final-result-content').style.display = 'block';
-    }
-});
-
-// Add a click event listener to the "Final Result" button
-document.getElementById('final_result').addEventListener('click', function () {
-    // Check if the textarea is empty
-    if (userTextData.trim() === "") {
-        // Display an error message
-        document.getElementById('error-message').textContent = "Please,\nYou Have To Write\nFirst 😝";
-        document.getElementById('error-message').style.display = 'block';
-
-        // Hide the "Final Result" content since there's no text
-        document.getElementById('final-result-content').style.display = 'none';
-    } else {
-        // Clear any previous error message
-        document.getElementById('error-message').textContent = "";
-        document.getElementById('error-message').style.display = 'none';
-
-        // Display the content in the "Final Result" section
-        document.getElementById('final-result-content').textContent = userTextData;
-        document.getElementById('final-result-content').style.display = 'block';
     }
 });
 
 // Listen for input in the textarea and store the text
 document.getElementById('userInput').addEventListener('input', function () {
     userTextData = document.getElementById('userInput').value;
-});
-
-// Initially, hide the "Final Result" content and error message
-document.getElementById('final-result-content').style.display = 'none';
-document.getElementById('error-message').style.display = 'none';
-
-// JavaScript to toggle the visibility of the memory-load btn
-document.getElementById("showResultButton").addEventListener("click", function() {
-    var resultDiv = document.getElementById("resultDiv");
-    if (resultDiv.style.display === "none") {
-        resultDiv.style.display = "block";
-    } else {
-        resultDiv.style.display = "none";
-    }
 });

@@ -1,6 +1,6 @@
-{% import "bootstrap/wtf.html" as wtf %}
-
 {% extends 'header.html' %}
+
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %} Welcome to {% endblock %}
 
@@ -22,14 +22,6 @@
 
 {% block content %}
 {% autoescape true %}
-
-{{ select_conversation_form.csrf_token }}
-
-<div class="text-center mb-3">
-    {% if not current_user.is_authenticated %}
-        <span style="color:#1295FA;">😭<br>sorry<br>not authenticated<br>¡!¡ RELOAD THE PAGE ¡!¡</span>
-    {% endif %}
-</div>
 
 <div class="content">
 

@@ -13,7 +13,7 @@ def register():
     register_form = RegisterForm()
 
     try:
-        if register_form.validate_on_submit():
+        if request.method == 'POST':
             print(f"Form data: {register_form.data}")
 
             # Check if the passwords match
@@ -61,7 +61,7 @@ def login():
     login_form = LoginForm()
 
     try:
-        if login_form.validate_on_submit():
+        if request.method == 'POST':
             print(f"Form data: {login_form.data}")
 
             email = request.form.get('email')
@@ -69,6 +69,7 @@ def login():
             remember_me = login_form.remember_me.data
 
             user = User.query.filter_by(email=email).first()
+
             # Email doesn't exist
             if not user:
                 flash("That email does not exist, please try again 😭 ¡!¡")
