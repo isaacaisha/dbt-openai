@@ -1,6 +1,6 @@
-{% extends 'header.html' %}
-
 {% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
 
 {% block title %} Welcome to {% endblock %}
 
@@ -46,12 +46,17 @@
                         {% endif %}
                     {% endwith %}
 
-                    <div class="mb-3" style="margin:0 9%;">
-                        <!-- Include CSRF token -->
-                        {{ wtf.quick_form(login_form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
-                    </div>
+                    <!-- Include CSRF token -->
+                    {{ login_form.csrf_token }}
 
+                    <form method="POST" action="{{ url_for('login') }}">
+                        {{ wtf.form_field(login_form.email) }}
+                        {{ wtf.form_field(login_form.password) }}
+                        {{ wtf.form_field(login_form.remember_me) }}
+                        <div class="mb-5 text-center">{{ wtf.form_field(login_form.submit, class="submit btn btn-success") }}</div>
+                    </form>
                 </div>
+
             </div>
         </div>
 
