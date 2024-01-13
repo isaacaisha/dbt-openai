@@ -1,24 +1,21 @@
 import json
 import os
-import flask_wtf
 import openai
 import secrets
 import warnings
 
 import pytz
 from dotenv import load_dotenv, find_dotenv
-from flask_cors import CORS
 from flask import Flask, flash, request, redirect, url_for, render_template, send_file, jsonify
 from flask_login import LoginManager, current_user
 from flask_bootstrap import Bootstrap
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
-from werkzeug.exceptions import InternalServerError, BadRequest
 
 from app.forms.app_forms import TextAreaFormIndex, TextAreaForm, ConversationIdForm, DeleteForm
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
@@ -30,7 +27,6 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
-CORS(app)
 Bootstrap(app)
 
 
@@ -46,11 +42,6 @@ openai.api_key = openai_api_key
 secret_key = secrets.token_hex(19)
 # Set it as the Flask application's secret key
 app.secret_key = secret_key
-
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-app.config['WTF_CSRF_ENABLED'] = True
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"postgresql://{os.environ['user']}:{os.environ['password']}@"
@@ -79,40 +70,6 @@ with app.app_context():
 with get_db() as db:
     # memories = db.query(Memory).all()
     test = db.query(Memory).all()
-
-
-# -------------------------------------- @app.errorhandler functions ----------------------------------------------#
-@app.errorhandler(InternalServerError)
-def handle_internal_server_error(err):
-    # Get the URL of the request that caused the error
-    referring_url = request.referrer
-    flash(f"RETRY (InternalServerError) ¡!¡")
-    print(f"InternalServerError ¡!¡ Unexpected {err=}, {type(err)=}")
-
-    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error'))  # , 500
-
-
-@app.errorhandler(BadRequest)
-def handle_bad_request(err):
-    # Get the URL of the request that caused the error
-    referring_url = request.referrer
-    flash(f"RETRY (BadRequest) ¡!¡")
-    print(f"BadRequest ¡!¡ Unexpected {err=}, {type(err)=}")
-
-    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error'))  # , 400
-
-
-@app.errorhandler(flask_wtf.csrf.CSRFError)
-def handle_csrf_error(err):
-    # Get the URL of the request that caused the error
-    referring_url = request.referrer
-    flash(f"RETRY (CSRFError) ¡!¡")
-    print(f"CSRFError ¡!¡ Unexpected {err=}, {type(err)=}")
-
-    # Redirect the user back to the page that produced the error, or a default page if the referrer is not available
-    return redirect(referring_url or url_for('authentication_error'))  # , 401
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
@@ -240,6 +197,8 @@ def answer():
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
+    created_at = datetime.now(pytz.timezone('Europe/Paris'))
+
     # Create a new Memory object with the data
     new_memory = Memory(
         user_name=current_user.name,
@@ -247,7 +206,7 @@ def answer():
         user_message=user_input,
         llm_response=response,
         conversations_summary=conversations_summary_str,
-        created_at=datetime.now(pytz.timezone('Europe/Paris'))
+        created_at=created_at
     )
     # Add the new memory to the session
     db.add(new_memory)
