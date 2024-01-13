@@ -27,10 +27,12 @@
 
     <!-- Page Header -->
 
-    <hr style="color:green;">
-
     <div class="container">
-        <h3 class="conversations-details text-center mb-5">Select a Conversation</h3>
+
+        <hr class="mb-3" style="color:green;">
+        <h3 class="conversations-details text-center mb-3" style="margin-top:0;">Select a Conversation</h3>
+        <hr class="mb-5" style="color:green;">
+
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto mb-3">
 
@@ -42,22 +44,23 @@
                     {% endif %}
                 {% endwith %}
 
-                <div class="mb-3" style="margin:0 9%;">
+                <form method="POST" action="{{ url_for('select_conversation') }}">
                     <!-- Include CSRF token -->
-                    {{ wtf.quick_form(select_conversation_form, novalidate=True, button_map={'submit': 'success btn-block submit'}) }}
-                </div>
+                    <span style="display:none;">{{ wtf.form_field(select_conversation_form.csrf_token) }}</span>
+                    {{ wtf.form_field(select_conversation_form.conversation_id) }}
+                    <div class="mb-5 text-center">{{ wtf.form_field(select_conversation_form.submit, class="submit btn btn-success") }}</div>
+                </form>
 
             </div>
         </div>
+
+        <hr class="mb-3" style="color:yellow;">
+        <div class="text-center">
+            <a href="{{ url_for('conversation_interface') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+        </div>
+        <hr class="mb-5" style="color:red;">
+
     </div>
-
-    <hr class="mb-3" style="color:yellow;">
-
-    <div class="text-center">
-        <a href="{{ url_for('conversation_interface') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
-    </div>
-
-    <hr class="mb-5" style="color:red;">
 
 </div>
 

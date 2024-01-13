@@ -88,3 +88,9 @@ document.getElementById('generateButton').addEventListener('click', function (ev
 document.getElementById('userInput').addEventListener('input', function () {
     userTextData = document.getElementById('userInput').value;
 });
+
+// Function to toggle histories JSON container
+function toggleHistoriesJson() {
+    var container = document.getElementById('historiesContainerJson');
+    container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+}

@@ -26,17 +26,18 @@
 {% block content %}
 {% autoescape true %}
 
-<hr class="mb-3" style="color:green;">
 
-<div id="resultMemo" class="text-center mb-3">
-    <h3 style="color:crimson;">Sorry Forbidden</h3>
-    <h3>
+<div class="text-center mb-3">
+    <hr class="mb-3" style="color:green;">
+    <h3 style="color:crimson; margin-top:0;">Sorry Forbidden</h3>
+    <hr class="mb-5" style="color:green;">
+    <h3 style="color:#9ED2C6;">
         Conversation with:<br>ID 🔥<span style="color:crimson;">{{ conversation_id }}</span>🔥<br>
         Doesn't belong to you<br>¡!¡ 😝 ¡!¡
     </h3>
 </div>
 
-<div class="mb-3 text-center">
+<div class="mb-5 text-center">
     <a href="{{ url_for('select_conversation') }}" style="color:#fff;">
         Click to Go Back to Conversation Selection
     </a>
