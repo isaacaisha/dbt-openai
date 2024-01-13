@@ -120,6 +120,36 @@ def home():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
+@app.route('/home/answer', methods=['POST'])
+def home_answer():
+    user_message = request.form['prompt']
+    print(f'User Input:\n{user_message} 😎\n')
+
+    # Extend the conversation with the user's message
+    response = siisi_conversation.predict(input=user_message)
+
+    # Check if the response is a string, and if so, use it as the assistant's reply
+    if isinstance(response, str):
+        assistant_reply = response
+    else:
+        # If it's not a string, access the assistant's reply as you previously did
+        assistant_reply = response.choices[0].message['content']
+
+    # Convert the text response to speech using gTTS
+    tts = gTTS(assistant_reply)
+
+    # Create a temporary audio file
+    audio_file_path = 'temp_audio.mp3'
+    tts.save(audio_file_path)
+    print(f'LLM Response:\n{assistant_reply} 😝\n')
+
+    # Return the response as JSON, including both text and the path to the audio file
+    return jsonify({
+        "answer_text": assistant_reply,
+        "answer_audio_path": audio_file_path,
+    })
+
+
 @app.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
     writing_text_form = TextAreaForm()
