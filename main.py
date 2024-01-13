@@ -6,9 +6,9 @@ import warnings
 
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, flash, request, redirect, url_for, render_template, send_file, jsonify
-from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, current_user
-from datetime import timedelta, datetime
+from flask_bootstrap import Bootstrap
+from datetime import datetime
 
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
@@ -29,25 +29,6 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 app = Flask(__name__, template_folder='templates')
 Bootstrap(app)
 
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-app.config['WTF_CSRF_ENABLED'] = True
-
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.init_app(app)
-
-llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
-memory = ConversationBufferMemory()
-siisi_conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
-memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
-
 
 try:
     openai_api_key = os.environ['OPENAI_API_KEY']
@@ -67,6 +48,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+
+llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
+memory = ConversationBufferMemory()
+siisi_conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
+memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 with app.app_context():
     db.create_all()
@@ -134,19 +129,19 @@ def home():
     user_input = None
 
     try:
-        if home_form.validate_on_submit():
+        if request.method == "POST" and home_form.validate_on_submit():
             print(f"Form data: {home_form.data}\n")
 
             # Retrieve form data using the correct key
-            user_input = home_form.text_writing.data
+            user_input = request.form['text_writing']
             # Use the LLM to generate a response based on user input
             response = siisi_conversation.predict(input=user_input)
 
+            print(f"user_input: {user_input}")
+            print(f"response: {response}\n")
+
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
-
-        print(f"user_input: {user_input}")
-        print(f"response: {response}\n")
 
         return render_template('index.html', home_form=home_form,
                                current_user=current_user, user_input=user_input, response=response,

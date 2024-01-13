@@ -25,6 +25,8 @@
 {% block content %}
 {% autoescape true %}
 
+{{ login_form.csrf_token }}
+
     <div class="content">
 
         <!-- Page Header -->
