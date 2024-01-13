@@ -71,6 +71,12 @@
 
 <div class="container">
     <form id="prompt-form" method="POST">
+        {% for message in get_flashed_messages() %}
+            <div class="alert alert-info text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+
         {% if error_message %}
             <div class="alert alert-info">
                 {{ error_message }}
