@@ -5,10 +5,11 @@ import secrets
 import warnings
 
 from dotenv import load_dotenv, find_dotenv
+from flask_cors import CORS
 from flask import Flask, flash, request, redirect, url_for, render_template, send_file, jsonify
 from flask_login import LoginManager, current_user
 from flask_bootstrap import Bootstrap
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from gtts import gTTS
 from langchain.chat_models import ChatOpenAI
@@ -27,6 +28,7 @@ warnings.filterwarnings('ignore')
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = Flask(__name__, template_folder='templates')
+CORS(app)
 Bootstrap(app)
 
 
@@ -42,6 +44,11 @@ openai.api_key = openai_api_key
 secret_key = secrets.token_hex(19)
 # Set it as the Flask application's secret key
 app.secret_key = secret_key
+
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+app.config['WTF_CSRF_ENABLED'] = True
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"postgresql://{os.environ['user']}:{os.environ['password']}@"
