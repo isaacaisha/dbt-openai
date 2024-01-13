@@ -446,7 +446,6 @@ def get_conversation(conversation_id):
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     delete_conversation_form = DeleteForm()
-    conversation_id = None
 
     try:
         if delete_conversation_form.validate_on_submit():
@@ -478,9 +477,8 @@ def delete_conversation():
                                        current_user=current_user, delete_conversation_form=delete_conversation_form,
                                        conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
-        return render_template('conversation-delete.html', current_user=current_user,
-                               delete_conversation_form=delete_conversation_form, conversation_id=conversation_id,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+        return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
+                               current_user=current_user, delete_conversation_form=delete_conversation_form,)
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
