@@ -444,8 +444,9 @@ def get_conversation(conversation_id):
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
-def delete_conversation(conversation_id=None):
+def delete_conversation():
     delete_conversation_form = DeleteForm()
+    conversation_id = None
 
     try:
         if delete_conversation_form.validate_on_submit():
