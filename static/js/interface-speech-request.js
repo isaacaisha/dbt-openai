@@ -37,7 +37,6 @@ function sendRequest(prompt) {
             // Set the audio source and play
             var audio = document.getElementById('response-audio');
             audio.src = "data:audio/mp3;base64," + response.answer_audio;
-            audio.style.display = 'block';
 
             // Auto-play the audio when it's ready
             audio.oncanplay = function() {
@@ -49,8 +48,22 @@ function sendRequest(prompt) {
 }
 
 // Add an event listener to the form for submitting
-document.getElementById('prompt-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var prompt = document.getElementById('userInput').value; // Get text from the textarea
-    sendRequest(prompt);
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('prompt-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var prompt = document.getElementById('userInput').value; // Get text from the textarea
+        sendRequest(prompt);
+    });
+});
+
+// Function to handle audio playback
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById('response-audio').onloadedmetadata = function () {
+        this.play();
+    };
+
+    document.getElementById('playAudioButton').addEventListener('click', function () {
+        var audio = document.getElementById('response-audio');
+        audio.play();
+    });
 });

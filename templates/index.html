@@ -129,7 +129,7 @@
                     </button>
                 </div>
 
-                <hr class="mb-3" style="color:green;">
+                <hr class="mb-3" style="color:red;">
 
                 <div id="textarea-container" style="display: none;">
                     <label for="userInput" class="label_ text-center">Start Writing to Test:</label>
@@ -149,21 +149,22 @@
             <hr class="mb-5" style="color:yellow">
 
             <div class="text-center">
-                <hr class="mb-3" style="color:red">
+                <hr class="mb-3" style="color:green">
                 <label>:…·SìįSí·…(Dbt)…·SìįSí·…:</label>
                 <textarea id="generatedText" class="mb-5 form-control result" style="display: none;"></textarea>
-
-                {% if response %}
-                <label>:…·SìįSí·…(LLM)…·SìįSí·…:</label>
-                    <!-- Display the text response -->
-                    <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ response|safe }}<br> 💪🏿😇👌🏿</div>
-
-                {% endif %}
+                <hr class="mb-5" style="color:green">
             </div>
 
-            <div class="mb-3 text-center">
+            <div class="text-center">
+                <hr class="mb-3" style="color:red">
                 <!-- Play the audio response -->
                 <span style="color:gray;">Reload<br>(to access the playback)<br>👇🏿<br></span>
+                <button id="playAudioButton" type="button" class="submit btn btn-outline-info mb-3"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;border: solid .1rem">
+                    Play Audio ¡!¡
+                </button>
+            </div>
+            <div class="mb-3 text-center">
                 <audio id="response-audio" controls class="submit btn btn-outline-info">
                     <source src="{{ url_for('home_serve_audio') }}" type="audio/mp3">
                     Your browser does not support the audio element.
