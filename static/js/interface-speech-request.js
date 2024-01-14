@@ -55,15 +55,3 @@ document.addEventListener('DOMContentLoaded', function() {
         sendRequest(prompt);
     });
 });
-
-// Function to handle audio playback
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById('response-audio').onloadedmetadata = function () {
-        this.play();
-    };
-
-    document.getElementById('playAudioButton').addEventListener('click', function () {
-        var audio = document.getElementById('response-audio');
-        audio.play();
-    });
-});

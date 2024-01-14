@@ -136,24 +136,6 @@
 
     <hr class="mb-5" style="color:green">
 
-    <div class="text-center">
-        <hr class="mb-3" style="color:yellow">
-        <!-- Play the audio response -->
-        <span style="color:gray;">Reload<br>(to access the playback)<br>👇🏿<br></span>
-        <button id="playAudioButton" type="button" class="submit btn btn-outline-info mb-3"
-                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;border: solid .1rem">
-            Play Audio ¡!¡
-        </button>
-    </div>
-    <div class="mb-3 text-center">
-        <audio id="response-audio" controls class="submit btn btn-outline-info">
-            <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-
-    <hr class="mb-5" style="color:yellow">
-
 </div>
 
 <script src="{{ url_for('static', filename='js/interface-speech-request.js')}}"></script>
