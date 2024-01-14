@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, request
+from flask import Blueprint, render_template, flash, request, send_file
 from flask_login import current_user
 from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
@@ -80,6 +80,12 @@ def conversation_interface():
     return render_template('conversation-interface.html', writing_text_form=writing_text_form,
                            answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
                            current_user=current_user, memory_buffer=memory_buffer, memory_load=memory_load)
+
+
+@llm_conversation_bp.route('/audio')
+def serve_audio():
+    audio_file_path = 'temp_audio.mp3'
+    return send_file(audio_file_path, as_attachment=True)
 
 
 @llm_conversation_bp.route("/get-all-conversations")

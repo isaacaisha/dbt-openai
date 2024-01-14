@@ -22,7 +22,7 @@ from app.models.memory import Memory, User, db
 from app.forms.app_forms import ConversationIdForm, DeleteForm
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.routes.llm_conversation import (home as home_llm, conversation_interface as interface_llm,
-                                         get_all_conversations as all_conversation_llm,
+                                         get_all_conversations as all_conversation_llm, serve_audio as audio_llm,
                                          get_conversations_jsonify as conversation_jsonify_llm)
 
 warnings.filterwarnings('ignore')
@@ -231,8 +231,7 @@ def answer():
 
 @app.route('/audio')
 def serve_audio():
-    audio_file_path = 'temp_audio.mp3'
-    return send_file(audio_file_path, as_attachment=True)
+    return audio_llm()
 
 
 @app.route('/show-history')
