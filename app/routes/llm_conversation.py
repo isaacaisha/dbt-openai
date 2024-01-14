@@ -56,6 +56,12 @@ def home():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
+@llm_conversation_bp.route('/home-audio')
+def home_serve_audio():
+    home_audio_file_path = 'home_temp_audio.mp3'
+    return send_file(home_audio_file_path, as_attachment=True)
+
+
 @llm_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
     writing_text_form = TextAreaForm()
@@ -82,10 +88,10 @@ def conversation_interface():
                            current_user=current_user, memory_buffer=memory_buffer, memory_load=memory_load)
 
 
-@llm_conversation_bp.route('/audio')
-def serve_audio():
-    audio_file_path = 'temp_audio.mp3'
-    return send_file(audio_file_path, as_attachment=True)
+@llm_conversation_bp.route('/interface-audio')
+def interface_serve_audio():
+    interface_audio_file_path = 'interface_temp_audio.mp3'
+    return send_file(interface_audio_file_path, as_attachment=True)
 
 
 @llm_conversation_bp.route("/get-all-conversations")

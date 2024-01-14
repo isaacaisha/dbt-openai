@@ -22,7 +22,9 @@ from app.models.memory import Memory, User, db
 from app.forms.app_forms import ConversationIdForm, DeleteForm
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.routes.llm_conversation import (home as home_llm, conversation_interface as interface_llm,
-                                         get_all_conversations as all_conversation_llm, serve_audio as audio_llm,
+                                         get_all_conversations as all_conversation_llm,
+                                         home_serve_audio as home_audio_llm,
+                                         interface_serve_audio as interface_audio_llm,
                                          get_conversations_jsonify as conversation_jsonify_llm)
 
 warnings.filterwarnings('ignore')
@@ -114,15 +116,20 @@ def home_answer():
     tts = gTTS(assistant_reply)
 
     # Create a temporary audio file
-    audio_file_path = 'temp_audio.mp3'
-    tts.save(audio_file_path)
+    home_audio_file_path = 'home_temp_audio.mp3'
+    tts.save(home_audio_file_path)
     print(f'LLM Response:\n{assistant_reply} 😝\n')
 
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
-        "answer_audio_path": audio_file_path,
+        "answer_audio_path": home_audio_file_path,
     })
+
+
+@app.route('/home-audio')
+def home_serve_audio():
+    return home_audio_llm()
 
 
 @app.route('/conversation-interface', methods=['GET', 'POST'])
@@ -130,8 +137,8 @@ def conversation_interface():
     return interface_llm()
 
 
-@app.route('/answer', methods=['POST'])
-def answer():
+@app.route('/interface/answer', methods=['POST'])
+def interface_answer():
     global memory
 
     try:
@@ -178,8 +185,8 @@ def answer():
             tts = gTTS(assistant_reply)
 
             # Create a temporary audio file
-            audio_file_path = 'temp_audio.mp3'
-            tts.save(audio_file_path)
+            interface_audio_file_path = 'interface_temp_audio.mp3'
+            tts.save(interface_audio_file_path)
 
             memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
             conversations_summary = memory_summary.load_memory_variables({})
@@ -213,7 +220,7 @@ def answer():
             # Return the response as JSON, including both text and the path to the audio file
             return jsonify({
                 "answer_text": assistant_reply,
-                "answer_audio_path": audio_file_path,
+                "answer_audio_path": interface_audio_file_path,
                 "memory_buffer": memory_buffer,
                 "memory_load": memory_load,
             })
@@ -229,9 +236,9 @@ def answer():
         return redirect(url_for('conversation_interface'))
 
 
-@app.route('/audio')
-def serve_audio():
-    return audio_llm()
+@app.route('/interface-audio')
+def interface_serve_audio():
+    return interface_audio_llm()
 
 
 @app.route('/show-history')
@@ -376,8 +383,12 @@ def get_conversations_jsonify():
 
 if __name__ == '__main__':
     # Clean up any previous temporary audio files
-    temp_audio_file = 'temp_audio.mp3'
-    if os.path.exists(temp_audio_file):
-        os.remove(temp_audio_file)
+    home_temp_audio_file = 'home_temp_audio.mp3'
+    if os.path.exists(home_temp_audio_file):
+        os.remove(home_temp_audio_file)
+
+    interface_temp_audio_file = 'interface_temp_audio.mp3'
+    if os.path.exists(interface_temp_audio_file):
+        os.remove(interface_temp_audio_file)
 
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

@@ -1,7 +1,7 @@
 // Function to send a POST request to the server
 function sendRequest(prompt) {
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/answer', true);
+    xhr.open('POST', '/interface/answer', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
