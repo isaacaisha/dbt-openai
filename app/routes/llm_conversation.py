@@ -117,12 +117,10 @@ def get_all_conversations():
 
 @llm_conversation_bp.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
-    # Retrieve all conversations from the database
-    conversations = db.query(Memory).all()
     # Convert the conversations to a list of dictionaries
     serialized_conversations = []
 
-    for conversation_ in conversations:
+    for conversation_ in test:
         conversation_dict = {
             'id': conversation_.id,
             'user_name': conversation_.user_name,

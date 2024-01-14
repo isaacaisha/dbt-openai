@@ -28,8 +28,6 @@
 {% block content %}
 {% autoescape true %}
 
-{{ writing_text_form.csrf_token }}
-
 <div class="container text-center mb-1">
     <hr style="color:green;">
 
@@ -71,6 +69,9 @@
 
 <div class="container">
     <form id="prompt-form" method="POST">
+
+        {{ writing_text_form.csrf_token }}
+
         {% if not current_user.is_authenticated %}
             <div class="alert alert-info text-center">
                 <div>Not Authenticated. Reload & Retry... .</div>

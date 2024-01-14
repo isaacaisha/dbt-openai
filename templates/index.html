@@ -30,14 +30,12 @@
 {% block content %}
 {% autoescape true %}
 
-{{ home_form.csrf_token }}
-
     <div class="content">
         <!-- Page Header -->
 
         <hr style="color:red;">
 
-        <h3 class="text-center log-register-h3">Interact  With<br>
+        <h3 class="text-center log-register-h3">Interact With<br>
             <span class="artificial-intelligence">SìįSí</span><br>Register & Log in
         </h3>
 
@@ -105,6 +103,9 @@
 
         <div class="container">
             <form id="prompt-form" method="POST">
+
+                {{ home_form.csrf_token }}
+
                 {% if error_message %}
                     <div class="alert alert-info">
                         {{ error_message }}

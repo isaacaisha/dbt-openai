@@ -46,10 +46,10 @@
                         {% endif %}
                     {% endwith %}
 
-                    <!-- Include CSRF token -->
-                    {{ login_form.csrf_token }}
-
                     <form method="POST" action="{{ url_for('login') }}">
+                        <!-- Include CSRF token -->
+                        {{ login_form.csrf_token }}
+
                         {{ wtf.form_field(login_form.email) }}
                         {{ wtf.form_field(login_form.password) }}
                         {{ wtf.form_field(login_form.remember_me) }}
