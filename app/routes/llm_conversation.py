@@ -82,37 +82,6 @@ def conversation_interface():
                            current_user=current_user, memory_buffer=memory_buffer, memory_load=memory_load)
 
 
-@llm_conversation_bp.route('/show-history')
-def show_story():
-    try:
-        if current_user.is_authenticated:
-            owner_id = current_user.id
-
-            summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
-            memory_load = memory.load_memory_variables({'owner_id': owner_id})
-
-            memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n{memory.buffer_as_str}'
-
-            print(f'memory_buffer_story:\n{memory_buffer}\n')
-            print(f'memory_load_story:\n{memory_load}\n')
-            print(f'summary_conversation_story:\n{summary_conversation}\n')
-
-            return render_template('show-history.html', current_user=current_user, owner_id=owner_id,
-                                   memory_load=memory_load, memory_buffer=memory_buffer,
-                                   summary_conversation=summary_conversation,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-
-        else:
-            return render_template('authentication-error.html', error_message='User not authenticated',
-                                   current_user=current_user,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        flash(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-
 @llm_conversation_bp.route("/get-all-conversations")
 def get_all_conversations():
     try:

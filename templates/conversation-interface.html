@@ -71,6 +71,14 @@
 
 <div class="container">
     <form id="prompt-form" method="POST">
+        {% if not current_user.is_authenticated %}
+            <div class="alert alert-info text-center">
+                <div>Not Authenticated. Reload & Retry... .</div>
+                <div>🤣 Or LOGIN 😂</div>
+                <div>¡!¡ 😭 ¡!¡</div>
+            </div>
+        {% endif %}
+
         {% for message in get_flashed_messages() %}
             <div class="alert alert-info text-center">
                 {{ message }}

@@ -38,6 +38,14 @@
 
             <div class="col-lg-8 col-md-10 mx-auto content mb-3">
 
+                {% if not current_user.is_authenticated %}
+                    <div class="alert alert-info text-center">
+                        <div>Not Authenticated. Reload & Retry... .</div>
+                        <div>🤣 Or LOGIN 😂</div>
+                        <div>¡!¡ 😭 ¡!¡</div>
+                    </div>
+                {% endif %}
+
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}

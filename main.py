@@ -22,7 +22,7 @@ from app.models.memory import Memory, User, db
 from app.forms.app_forms import ConversationIdForm, DeleteForm
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 from app.routes.llm_conversation import (home as home_llm, conversation_interface as interface_llm,
-                                         show_story as story_llm, get_all_conversations as all_conversation_llm,
+                                         get_all_conversations as all_conversation_llm,
                                          get_conversations_jsonify as conversation_jsonify_llm)
 
 warnings.filterwarnings('ignore')
@@ -219,10 +219,12 @@ def answer():
             })
         else:
             # Handle the case where the user is not authenticated
-            return flash("User not authenticated. Please log in.", "info")
+            db.rollback()  # Rollback in case of commit failure
+            flash("An error occurred. reload & retry... .", "info")
+            return redirect(url_for('conversation_interface'))
 
     except AttributeError as e:
-        flash("An error occurred. Please reload & retry...", "info")
+        flash("An error occurred. Please reload & retry... .", "info")
         print(f"AttributeError: {e}")
         return redirect(url_for('conversation_interface'))
 
@@ -233,9 +235,35 @@ def serve_audio():
     return send_file(audio_file_path, as_attachment=True)
 
 
-@app.route('/show-history', methods=['GET', 'POST'])
+@app.route('/show-history')
 def show_story():
-    return story_llm()
+    try:
+        if current_user.is_authenticated:
+            owner_id = current_user.id
+
+            summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
+            memory_load = memory.load_memory_variables({'owner_id': owner_id})
+
+            memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n{memory.buffer_as_str}'
+
+            print(f'memory_buffer_story:\n{memory_buffer}\n')
+            print(f'memory_load_story:\n{memory_load}\n')
+            print(f'summary_conversation_story:\n{summary_conversation}\n')
+
+            return render_template('show-history.html', current_user=current_user, owner_id=owner_id,
+                                   memory_load=memory_load, memory_buffer=memory_buffer,
+                                   summary_conversation=summary_conversation,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
+
+        else:
+            return render_template('authentication-error.html', error_message='User not authenticated',
+                                   current_user=current_user,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
+
+    except Exception as err:
+        flash(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @app.route("/get-all-conversations")
