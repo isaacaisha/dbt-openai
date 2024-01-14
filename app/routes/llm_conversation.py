@@ -56,11 +56,11 @@ def home():
 
 @llm_conversation_bp.route('/home-audio')
 def home_serve_audio():
+    home_audio_file_path = 'home_temp_audio.mp3'
     try:
-        home_audio_file_path = 'home_temp_audio.mp3'
+        return send_file(home_audio_file_path, as_attachment=True)
     except FileNotFoundError:
         return "File not found", 404
-    return send_file(home_audio_file_path, as_attachment=True)
 
 
 @llm_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
@@ -97,11 +97,11 @@ def conversation_interface():
 
 @llm_conversation_bp.route('/interface-audio')
 def interface_serve_audio():
+    interface_audio_file_path = 'interface_temp_audio.mp3'
     try:
-        interface_audio_file_path = 'interface_temp_audio.mp3'
+        return send_file(interface_audio_file_path, as_attachment=True)
     except FileNotFoundError:
         return "File not found", 404
-    return send_file(interface_audio_file_path, as_attachment=True)
 
 
 @llm_conversation_bp.route("/get-all-conversations")
