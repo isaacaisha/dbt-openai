@@ -11,12 +11,10 @@ from app.forms.app_forms import TextAreaFormIndex, TextAreaForm
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
 
-
 # Fetch memories from the database
 with get_db() as db:
     # memories = db.query(Memory).all()
     test = db.query(Memory).all()
-
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
@@ -49,9 +47,9 @@ def home():
                                current_user=current_user, user_input=user_input, response=response,
                                memory_buffer=memory_buffer, memory_load=memory_load,
                                date=datetime.now().strftime("%a %d %B %Y"))
-
     except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        print(f"😭 Unexpected {err=}, {type(err)=} 😭")
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -68,24 +66,30 @@ def conversation_interface():
     error_message = None
     answer = None
 
-    if request.method == "POST" and writing_text_form.validate_on_submit():
-        user_input = request.form['writing_text']
+    try:
+        if request.method == "POST" and writing_text_form.validate_on_submit():
+            user_input = request.form['writing_text']
 
-        # Use the LLM to generate a response based on user input
-        response = conversation.predict(input=user_input)
-        answer = response['output']
+            # Use the LLM to generate a response based on user input
+            response = conversation.predict(input=user_input)
+            answer = response['output']
 
-        print(f'User ID:{current_user.id} 😎')
-        print(f'User Name: {current_user.name} 😝')
-        print(f'User Input: {user_input} 😎')
-        print(f'LLM Response:{answer} 😝\n')
+            print(f'User ID:{current_user.id} 😎')
+            print(f'User Name: {current_user.name} 😝')
+            print(f'User Input: {user_input} 😎')
+            print(f'LLM Response:{answer} 😝\n')
 
-    memory_buffer = memory.buffer_as_str
-    memory_load = memory.load_memory_variables({})
+        memory_buffer = memory.buffer_as_str
+        memory_load = memory.load_memory_variables({})
 
-    return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                           answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
-                           current_user=current_user, memory_buffer=memory_buffer, memory_load=memory_load)
+        return render_template('conversation-interface.html', writing_text_form=writing_text_form,
+                               answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
+                               current_user=current_user, memory_buffer=memory_buffer, memory_load=memory_load)
+    except Exception as err:
+        flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        print(f"😭 Unexpected {err=}, {type(err)=} 😭")
+        return render_template('error.html', error_message=str(err), current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @llm_conversation_bp.route('/interface-audio')
