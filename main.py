@@ -256,7 +256,7 @@ def show_story():
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        flash(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 

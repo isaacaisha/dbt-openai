@@ -43,12 +43,14 @@
         <hr class="mb-3" style="color:red;">
 -->
         <h3>PlayBack</h3>
-        <button  id="response-audio" type="button" class="submit btn btn-outline-info">
-            <audio controls >
-                <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
+
+        <div class="mb-3 text-center">
+            <!-- Play the audio response -->
+            <audio id="response-audio" controls class="submit btn btn-outline-info">
+                <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
                 Your browser does not support the audio element.
             </audio>
-        </button>
+        </div>
     </div>
 
     <hr class="mb-3" style="color:yellow;">

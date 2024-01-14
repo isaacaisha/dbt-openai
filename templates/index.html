@@ -158,12 +158,15 @@
                     <!-- Display the text response -->
                     <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ response|safe }}<br> 💪🏿😇👌🏿</div>
 
-                    <!-- Play the audio response -->
-                    <audio id="response-audio" controls style="display: none;">
-                        <source src="{{ url_for('serve_audio') }}" type="audio/mp3">
-                            Your browser does not support the audio element.
-                    </audio>
                 {% endif %}
+            </div>
+
+            <div class="mb-3 text-center">
+                <!-- Play the audio response -->
+                <audio id="response-audio" controls class="submit btn btn-outline-info">
+                    <source src="{{ url_for('home_serve_audio') }}" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
             </div>
 
             <hr class="mb-5" style="color:red">
