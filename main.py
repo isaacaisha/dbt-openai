@@ -6,7 +6,7 @@ import warnings
 import pytz
 
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, flash, request, redirect, url_for, render_template, send_file, jsonify
+from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
 from flask_login import LoginManager, current_user
 from flask_bootstrap import Bootstrap
 from gtts import gTTS
@@ -137,76 +137,55 @@ def conversation_interface():
     return interface_llm()
 
 
-@app.route('/interface/answer', methods=['POST'])
-def interface_answer():
-    # Check if the user is authenticated
-    if current_user.is_authenticated:
-        user_input = request.form['prompt']
-        print(f'User Input:\n{user_input} 😎\n')
+def get_user_conversations():
+    # Get conversations only for the current user
+    user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+    return user_conversations
 
-        # Get conversations only for the current user
-        user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-        # Create a list of JSON strings for each conversation
-        conversation_strings = [memory.conversations_summary for memory in user_conversations]
+def generate_conversation_context(user_input, user_conversations):
+    # Create a list of JSON strings for each conversation
+    conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
-        # Combine the first 1 and last 9 entries into a valid JSON array
-        qdocs = f"[{','.join(conversation_strings[-3:])}]"
+    # Combine the first 1 and last 9 entries into a valid JSON array
+    qdocs = f"[{','.join(conversation_strings[-3:])}]"
 
-        # Convert 'created_at' values to string
-        created_at_list = [str(memory.created_at) for memory in user_conversations]
+    # Convert 'created_at' values to string
+    created_at_list = [str(memory.created_at) for memory in user_conversations]
 
-        # Include 'created_at' in the conversation context
-        conversation_context = {
-            "created_at": created_at_list[-3:],
-            "conversations": qdocs,
-            "user_name": current_user.name,
-            "user_message": user_input,
-        }
+    # Include 'created_at' in the conversation context
+    conversation_context = {
+        "created_at": created_at_list[-3:],
+        "conversations": qdocs,
+        "user_name": current_user.name,
+        "user_message": user_input,
+    }
 
-        # Call llm ChatOpenAI
-        response = conversation.predict(input=json.dumps(conversation_context))
-        print(f'conversation_context:\n{conversation_context}\n')
+    return conversation_context
 
-        # Check if the response is a string, and if so, use it as the assistant's reply
-        if isinstance(response, str):
-            assistant_reply = response
+
+def call_llm_for_response(conversation_context):
+    # Call llm ChatOpenAI
+    response = conversation.predict(input=json.dumps(conversation_context))
+    return response
+
+
+def handle_response(response):
+    # Check if the response is a string, and if so, use it as the assistant's reply
+    if isinstance(response, str):
+        assistant_reply = response
+    else:
+        # If it's not a string, access the assistant's reply appropriately
+        if isinstance(response, dict) and 'choices' in response:
+            assistant_reply = response['choices'][0]['message']['content']
         else:
-            # If it's not a string, access the assistant's reply appropriately
-            if isinstance(response, dict) and 'choices' in response:
-                assistant_reply = response['choices'][0]['message']['content']
-            else:
-                assistant_reply = None
-
-        # Convert the text response to speech using gTTS
-        tts = gTTS(assistant_reply)
-
-        # Create a temporary audio file
-        interface_audio_file_path = 'interface_temp_audio.mp3'
-        tts.save(interface_audio_file_path)
-
-        memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
-
-        print(f'User ID:{current_user.id} 😎')
-        print(f'User Name: {current_user.name} 😝')
-        print(f'User Input: {user_input} 😎')
-        print(f'LLM Response:{response} 😝\n')
-
-        # Save the data to the database
-        save_to_database()
-
-        # Return the response as JSON, including both text and the path to the audio file
-        return jsonify({
-            "answer_text": assistant_reply,
-            "answer_audio_path": interface_audio_file_path,
-        })
+            assistant_reply = None
+    return assistant_reply
 
 
-@app.route('/save-to-database', methods=['POST'])
-def save_to_database():
-    user_input = request.form['prompt']
-    response = conversation.predict(input=json.dumps({"user_message": user_input}))
-
+def save_data_to_database(user_input, response):
+    user_name = current_user.name
+    owner_id = current_user.id
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
@@ -214,8 +193,8 @@ def save_to_database():
 
     # Create a new Memory object with the data
     new_memory = Memory(
-        user_name=current_user.name,
-        owner_id=current_user.id,
+        user_name=user_name,
+        owner_id=owner_id,
         user_message=user_input,
         llm_response=response,
         conversations_summary=conversations_summary_str,
@@ -236,10 +215,60 @@ def save_to_database():
         print(f"Error saving to database: {str(e)}")
         return jsonify({"error": "Failed to save to database"}), 500
 
-    return jsonify({
+    return {
         "memory_buffer": memory_buffer,
         "memory_load": memory_load,
-    })
+    }
+
+
+def interface_answer_logic(user_input):
+    # Get user conversations
+    user_conversations = get_user_conversations()
+
+    # Generate conversation context
+    conversation_context = generate_conversation_context(user_input, user_conversations)
+    print(f'conversation_context:\n{conversation_context}\n')
+
+    # Call llm for response
+    response = call_llm_for_response(conversation_context)
+
+    # Handle response
+    assistant_reply = handle_response(response)
+
+    # Save data to database
+    save_to_database_response = save_data_to_database(user_input, response)
+
+    return assistant_reply, save_to_database_response
+
+
+@app.route('/interface/answer', methods=['POST'])
+def interface_answer():
+    # Check if the user is authenticated
+    if current_user.is_authenticated:
+        user_input = request.form['prompt']
+        print(f'User Input:\n{user_input} 😎\n')
+
+        # Call the main logic function
+        assistant_reply, save_to_database_response = interface_answer_logic(user_input)
+
+        # Convert the text response to speech using gTTS
+        tts = gTTS(assistant_reply)
+
+        # Create a temporary audio file
+        interface_audio_file_path = 'interface_temp_audio.mp3'
+        tts.save(interface_audio_file_path)
+
+        print(f'User ID:{current_user.id} 😎')
+        print(f'User Name: {current_user.name} 😝')
+        print(f'User Input: {user_input} 😎')
+        print(f'LLM Response:{assistant_reply} 😝\n')
+
+        # Return the response as JSON, including both text and the path to the audio file
+        return jsonify({
+            "answer_text": assistant_reply,
+            "answer_audio_path": interface_audio_file_path,
+            "save_to_database_response": save_to_database_response,
+        })
 
 
 @app.route('/interface-audio')
