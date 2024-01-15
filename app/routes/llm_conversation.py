@@ -103,7 +103,11 @@ def interface_serve_audio():
 def get_all_conversations():
     try:
         owner_id = current_user.id
-        conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
+
+        # Fetch memories from the database
+        with get_db() as db:
+            conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
+
         # Create a list to store serialized data for each Memory object
         serialized_conversations = []
 
