@@ -22,9 +22,10 @@ from app.databases.database import get_db
 from app.models.memory import Memory, User, db
 from app.forms.app_forms import ConversationIdForm, DeleteForm
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
-from app.routes.llm_conversation import (home as home_llm, conversation_interface as interface_llm,
+from app.routes.process_home_conversation import (home as home_llm, home_answer as answer_home,
+                                                  home_serve_audio as home_audio_llm)
+from app.routes.llm_conversation import (conversation_interface as interface_llm,
                                          get_all_conversations as all_conversation_llm,
-                                         home_serve_audio as home_audio_llm,
                                          interface_serve_audio as interface_audio_llm,
                                          get_conversations_jsonify as conversation_jsonify_llm)
 
@@ -94,32 +95,7 @@ def home():
 
 @app.route('/home/answer', methods=['POST'])
 def home_answer():
-    user_message = request.form['prompt']
-    print(f'User Input:\n{user_message} 😎\n')
-
-    # Extend the conversation with the user's message
-    response = conversation.predict(input=user_message)
-
-    # Check if the response is a string, and if so, use it as the assistant's reply
-    if isinstance(response, str):
-        assistant_reply = response
-    else:
-        # If it's not a string, access the assistant's reply as you previously did
-        assistant_reply = response.choices[0].message['content']
-
-    # Convert the text response to speech using gTTS
-    tts = gTTS(assistant_reply)
-
-    # Create a temporary audio file
-    home_audio_file_path = 'home_temp_audio.mp3'
-    tts.save(home_audio_file_path)
-    print(f'LLM Response:\n{assistant_reply} 😝\n')
-
-    # Return the response as JSON, including both text and the path to the audio file
-    return jsonify({
-        "answer_text": assistant_reply,
-        "answer_audio_path": home_audio_file_path,
-    })
+    return answer_home()
 
 
 @app.route('/home-audio')

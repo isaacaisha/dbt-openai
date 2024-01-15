@@ -1,61 +1,21 @@
-from flask import Blueprint, render_template, flash, request, send_file
+from flask import Blueprint, render_template, flash, request, send_file, jsonify
 from flask_login import current_user
+from gtts import gTTS
 from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from datetime import datetime
 
 from app.databases.database import get_db
-from app.models.memory import Memory, db
+from app.models.memory import Memory
 from app.forms.app_forms import TextAreaFormIndex, TextAreaForm
 
-llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
+llm_conversation_bp = Blueprint('llm_conversation', __name__)
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
-
-
-@llm_conversation_bp.route("/", methods=["GET", "POST"])
-def home():
-    home_form = TextAreaFormIndex()
-    response = None
-    user_input = None
-
-    try:
-        if request.method == "POST" and home_form.validate_on_submit():
-            print(f"Form data: {home_form.data}\n")
-
-            # Retrieve form data using the correct key
-            user_input = request.form['text_writing']
-            # Use the LLM to generate a response based on user input
-            response = conversation.predict(input=user_input)
-
-            print(f"user_input: {user_input}")
-            print(f"response: {response}\n")
-
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({})
-
-        return render_template('index.html', home_form=home_form,
-                               current_user=current_user, user_input=user_input, response=response,
-                               memory_buffer=memory_buffer, memory_load=memory_load,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-    except Exception as err:
-        flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
-        print(f"😭 Unexpected {err=}, {type(err)=} 😭")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@llm_conversation_bp.route('/home-audio')
-def home_serve_audio():
-    home_audio_file_path = 'home_temp_audio.mp3'
-    try:
-        return send_file(home_audio_file_path, as_attachment=True)
-    except FileNotFoundError:
-        return "File not found", 404
 
 
 @llm_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])

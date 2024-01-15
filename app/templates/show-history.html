@@ -33,26 +33,27 @@
         <hr class="mb-3" style="color:yellow;">
 
         <h3>Summary</h3>
-        <textarea class="textarea-memory mb-3" style="color:red;">{{ summary_conversation|tojson(indent=4)|safe }}</textarea>
-
-        <hr class="mb-3" style="color:red;">
+        <textarea class="textarea-memory mb-5" style="color:red;">{{ summary_conversation|tojson(indent=4)|safe }}</textarea>
 <!--
+        <hr class="mb-3" style="color:red;">
+
         <h3>Memory Load</h3>
         <textarea class="textarea-memory mb-3" style="color:purple;">{{ memory_load|tojson(indent=4)|safe }}</textarea>
 
         <hr class="mb-3" style="color:red;">
 -->
-        <h3>PlayBack</h3>
+        <!--
+        <h3>PlayBack Audio</h3>
 
         <div class="mb-3 text-center">
-            <!-- Play the audio response -->
+            <!- Play the audio response ->
             <audio id="response-audio" controls class="submit btn btn-outline-info">
                 <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
                 Your browser does not support the audio element.
             </audio>
         </div>
     </div>
-
+-->
     <hr class="mb-3" style="color:yellow;">
 
     <div class="text-center">
