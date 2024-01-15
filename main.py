@@ -161,7 +161,7 @@ def generate_conversation_context(user_input, user_conversations):
 def handle_llm_response(user_input, conversation_context):
     # Call llm ChatOpenAI
     response = conversation.predict(input=json.dumps(conversation_context))
-    print(f'conversation_context:\n{conversation_context}\n')
+    print(f'conversation_context:\n{conversation_context} 😇\n')
 
     # Check if the response is a string, and if so, use it as the assistant's reply
     if isinstance(response, str):
@@ -187,7 +187,7 @@ def handle_llm_response(user_input, conversation_context):
     print(f'User Input: {user_input} 😎')
     print(f'LLM Response:{response} 😝\n')
 
-    return assistant_reply, interface_audio_file_path
+    return assistant_reply, interface_audio_file_path, response
 
 
 @app.route('/interface/answer', methods=['POST'])
@@ -195,7 +195,6 @@ def interface_answer():
     # Check if the user is authenticated
     if current_user.is_authenticated:
         user_input = request.form['prompt']
-        print(f'User Input:\n{user_input} 😎\n')
 
         # Get conversations only for the current user
         user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
@@ -204,10 +203,10 @@ def interface_answer():
         conversation_context = generate_conversation_context(user_input, user_conversations)
 
         # Handle llm response and save data to the database
-        assistant_reply, audio_file_path = handle_llm_response(user_input, conversation_context)
+        assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
 
         # Save the data to the database
-        save_to_database()
+        save_to_database(user_input, response)
 
         # Return the response as JSON, including both text and the path to the audio file
         return jsonify({
@@ -217,10 +216,7 @@ def interface_answer():
 
 
 @app.route('/save-to-database', methods=['POST'])
-def save_to_database():
-    user_input = request.form['prompt']
-    response = conversation.predict(input=json.dumps({"user_message": user_input}))
-
+def save_to_database(user_input, response):
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
@@ -245,9 +241,9 @@ def save_to_database():
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
-    except Exception as e:
+    except Exception as err:
         # Log the exception or handle it as needed
-        print(f"Error saving to database: {str(e)}")
+        print(f"Error saving to database: {str(err)}")
         return jsonify({"error": "Failed to save to database"}), 500
 
     return jsonify({
