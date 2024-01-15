@@ -6,7 +6,7 @@ import warnings
 import pytz
 
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, flash, request, redirect, url_for, render_template, send_file, jsonify
+from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
 from flask_login import LoginManager, current_user
 from flask_bootstrap import Bootstrap
 from gtts import gTTS
@@ -137,6 +137,59 @@ def conversation_interface():
     return interface_llm()
 
 
+def generate_conversation_context(user_input, user_conversations):
+    # Create a list of JSON strings for each conversation
+    conversation_strings = [memory.conversations_summary for memory in user_conversations]
+
+    # Combine the first 1 and last 9 entries into a valid JSON array
+    qdocs = f"[{','.join(conversation_strings[-3:])}]"
+
+    # Convert 'created_at' values to string
+    created_at_list = [str(memory.created_at) for memory in user_conversations]
+
+    # Include 'created_at' in the conversation context
+    conversation_context = {
+        "created_at": created_at_list[-3:],
+        "conversations": qdocs,
+        "user_name": current_user.name,
+        "user_message": user_input,
+    }
+
+    return conversation_context
+
+
+def handle_llm_response(user_input, conversation_context):
+    # Call llm ChatOpenAI
+    response = conversation.predict(input=json.dumps(conversation_context))
+    print(f'conversation_context:\n{conversation_context}\n')
+
+    # Check if the response is a string, and if so, use it as the assistant's reply
+    if isinstance(response, str):
+        assistant_reply = response
+    else:
+        # If it's not a string, access the assistant's reply appropriately
+        if isinstance(response, dict) and 'choices' in response:
+            assistant_reply = response['choices'][0]['message']['content']
+        else:
+            assistant_reply = None
+
+    # Convert the text response to speech using gTTS
+    tts = gTTS(assistant_reply)
+
+    # Create a temporary audio file
+    interface_audio_file_path = 'interface_temp_audio.mp3'
+    tts.save(interface_audio_file_path)
+
+    memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
+
+    print(f'User ID:{current_user.id} 😎')
+    print(f'User Name: {current_user.name} 😝')
+    print(f'User Input: {user_input} 😎')
+    print(f'LLM Response:{response} 😝\n')
+
+    return assistant_reply, interface_audio_file_path
+
+
 @app.route('/interface/answer', methods=['POST'])
 def interface_answer():
     # Check if the user is authenticated
@@ -147,50 +200,11 @@ def interface_answer():
         # Get conversations only for the current user
         user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-        # Create a list of JSON strings for each conversation
-        conversation_strings = [memory.conversations_summary for memory in user_conversations]
+        # Generate conversation context
+        conversation_context = generate_conversation_context(user_input, user_conversations)
 
-        # Combine the first 1 and last 9 entries into a valid JSON array
-        qdocs = f"[{','.join(conversation_strings[-3:])}]"
-
-        # Convert 'created_at' values to string
-        created_at_list = [str(memory.created_at) for memory in user_conversations]
-
-        # Include 'created_at' in the conversation context
-        conversation_context = {
-            "created_at": created_at_list[-3:],
-            "conversations": qdocs,
-            "user_name": current_user.name,
-            "user_message": user_input,
-        }
-
-        # Call llm ChatOpenAI
-        response = conversation.predict(input=json.dumps(conversation_context))
-        print(f'conversation_context:\n{conversation_context}\n')
-
-        # Check if the response is a string, and if so, use it as the assistant's reply
-        if isinstance(response, str):
-            assistant_reply = response
-        else:
-            # If it's not a string, access the assistant's reply appropriately
-            if isinstance(response, dict) and 'choices' in response:
-                assistant_reply = response['choices'][0]['message']['content']
-            else:
-                assistant_reply = None
-
-        # Convert the text response to speech using gTTS
-        tts = gTTS(assistant_reply)
-
-        # Create a temporary audio file
-        interface_audio_file_path = 'interface_temp_audio.mp3'
-        tts.save(interface_audio_file_path)
-
-        memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
-
-        print(f'User ID:{current_user.id} 😎')
-        print(f'User Name: {current_user.name} 😝')
-        print(f'User Input: {user_input} 😎')
-        print(f'LLM Response:{response} 😝\n')
+        # Handle llm response and save data to the database
+        assistant_reply, audio_file_path = handle_llm_response(user_input, conversation_context)
 
         # Save the data to the database
         save_to_database()
@@ -198,7 +212,7 @@ def interface_answer():
         # Return the response as JSON, including both text and the path to the audio file
         return jsonify({
             "answer_text": assistant_reply,
-            "answer_audio_path": interface_audio_file_path,
+            "answer_audio_path": audio_file_path,
         })
 
 
