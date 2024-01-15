@@ -149,6 +149,7 @@ def generate_conversation_context(user_input, user_conversations):
 
     # Combine the first 1 and last 9 entries into a valid JSON array
     qdocs = f"[{','.join(conversation_strings[-3:])}]"
+    print(f'qdocs:\n{qdocs}\n')
 
     # Convert 'created_at' values to string
     created_at_list = [str(memory.created_at) for memory in user_conversations]
@@ -207,6 +208,8 @@ def save_data_to_database(user_input, response):
         db.commit()
         # Refresh the new_memory object with the updated database state
         db.refresh(new_memory)
+
+        memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
