@@ -23,7 +23,7 @@ function sendRequest(prompt) {
                 if (activeLanguageButton) {
                     speech.lang = activeLanguageButton.getAttribute('data-lang');
                 } else {
-                    speech.lang = 'en-GB'; // Default to English if no language is selected
+                    speech.lang = 'en-US'; // Default to English if no language is selected
                 }
 
                 // Add <lang> tags with the xml:lang attribute to switch languages
