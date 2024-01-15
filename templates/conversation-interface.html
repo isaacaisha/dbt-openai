@@ -133,11 +133,23 @@
         <label>:…·SìįSí·…(Dbt)…·SìįSí·…:</label>
         <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
     </div>
+    {% if generatedText %}
+        <!-- Display the text response -->
+        <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
+
+        <!-- Play the audio response -->
+        <audio id="response-audio" controls class="submit btn btn-outline-info">
+            <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+    {% endif %}
 
     <hr class="mb-5" style="color:green">
 
 </div>
 
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
 <script src="{{ url_for('static', filename='js/interface-speech-request.js')}}"></script>
 
 {% endautoescape %}

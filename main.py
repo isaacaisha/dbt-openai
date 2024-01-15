@@ -139,8 +139,6 @@ def conversation_interface():
 
 @app.route('/interface/answer', methods=['POST'])
 def interface_answer():
-    global memory
-
     # Check if the user is authenticated
     if current_user.is_authenticated:
         user_input = request.form['prompt']
@@ -188,41 +186,60 @@ def interface_answer():
         tts.save(interface_audio_file_path)
 
         memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
-        conversations_summary = memory_summary.load_memory_variables({})
-        conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
-
-        created_at = datetime.now(pytz.timezone('Europe/Paris'))
-
-        # Create a new Memory object with the data
-        new_memory = Memory(
-            user_name=current_user.name,
-            owner_id=current_user.id,
-            user_message=user_input,
-            llm_response=response,
-            conversations_summary=conversations_summary_str,
-            created_at=created_at
-        )
-        # Add the new memory to the session
-        db.add(new_memory)
-        # Commit changes to the database
-        db.commit()
-        db.refresh(new_memory)
 
         print(f'User ID:{current_user.id} 😎')
         print(f'User Name: {current_user.name} 😝')
         print(f'User Input: {user_input} 😎')
         print(f'LLM Response:{response} 😝\n')
 
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({})
+        # Save the data to the database
+        save_to_database()
 
         # Return the response as JSON, including both text and the path to the audio file
         return jsonify({
             "answer_text": assistant_reply,
             "answer_audio_path": interface_audio_file_path,
-            "memory_buffer": memory_buffer,
-            "memory_load": memory_load,
         })
+
+
+@app.route('/save-to-database', methods=['POST'])
+def save_to_database():
+    user_input = request.form['prompt']
+    response = conversation.predict(input=json.dumps({"user_message": user_input}))
+
+    conversations_summary = memory_summary.load_memory_variables({})
+    conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
+
+    created_at = datetime.now(pytz.timezone('Europe/Paris'))
+
+    # Create a new Memory object with the data
+    new_memory = Memory(
+        user_name=current_user.name,
+        owner_id=current_user.id,
+        user_message=user_input,
+        llm_response=response,
+        conversations_summary=conversations_summary_str,
+        created_at=created_at
+    )
+    try:
+        # Add the new memory to the session
+        db.add(new_memory)
+        # Commit changes to the database
+        db.commit()
+        # Refresh the new_memory object with the updated database state
+        db.refresh(new_memory)
+
+        memory_buffer = memory.buffer_as_str
+        memory_load = memory.load_memory_variables({})
+    except Exception as e:
+        # Log the exception or handle it as needed
+        print(f"Error saving to database: {str(e)}")
+        return jsonify({"error": "Failed to save to database"}), 500
+
+    return jsonify({
+        "memory_buffer": memory_buffer,
+        "memory_load": memory_load,
+    })
 
 
 @app.route('/interface-audio')
