@@ -14,7 +14,7 @@ def register():
     register_form = RegisterForm()
 
     try:
-        if request.method == 'POST':
+        if request.method == 'POST' and register_form.validate_on_submit():
             print(f"Form data: {register_form.data}")
 
             # Check if the passwords match
@@ -29,20 +29,19 @@ def register():
                 return redirect(url_for('login'))
 
             hash_and_salted_password = generate_password_hash(
-                request.form.get('password'),
+                register_form.password.data,
                 method='pbkdf2:sha256',
                 salt_length=8
             )
 
             new_user = User()
-            new_user.email = request.form['email']
-            new_user.name = request.form['name']
+            new_user.email = register_form.email.data
+            new_user.name = register_form.name.data  # The name is obtained directly from the form
             new_user.password = hash_and_salted_password
 
-            db.add(new_user)
-            db.commit()
-            db.refresh(new_user)
-            db.rollback()  # Rollback in case of commit failure
+            db.session.add(new_user)
+            db.session.commit()
+            db.session.refresh(new_user)
 
             # Log in and authenticate the user after adding details to the database.
             login_user(new_user)

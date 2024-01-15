@@ -6,8 +6,8 @@ import warnings
 import pytz
 
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
-from flask_login import LoginManager, current_user
+from flask import flash, request, redirect, url_for, render_template, jsonify
+from flask_login import LoginManager, current_user, login_required
 from flask_bootstrap import Bootstrap
 from gtts import gTTS
 from datetime import datetime
@@ -17,6 +17,7 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 
+from app import create_app
 from app.databases.database import get_db
 from app.models.memory import Memory, User, db
 from app.forms.app_forms import ConversationIdForm, DeleteForm
@@ -31,7 +32,7 @@ warnings.filterwarnings('ignore')
 
 _ = load_dotenv(find_dotenv())  # read local .env file
 
-app = Flask(__name__, template_folder='templates')
+app = create_app()
 Bootstrap(app)
 
 try:
@@ -46,12 +47,6 @@ openai.api_key = openai_api_key
 secret_key = secrets.token_hex(19)
 # Set it as the Flask application's secret key
 app.secret_key = secret_key
-
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    f"postgresql://{os.environ['user']}:{os.environ['password']}@"
-    f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -150,7 +145,7 @@ def generate_conversation_context(user_input, user_conversations):
     # Include 'created_at' in the conversation context
     conversation_context = {
         "created_at": created_at_list[-3:],
-        "conversations": qdocs,
+        "conversations": json.loads(qdocs),
         "user_name": current_user.name,
         "user_message": user_input,
     }
@@ -257,6 +252,7 @@ def interface_serve_audio():
     return interface_audio_llm()
 
 
+@login_required
 @app.route('/show-history')
 def show_story():
     try:
@@ -284,6 +280,7 @@ def show_story():
 
     except Exception as err:
         flash(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        print(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 

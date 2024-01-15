@@ -45,7 +45,7 @@
                         {% endif %}
                     {% endwith %}
 
-                    <form method="POST" action="{{ url_for('register') }}">
+                    <form method="POST" action="{{ url_for('register') }}" accept-charset="UTF-8">
                         <!-- Include CSRF token -->
                         {{ register_form.csrf_token }}
 
