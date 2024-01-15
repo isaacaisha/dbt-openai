@@ -137,99 +137,69 @@ def conversation_interface():
     return interface_llm()
 
 
-def generate_conversation_context(user_input, user_conversations):
-    # Create a list of JSON strings for each conversation
-    conversation_strings = [memory.conversations_summary for memory in user_conversations]
-
-    # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[-3:])}]"
-
-    # Convert 'created_at' values to string
-    created_at_list = [str(memory.created_at) for memory in user_conversations]
-
-    # Include 'created_at' in the conversation context
-    conversation_context = {
-        "created_at": created_at_list[-3:],
-        "conversations": qdocs,
-        "user_name": current_user.name,
-        "user_message": user_input,
-    }
-
-    return conversation_context
-
-
-def handle_llm_response(user_input, conversation_context):
-    # Call llm ChatOpenAI
-    response = conversation.predict(input=json.dumps(conversation_context))
-    print(f'conversation_context:\n{conversation_context}\n')
-
-    # Check if the response is a string, and if so, use it as the assistant's reply
-    if isinstance(response, str):
-        assistant_reply = response
-    else:
-        # If it's not a string, access the assistant's reply appropriately
-        if isinstance(response, dict) and 'choices' in response:
-            assistant_reply = response['choices'][0]['message']['content']
-        else:
-            assistant_reply = None
-
-    # Convert the text response to speech using gTTS
-    tts = gTTS(assistant_reply)
-
-    # Create a temporary audio file
-    interface_audio_file_path = 'interface_temp_audio.mp3'
-    tts.save(interface_audio_file_path)
-
-    memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
-
-    print(f'User ID:{current_user.id} 😎')
-    print(f'User Name: {current_user.name} 😝')
-    print(f'User Input: {user_input} 😎')
-    print(f'LLM Response:{response} 😝\n')
-
-    return assistant_reply, interface_audio_file_path
-
-
-from flask import flash, redirect, url_for
-
-
 @app.route('/interface/answer', methods=['POST'])
 def interface_answer():
-    try:
-        # Check if the user is authenticated
-        if current_user.is_authenticated:
-            user_input = request.form['prompt']
-            print(f'User Input:\n{user_input} 😎\n')
+    # Check if the user is authenticated
+    if current_user.is_authenticated:
+        user_input = request.form['prompt']
+        print(f'User Input:\n{user_input} 😎\n')
 
-            # Get conversations only for the current user
-            user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+        # Get conversations only for the current user
+        user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-            # Generate conversation context
-            conversation_context = generate_conversation_context(user_input, user_conversations)
+        # Create a list of JSON strings for each conversation
+        conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
-            # Handle llm response and save data to the database
-            assistant_reply, audio_file_path = handle_llm_response(user_input, conversation_context)
+        # Combine the first 1 and last 9 entries into a valid JSON array
+        qdocs = f"[{','.join(conversation_strings[-3:])}]"
 
-            # Save the data to the database
-            save_to_database()
+        # Convert 'created_at' values to string
+        created_at_list = [str(memory.created_at) for memory in user_conversations]
 
-            # Return the response as JSON, including both text and the path to the audio file
-            return jsonify({
-                "answer_text": assistant_reply,
-                "answer_audio_path": audio_file_path,
-            })
+        # Include 'created_at' in the conversation context
+        conversation_context = {
+            "created_at": created_at_list[-3:],
+            "conversations": qdocs,
+            "user_name": current_user.name,
+            "user_message": user_input,
+        }
 
+        # Call llm ChatOpenAI
+        response = conversation.predict(input=json.dumps(conversation_context))
+        print(f'conversation_context:\n{conversation_context}\n')
+
+        # Check if the response is a string, and if so, use it as the assistant's reply
+        if isinstance(response, str):
+            assistant_reply = response
         else:
-            # Return an error response for unauthenticated users
-            return jsonify({"error": "User not authenticated"}), 401
+            # If it's not a string, access the assistant's reply appropriately
+            if isinstance(response, dict) and 'choices' in response:
+                assistant_reply = response['choices'][0]['message']['content']
+            else:
+                assistant_reply = None
 
-    except Exception as err:
-        # Log the exception or handle it as needed
-        print(f"Error in interface_answer: {str(err)}")
-        # Flash a message for the user to retry
-        flash("An error occurred. Please retry.")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+        # Convert the text response to speech using gTTS
+        tts = gTTS(assistant_reply)
+
+        # Create a temporary audio file
+        interface_audio_file_path = 'interface_temp_audio.mp3'
+        tts.save(interface_audio_file_path)
+
+        memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
+
+        print(f'User ID:{current_user.id} 😎')
+        print(f'User Name: {current_user.name} 😝')
+        print(f'User Input: {user_input} 😎')
+        print(f'LLM Response:{response} 😝\n')
+
+        # Save the data to the database
+        save_to_database()
+
+        # Return the response as JSON, including both text and the path to the audio file
+        return jsonify({
+            "answer_text": assistant_reply,
+            "answer_audio_path": interface_audio_file_path,
+        })
 
 
 @app.route('/save-to-database', methods=['POST'])
