@@ -144,11 +144,13 @@ def get_user_conversations():
 
 
 def generate_conversation_context(user_input, user_conversations):
+    # Select only the last three conversations
+    user_conversations = user_conversations[-3:]
     # Create a list of JSON strings for each conversation
     conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[-3:])}]"
+    qdocs = f"[{','.join(conversation_strings)}]"
     print(f'qdocs:\n{qdocs}\n')
 
     # Convert 'created_at' values to string
@@ -187,7 +189,7 @@ def handle_response(response):
 def save_data_to_database(user_input, response):
     user_name = current_user.name
     owner_id = current_user.id
-    conversations_summary = memory_summary.load_memory_variables({})
+    conversations_summary = memory_summary.load_memory_variables(get_user_conversations())
     conversations_summary_str = json.dumps(conversations_summary)  # Convert to string
 
     created_at = datetime.now(pytz.timezone('Europe/Paris'))
