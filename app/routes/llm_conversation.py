@@ -5,8 +5,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from datetime import datetime
 
-from app.databases.database import get_db
-from app.models.memory import Memory, db
+from app.models.memory import Memory
 from app.forms.app_forms import TextAreaFormIndex, TextAreaForm
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
@@ -105,8 +104,7 @@ def get_all_conversations():
         owner_id = current_user.id
 
         # Fetch memories from the database
-        with get_db() as db:
-            conversations = db.query(Memory).filter_by(owner_id=owner_id).all()
+        conversations = Memory.query.filter_by(owner_id=owner_id).all()
 
         # Create a list to store serialized data for each Memory object
         serialized_conversations = []
@@ -139,8 +137,7 @@ def get_all_conversations():
 @llm_conversation_bp.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
     # Fetch memories from the database
-    with get_db() as db:
-        conversations = db.query(Memory).all()
+    conversations = Memory.query.all()
     # Convert the conversations to a list of dictionaries
     serialized_conversations = []
 

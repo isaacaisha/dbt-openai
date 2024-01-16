@@ -26,23 +26,25 @@
 {% block content %}
 {% autoescape true %}
 
-<div id="resultMemo" class="text-center mb-3">
+<div class="content container">
+    <div id="resultMemo" class="text-center mb-3">
 
-    <hr class="mb-3" style="color:green;">
-    <h3 style="color:yellow; margin-top:0;">REL😎AD</h3>
-    <hr class="mb-5" style="color:green;">
+        <hr class="mb-3" style="color:green;">
+        <h3 style="color:yellow; margin-top:0;">REL😎AD</h3>
+        <hr class="mb-5" style="color:green;">
 
-    <span style="color:#fff;">Reload the page ∞</span> <span style="font-size:1.45rem; color:gold">∞ Reload the page</span>
-    <h3 class="mb-5">Error Message:<br>🔥<span style="color:yellow; font-size:1rem;">{{ error_message }}</span>🔥<br>¡!¡ 😭 ¡!¡</h3>
+        <span style="color:#fff;">Reload the page ∞</span> <span style="font-size:1.45rem; color:gold">∞ Reload the page</span>
+        <h3 class="mb-5">Error Message:<br>🔥<span style="color:yellow; font-size:1rem;">{{ error_message }}</span>🔥<br>¡!¡ 😭 ¡!¡</h3>
+    </div>
+
+    <hr class="mb-3" style="color:yellow;">
+
+    <div class="text-center">
+        <a href="{{ url_for('home') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
+    </div>
+
+    <hr class="mb-5" style="color:red;">
 </div>
-
-<hr class="mb-3" style="color:yellow;">
-
-<div class="text-center">
-    <a href="{{ url_for('home') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
-</div>
-
-<hr class="mb-5" style="color:red;">
 
 {% endautoescape %}
 {% endblock %}

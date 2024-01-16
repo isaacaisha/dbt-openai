@@ -30,7 +30,7 @@
 {% block content %}
 {% autoescape true %}
 
-    <div class="content">
+    <div class="content container">
         <!-- Page Header -->
 
         <hr style="color:red;">
@@ -40,6 +40,9 @@
         </h3>
 
         <hr class="mb-3" style="color:yellow;">
+    </div>
+
+    <div class="content">
 
         <!-- Navbar -->
         <nav class="navbar nav-home">
@@ -60,7 +63,9 @@
             </div>
 
         </nav>
+    </div>
 
+    <div class="content container">
         <hr class="mb-3" style="color:yellow;">
 
         <div class="container text-center mb-1">
@@ -161,12 +166,12 @@
                 <span style="color:gray;">Reload<br>(to access the playback)<br>👇🏿<br></span>
                 <button id="playAudioButton" type="button" class="submit btn btn-outline-info mb-3"
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;border: solid .1rem">
-                    Play Audio ¡!¡
+                    PlayBack Audio ¡!¡
                 </button>
             </div>
             <div class="mb-3 text-center">
                 <audio id="response-audio" controls class="submit btn btn-outline-info">
-                    <source src="{{ url_for('home_serve_audio') }}" type="audio/mp3">
+                    <source src="{{ url_for('home_audio') }}" type="audio/mp3">
                     Your browser does not support the audio element.
                 </audio>
             </div>

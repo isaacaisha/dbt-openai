@@ -1,14 +1,11 @@
 import json
 import os
-import openai
-import secrets
 import warnings
 import pytz
 
 from dotenv import load_dotenv, find_dotenv
-from flask import flash, request, redirect, url_for, render_template, jsonify
-from flask_login import LoginManager, current_user, login_required
-from flask_bootstrap import Bootstrap
+from flask import flash, request, render_template, jsonify
+from flask_login import current_user, login_required
 from gtts import gTTS
 from datetime import datetime
 
@@ -18,57 +15,31 @@ from langchain.memory import ConversationBufferMemory
 from langchain.memory import ConversationSummaryBufferMemory
 
 from app import create_app
-from app.databases.database import get_db
-from app.models.memory import Memory, User, db
-from app.forms.app_forms import ConversationIdForm, DeleteForm
+from app.models.memory import Memory, db
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
-from app.routes.llm_conversation import (home as home_llm, conversation_interface as interface_llm,
+
+from app.routes.home_process import (home as home_conversations, home_answer as answer_home,
+                                     home_audio as audio_home)
+
+from app.routes.llm_conversation import (conversation_interface as interface_llm,
                                          get_all_conversations as all_conversation_llm,
-                                         home_serve_audio as home_audio_llm,
                                          interface_serve_audio as interface_audio_llm,
                                          get_conversations_jsonify as conversation_jsonify_llm)
+
+from app.routes.convers_functions import (select_conversation as conversation_selected,
+                                          get_conversation as access_conversation,
+                                          delete_conversation as conversation_deleted)
 
 warnings.filterwarnings('ignore')
 
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 app = create_app()
-Bootstrap(app)
-
-try:
-    openai_api_key = os.environ['OPENAI_API_KEY']
-except KeyError:
-    raise ValueError("OPENAI_API_KEY environment variable is not set.")
-
-# Set the OpenAI API key
-openai.api_key = openai_api_key
-
-# Generate a random secret key
-secret_key = secrets.token_hex(19)
-# Set it as the Flask application's secret key
-app.secret_key = secret_key
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
-
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
-
-with app.app_context():
-    db.create_all()
-
-# Fetch memories from the database
-with get_db() as db:
-    # memories = db.query(Memory).all()
-    test = db.query(Memory).all()
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
@@ -89,42 +60,17 @@ def logout():
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    return home_llm()
+    return home_conversations()
 
 
 @app.route('/home/answer', methods=['POST'])
 def home_answer():
-    user_message = request.form['prompt']
-    print(f'User Input:\n{user_message} 😎\n')
-
-    # Extend the conversation with the user's message
-    response = conversation.predict(input=user_message)
-
-    # Check if the response is a string, and if so, use it as the assistant's reply
-    if isinstance(response, str):
-        assistant_reply = response
-    else:
-        # If it's not a string, access the assistant's reply as you previously did
-        assistant_reply = response.choices[0].message['content']
-
-    # Convert the text response to speech using gTTS
-    tts = gTTS(assistant_reply)
-
-    # Create a temporary audio file
-    home_audio_file_path = 'home_temp_audio.mp3'
-    tts.save(home_audio_file_path)
-    print(f'LLM Response:\n{assistant_reply} 😝\n')
-
-    # Return the response as JSON, including both text and the path to the audio file
-    return jsonify({
-        "answer_text": assistant_reply,
-        "answer_audio_path": home_audio_file_path,
-    })
+    return answer_home()
 
 
 @app.route('/home-audio')
-def home_serve_audio():
-    return home_audio_llm()
+def home_audio():
+    return audio_home()
 
 
 @app.route('/conversation-interface', methods=['GET', 'POST'])
@@ -230,17 +176,18 @@ def save_to_database(user_input, response):
     )
     try:
         # Add the new memory to the session
-        db.add(new_memory)
+        db.session.add(new_memory)
         # Commit changes to the database
-        db.commit()
-        # Refresh the new_memory object with the updated database state
-        db.refresh(new_memory)
+        db.session.commit()
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
     except Exception as err:
         # Log the exception or handle it as needed
+        # Refresh the new_memory object with the updated database state
+        db.refresh(new_memory)
+        flash(f"Error saving to database: {str(err)}")
         print(f"Error saving to database: {str(err)}")
         return jsonify({"error": "Failed to save to database"}), 500
 
@@ -295,101 +242,17 @@ def get_all_conversations():
 
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
-    select_conversation_form = ConversationIdForm()
-
-    try:
-        if select_conversation_form.validate_on_submit():
-            print(f"Form data: {select_conversation_form.data}")
-
-            # Retrieve the selected conversation ID
-            selected_conversation_id = select_conversation_form.conversation_id.data
-
-            # Construct the URL string for the 'get_conversation' route
-            url = url_for('get_conversation', conversation_id=selected_conversation_id)
-
-            return redirect(url)
-
-        else:
-            return render_template('conversation-by-id.html',
-                                   select_conversation_form=select_conversation_form, current_user=current_user,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+    return conversation_selected()
 
 
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
-
-    try:
-        if not conversation_:
-            # Conversation isn't found, return a not found message
-            return render_template('conversation-not-found.html', current_user=current_user,
-                                   conversation_=conversation_, conversation_id=conversation_id,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-
-        if conversation_.owner_id != current_user.id:
-            # User doesn't have access, return a forbidden message
-            return render_template('conversation-forbidden.html', current_user=current_user,
-                                   conversation_=conversation_, conversation_id=conversation_id,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-
-        else:
-            # Format created_at timestamp
-            formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
-            return render_template('conversation-details.html', current_user=current_user,
-                                   conversation_=conversation_, formatted_created_at=formatted_created_at,
-                                   conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+    return access_conversation(conversation_id)
 
 
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    delete_conversation_form = DeleteForm()
-
-    try:
-        if delete_conversation_form.validate_on_submit():
-            print(f"Form data: {delete_conversation_form.data}")
-
-            # Get the conversation_id from the form
-            conversation_id = delete_conversation_form.conversation_id.data
-
-            # Query the database to get the conversation to be deleted
-            conversation_to_delete = db.query(Memory).filter(Memory.id == conversation_id).first()
-
-            # Check if the conversation exists
-            if not conversation_to_delete:
-                return render_template('conversation-delete-not-found.html', current_user=current_user,
-                                       conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
-
-            # Check if the current user is the owner of the conversation
-            if conversation_to_delete.owner_id != current_user.id:
-                return render_template('conversation-delete-forbidden.html', current_user=current_user,
-                                       conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
-
-            else:
-                # Delete the conversation
-                db.delete(conversation_to_delete)
-                db.commit()
-                db.rollback()  # Rollback in case of commit failure
-                flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
-                return render_template('conversation-delete.html',
-                                       current_user=current_user, delete_conversation_form=delete_conversation_form,
-                                       conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
-
-        return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
-                               current_user=current_user, delete_conversation_form=delete_conversation_form, )
-
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+    return conversation_deleted()
 
 
 @app.route("/api/conversations-jsonify")

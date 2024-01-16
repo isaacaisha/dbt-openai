@@ -22,7 +22,7 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="content">
+<div class="content container">
 
   <!-- Page Header -->
 
@@ -56,10 +56,10 @@
                     <span style="color:#30ABB7;"><strong>Username:</strong> {{ conversation_.user_name }}</span><br>
                     -->
                     <span style="color:#9A30F3;">
-                        <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message }}
+                        <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
                     </span><br>
-                    <span style="color:#1295FA;"><strong>SìįSí Dbt Response:</strong> {{ conversation_.llm_response }}</span><br>
-                    <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary }}</span><br>
+                    <span style="color:#1295FA;"><strong>SìįSí Dbt Response:</strong> {{ conversation_.llm_response|safe }}</span><br>
+                    <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
                     <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
                 </li>
             {% endfor %}

@@ -52,6 +52,7 @@ def register():
                                    current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
+        flash(f"RETRY ¡!¡ Unexpected {err=}, {type(err)=}")
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('register'))
 
@@ -90,6 +91,7 @@ def login():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
+        flash(f"RETRY ¡!¡ Unexpected {err=}, {type(err)=}")
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return redirect(url_for('login'))
 
