@@ -192,10 +192,14 @@ def show_story():
         if current_user.is_authenticated:
             owner_id = current_user.id
 
-            summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
-            memory_load = memory.load_memory_variables({'owner_id': owner_id})
+            # Modify your query to filter by owner_id
+            summary_conversation = Memory.query.filter_by(owner_id=owner_id).first()
+            memory_load = Memory.query.filter_by(owner_id=owner_id).all()
 
-            memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n{memory.buffer_as_str}'
+            memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n'
+            memory_buffer += '\n'.join(
+                [f'{memory.user_name}: {memory.user_message}\nLLM Response: {memory.llm_response}' for memory in
+                 memory_load])
 
             print(f'memory_buffer_story:\n{memory_buffer}\n')
             print(f'memory_load_story:\n{memory_load}\n')
@@ -205,12 +209,10 @@ def show_story():
                                    memory_load=memory_load, memory_buffer=memory_buffer,
                                    summary_conversation=summary_conversation,
                                    date=datetime.now().strftime("%a %d %B %Y"))
-
         else:
             return render_template('authentication-error.html', error_message='User not authenticated',
                                    current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
-
     except Exception as err:
         flash(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
         print(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')

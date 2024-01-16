@@ -34,16 +34,23 @@
         <hr class="mb-3" style="color:yellow;">
 
         <h3>Summary</h3>
-        <textarea class="textarea-memory mb-3" style="color:red;">{{ summary_conversation|tojson(indent=4)|safe }}</textarea>
+        <textarea class="textarea-memory mb-3" style="color:red;">{{ summary_conversation|safe }}</textarea>
 
-        <hr class="mb-5" style="color:red;">
-        <hr class="mb-3" style="color:green;">
+        <hr class="mb-3" style="color:red;">
+
+        <h3>Memory Load</h3>
+        <textarea class="textarea-memory mb-3" style="color:purple;">{{ memory_load }}</textarea>
+
+        <hr class="mb-3" style="color:red;">
+
 
         <div class="text-center">
             <a href="{{ url_for('conversation_interface') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
         </div>
 
-    <hr class="mb-5" style="color:green;">
+        <hr class="mb-5" style="color:green;">
+    </div>
+
 </div>
 
 {% endautoescape %}
