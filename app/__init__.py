@@ -1,16 +1,13 @@
 import os
 import secrets
-
 import openai
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
-
 from .databases.database import database_bp
 from .forms.app_forms import app_form_bp
 from .models.memory import memory_bp, db, User
 from .schemas.schemas import schemas_bp
-
 from .routes.auth import auth_bp
 from .routes.process_home_conversation import home_conversation_bp
 from .routes.process_interface_conversation import interface_conversation_bp
@@ -29,6 +26,7 @@ def create_app():
     def load_user(user_id):
         return User.query.get(user_id)
 
+    # Configurations
     try:
         openai_api_key = os.environ['OPENAI_API_KEY']
     except KeyError:
@@ -46,24 +44,23 @@ def create_app():
         f"postgresql://{os.environ['user']}:{os.environ['password']}@"
         f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JSON_AS_ASCII'] = False
-
     db.init_app(app)
 
+    # Initialize database
     with app.app_context():
         db.create_all()
 
-    app.register_blueprint(database_bp, name='database')
-    app.register_blueprint(app_form_bp, name='forms')
-    app.register_blueprint(memory_bp, name='memory')
-    app.register_blueprint(auth_bp, name='auth')
-    app.register_blueprint(home_conversation_bp, name='conversation_home')
-    app.register_blueprint(interface_conversation_bp, name='conversation_interface')
-    app.register_blueprint(functionality_conversation_bp, name='conversation_function')
-    app.register_blueprint(llm_conversation_bp, name='llm_conversation')
-    app.register_blueprint(schemas_bp, name='schemas')
+    # Register blueprints
+    app.register_blueprint(database_bp, url_prefix='/database', name='database')
+    app.register_blueprint(app_form_bp, url_prefix='/app_form', name='forms')
+    app.register_blueprint(memory_bp, url_prefix='/memory', name='memory')
+    app.register_blueprint(auth_bp, url_prefix='/auth', name='auth')
+    app.register_blueprint(home_conversation_bp, url_prefix='/process_home_conversation', name='conversation_home')
+    app.register_blueprint(interface_conversation_bp, url_prefix='/process_interface_conversation',
+                           name='conversation_interface')
+    app.register_blueprint(functionality_conversation_bp, url_prefix='/conversation_functionality',
+                           name='conversation_function')
+    app.register_blueprint(llm_conversation_bp, url_prefix='/llm_conversation', name='llm_conversation')
+    app.register_blueprint(schemas_bp, url_prefix='/schemas', name='schemas')
 
     return app
-
-
-app = create_app()
