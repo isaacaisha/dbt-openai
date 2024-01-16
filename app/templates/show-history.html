@@ -36,25 +36,33 @@
         <h3>Summary</h3>
         <textarea class="textarea-memory mb-3" style="color:red;">{{ summary_conversation|tojson(indent=4)|safe }}</textarea>
 
-        <hr class="mb-3" style="color:red;">
+        <hr class="mb-5" style="color:red;">
 <!--
         <h3>Memory Load</h3>
         <textarea class="textarea-memory mb-3" style="color:purple;">{{ memory_load|tojson(indent=4)|safe }}</textarea>
 
         <hr class="mb-3" style="color:red;">
--->
-        <h3>PlayBack Audio</h3>
 
-        <div class="mb-3 text-center">
-            <!-- Play the audio response -->
+        <h3 class="mb-3">PlayBack Audio</h3>
+
+        <!- Add a button for speech synthesis playback ->
+        <div class="mb-5 text-center">
+            <button id="playbackButton" type="button" class="btn btn-info" >
+                ¡!¡ ·SìįSí·Dbt·SìįSí· ¡!¡
+            </button>
+        </div>
+
+
+        <div class="mb-3 text-center" style="display:none">
+            <!- Play the audio response ->
             <audio id="response-audio" controls class="submit btn btn-outline-info">
                 <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
                 Your browser does not support the audio element.
             </audio>
         </div>
     </div>
-
-    <hr class="mb-3" style="color:yellow;">
+-->
+    <hr class="mb-3" style="color:green;">
 
     <div class="text-center">
         <a href="{{ url_for('conversation_interface') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
@@ -62,6 +70,8 @@
 
     <hr class="mb-5" style="color:green;">
 </div>
+
+<script src="{{ url_for('static', filename='js/interface-speech-request.js')}}"></script>
 
 {% endautoescape %}
 {% endblock %}

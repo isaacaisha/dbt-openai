@@ -48,20 +48,38 @@ function sendRequest(prompt) {
 }
 
 // Add an event listener to the form for submitting
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('prompt-form').addEventListener('submit', function (e) {
         e.preventDefault();
         var prompt = document.getElementById('userInput').value; // Get text from the textarea
         sendRequest(prompt);
     });
-});
 
-// Function to handle audio playback
-document.addEventListener("DOMContentLoaded", function () {
+    // Add an event listener to the playback button
+    document.getElementById('playbackButton').addEventListener('click', function () {
+        // Use the SpeechSynthesis API to read the response aloud
+        var speech = new SpeechSynthesisUtterance(document.getElementById('generatedText').value);
+
+        // Get the active language button and set speech.lang based on its data-lang attribute
+        var activeLanguageButton = document.querySelector('.language-btn.active');
+        if (activeLanguageButton) {
+            speech.lang = activeLanguageButton.getAttribute('data-lang');
+        } else {
+            speech.lang = 'es-ES'; // Default to Spanish if no language is selected
+        }
+
+        // Add <lang> tags with the xml:lang attribute to switch languages
+        speech.text = document.getElementById('generatedText').value;
+
+        window.speechSynthesis.speak(speech);
+    });
+
+    // Add an event listener to the audio element for playback
     document.getElementById('response-audio').onloadedmetadata = function () {
         this.play();
     };
 
+    // Add an event listener to the playback button for audio
     document.getElementById('playAudioButton').addEventListener('click', function () {
         var audio = document.getElementById('response-audio');
         audio.play();

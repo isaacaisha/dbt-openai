@@ -130,6 +130,8 @@ def interface_answer():
             "answer_text": assistant_reply,
             "answer_audio_path": audio_file_path,
         })
+    # else:
+    #     flash('Try Again 😭r LogIn ¡!¡'), 500
 
 
 @interface_conversation_bp.route('/save-to-database', methods=['POST'])

@@ -137,7 +137,17 @@
         {% if generatedText %}
             <!-- Display the text response -->
             <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
+        {% endif %}
 
+        <!-- Add a button for speech synthesis playback -->
+        <div class="mb-5 text-center">
+            <span>(PlayBack Audio)</span><br>
+            <button id="playbackButton" type="button" class="btn btn-info" >
+                ¡!¡ ·SìįSí·Dbt·SìįSí· ¡!¡
+            </button>
+        </div>
+
+        {% if generatedText %}
             <!-- Play the audio response -->
             <audio id="response-audio" controls class="submit btn btn-outline-info">
                 <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
