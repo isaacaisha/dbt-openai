@@ -43,7 +43,7 @@
         {% if memory_load %}
             {% for memory in memory_load %}
                 {{ memory.user_name }}: {{ memory.user_message }}
-                ·SìįSí· Response: {{ memory.llm_response }}
+                ·SìįSí· Dbt: {{ memory.llm_response }}
             {% endfor %}
         {% else %}
             No memory load data available.

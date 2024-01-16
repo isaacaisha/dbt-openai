@@ -1,6 +1,7 @@
 import os
 
 from app import create_app
+
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 
 from app.routes.home_process import (home as home_conversations, home_answer as answer_home,
