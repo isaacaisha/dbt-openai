@@ -28,124 +28,126 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="container text-center mb-1">
-    <hr style="color:green;">
+<div class="content container">
+    <div class="container text-center mb-1">
+        <hr style="color:green;">
 
-    <h3 class="mb-5">1°Click on your Favorite Language</h3>
+        <h3 class="mb-5">1°Click on your Favorite Language</h3>
 
-    <div>
-        <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5"
-            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-        عربي ¡!¡ Arabic
-        </button>
-    </div>
-
-    <button id="langEn" data-lang="en-US" type="button" class="btn language-btn"
-            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-        English ¡!¡
-    </button>
-
-    <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
-
-    <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn"
-            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-        Spanish ¡!¡
-    </button>
-</div>
-
-<div class="text-center mb-2">
-    <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn"
-            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-        Brazil ¡!¡
-    </button>
-</div>
-
-<div class="text-center mb-5">
-    <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn"
-            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-        French ¡!¡
-    </button>
-</div>
-
-<div class="container">
-    <form id="prompt-form" method="POST">
-
-        {{ writing_text_form.csrf_token }}
-<!--
-        {% if not current_user.is_authenticated %}
-            <div class="alert alert-info text-center">
-                <div>Not Authenticated. Reload & Retry... .</div>
-                <div>🤣 Or LOGIN 😂</div>
-                <div>¡!¡ 😭 ¡!¡</div>
-            </div>
-        {% endif %}
--->
-        {% for message in get_flashed_messages() %}
-            <div class="alert alert-info text-center">
-                {{ message }}
-            </div>
-        {% endfor %}
-
-        {% if error_message %}
-            <div class="alert alert-info">
-                {{ error_message }}
-            </div>
-        {% endif %}
-        <div class="text-center">
-            <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
-            <div>
-                <button id="start-button" type="button" class="btn mb-3"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-                    Click to Start Writing ¡!¡
-                </button>
-            </div>
-
-            <hr class="mb-3" style="color:yellow;">
-
-            <!-- Add a button for speech recognition -->
-            <button id="speechRecognitionButton" type="button" class="btn mb-3"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-                Start Speech Recognition ¡!¡
+        <div>
+            <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+            عربي ¡!¡ Arabic
             </button>
         </div>
 
-        <hr class="mb-5" style="color:yellow;">
+        <button id="langEn" data-lang="en-US" type="button" class="btn language-btn"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+            English ¡!¡
+        </button>
 
-        <div id="textarea-container" style="display: none;">
-            <label for="userInput" class="label_ text-center">Write Your Text, below:</label>
-            <textarea class="form-control mb-5" id="userInput" name="writing_text"
-                      placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
-        </div>
+        <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+
+        <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+            Spanish ¡!¡
+        </button>
+    </div>
+
+    <div class="text-center mb-2">
+        <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+            Brazil ¡!¡
+        </button>
+    </div>
+
+    <div class="text-center mb-5">
+        <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn"
+                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+            French ¡!¡
+        </button>
+    </div>
+
+    <div class="container">
+        <form id="prompt-form" method="POST">
+
+            {{ writing_text_form.csrf_token }}
+    <!--
+            {% if not current_user.is_authenticated %}
+                <div class="alert alert-info text-center">
+                    <div>Not Authenticated. Reload & Retry... .</div>
+                    <div>🤣 Or LOGIN 😂</div>
+                    <div>¡!¡ 😭 ¡!¡</div>
+                </div>
+            {% endif %}
+    -->
+            {% for message in get_flashed_messages() %}
+                <div class="alert alert-info text-center">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {% if error_message %}
+                <div class="alert alert-info">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+            <div class="text-center">
+                <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
+                <div>
+                    <button id="start-button" type="button" class="btn mb-3"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                        Click to Start Writing ¡!¡
+                    </button>
+                </div>
+
+                <hr class="mb-3" style="color:yellow;">
+
+                <!-- Add a button for speech recognition -->
+                <button id="speechRecognitionButton" type="button" class="btn mb-3"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                    Start Speech Recognition ¡!¡
+                </button>
+            </div>
+
+            <hr class="mb-5" style="color:yellow;">
+
+            <div id="textarea-container" style="display: none;">
+                <label for="userInput" class="label_ text-center">Write Your Text, below:</label>
+                <textarea class="form-control mb-5" id="userInput" name="writing_text"
+                          placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
+            </div>
+
+            <div class="text-center">
+                <hr style="color:red">
+                <button id="generateButton" class="mb-3 btn generate-text" type="submit"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
+                Click for Response 🔥¡!¡🔥
+            </button>
+            </div>
+        </form>
+
+        <hr class="mb-5" style="color:red">
 
         <div class="text-center">
-            <hr style="color:red">
-            <button id="generateButton" class="mb-3 btn generate-text" type="submit"
-                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: 1rem; --bs-btn-font-size: 1.3rem;">
-            Click for Response 🔥¡!¡🔥
-        </button>
+            <hr class="mb-3" style="color:green;">
+            <label>:…·SìįSí·…(Dbt)…·SìįSí·…:</label>
+            <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
         </div>
-    </form>
+        {% if generatedText %}
+            <!-- Display the text response -->
+            <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
 
-    <hr class="mb-5" style="color:red">
+            <!-- Play the audio response -->
+            <audio id="response-audio" controls class="submit btn btn-outline-info">
+                <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
+        {% endif %}
 
-    <div class="text-center">
-        <hr class="mb-3" style="color:green;">
-        <label>:…·SìįSí·…(Dbt)…·SìįSí·…:</label>
-        <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
+        <hr class="mb-5" style="color:green">
+
     </div>
-    {% if generatedText %}
-        <!-- Display the text response -->
-        <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
-
-        <!-- Play the audio response -->
-        <audio id="response-audio" controls class="submit btn btn-outline-info">
-            <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
-            Your browser does not support the audio element.
-        </audio>
-    {% endif %}
-
-    <hr class="mb-5" style="color:green">
-
 </div>
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>

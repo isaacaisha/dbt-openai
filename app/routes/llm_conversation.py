@@ -1,62 +1,44 @@
-from flask import Blueprint, render_template, flash, request, send_file, jsonify
+from flask import Blueprint, render_template, flash
 from flask_login import current_user
-from gtts import gTTS
-from langchain.chains import ConversationChain
-from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from datetime import datetime
 
 from app.databases.database import get_db
 from app.models.memory import Memory
-from app.forms.app_forms import TextAreaFormIndex, TextAreaForm
+from app.routes.process_interface_conversation import memory_summary, memory
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__)
 
-llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
-memory = ConversationBufferMemory()
-conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
-memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
-
-@llm_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
-def conversation_interface():
-    writing_text_form = TextAreaForm()
-    error_message = None
-    answer = None
-
+@llm_conversation_bp.route('/show-history')
+def show_story():
     try:
-        if request.method == "POST" and writing_text_form.validate_on_submit():
-            user_input = request.form['writing_text']
+        if current_user.is_authenticated:
+            owner_id = current_user.id
 
-            # Use the LLM to generate a response based on user input
-            response = conversation.predict(input=user_input)
-            answer = response['output']
+            summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
+            memory_load = memory.load_memory_variables({'owner_id': owner_id})
 
-            print(f'User ID:{current_user.id} 😎')
-            print(f'User Name: {current_user.name} 😝')
-            print(f'User Input: {user_input} 😎')
-            print(f'LLM Response:{answer} 😝\n')
+            memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n{memory.buffer_as_str}'
 
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({})
+            print(f'memory_buffer_story:\n{memory_buffer}\n')
+            print(f'memory_load_story:\n{memory_load}\n')
+            print(f'summary_conversation_story:\n{summary_conversation}\n')
 
-        return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                               answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
-                               current_user=current_user, memory_buffer=memory_buffer, memory_load=memory_load)
+            return render_template('show-history.html', current_user=current_user, owner_id=owner_id,
+                                   memory_load=memory_load, memory_buffer=memory_buffer,
+                                   summary_conversation=summary_conversation,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
+
+        else:
+            return render_template('authentication-error.html', error_message='User not authenticated',
+                                   current_user=current_user,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
+
     except Exception as err:
-        flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
-        print(f"😭 Unexpected {err=}, {type(err)=} 😭")
+        flash(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        print(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@llm_conversation_bp.route('/interface-audio')
-def interface_serve_audio():
-    interface_audio_file_path = 'interface_temp_audio.mp3'
-    try:
-        return send_file(interface_audio_file_path, as_attachment=True)
-    except FileNotFoundError:
-        return "File not found", 404
 
 
 @llm_conversation_bp.route("/get-all-conversations")
