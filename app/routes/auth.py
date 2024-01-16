@@ -6,7 +6,7 @@ from datetime import datetime
 from app.forms.app_forms import LoginForm, RegisterForm
 from app.models.memory import User, db
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])

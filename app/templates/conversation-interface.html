@@ -115,7 +115,7 @@
             <div id="textarea-container" style="display: none;">
                 <label for="userInput" class="label_ text-center">Write Your Text, below:</label>
                 <textarea class="form-control mb-5" id="userInput" name="writing_text"
-                          placeholder="¡!¡ INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
+                          placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
             </div>
 
             <div class="text-center">
@@ -134,7 +134,6 @@
             <label>:…·SìįSí·…(Dbt)…·SìįSí·…:</label>
             <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
         </div>
-
         {% if generatedText %}
             <!-- Display the text response -->
             <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
@@ -150,6 +149,10 @@
 
     </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
+<script src="{{ url_for('static', filename='js/interface-speech-request.js')}}"></script>
 
 {% endautoescape %}
 {% endblock %}

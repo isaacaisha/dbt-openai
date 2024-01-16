@@ -22,7 +22,6 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="content container">
     <hr class="mb-3" style="color:green;">
     <h3 class="text-center conversations-details" style="margin-top:0;">Actual Conversation</h3>
     <hr class="mb-5" style="color:green;">
@@ -43,9 +42,9 @@
 
         <hr class="mb-3" style="color:red;">
 -->
-        <h3>PlayBack Audio</h3>
+        <h3>PlayBack</h3>
 
-        <div class="mb-5 text-center">
+        <div class="mb-3 text-center">
             <!-- Play the audio response -->
             <audio id="response-audio" controls class="submit btn btn-outline-info">
                 <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
@@ -61,7 +60,6 @@
     </div>
 
     <hr class="mb-5" style="color:green;">
-</div>
 
 {% endautoescape %}
 {% endblock %}
