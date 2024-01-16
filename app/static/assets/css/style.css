@@ -144,7 +144,7 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
 }
 
 /* 1°Click on your Favorite Language */
-#content > div.content.container > div.container.text-center.mb-1 > h3,
+#content > div.content.container > div.text-center.mb-1 > h3,
 #resultMemo > h3:nth-child(2), #resultMemo > h3,
 .conversations-details {
     color: #AEFAFC;

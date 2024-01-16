@@ -1,14 +1,6 @@
 import os
-import secrets
-import warnings
-import openai
-
-from dotenv import load_dotenv, find_dotenv
-from flask_bootstrap import Bootstrap
-from flask_login import LoginManager
 
 from app import create_app
-from app.models.memory import User
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 
 from app.routes.home_process import (home as home_conversations, home_answer as answer_home,
@@ -29,33 +21,7 @@ from app.routes.convers_functions import (select_conversation as conversation_se
                                           get_conversation as access_conversation,
                                           delete_conversation as conversation_deleted)
 
-warnings.filterwarnings('ignore')
-
-_ = load_dotenv(find_dotenv())  # read local .env file
-
 app = create_app()
-Bootstrap(app)
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-try:
-    openai_api_key = os.environ['OPENAI_API_KEY']
-except KeyError:
-    raise ValueError("OPENAI_API_KEY environment variable is not set.")
-
-# Set the OpenAI API key
-openai.api_key = openai_api_key
-
-# Generate a random secret key
-secret_key = secrets.token_hex(19)
-# Set it as the Flask application's secret key
-app.secret_key = secret_key
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#

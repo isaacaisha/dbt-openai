@@ -1,6 +1,12 @@
 import os
+import secrets
+import warnings
 
+import openai
+from dotenv import load_dotenv, find_dotenv
 from flask import Flask
+from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
 
 from .databases.database import database_bp
 from .forms.app_forms import app_form_bp
@@ -14,8 +20,34 @@ from .routes.convers_functions import conversation_functionality_bp
 from .routes.llm_conversation import llm_conversation_bp
 
 
+warnings.filterwarnings('ignore')
+
+_ = load_dotenv(find_dotenv())  # read local .env file
+
+
 def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static')
+    Bootstrap(app)
+
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
+
+    try:
+        openai_api_key = os.environ['OPENAI_API_KEY']
+    except KeyError:
+        raise ValueError("OPENAI_API_KEY environment variable is not set.")
+
+    # Set the OpenAI API key
+    openai.api_key = openai_api_key
+
+    # Generate a random secret key
+    secret_key = secrets.token_hex(19)
+    # Set it as the Flask application's secret key
+    app.secret_key = secret_key
 
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         f"postgresql://{os.environ['user']}:{os.environ['password']}@"
