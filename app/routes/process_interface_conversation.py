@@ -193,12 +193,13 @@ def show_story():
             owner_id = current_user.id
 
             # Modify your query to filter by owner_id
-            summary_conversation = Memory.query.filter_by(owner_id=owner_id).first()
             memory_load = Memory.query.filter_by(owner_id=owner_id).all()
+
+            summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
 
             memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n'
             memory_buffer += '\n'.join(
-                [f'{memory.user_name}: {memory.user_message}\nLLM Response: {memory.llm_response}' for memory in
+                [f'{memory.user_name}: {memory.user_message}\n·SìįSí· Dbt: {memory.llm_response}' for memory in
                  memory_load])
 
             print(f'memory_buffer_story:\n{memory_buffer}\n')
@@ -214,7 +215,7 @@ def show_story():
                                    current_user=current_user,
                                    date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
-        flash(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
-        print(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        flash(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭')
+        print(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭')
         return render_template('error.html', error_message=str(err), current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))

@@ -39,7 +39,16 @@
         <hr class="mb-3" style="color:red;">
 
         <h3>Memory Load</h3>
-        <textarea class="textarea-memory mb-3" style="color:purple;">{{ memory_load }}</textarea>
+        <textarea class="textarea-memory mb-3" style="color:purple;">
+        {% if memory_load %}
+            {% for memory in memory_load %}
+                {{ memory.user_name }}: {{ memory.user_message }}
+                ·SìįSí· Response: {{ memory.llm_response }}
+            {% endfor %}
+        {% else %}
+            No memory load data available.
+        {% endif %}
+        </textarea>
 
         <hr class="mb-3" style="color:red;">
 
