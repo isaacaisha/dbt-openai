@@ -116,7 +116,9 @@
                         {{ error_message }}
                     </div>
                 {% endif %}
+
                 <div class="text-center">
+                    <hr class="mb-3" style="color:green;">
                     <div class="mb-3 alert error" id="error-message" style="display: none;"></div>
                     <div>
                         <button id="start-button" type="button" class="btn mb-3"
@@ -125,7 +127,8 @@
                         </button>
                     </div>
 
-                    <hr class="mb-3" style="color:green;">
+                    <hr class="mb-5" style="color:green;">
+                    <hr class="mb-3" style="color:red;">
 
                     <!-- Add a button for speech recognition -->
                     <button id="speechRecognitionButton" type="button" class="btn mb-3"
@@ -134,7 +137,7 @@
                     </button>
                 </div>
 
-                <hr class="mb-3" style="color:red;">
+                <hr class="mb-5" style="color:red;">
 
                 <div id="textarea-container" style="display: none;">
                     <label for="userInput" class="label_ text-center">Start Writing to Test:</label>
@@ -142,6 +145,8 @@
                               placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
                     <hr style="display: block; color:yellow">
                 </div>
+
+                <hr class="" style="color:yellow">
 
                 <div class="text-center">
                     <button id="generateButton" class="mb-3 btn generate-text" type="submit"
@@ -157,27 +162,21 @@
                 <hr class="mb-3" style="color:green">
                 <label>:…·SìįSí·…(Dbt)…·SìįSí·…:</label>
                 <textarea id="generatedText" class="mb-5 form-control result" style="display: none;"></textarea>
+
+                <!-- Add a button for speech synthesis playback -->
+                <div class="mb-3 text-center">
+                    <span>(PlayBack)</span><br>
+                    <button id="playbackButton" type="button" class="btn btn-outline-info" style="border:0.1rem solid">
+                        ¡!¡ ·SìįSí·Dbt·SìįSí· ¡!¡
+                    </button>
+                    <audio id="response-audio" controls class="submit btn btn-outline-info" style="display:none;">
+                        <source src="{{ url_for('home_audio') }}" type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
             </div>
 
             <hr class="mb-5" style="color:green">
-            <hr class="mb-3" style="color:red">
-
-            <!-- Add a button for speech synthesis playback -->
-            <div class="mb-3 text-center">
-                <span>(PlayBack)</span><br>
-                <button id="playbackButton" type="button" class="btn btn-outline-info" style="border:0.1rem solid">
-                    ¡!¡ ·SìįSí·Dbt·SìįSí· ¡!¡
-                </button>
-            </div>
-
-            <div style="display:none;">
-                <audio id="response-audio" controls class="submit btn btn-outline-info">
-                    <source src="{{ url_for('home_audio') }}" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-
-            <hr class="mb-5" style="color:red">
 
         </div>
 

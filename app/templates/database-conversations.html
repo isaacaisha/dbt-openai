@@ -41,7 +41,7 @@
     <!-- Add a button to trigger the display of serialized_histories -->
     <div class="text-center">
         <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistoriesJson()">
-            Show Database Conversations JSON
+            Show Database Conversations
         </button>
     </div>
 
@@ -57,9 +57,14 @@
         </div>
 
         {% for conversation in serialized_conversations %}
-            <pre style="color:purple;">
-                {{ conversation|tojson(indent=4)|safe }}
-            </pre>
+            <!--{{ conversation|tojson(indent=4)|safe }}-->
+            <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:purple;">
+                "conversation_id": "{{ conversation.id }}"
+                "{{ conversation.user_name }}": "{{ conversation.user_message }}"
+                "·SìįSí· Dbt": "{{ conversation.llm_response }}"
+                "conversation_summary": "{{ conversation.conversations_summary }}"
+                "created_at": "{{ conversation.created_at }}"
+            </textarea>
         {% endfor %}
 
     </div>

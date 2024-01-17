@@ -72,7 +72,7 @@
         <form id="prompt-form" method="POST">
 
             {{ writing_text_form.csrf_token }}
-    <!--
+
             {% if not current_user.is_authenticated %}
                 <div class="alert alert-info text-center">
                     <div>Not Authenticated. Reload & Retry... .</div>
@@ -80,7 +80,7 @@
                     <div>¡!¡ 😭 ¡!¡</div>
                 </div>
             {% endif %}
-    -->
+
             {% for message in get_flashed_messages() %}
                 <div class="alert alert-info text-center">
                     {{ message }}

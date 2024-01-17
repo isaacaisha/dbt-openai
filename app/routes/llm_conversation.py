@@ -56,6 +56,7 @@ def get_conversations_jsonify():
             'user_name': conversation_.user_name,
             'user_message': conversation_.user_message,
             'llm_response': conversation_.llm_response,
+            "conversations_summary": conversation_.conversations_summary,
             'created_at': conversation_.created_at.strftime("%a %d %B %Y"),
         }
 
