@@ -66,17 +66,17 @@
         </ul>
     </div>
 
-    <hr class="mb-3" style="color:yellow;">
+    <hr class="mb-3" style="color:green;">
 
     <!-- Add a button to trigger the display of serialized_histories -->
     <div class="text-center">
-        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistoriesJson()">
+        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
             Show Conversations
         </button>
     </div>
 
     <!-- Add a div to contain the serialized histories -->
-    <div id="historiesContainerJson" class="mb-3" style="display: none;">
+    <div id="historiesContainer" class="mb-3" style="display: none;">
         {% for conversation in serialized_conversations %}
             <!--{{ conversation|tojson(indent=4)|safe }}-->
             <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:purple;">
@@ -89,17 +89,43 @@
         {% endfor %}
     </div>
 
+    <hr class="mb-5" style="color:green;">
+    <hr class="mb-3" style="color:yellow;">
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <div class="text-center">
+        <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
+            Show Database Conversations json
+        </button>
+    </div>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesContainerJson" class="mb-3" style="display: none;">
+        {% for conversation in serialized_conversations %}
+            <pre style="color:purple;">
+                {{ conversation|tojson(indent=4)|safe }}
+            </pre>
+        {% endfor %}
+    </div>
+
+    <hr class="mb-5" style="color:yellow;">
     <hr class="mb-3" style="color:red;">
 
     <div class="text-center">
         <a href="{{ url_for('conversation_interface') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
     </div>
 
-    <hr class="mb-5" style="color:green;">
+    <hr class="mb-5" style="color:red;">
 
 </div>
 
 <script>
+    // Function to toggle histories container
+    function toggleHistories() {
+        var container = document.getElementById('historiesContainer');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
     // Function to toggle histories JSON container
     function toggleHistoriesJson() {
         var container = document.getElementById('historiesContainerJson');
