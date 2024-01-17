@@ -23,7 +23,7 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="content">
+<div class="content container">
 
   <!-- Page Header -->
 
@@ -39,6 +39,7 @@
         <hr class="mb-3" style="color:green;">
         <h3 class="text-center" style="margin-top:0;">Conversation Details</h3>
         <hr class="mb-5" style="color:green;">
+        <hr class="mb-3" style="color:yellow;">
                     <!--
                     <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
                     <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
@@ -54,13 +55,14 @@
 
     </div>
 
-    <div class="mb-5 text-center">
+    <div class="mb-3 text-center">
         <a href="{{ url_for('select_conversation') }}" style="color:#fff;">
             Click to Go Back to Conversation Selection
         </a>
     </div>
 
-    <hr class="mb-3" style="color:yellow;">
+    <hr class="mb-5" style="color:yellow;">
+    <hr class="mb-3" style="color:red;">
 
     <div class="text-center">
         <a href="{{ url_for('conversation_interface') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
