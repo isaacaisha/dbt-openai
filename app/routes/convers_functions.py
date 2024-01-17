@@ -7,6 +7,8 @@ from app.models.memory import Memory, db
 
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
+error_message = 'Not Authenticated RELOAD & please try again or LOGIN ¡!¡😭¡!¡'
+
 
 @conversation_functionality_bp.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
@@ -31,7 +33,8 @@ def select_conversation():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
+        return render_template('conversation-by-id.html', error_message=error_message,
+                               current_user=current_user, select_conversation_form=select_conversation_form,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -60,15 +63,21 @@ def get_conversation(conversation_id):
                                    conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
+        select_conversation_form = ConversationIdForm()
+        return render_template('conversation-by-id.html', current_user=current_user,
+                               select_conversation_form=select_conversation_form, error_message=error_message,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_functionality_bp.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    global error_message
     delete_conversation_form = DeleteForm()
 
     try:
+        if not current_user.is_authenticated:
+            error_message = 'Not Authenticated RELOAD & please try again or LOGIN ¡!¡😭¡!¡'
+
         if delete_conversation_form.validate_on_submit():
             print(f"Form data: {delete_conversation_form.data}")
 
@@ -98,9 +107,10 @@ def delete_conversation():
                                        conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
         return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
-                               current_user=current_user, delete_conversation_form=delete_conversation_form, )
+                               current_user=current_user, delete_conversation_form=delete_conversation_form)
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
+        return render_template('conversation-delete.html', error_message=error_message,
+                               current_user=current_user, delete_conversation_form=delete_conversation_form,
                                date=datetime.now().strftime("%a %d %B %Y"))

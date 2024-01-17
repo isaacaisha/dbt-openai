@@ -26,13 +26,11 @@
 
   <!-- Page Header -->
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p class="text-center" style="color:green">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    {% if error_message %}
+    <div class="alert alert-info">
+        {{ error_message }}
+    </div>
+    {% endif %}
 
     <div class="conversations-details">
 

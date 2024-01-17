@@ -25,7 +25,6 @@ memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
     writing_text_form = TextAreaForm()
-    error_message = None
     answer = None
 
     try:
@@ -45,13 +44,15 @@ def conversation_interface():
         memory_load = memory.load_memory_variables({})
 
         return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                               answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
-                               current_user=current_user, memory_buffer=memory_buffer, memory_load=memory_load)
+                               answer=answer, date=datetime.now().strftime("%a %d %B %Y"), current_user=current_user,
+                               memory_buffer=memory_buffer, memory_load=memory_load)
     except Exception as err:
         flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
         print(f"😭 Unexpected {err=}, {type(err)=} 😭")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+        error_message = str(err) + 'Try Again 😭r LogIn ¡!¡'
+        return render_template('conversation-interface.html', writing_text_form=writing_text_form,
+                               answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
+                               current_user=current_user)
 
 
 def generate_conversation_context(user_input, user_conversations):
@@ -130,8 +131,10 @@ def interface_answer():
             "answer_text": assistant_reply,
             "answer_audio_path": audio_file_path,
         })
-    # else:
-    #     flash('Try Again 😭r LogIn ¡!¡'), 500
+    else:
+        error_message = 'Try Again 😭r LogIn ¡!¡'
+        return render_template('conversation-interface.html', current_user=current_user,
+                               error_message=error_message, date=datetime.now().strftime("%a %d %B %Y")), 500
 
 
 @interface_conversation_bp.route('/save-to-database', methods=['POST'])
@@ -188,34 +191,27 @@ def interface_serve_audio():
 
 @interface_conversation_bp.route('/show-history')
 def show_story():
-    try:
-        if current_user.is_authenticated:
-            owner_id = current_user.id
+    if current_user.is_authenticated:
+        owner_id = current_user.id
 
-            # Modify your query to filter by owner_id
-            memory_load = Memory.query.filter_by(owner_id=owner_id).all()
+        # Modify your query to filter by owner_id
+        memory_load = Memory.query.filter_by(owner_id=owner_id).all()
 
-            summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
+        summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
 
-            memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n'
-            memory_buffer += '\n'.join(
-                [f'{memory.user_name}: {memory.user_message}\n·SìįSí· Dbt: {memory.llm_response}' for memory in
-                 memory_load])
+        memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n'
+        memory_buffer += '\n'.join(
+            [f'{memory.user_name}: {memory.user_message}\n·SìįSí· Dbt: {memory.llm_response}' for memory in
+             memory_load])
 
-            print(f'memory_buffer_story:\n{memory_buffer}\n')
-            print(f'memory_load_story:\n{memory_load}\n')
-            print(f'summary_conversation_story:\n{summary_conversation}\n')
-
-            return render_template('show-history.html', current_user=current_user, owner_id=owner_id,
-                                   memory_load=memory_load, memory_buffer=memory_buffer,
-                                   summary_conversation=summary_conversation,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-        else:
-            return render_template('authentication-error.html', error_message='User not authenticated',
-                                   current_user=current_user,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-    except Exception as err:
-        flash(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭')
-        print(f'😭 Unexpected: {str(err)}, \ntype: {type(err)} 😭')
-        return render_template('error.html', error_message=str(err), current_user=current_user,
+        print(f'memory_buffer_story:\n{memory_buffer}\n')
+        print(f'memory_load_story:\n{memory_load}\n')
+        print(f'summary_conversation_story:\n{summary_conversation}\n')
+        return render_template('show-history.html', current_user=current_user, owner_id=owner_id,
+                               memory_load=memory_load, memory_buffer=memory_buffer,
+                               summary_conversation=summary_conversation,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        return render_template('authentication-error.html', error_message='User not authenticated',
+                               current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))

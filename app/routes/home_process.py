@@ -42,8 +42,10 @@ def home():
                                date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        error_message = str(err)
         print(f"😭 Unexpected {err=}, {type(err)=} 😭")
-        return render_template('error.html', error_message=str(err), current_user=current_user,
+        return render_template('index.html', error_message=error_message, home_form=home_form,
+                               current_user=current_user, user_input=user_input, response=response,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 

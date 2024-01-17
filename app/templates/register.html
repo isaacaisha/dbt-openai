@@ -37,13 +37,11 @@
             <div class="row">
                 <div class="col-lg-8 col-md-10 mx-auto mb-3">
 
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            {% for message in messages %}
-                                <p class="text-center" style="color:#17a2b8;">{{ message }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
+                    {% if error_message %}
+                        <div class="alert alert-warning">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
 
                     <form method="POST" action="{{ url_for('register') }}" accept-charset="UTF-8">
                         <!-- Include CSRF token -->

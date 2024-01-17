@@ -6,7 +6,7 @@ from datetime import datetime
 from app.forms.app_forms import LoginForm, RegisterForm
 from app.models.memory import User, db
 
-auth_bp = Blueprint('auth', __name__, template_folder='templates')
+auth_bp = Blueprint('auth', __name__)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -19,14 +19,17 @@ def register():
 
             # Check if the passwords match
             if register_form.password.data != register_form.confirm_password.data:
-                flash("Passwords do not match. Please enter matching passwords 😭.")
-                return redirect(url_for('register'))
+                error_message = "Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡"
+                return render_template("register.html", register_form=register_form,
+                                       current_user=current_user, error_message=error_message,
+                                       date=datetime.now().strftime("%a %d %B %Y"))
 
             # If user's email already exists
             if User.query.filter_by(email=register_form.email.data.lower().strip()).first():
                 # Send a flash message
-                flash("You've already signed up with that email, log in instead! 🤣.")
-                return redirect(url_for('login'))
+                error_message = "You've already signed up with that email, log in instead! ¡!!🤣¡!¡"
+                return render_template("login.html", current_user=current_user, login_form=LoginForm(),
+                                       error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
 
             hash_and_salted_password = generate_password_hash(
                 register_form.password.data.lower().strip(),
@@ -54,7 +57,10 @@ def register():
     except Exception as err:
         flash(f"RETRY ¡!¡ Unexpected {err=}, {type(err)=}")
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('register'))
+        error_message = str(err)
+        return render_template("register.html", error_message=error_message,
+                               register_form=register_form, current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -73,19 +79,20 @@ def login():
 
             # Email doesn't exist
             if not user:
-                flash("That email does not exist, please try again 😭 ¡!¡")
-                return redirect(url_for('login'))
+                error_message = "That email does not exist, please try again ¡!¡😭¡!¡"
+                return render_template("login.html", login_form=login_form, current_user=current_user,
+                                       error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
             # Password incorrect
             elif not check_password_hash(user.password, password):
-                flash('Password incorrect, please try again 😭 ¡!¡')
-                return redirect(url_for('login'))
+                error_message = 'Password incorrect, please try again ¡!¡😭¡!¡'
+                return render_template("login.html", login_form=login_form, current_user=current_user,
+                                       error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
             # Email exists and password correct
             else:
                 login_user(user, remember=remember_me)
 
                 # Redirect to the desired page after login
-                next_page = request.args.get('next') or url_for('conversation_interface')
-                return redirect(next_page)
+                return redirect(url_for('conversation_interface'))
 
         return render_template("login.html", login_form=login_form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -93,7 +100,9 @@ def login():
     except Exception as err:
         flash(f"RETRY ¡!¡ Unexpected {err=}, {type(err)=}")
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return redirect(url_for('login'))
+        error_message = str(err)
+        return render_template("login.html", login_form=login_form, current_user=current_user,
+                               error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @auth_bp.route('/logout')

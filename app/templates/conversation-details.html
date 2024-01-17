@@ -25,15 +25,12 @@
 
 <div class="content container">
 
-  <!-- Page Header -->
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p class="text-center" style="color:crimson">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <!-- Page Header -->
+    {% if error_message %}
+    <div class="alert alert-info">
+        {{ error_message }}
+    </div>
+    {% endif %}
 
     <div class="container conversations-details">
         <hr class="mb-3" style="color:green;">
