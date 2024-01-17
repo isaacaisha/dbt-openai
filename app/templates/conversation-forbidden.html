@@ -28,28 +28,30 @@
 
 <div class="content container">
     <div class="text-center mb-3">
-        <hr class="mb-3" style="color:green;">
+        <hr class="mb-3" style="color:red;">
         <h3 style="color:crimson; margin-top:0;">Sorry Forbidden</h3>
-        <hr class="mb-5" style="color:green;">
-        <h3 style="color:#9ED2C6;">
+        <hr class="mb-5" style="color:red;">
+        <hr class="mb-3" style="color:yellow;">
+        <h3 style="color:#9ED2C6; margin-top:0;">
             Conversation with:<br>ID 🔥<span style="color:crimson;">{{ conversation_id }}</span>🔥<br>
             Doesn't belong to you<br>¡!¡ 😝 ¡!¡
         </h3>
     </div>
 
-    <div class="mb-5 text-center">
+    <div class="mb-3 text-center">
         <a href="{{ url_for('select_conversation') }}" style="color:#fff;">
             Click to Go Back to Conversation Selection
         </a>
     </div>
 
-    <hr class="mb-3" style="color:yellow;">
+    <hr class="mb-5" style="color:yellow;">
+    <hr class="mb-3" style="color:green;">
 
     <div class="text-center">
         <a href="{{ url_for('conversation_interface') }}" class="btn text-center btn-story mb-3" style="font-size:1rem;">Back Home -¡!¡-</a>
     </div>
 
-    <hr class="mb-5" style="color:red;">
+    <hr class="mb-5" style="color:green;">
 </div>
 
 {% endautoescape %}
