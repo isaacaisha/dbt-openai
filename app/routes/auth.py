@@ -29,7 +29,7 @@ def register():
                 return redirect(url_for('login'))
 
             hash_and_salted_password = generate_password_hash(
-                register_form.password.data,
+                register_form.password.data.lower().strip(),
                 method='pbkdf2:sha256',
                 salt_length=8
             )
@@ -66,7 +66,7 @@ def login():
             print(f"Form data: {login_form.data}")
 
             email = request.form.get('email')
-            password = request.form.get('password').strip()
+            password = request.form.get('password').lower().strip()
             remember_me = login_form.remember_me.data
 
             user = User.query.filter_by(email=email.lower().strip()).first()
