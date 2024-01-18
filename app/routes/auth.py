@@ -28,7 +28,7 @@ def register():
             return redirect(url_for('login'))
 
         hash_and_salted_password = generate_password_hash(
-            register_form.password.data,
+            register_form.password.data.lower().strip(),
             method='pbkdf2:sha256',
             salt_length=8
         )
@@ -36,7 +36,7 @@ def register():
         new_user = User()
         new_user.email = request.form['email'].lower().strip()
         new_user.name = request.form['name']
-        new_user.password = hash_and_salted_password.lower().strip()
+        new_user.password = hash_and_salted_password
 
         db.session.add(new_user)
         db.session.commit()
