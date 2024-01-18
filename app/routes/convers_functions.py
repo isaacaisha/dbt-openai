@@ -94,12 +94,16 @@ def delete_conversation():
                                        conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
             else:
+                all_deleted_conversation.append(conversation_to_delete.user_name +
+                                                conversation_to_delete.user_message +
+                                                conversation_to_delete.llm_response +
+                                                conversation_to_delete.conversations_summary
+                                                )
                 # Delete the conversation
                 db.session.delete(conversation_to_delete)  # Use db.session.delete instead of db.delete
                 db.session.commit()
                 flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
                 deleted_conversation = f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎'
-                all_deleted_conversation.append(deleted_conversation)
                 print(f'Deleted_conversation: {deleted_conversation}\n')
                 print(f'All_deleted_conversation: {all_deleted_conversation}\n')
                 return render_template('conversation-delete.html',
