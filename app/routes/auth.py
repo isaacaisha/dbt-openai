@@ -13,88 +13,74 @@ auth_bp = Blueprint('auth', __name__)
 def register():
     register_form = RegisterForm()
 
-    try:
-        if register_form.validate_on_submit():
-            print(f"Form data: {register_form.data}")
+    if register_form.validate_on_submit():
+        print(f"Form data: {register_form.data}")
 
-            # Check if the passwords match
-            if register_form.password.data != register_form.confirm_password.data:
-                flash("Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡")
-                return redirect(url_for('register'))
+        # Check if the passwords match
+        if register_form.password.data != register_form.confirm_password.data:
+            flash("Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡")
+            return redirect(url_for('register'))
 
-            # If user's email already exists
-            if User.query.filter_by(email=register_form.email.data).first():
-                # Send a flash message
-                flash("You've already signed up with that email, log in instead! ¡!!🤣¡!¡")
-                return redirect(url_for('login'))
-
-            hash_and_salted_password = generate_password_hash(
-                register_form.password.data.lower().strip(),
-                method='pbkdf2:sha256',
-                salt_length=8
-            )
-
-            new_user = User()
-            new_user.email = register_form.email.data.lower().strip()
-            new_user.name = register_form.name.data  # The name is obtained directly from the form
-            new_user.password = hash_and_salted_password
-
-            db.session.add(new_user)
-            db.session.commit()
-            db.session.refresh(new_user)
-
-            # Log in and authenticate the user after adding details to the database.
-            login_user(new_user)
+        # If user's email already exists
+        if User.query.filter_by(email=register_form.email.data).first():
+            # Send a flash message
+            flash("You've already signed up with that email, log in instead! ¡!!🤣¡!¡")
             return redirect(url_for('login'))
 
-        else:
-            return render_template("register.html", register_form=register_form,
-                                   current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
+        hash_and_salted_password = generate_password_hash(
+            register_form.password.data.lower().strip(),
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
 
-    except Exception as err:
-        # Rollback the changes in case of an error
-        db.session.rollback()
-        print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
-        flash(f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}")
-        redirect(url_for('register'))
+        new_user = User()
+        new_user.email = register_form.email.data.lower().strip()
+        new_user.name = register_form.name.data  # The name is obtained directly from the form
+        new_user.password = hash_and_salted_password
+
+        db.session.add(new_user)
+        db.session.commit()
+        db.session.refresh(new_user)
+
+        # Log in and authenticate the user after adding details to the database.
+        login_user(new_user)
+
+        return redirect(url_for('login'))
+    else:
+        return render_template("register.html", register_form=register_form,
+                               current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm()
 
-    try:
-        if login_form.validate_on_submit():
-            print(f"Form data: {login_form.data}")
+    if login_form.validate_on_submit():
+        print(f"Form data: {login_form.data}")
 
-            email = request.form.get('email').lower().strip()
-            password = request.form.get('password').lower().strip()
-            remember_me = login_form.remember_me.data
+        email = request.form.get('email').lower().strip()
+        password = request.form.get('password').lower().strip()
+        remember_me = login_form.remember_me.data
 
-            user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
-            # Email doesn't exist
-            if not user:
-                flash("That email does not exist, please try again ¡!¡😭¡!¡")
-                return redirect(url_for('login'))
-            # Password incorrect
-            elif not check_password_hash(user.password, password):
-                flash('Password incorrect, please try again ¡!¡😭¡!¡')
-                return redirect(url_for('login'))
-            # Email exists and password correct
-            else:
-                login_user(user, remember=remember_me)
+        # Email doesn't exist
+        if not user:
+            flash("That email does not exist, please try again ¡!¡😭¡!¡")
+            return redirect(url_for('login'))
 
-                # Redirect to the desired page after login
-                return redirect(url_for('conversation_interface'))
+        # Password incorrect
+        elif not check_password_hash(user.password, password):
+            flash('Password incorrect, please try again ¡!¡😭¡!¡')
+            return redirect(url_for('login'))
 
-        return render_template("login.html", login_form=login_form, current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
-        flash(f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}")
-        return redirect(url_for('login'))
+        # Email exists and password correct
+        else:
+            login_user(user, remember=remember_me)
+            # Redirect to the desired page after login
+            return redirect(url_for('conversation_interface'))
+    return render_template("login.html", login_form=login_form, current_user=current_user,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @auth_bp.route('/logout')
