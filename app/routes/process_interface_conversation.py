@@ -61,7 +61,7 @@ def generate_conversation_context(user_input, user_conversations):
     conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[-3:])}]"
+    qdocs = f"[{','.join(conversation_strings[-9:])}]"
 
     # Convert 'created_at' values to string
     created_at_list = [str(memory.created_at) for memory in user_conversations]
@@ -133,8 +133,10 @@ def interface_answer():
             "answer_audio_path": audio_file_path,
         })
     else:
-        flash('Try Again 😭r LogIn ¡!¡')
-        return redirect(url_for('conversation_interface')), 401
+        error_message = 'RETRY 😭r LogIn ¡!¡'
+        return render_template('conversation-interface.html', current_user=current_user,
+                               writing_text_form=TextAreaForm(), error_message=error_message,
+                               date=datetime.now().strftime("%a %d %B %Y")), 401
 
 
 @interface_conversation_bp.route('/save-to-database', methods=['POST'])

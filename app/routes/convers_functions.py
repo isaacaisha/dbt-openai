@@ -7,7 +7,7 @@ from app.models.memory import Memory, db
 
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
-error_message = 'RELOAD or LOGIN ¡!¡😭¡!¡'
+error_message = 'RELOAD 😭r LogIn ¡!¡'
 
 
 @conversation_functionality_bp.route('/select-conversation-id', methods=['GET', 'POST'])
