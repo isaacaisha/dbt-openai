@@ -43,6 +43,12 @@
                         </div>
                     {% endfor %}
 
+                    {% if error_message %}
+                        <div class="alert alert-warning text-center">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
+
                     <form method="POST" action="{{ url_for('register') }}" accept-charset="UTF-8">
                         <!-- Include CSRF token -->
                         {{ register_form.csrf_token }}

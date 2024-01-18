@@ -44,6 +44,12 @@
                         </div>
                     {% endfor %}
 
+                    {% if error_message %}
+                        <div class="alert alert-warning text-center">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
+
                     <form method="POST" action="{{ url_for('login') }}">
                         <!-- Include CSRF token -->
                         {{ login_form.csrf_token }}

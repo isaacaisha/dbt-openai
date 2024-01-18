@@ -28,27 +28,25 @@ def register():
             return redirect(url_for('login'))
 
         hash_and_salted_password = generate_password_hash(
-            register_form.password.data.lower().strip(),
+            register_form.password.data,
             method='pbkdf2:sha256',
             salt_length=8
         )
 
         new_user = User()
-        new_user.email = register_form.email.data.lower().strip()
-        new_user.name = register_form.name.data  # The name is obtained directly from the form
-        new_user.password = hash_and_salted_password
+        new_user.email = request.form['email'].lower().strip()
+        new_user.name = request.form['name']
+        new_user.password = hash_and_salted_password.lower().strip()
 
         db.session.add(new_user)
         db.session.commit()
-        db.session.refresh(new_user)
+        #db.session.refresh(new_user)
 
         # Log in and authenticate the user after adding details to the database.
         login_user(new_user)
 
         return redirect(url_for('login'))
 
-    # Rollback the changes in case of an error
-    db.session.rollback()
     return render_template("register.html", register_form=register_form,
                            current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
 
