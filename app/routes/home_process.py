@@ -18,8 +18,8 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 @home_conversation_bp.route("/", methods=["GET", "POST"])
 def home():
     home_form = TextAreaFormIndex()
-    response = None
     user_input = None
+    response = None
 
     try:
         if request.method == "POST" and home_form.validate_on_submit():

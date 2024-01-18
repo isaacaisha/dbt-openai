@@ -1,7 +1,7 @@
 import json
 import pytz
 
-from flask import Blueprint, render_template, flash, request, send_file, jsonify
+from flask import Blueprint, render_template, flash, request, send_file, jsonify, redirect, url_for
 from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
@@ -25,6 +25,7 @@ memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
     writing_text_form = TextAreaForm()
+    user_input = None
     answer = None
 
     try:
@@ -32,8 +33,7 @@ def conversation_interface():
             user_input = request.form['writing_text']
 
             # Use the LLM to generate a response based on user input
-            response = conversation.predict(input=user_input)
-            answer = response['output']
+            answer = conversation.predict(input=user_input)
 
             print(f'User ID:{current_user.id} 😎')
             print(f'User Name: {current_user.name} 😝')
@@ -44,15 +44,16 @@ def conversation_interface():
         memory_load = memory.load_memory_variables({})
 
         return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                               answer=answer, date=datetime.now().strftime("%a %d %B %Y"), current_user=current_user,
-                               memory_buffer=memory_buffer, memory_load=memory_load)
+                               user_input=user_input, answer=answer, current_user=current_user,
+                               memory_buffer=memory_buffer, memory_load=memory_load,
+                               date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
         print(f"😭 Unexpected {err=}, {type(err)=} 😭")
         error_message = str(err) + 'Try Again 😭r LogIn ¡!¡'
         return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                               answer=answer, date=datetime.now().strftime("%a %d %B %Y"), error_message=error_message,
-                               current_user=current_user)
+                               user_input=user_input, answer=answer, current_user=current_user,
+                               error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 def generate_conversation_context(user_input, user_conversations):
@@ -131,6 +132,9 @@ def interface_answer():
             "answer_text": assistant_reply,
             "answer_audio_path": audio_file_path,
         })
+    else:
+        flash('Try Again 😭r LogIn ¡!¡')
+        return redirect(url_for('conversation_interface')), 401
 
 
 @interface_conversation_bp.route('/save-to-database', methods=['POST'])
