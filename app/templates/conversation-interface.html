@@ -83,7 +83,7 @@
 
             {% for message in get_flashed_messages() %}
                 <div class="alert alert-info text-center">
-                    {{ message }}
+                    {{ message }} {{ error_message }}
                 </div>
             {% endfor %}
 
@@ -135,7 +135,7 @@
             <label>:…·SìįSí·…(Dbt)…·SìįSí·…:</label>
             <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
         </div>
-        {% if generatedText %}
+        {% if answer %}
             <!-- Display the text response -->
             <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
         {% endif %}
@@ -148,7 +148,7 @@
             </button>
         </div>
 
-        {% if generatedText %}
+        {% if answer %}
             <!-- Play the audio response -->
             <audio id="response-audio" controls class="submit btn btn-outline-info">
                 <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">

@@ -19,17 +19,14 @@ def register():
 
             # Check if the passwords match
             if register_form.password.data != register_form.confirm_password.data:
-                error_message = "Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡"
-                return render_template("register.html", register_form=register_form,
-                                       current_user=current_user, error_message=error_message,
-                                       date=datetime.now().strftime("%a %d %B %Y"))
+                flash("Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡")
+                return redirect(url_for('register'))
 
             # If user's email already exists
             if User.query.filter_by(email=register_form.email.data.lower().strip()).first():
                 # Send a flash message
-                error_message = "You've already signed up with that email, log in instead! ¡!!🤣¡!¡"
-                return render_template("login.html", current_user=current_user, login_form=LoginForm(),
-                                       error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
+                flash("You've already signed up with that email, log in instead! ¡!!🤣¡!¡")
+                return redirect(url_for('login'))
 
             hash_and_salted_password = generate_password_hash(
                 register_form.password.data.lower().strip(),
@@ -55,9 +52,8 @@ def register():
                                    current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RETRY ¡!¡ Unexpected {err=}, {type(err)=}")
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        error_message = str(err)
+        print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
+        error_message = f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}"
         return render_template("register.html", error_message=error_message,
                                register_form=register_form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -79,14 +75,12 @@ def login():
 
             # Email doesn't exist
             if not user:
-                error_message = "That email does not exist, please try again ¡!¡😭¡!¡"
-                return render_template("login.html", login_form=login_form, current_user=current_user,
-                                       error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
+                flash("That email does not exist, please try again ¡!¡😭¡!¡")
+                return redirect(url_for('login'))
             # Password incorrect
             elif not check_password_hash(user.password, password):
-                error_message = 'Password incorrect, please try again ¡!¡😭¡!¡'
-                return render_template("login.html", login_form=login_form, current_user=current_user,
-                                       error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
+                flash('Password incorrect, please try again ¡!¡😭¡!¡')
+                return redirect(url_for('login'))
             # Email exists and password correct
             else:
                 login_user(user, remember=remember_me)
@@ -98,9 +92,8 @@ def login():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
-        flash(f"RETRY ¡!¡ Unexpected {err=}, {type(err)=}")
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        error_message = str(err)
+        print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
+        error_message = f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}"
         return render_template("login.html", login_form=login_form, current_user=current_user,
                                error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
 

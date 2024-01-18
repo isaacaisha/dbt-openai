@@ -131,10 +131,6 @@ def interface_answer():
             "answer_text": assistant_reply,
             "answer_audio_path": audio_file_path,
         })
-    else:
-        error_message = 'Try Again 😭r LogIn ¡!¡'
-        return render_template('conversation-interface.html', current_user=current_user,
-                               error_message=error_message, date=datetime.now().strftime("%a %d %B %Y")), 500
 
 
 @interface_conversation_bp.route('/save-to-database', methods=['POST'])
