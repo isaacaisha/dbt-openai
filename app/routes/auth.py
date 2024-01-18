@@ -17,7 +17,7 @@ def register():
         print(f"Form data: {register_form.data}")
 
         # Check if the passwords match
-        if register_form.password.data != register_form.confirm_password.data:
+        if not register_form.password.data == register_form.confirm_password.data:
             flash("Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡")
             return redirect(url_for('register'))
 
@@ -46,9 +46,11 @@ def register():
         login_user(new_user)
 
         return redirect(url_for('login'))
-    else:
-        return render_template("register.html", register_form=register_form,
-                               current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
+
+    # Rollback the changes in case of an error
+    db.session.rollback()
+    return render_template("register.html", register_form=register_form,
+                           current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -66,7 +68,7 @@ def login():
 
         # Email doesn't exist
         if not user:
-            flash("That email does not exist, please try again ¡!¡😭¡!¡")
+            flash("That email does not exist, try again ¡!¡😭¡!¡")
             return redirect(url_for('login'))
 
         # Password incorrect

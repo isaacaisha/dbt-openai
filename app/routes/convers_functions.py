@@ -71,6 +71,7 @@ def get_conversation(conversation_id):
 @conversation_functionality_bp.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     delete_conversation_form = DeleteForm()
+    all_deleted_conversation = []
 
     try:
         if delete_conversation_form.validate_on_submit():
@@ -98,7 +99,9 @@ def delete_conversation():
                 db.session.commit()
                 flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
                 deleted_conversation = f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎'
-                print(deleted_conversation)
+                all_deleted_conversation.append(deleted_conversation)
+                print(f'Deleted_conversation: {deleted_conversation}\n')
+                print(f'All_deleted_conversation: {all_deleted_conversation}\n')
                 return render_template('conversation-delete.html',
                                        current_user=current_user, delete_conversation_form=delete_conversation_form,
                                        conversation_id=conversation_id, error_message=deleted_conversation,
