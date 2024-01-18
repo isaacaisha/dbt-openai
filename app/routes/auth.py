@@ -53,10 +53,8 @@ def register():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
-        error_message = f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}"
-        return render_template("register.html", error_message=error_message,
-                               register_form=register_form, current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+        flash(f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}")
+        redirect(url_for('register'))
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -93,9 +91,8 @@ def login():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
-        error_message = f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}"
-        return render_template("login.html", login_form=login_form, current_user=current_user,
-                               error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
+        flash(f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}")
+        return redirect(url_for('login'))
 
 
 @auth_bp.route('/logout')

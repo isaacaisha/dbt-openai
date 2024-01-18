@@ -32,10 +32,9 @@ def select_conversation():
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
+        flash(f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}")
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
-        return render_template('conversation-by-id.html', error_message=error_message,
-                               current_user=current_user, select_conversation_form=select_conversation_form,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+        return redirect(url_for('select_conversation'))
 
 
 @conversation_functionality_bp.route('/conversation/<int:conversation_id>')
@@ -71,13 +70,9 @@ def get_conversation(conversation_id):
 
 @conversation_functionality_bp.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
-    global error_message
     delete_conversation_form = DeleteForm()
 
     try:
-        if not current_user.is_authenticated:
-            error_message = 'Not Authenticated RELOAD & please try again or LOGIN ¡!¡😭¡!¡'
-
         if delete_conversation_form.validate_on_submit():
             print(f"Form data: {delete_conversation_form.data}")
 
@@ -101,6 +96,7 @@ def delete_conversation():
                 # Delete the conversation
                 db.session.delete(conversation_to_delete)  # Use db.session.delete instead of db.delete
                 db.session.commit()
+                flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
                 deleted_conversation = f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎'
                 print(deleted_conversation)
                 return render_template('conversation-delete.html',
