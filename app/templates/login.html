@@ -38,11 +38,11 @@
 
                 <div class="col-lg-8 col-md-10 mx-auto content mb-3">
 
-                    {% if error_message %}
-                        <div class="alert alert-warning">
-                            {{ error_message }}
+                    {% for message in get_flashed_messages() %}
+                        <div class="alert alert-warning text-center">
+                            {{ message }}
                         </div>
-                    {% endif %}
+                    {% endfor %}
 
                     <form method="POST" action="{{ url_for('login') }}">
                         <!-- Include CSRF token -->

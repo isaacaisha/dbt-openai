@@ -14,7 +14,7 @@ def register():
     register_form = RegisterForm()
 
     try:
-        if request.method == 'POST' and register_form.validate_on_submit():
+        if register_form.validate_on_submit():
             print(f"Form data: {register_form.data}")
 
             # Check if the passwords match
@@ -23,7 +23,7 @@ def register():
                 return redirect(url_for('register'))
 
             # If user's email already exists
-            if User.query.filter_by(email=register_form.email.data.lower().strip()).first():
+            if User.query.filter_by(email=register_form.email.data).first():
                 # Send a flash message
                 flash("You've already signed up with that email, log in instead! ¡!!🤣¡!¡")
                 return redirect(url_for('login'))
@@ -52,6 +52,8 @@ def register():
                                    current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
 
     except Exception as err:
+        # Rollback the changes in case of an error
+        db.session.rollback()
         print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
         flash(f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}")
         redirect(url_for('register'))
@@ -62,14 +64,14 @@ def login():
     login_form = LoginForm()
 
     try:
-        if request.method == 'POST':
+        if login_form.validate_on_submit():
             print(f"Form data: {login_form.data}")
 
-            email = request.form.get('email')
+            email = request.form.get('email').lower().strip()
             password = request.form.get('password').lower().strip()
             remember_me = login_form.remember_me.data
 
-            user = User.query.filter_by(email=email.lower().strip()).first()
+            user = User.query.filter_by(email=email).first()
 
             # Email doesn't exist
             if not user:

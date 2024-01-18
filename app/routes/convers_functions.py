@@ -108,6 +108,8 @@ def delete_conversation():
                                current_user=current_user, delete_conversation_form=delete_conversation_form)
 
     except Exception as err:
+        # Rollback the changes in case of an error
+        db.session.rollback()
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         return render_template('conversation-delete.html', error_message=error_message,
                                current_user=current_user, delete_conversation_form=delete_conversation_form,
