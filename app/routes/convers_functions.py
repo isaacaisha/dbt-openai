@@ -101,10 +101,12 @@ def delete_conversation():
                 # Delete the conversation
                 db.session.delete(conversation_to_delete)  # Use db.session.delete instead of db.delete
                 db.session.commit()
-                flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
+                deleted_conversation = f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎'
+                print(deleted_conversation)
                 return render_template('conversation-delete.html',
                                        current_user=current_user, delete_conversation_form=delete_conversation_form,
-                                       conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
+                                       conversation_id=conversation_id, error_message=deleted_conversation,
+                                       date=datetime.now().strftime("%a %d %B %Y"))
 
         return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
                                current_user=current_user, delete_conversation_form=delete_conversation_form)
