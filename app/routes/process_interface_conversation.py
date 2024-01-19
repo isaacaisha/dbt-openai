@@ -195,12 +195,13 @@ def show_story():
         # Modify your query to filter by owner_id
         memory_load = Memory.query.filter_by(owner_id=owner_id).all()
 
-        summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
-
         memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n'
         memory_buffer += '\n'.join(
             [f'{memory.user_name}: {memory.user_message}\n·SìįSí· Dbt: {memory.llm_response}' for memory in
              memory_load])
+
+        # Load the summary data for the current user
+        summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
 
         print(f'memory_buffer_story:\n{memory_buffer}\n')
         print(f'memory_load_story:\n{memory_load}\n')

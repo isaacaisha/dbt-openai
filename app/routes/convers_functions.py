@@ -1,3 +1,6 @@
+import csv
+import os
+
 from flask import Blueprint, render_template, flash, url_for, redirect, request
 from flask_login import current_user
 from datetime import datetime
@@ -94,19 +97,30 @@ def delete_conversation():
                                        conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
             else:
-                all_deleted_conversation.append(conversation_to_delete.user_name +
-                                                conversation_to_delete.user_message +
-                                                conversation_to_delete.llm_response +
-                                                conversation_to_delete.conversations_summary
-                                                )
+                deleted_data = [
+                    conversation_to_delete.user_name,
+                    conversation_to_delete.user_message,
+                    conversation_to_delete.llm_response,
+                    conversation_to_delete.conversations_summary
+                ]
+                all_deleted_conversation.append(deleted_data)
+
+                # Write to CSV file
+                csv_filename = 'deleted_conversations.csv'
+                csv_filepath = os.path.join(os.getcwd(), csv_filename)
+
+                with open(csv_filepath, mode='a', newline='', encoding='utf-8') as csv_file:
+                    csv_writer = csv.writer(csv_file)
+                    if os.stat(csv_filepath).st_size == 0:  # Check if the file is empty
+                        csv_writer.writerow(['User Name', 'User Message', 'LLM Response', 'Conversations Summary'])
+                    csv_writer.writerow(deleted_data)
+
                 # Delete the conversation
                 db.session.delete(conversation_to_delete)  # Use db.session.delete instead of db.delete
                 db.session.commit()
 
-                flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎')
+                flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted 😎')
                 deleted_conversation = f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎'
-                print(f'Deleted_conversation: {deleted_conversation}\n')
-                print(f'All_deleted_conversation: {all_deleted_conversation}\n')
 
                 return render_template('conversation-delete.html',
                                        current_user=current_user, delete_conversation_form=delete_conversation_form,
