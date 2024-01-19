@@ -7,8 +7,6 @@ from app.models.memory import Memory, db
 
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
-error_message = '¡!¡ RELOAD ¡!¡'
-
 
 @conversation_functionality_bp.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
@@ -61,6 +59,7 @@ def get_conversation(conversation_id):
                                    conversation_=conversation_, formatted_created_at=formatted_created_at,
                                    conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
+        error_message = '¡!¡ 😭RELOAD🤣 ¡!¡'
         print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
         select_conversation_form = ConversationIdForm()
         return render_template('conversation-by-id.html', current_user=current_user,
@@ -110,6 +109,7 @@ def delete_conversation():
 
     except Exception as err:
         print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
+        error_message = '¡!¡ 😭RETRY🤣 ¡!¡'
         return render_template('conversation-delete.html', error_message=error_message,
                                current_user=current_user, delete_conversation_form=delete_conversation_form,
                                date=datetime.now().strftime("%a %d %B %Y"))
