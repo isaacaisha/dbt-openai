@@ -31,7 +31,7 @@ def select_conversation():
 
     except Exception as err:
         flash(f"RELOAD ¡!¡ Unexpected {str(err)}, {type(err)}")
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
         return redirect(url_for('select_conversation'))
 
 
@@ -60,7 +60,7 @@ def get_conversation(conversation_id):
                                    conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         error_message = '¡!¡ 😭RELOAD🤣 ¡!¡'
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
         select_conversation_form = ConversationIdForm()
         return render_template('conversation-by-id.html', current_user=current_user,
                                select_conversation_form=select_conversation_form, error_message=error_message,
