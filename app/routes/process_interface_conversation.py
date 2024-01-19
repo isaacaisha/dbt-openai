@@ -14,9 +14,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.forms.app_forms import TextAreaForm
 from app.models.memory import Memory, db
 
-
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
-
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
@@ -31,35 +29,27 @@ def conversation_interface():
     answer = None
     error_message = None
 
-    try:
-        if request.method == "POST" and writing_text_form.validate_on_submit():
-            user_input = request.form['writing_text']
+    if request.method == "POST" and writing_text_form.validate_on_submit():
+        user_input = request.form['writing_text']
 
-            # Use the LLM to generate a response based on user input
-            answer = conversation.predict(input=user_input)
+        # Use the LLM to generate a response based on user input
+        answer = conversation.predict(input=user_input)
 
-            print(f'User ID:{current_user.id} 😎')
-            print(f'User Name: {current_user.name} 😝')
-            print(f'User Input: {user_input} 😎')
-            print(f'LLM Response:{answer} 😝\n')
+        print(f'User ID:{current_user.id} 😎')
+        print(f'User Name: {current_user.name} 😝')
+        print(f'User Input: {user_input} 😎')
+        print(f'LLM Response:{answer} 😝\n')
 
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({})
+    memory_buffer = memory.buffer_as_str
+    memory_load = memory.load_memory_variables({})
 
-        if not current_user.is_authenticated:
-            error_message = 'RELOAD 😭r LogIn ¡!¡'
+    if not current_user.is_authenticated:
+        error_message = 'RELOAD 😭r LogIn ¡!¡'
 
-        return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                               user_input=user_input, answer=answer, current_user=current_user,
-                               error_message=error_message, memory_buffer=memory_buffer, memory_load=memory_load,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-    except Exception as err:
-        flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
-        print(f"😭 Unexpected {err=}, {type(err)=} 😭")
-        error_message = str(err) + 'Try Again 😭r LogIn ¡!¡'
-        return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                               user_input=user_input, answer=answer, current_user=current_user,
-                               error_message=error_message, date=datetime.now().strftime("%a %d %B %Y"))
+    return render_template('conversation-interface.html', writing_text_form=writing_text_form,
+                           user_input=user_input, answer=answer, current_user=current_user,
+                           error_message=error_message, memory_buffer=memory_buffer, memory_load=memory_load,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 def generate_conversation_context(user_input, user_conversations):
@@ -218,8 +208,4 @@ def show_story():
         return render_template('show-history.html', current_user=current_user, owner_id=owner_id,
                                memory_load=memory_load, memory_buffer=memory_buffer,
                                summary_conversation=summary_conversation,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-    else:
-        return render_template('authentication-error.html', error_message='User not authenticated',
-                               current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))

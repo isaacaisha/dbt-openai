@@ -13,7 +13,7 @@ auth_bp = Blueprint('auth', __name__)
 def register():
     register_form = RegisterForm()
 
-    if register_form.validate_on_submit():
+    if request.method == "POST" and register_form.validate_on_submit():
         print(f"Form data: {register_form.data}")
 
         # Check if the passwords match
@@ -55,7 +55,7 @@ def register():
 def login():
     login_form = LoginForm()
 
-    if login_form.validate_on_submit():
+    if request.method == "POST" and login_form.validate_on_submit():
         print(f"Form data: {login_form.data}")
 
         email = login_form.email.data.lower().strip()

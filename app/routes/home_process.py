@@ -21,32 +21,25 @@ def home():
     user_input = None
     response = None
 
-    try:
-        if request.method == "POST" and home_form.validate_on_submit():
-            print(f"Form data: {home_form.data}\n")
+    if request.method == "POST" and home_form.validate_on_submit():
+        print(f"Form data: {home_form.data}\n")
 
-            # Retrieve form data using the correct key
-            user_input = request.form['text_writing']
-            # Use the LLM to generate a response based on user input
-            response = conversation.predict(input=user_input)
+        # Retrieve form data using the correct key
+        user_input = request.form['text_writing']
 
-            print(f"user_input: {user_input}")
-            print(f"response: {response}\n")
+        # Use the LLM to generate a response based on user input
+        response = conversation.predict(input=user_input)
 
-        memory_buffer = memory.buffer_as_str
-        memory_load = memory.load_memory_variables({})
+        print(f"user_input: {user_input}")
+        print(f"response: {response}\n")
 
-        return render_template('index.html', home_form=home_form,
-                               current_user=current_user, user_input=user_input, response=response,
-                               memory_buffer=memory_buffer, memory_load=memory_load,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-    except Exception as err:
-        flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
-        error_message = str(err)
-        print(f"😭 Unexpected {err=}, {type(err)=} 😭")
-        return render_template('index.html', error_message=error_message, home_form=home_form,
-                               current_user=current_user, user_input=user_input, response=response,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+    memory_buffer = memory.buffer_as_str
+    memory_load = memory.load_memory_variables({})
+
+    return render_template('index.html', home_form=home_form,
+                           current_user=current_user, user_input=user_input, response=response,
+                           memory_buffer=memory_buffer, memory_load=memory_load,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @home_conversation_bp.route('/home/answer', methods=['POST'])
