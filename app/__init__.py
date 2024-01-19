@@ -23,24 +23,20 @@ from .routes.llm_conversation import llm_conversation_bp
 _ = load_dotenv(find_dotenv())  # read local .env file
 
 
-def configure_app(app):
+def create_app():
+    app = Flask(__name__, template_folder='templates', static_folder='static')
+    Bootstrap(app)
+
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_PERMANENT'] = True
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
+    login_manager = LoginManager()
 
-login_manager = LoginManager()
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
 
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
-
-
-def create_app():
-    app = Flask(__name__, template_folder='templates', static_folder='static')
-    Bootstrap(app)
-    configure_app(app)
     login_manager.init_app(app)
 
     try:
