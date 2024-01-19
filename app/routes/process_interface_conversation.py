@@ -1,3 +1,4 @@
+import csv
 import json
 import pytz
 
@@ -16,6 +17,7 @@ from app.models.memory import Memory, db
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
+CSV_FILE_PATH = '/Users/lesanebyby/PycharmProjects/DBT OpenAI Speech/memory-conversation.csv'
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
@@ -162,6 +164,10 @@ def save_to_database(user_input, response):
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
+
+        # Save the data to the CSV file
+        save_to_csv(new_memory)
+
     except SQLAlchemyError as err:
         # Log the exception or handle it as needed
         print(f"Error saving to database: {str(err)}")
@@ -176,6 +182,27 @@ def save_to_database(user_input, response):
         "memory_buffer": memory_buffer,
         "memory_load": memory_load,
     })
+
+
+def save_to_csv(memory):
+    # Open the CSV file in append mode and write the data
+    with open(CSV_FILE_PATH, 'a', newline='') as csvfile:
+        fieldnames = ['user_name', 'owner_id', 'user_message', 'llm_response', 'conversations_summary', 'created_at']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        # Write the header if the file is empty
+        if csvfile.tell() == 0:
+            writer.writeheader()
+
+        # Write the data to the CSV file
+        writer.writerow({
+            'user_name': memory.user_name,
+            'owner_id': memory.owner_id,
+            'user_message': memory.user_message,
+            'llm_response': memory.llm_response,
+            'conversations_summary': memory.conversations_summary,
+            'created_at': memory.created_at,
+        })
 
 
 @interface_conversation_bp.route('/interface-audio')
