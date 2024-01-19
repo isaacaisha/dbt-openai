@@ -1,8 +1,8 @@
 import json
 import pytz
 
-from flask import Blueprint, render_template, flash, request, send_file, jsonify, redirect, url_for
-from flask_login import current_user
+from flask import Blueprint, render_template, request, send_file, jsonify
+from flask_login import current_user, login_required
 from gtts import gTTS
 from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
@@ -187,6 +187,7 @@ def interface_serve_audio():
         return "File not found", 404
 
 
+@login_required
 @interface_conversation_bp.route('/show-history')
 def show_story():
     if current_user.is_authenticated:
@@ -213,4 +214,3 @@ def show_story():
         return render_template('authentication-error.html', error_message='User not authenticated',
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
-#

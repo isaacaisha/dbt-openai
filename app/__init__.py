@@ -1,6 +1,6 @@
 import os
 import secrets
-import warnings
+from datetime import timedelta
 
 import openai
 from dotenv import load_dotenv, find_dotenv
@@ -20,21 +20,28 @@ from .routes.convers_functions import conversation_functionality_bp
 from .routes.llm_conversation import llm_conversation_bp
 
 
-warnings.filterwarnings('ignore')
+def configure_app(app):
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_PERMANENT'] = True
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+
 
 _ = load_dotenv(find_dotenv())  # read local .env file
+
+login_manager = LoginManager()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 
 def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static')
     Bootstrap(app)
-
-    login_manager = LoginManager()
+    configure_app(app)
     login_manager.init_app(app)
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(user_id)
 
     try:
         openai_api_key = os.environ['OPENAI_API_KEY']

@@ -27,7 +27,7 @@ class Memory(db.Model):
         return f"<Memory id={self.id}>"
 
 
-class User(UserMixin, db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(255), nullable=False)
