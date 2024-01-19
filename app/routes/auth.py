@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_user, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -16,26 +16,26 @@ def register():
     if register_form.validate_on_submit():
         print(f"Form data: {register_form.data}")
 
-        # Check if the passwords match
-        if register_form.password.data != register_form.confirm_password.data:
-            flash("Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡")
-            return redirect(url_for('register'))
-
+        # # Check if the passwords match
+        # if register_form.password.data != register_form.confirm_password.data:
+        #     flash("Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡")
+        #     return redirect(url_for('register'))
+#
         # If user's email already exists
-        if User.query.filter_by(email=register_form.email.data).first():
+        if User.query.filter_by(email=register_form.email.data.lower().strip()).first():
             # Send a flash message
             flash("You've already signed up with that email, log in instead! ¡!!🤣¡!¡")
             return redirect(url_for('login'))
 
         hash_and_salted_password = generate_password_hash(
-            request.form.get('password'),
+            register_form.password.data,
             method='pbkdf2:sha256',
             salt_length=8
         )
 
         new_user = User()
-        new_user.email = request.form['email']
-        new_user.name = request.form['name']
+        new_user.email = register_form.email.data.lower().strip()
+        new_user.name = register_form.name.data
         new_user.password = hash_and_salted_password
 
         db.session.add(new_user)
@@ -58,8 +58,8 @@ def login():
     if login_form.validate_on_submit():
         print(f"Form data: {login_form.data}")
 
-        email = request.form.get('email')
-        password = request.form.get('password')
+        email = login_form.email.data.lower().strip()
+        password = login_form.password.data.lower().strip()
         remember_me = login_form.remember_me.data
 
         user = User.query.filter_by(email=email).first()
