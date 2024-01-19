@@ -1,3 +1,4 @@
+import csv
 import json
 import pytz
 
@@ -15,6 +16,8 @@ from app.forms.app_forms import TextAreaForm
 from app.models.memory import Memory, db
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
+
+CSV_FILE_PATH = 'memory_conversations.csv'
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
@@ -181,6 +184,43 @@ def save_to_database(user_input, response):
         "memory_buffer": memory_buffer,
         "memory_load": memory_load,
     })
+
+
+# Function to save database data to CSV file
+def save_database_to_csv():
+    try:
+        # Retrieve all memories from the database
+        all_memories = Memory.query.all()
+
+        # Open the CSV file in written mode
+        with open(CSV_FILE_PATH, 'w', newline='') as csvfile:
+            fieldnames = ['user_name', 'owner_id', 'user_message', 'llm_response', 'conversations_summary', 'created_at']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            # Write the header
+            writer.writeheader()
+
+            # Write each memory to the CSV file
+            for memory in all_memories:
+                writer.writerow({
+                    'user_name': memory.user_name,
+                    'owner_id': memory.owner_id,
+                    'user_message': memory.user_message,
+                    'llm_response': memory.llm_response,
+                    'conversations_summary': memory.conversations_summary,
+                    'created_at': memory.created_at,
+                })
+
+    except SQLAlchemyError as err:
+        # Log the exception or handle it as needed
+        print(f"Error saving to CSV file: {str(err)}")
+
+
+@interface_conversation_bp.route('/save-database-to-csv', methods=['GET'])
+def save_database_to_csv_route():
+    # Call the function to save database data to CSV
+    save_database_to_csv()
+    return jsonify({"message": "Data saved to CSV file."})
 
 
 @interface_conversation_bp.route('/show-history')

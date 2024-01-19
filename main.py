@@ -1,10 +1,8 @@
 import os
-from datetime import timedelta
 
-from dotenv import load_dotenv, find_dotenv
-from flask_login import login_required, LoginManager
+from flask_login import login_required
 
-from app import create_app, User
+from app import create_app
 
 from app.routes.auth import register as auth_register, login as auth_login, logout as auth_logout
 
@@ -27,21 +25,7 @@ from app.routes.convers_functions import (select_conversation as conversation_se
                                           delete_conversation as conversation_deleted)
 
 
-_ = load_dotenv(find_dotenv())  # read local .env file
-
 app = create_app()
-
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#

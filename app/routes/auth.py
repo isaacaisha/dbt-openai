@@ -13,9 +13,7 @@ auth_bp = Blueprint('auth', __name__)
 def register():
     register_form = RegisterForm()
 
-    if request.method == "POST" and register_form.validate_on_submit():
-        print(f"Form data: {register_form.data}")
-
+    if request.method == 'POST':
         # If user's email already exists
         if User.query.filter_by(email=register_form.email.data).first():
             # Send a flash message
@@ -29,8 +27,8 @@ def register():
         )
 
         new_user = User()
-        new_user.email = register_form.email.data
-        new_user.name = register_form.name.data
+        new_user.email = request.form['email']
+        new_user.name = request.form['name']
         new_user.password = hash_and_salted_password
 
         db.session.add(new_user)
@@ -40,7 +38,7 @@ def register():
         # Log in and authenticate the user after adding details to the database.
         login_user(new_user)
 
-        return redirect(url_for('conversation_interface'))
+        return redirect(url_for('login'))
 
     return render_template("register.html", register_form=register_form,
                            current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
@@ -50,12 +48,9 @@ def register():
 def login():
     login_form = LoginForm()
 
-    if request.method == "POST" and login_form.validate_on_submit():
-        print(f"Form data: {login_form.data}")
-
-        email = login_form.email.data
-        password = login_form.password.data
-        remember_me = login_form.remember_me.data
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
         user = User.query.filter_by(email=email).first()
 
@@ -71,7 +66,7 @@ def login():
 
         # Email exists and password correct
         else:
-            login_user(user, remember=remember_me)
+            login_user(user)
             # Redirect to the desired page after login
             return redirect(url_for('conversation_interface'))
 
