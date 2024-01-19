@@ -1,4 +1,3 @@
-import csv
 import json
 import pytz
 
@@ -16,8 +15,6 @@ from app.forms.app_forms import TextAreaForm
 from app.models.memory import Memory, db
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
-
-CSV_FILE_PATH = 'memory_conversations.csv'
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
@@ -175,9 +172,6 @@ def save_to_database(user_input, response):
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
-        # Save the last entry to the CSV file
-        save_last_database_entry_to_csv()
-
     except SQLAlchemyError as err:
         # Log the exception or handle it as needed
         print(f"Error saving to database: {str(err)}")
@@ -192,40 +186,6 @@ def save_to_database(user_input, response):
         "memory_buffer": memory_buffer,
         "memory_load": memory_load,
     })
-
-
-# Function to save the last database entry to the CSV file
-def save_last_database_entry_to_csv():
-    try:
-        # Retrieve the last memory from the database
-        last_memory = Memory.query.order_by(Memory.created_at.desc()).first()
-
-        if last_memory:
-            # Open the CSV file in written mode
-            with open(CSV_FILE_PATH, 'a', newline='') as csvfile:
-                fieldnames = ['user_name', 'owner_id', 'user_message', 'llm_response', 'conversations_summary',
-                              'created_at']
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-                # Write the header if the file is empty
-                if csvfile.tell() == 0:
-                    writer.writeheader()
-
-                # Write the last memory to the CSV file
-                writer.writerow({
-                    'user_name': last_memory.user_name,
-                    'owner_id': last_memory.owner_id,
-                    'user_message': last_memory.user_message,
-                    'llm_response': last_memory.llm_response,
-                    'conversations_summary': last_memory.conversations_summary,
-                    'created_at': last_memory.created_at,
-                })
-
-                print(f'last_memory:\n{last_memory}\n')
-
-    except SQLAlchemyError as err:
-        # Log the exception or handle it as needed
-        print(f"Error saving to CSV file: {str(err)}")
 
 
 @interface_conversation_bp.route('/show-history')
