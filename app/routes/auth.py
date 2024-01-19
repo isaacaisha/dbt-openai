@@ -22,19 +22,19 @@ def register():
             return redirect(url_for('register'))
 
         # If user's email already exists
-        if User.query.filter_by(email=register_form.email.data.lower().strip()).first():
+        if User.query.filter_by(email=register_form.email.data).first():
             # Send a flash message
             flash("You've already signed up with that email, log in instead! ¡!!🤣¡!¡")
             return redirect(url_for('login'))
 
         hash_and_salted_password = generate_password_hash(
-            register_form.password.data.lower().strip(),
+            register_form.password.data,
             method='pbkdf2:sha256',
             salt_length=8
         )
 
         new_user = User()
-        new_user.email = register_form.email.data.lower().strip()
+        new_user.email = register_form.email.data
         new_user.name = register_form.name.data
         new_user.password = hash_and_salted_password
 
@@ -58,8 +58,8 @@ def login():
     if request.method == "POST" and login_form.validate_on_submit():
         print(f"Form data: {login_form.data}")
 
-        email = login_form.email.data.lower().strip()
-        password = login_form.password.data.lower().strip()
+        email = login_form.email.data
+        password = login_form.password.data
         remember_me = login_form.remember_me.data
 
         user = User.query.filter_by(email=email).first()
@@ -71,7 +71,7 @@ def login():
 
         # Password incorrect
         elif not check_password_hash(user.password, password):
-            flash('Password incorrect, please try again ¡!¡😭¡!¡')
+            flash('Password incorrect, please try again 😭')
             return redirect(url_for('login'))
 
         # Email exists and password correct
