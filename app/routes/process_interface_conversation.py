@@ -170,6 +170,9 @@ def save_to_database(user_input, response):
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
+        # Call the function to save database data to CSV
+        save_database_to_csv()
+
     except SQLAlchemyError as err:
         # Log the exception or handle it as needed
         print(f"Error saving to database: {str(err)}")
