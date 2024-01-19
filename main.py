@@ -59,7 +59,6 @@ def home_audio():
     return audio_home()
 
 
-@login_required
 @app.route('/conversation-interface', methods=['GET', 'POST'])
 def conversation_interface():
     return process_interface_llm()
@@ -88,37 +87,31 @@ def interface_serve_audio():
     return process_interface_audio_llm()
 
 
-@login_required
 @app.route("/show-history")
 def show_story():
     return history()
 
 
-@login_required
 @app.route("/get-all-conversations")
 def get_all_conversations():
     return all_conversation_llm()
 
 
-@login_required
 @app.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
     return conversation_selected()
 
 
-@login_required
 @app.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     return access_conversation(conversation_id)
 
 
-@login_required
 @app.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     return conversation_deleted()
 
 
-@login_required
 @app.route("/api/conversations-jsonify")
 def get_conversations_jsonify():
     return conversation_jsonify_llm()
