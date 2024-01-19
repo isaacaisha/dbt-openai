@@ -10,7 +10,7 @@ app_form_bp = Blueprint('forms', __name__)
 class RegisterForm(FlaskForm):
     email = StringField("Email:", validators=[DataRequired(), validators.Email()])
     password = PasswordField("Password:", validators=[DataRequired(), validators.Length(min=6)])
-    #confirm_password = PasswordField("Password:", validators=[DataRequired(), validators.Length(min=6)])
+    confirm_password = PasswordField("Password:", validators=[DataRequired(), validators.Length(min=6)])
     name = StringField("Name:", validators=[DataRequired()])
     submit = SubmitField("SIGN M€ UP ¡!¡")
 
