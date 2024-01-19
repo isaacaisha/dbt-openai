@@ -14,7 +14,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.forms.app_forms import TextAreaForm
 from app.models.memory import Memory, db
 
+
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
+
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
@@ -27,6 +29,7 @@ def conversation_interface():
     writing_text_form = TextAreaForm()
     user_input = None
     answer = None
+    error_message = None
 
     try:
         if request.method == "POST" and writing_text_form.validate_on_submit():
@@ -43,9 +46,12 @@ def conversation_interface():
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
+        if not current_user.is_authenticated:
+            error_message = 'RELOAD 😭r LogIn ¡!¡'
+
         return render_template('conversation-interface.html', writing_text_form=writing_text_form,
                                user_input=user_input, answer=answer, current_user=current_user,
-                               memory_buffer=memory_buffer, memory_load=memory_load,
+                               error_message=error_message, memory_buffer=memory_buffer, memory_load=memory_load,
                                date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         flash(f'😭 RELOAD & RETRY Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
@@ -61,7 +67,7 @@ def generate_conversation_context(user_input, user_conversations):
     conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[-9:])}]"
+    qdocs = f"[{','.join(conversation_strings[-3:])}]"
 
     # Convert 'created_at' values to string
     created_at_list = [str(memory.created_at) for memory in user_conversations]
