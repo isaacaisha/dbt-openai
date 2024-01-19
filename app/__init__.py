@@ -22,7 +22,6 @@ from .routes.llm_conversation import llm_conversation_bp
 
 def configure_app(app):
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_PERMANENT'] = True
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 

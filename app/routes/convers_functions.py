@@ -1,6 +1,3 @@
-import csv
-import os
-
 from flask import Blueprint, render_template, flash, url_for, redirect, request
 from flask_login import current_user
 from datetime import datetime
@@ -74,7 +71,6 @@ def get_conversation(conversation_id):
 @conversation_functionality_bp.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     delete_conversation_form = DeleteForm()
-    all_deleted_conversation = []
 
     try:
         if request.method == "POST" and delete_conversation_form.validate_on_submit():
@@ -97,26 +93,6 @@ def delete_conversation():
                                        conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
             else:
-                deleted_data = [
-                    conversation_to_delete.user_name,
-                    conversation_to_delete.user_message,
-                    conversation_to_delete.llm_response,
-                    conversation_to_delete.conversations_summary
-                ]
-                all_deleted_conversation.append(deleted_data)
-
-                # Write to CSV file
-                csv_filename = 'deleted_conversations.csv'
-                csv_filepath = os.path.join(os.getcwd(), csv_filename)
-
-                with open(csv_filepath, mode='a', newline='', encoding='utf-8') as csv_file:
-                    csv_writer = csv.writer(csv_file)
-                    if os.stat(csv_filepath).st_size == 0:  # Check if the file is empty
-                        csv_writer.writerow(['User Name', 'User Message', 'LLM Response', 'Conversations Summary'])
-                    csv_writer.writerow(deleted_data)
-
-                    print(f"CSV file path: {csv_filepath}")
-
                 # Delete the conversation
                 db.session.delete(conversation_to_delete)  # Use db.session.delete instead of db.delete
                 db.session.commit()
@@ -133,7 +109,7 @@ def delete_conversation():
                                current_user=current_user, delete_conversation_form=delete_conversation_form)
 
     except Exception as err:
-        print(f"RELOAD ¡!¡ Unexpected {err=}, {type(err)=}")
+        print(f"RELOAD ¡!¡ Unexpected {err}, {type(err)}")
         return render_template('conversation-delete.html', error_message=error_message,
                                current_user=current_user, delete_conversation_form=delete_conversation_form,
                                date=datetime.now().strftime("%a %d %B %Y"))
