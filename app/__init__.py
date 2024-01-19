@@ -1,8 +1,8 @@
 import os
 import secrets
-from datetime import timedelta
-
 import openai
+
+from datetime import timedelta
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask
 from flask_bootstrap import Bootstrap

@@ -10,6 +10,9 @@ from app.models.memory import Memory, db
 
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
+DELETE_CSV_FILE_PATH = os.environ.get('CSV_FILE_PATH',
+                                      '/Users/lesanebyby/PycharmProjects/DBT OpenAI '
+                                      'Speech/app/deleted_conversations.csv')
 error_message = '¡!¡ RELOAD ¡!¡'
 
 
@@ -106,8 +109,8 @@ def delete_conversation():
                 all_deleted_conversation.append(deleted_data)
 
                 # Write to CSV file
-                csv_filename = 'deleted_conversations.csv'
-                csv_filepath = os.path.join(os.getcwd(), csv_filename)
+                csv_filename = DELETE_CSV_FILE_PATH
+                csv_filepath = os.path.join(os.getcwd(), DELETE_CSV_FILE_PATH, csv_filename)
 
                 with open(csv_filepath, mode='a', newline='', encoding='utf-8') as csv_file:
                     csv_writer = csv.writer(csv_file)
@@ -120,7 +123,7 @@ def delete_conversation():
                 db.session.commit()
 
                 flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted 😎')
-                deleted_conversation = f'Conversation with ID: 🔥{conversation_id}🔥 deleted successfully 😎'
+                deleted_conversation = f'Conversation with ID: 🔥{conversation_id}🔥 deleted 😎'
 
                 return render_template('conversation-delete.html',
                                        current_user=current_user, delete_conversation_form=delete_conversation_form,

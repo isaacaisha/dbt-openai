@@ -1,5 +1,7 @@
 import csv
 import json
+import os
+
 import pytz
 
 from flask import Blueprint, render_template, request, send_file, jsonify
@@ -17,7 +19,8 @@ from app.models.memory import Memory, db
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
-CSV_FILE_PATH = '/Users/lesanebyby/PycharmProjects/DBT OpenAI Speech/memory-conversation.csv'
+CSV_FILE_PATH = os.environ.get('CSV_FILE_PATH', '/Users/lesanebyby/PycharmProjects/DBT OpenAI '
+                                                'Speech/app/memory-conversation.csv')
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
@@ -184,25 +187,26 @@ def save_to_database(user_input, response):
     })
 
 
-def save_to_csv(memory):
-    # Open the CSV file in append mode and write the data
+def save_to_csv(new_memory):
+
+    # If the file doesn't exist, create it with a header
+    if not os.path.exists(CSV_FILE_PATH):
+        with open(CSV_FILE_PATH, 'w', newline='') as csvfile:
+            header = ["user_name", "owner_id", "user_message", "llm_response", "conversations_summary", "created_at"]
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerow(header)
+
+    # Append the new memory data to the CSV file
     with open(CSV_FILE_PATH, 'a', newline='') as csvfile:
-        fieldnames = ['user_name', 'owner_id', 'user_message', 'llm_response', 'conversations_summary', 'created_at']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        # Write the header if the file is empty
-        if csvfile.tell() == 0:
-            writer.writeheader()
-
-        # Write the data to the CSV file
-        writer.writerow({
-            'user_name': memory.user_name,
-            'owner_id': memory.owner_id,
-            'user_message': memory.user_message,
-            'llm_response': memory.llm_response,
-            'conversations_summary': memory.conversations_summary,
-            'created_at': memory.created_at,
-        })
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow([
+            new_memory.user_name,
+            new_memory.owner_id,
+            new_memory.user_message,
+            new_memory.llm_response,
+            new_memory.conversations_summary,
+            new_memory.created_at
+        ])
 
 
 @interface_conversation_bp.route('/interface-audio')
