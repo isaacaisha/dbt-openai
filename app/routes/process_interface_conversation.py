@@ -60,7 +60,7 @@ def generate_conversation_context(user_input, user_conversations):
     conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
     # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[-3:])}]"
+    qdocs = f"[{','.join(conversation_strings[-5:])}]"
 
     # Convert 'created_at' values to string
     created_at_list = [str(memory.created_at) for memory in user_conversations]
@@ -220,6 +220,8 @@ def save_last_database_entry_to_csv():
                     'conversations_summary': last_memory.conversations_summary,
                     'created_at': last_memory.created_at,
                 })
+
+                print(f'last_memory:\n{last_memory}\n')
 
     except SQLAlchemyError as err:
         # Log the exception or handle it as needed
