@@ -19,8 +19,8 @@ from app.models.memory import Memory, db
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
-CSV_FILE_PATH = os.environ.get('MEMORY_CSV_FILE_PATH', '/Users/lesanebyby/PycharmProjects/DBT OpenAI '
-                                                'Speech/app/memory-conversation.csv')
+MEMORY_CSV_FILE_PATH = os.environ.get('MEMORY_CSV_FILE_PATH',
+                                      '/Users/lesanebyby/PycharmProjects/DBT OpenAI Speech/app/memory-conversation.csv')
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
@@ -188,7 +188,6 @@ def save_to_database(user_input, response):
 
 
 def save_to_csv(new_memory):
-
     # If the file doesn't exist, create it with a header
     if not os.path.exists(CSV_FILE_PATH):
         with open(CSV_FILE_PATH, 'w', newline='') as csvfile:

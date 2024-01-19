@@ -10,8 +10,10 @@ from app.models.memory import Memory, db
 
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
-DELETE_CSV_FILE_PATH = os.environ.get('DELETE_CSV_FILE_PATH',
-                                      '/app/deleted-conversations.csv')
+DELETE_CSV_FILE_PATH = os.environ.get('DELETED_CSV_FILE_PATH',
+                                      '/Users/lesanebyby/PycharmProjects/DBT OpenAI '
+                                      'Speech/app/deleted_conversations.csv')
+
 error_message = '¡!¡ RELOAD ¡!¡'
 
 
