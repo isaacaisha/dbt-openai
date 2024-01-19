@@ -10,9 +10,8 @@ from app.models.memory import Memory, db
 
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
-DELETE_CSV_FILE_PATH = os.environ.get('CSV_FILE_PATH',
-                                      '/Users/lesanebyby/PycharmProjects/DBT OpenAI '
-                                      'Speech/app/deleted_conversations.csv')
+DELETE_CSV_FILE_PATH = os.environ.get('DELETE_CSV_FILE_PATH',
+                                      '/app/deleted-conversations.csv')
 error_message = '¡!¡ RELOAD ¡!¡'
 
 
@@ -117,6 +116,8 @@ def delete_conversation():
                     if os.stat(csv_filepath).st_size == 0:  # Check if the file is empty
                         csv_writer.writerow(['User Name', 'User Message', 'LLM Response', 'Conversations Summary'])
                     csv_writer.writerow(deleted_data)
+
+                    print(f"CSV file path: {csv_filepath}")
 
                 # Delete the conversation
                 db.session.delete(conversation_to_delete)  # Use db.session.delete instead of db.delete

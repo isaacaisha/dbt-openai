@@ -19,7 +19,7 @@ from app.models.memory import Memory, db
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
-CSV_FILE_PATH = os.environ.get('CSV_FILE_PATH', '/Users/lesanebyby/PycharmProjects/DBT OpenAI '
+CSV_FILE_PATH = os.environ.get('MEMORY_CSV_FILE_PATH', '/Users/lesanebyby/PycharmProjects/DBT OpenAI '
                                                 'Speech/app/memory-conversation.csv')
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
@@ -195,6 +195,8 @@ def save_to_csv(new_memory):
             header = ["user_name", "owner_id", "user_message", "llm_response", "conversations_summary", "created_at"]
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(header)
+
+            print(f"CSV file path: {CSV_FILE_PATH}")
 
     # Append the new memory data to the CSV file
     with open(CSV_FILE_PATH, 'a', newline='') as csvfile:
