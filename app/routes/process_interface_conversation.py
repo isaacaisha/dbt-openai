@@ -189,16 +189,16 @@ def save_to_database(user_input, response):
 
 def save_to_csv(new_memory):
     # If the file doesn't exist, create it with a header
-    if not os.path.exists(CSV_FILE_PATH):
-        with open(CSV_FILE_PATH, 'w', newline='') as csvfile:
+    if not os.path.exists(MEMORY_CSV_FILE_PATH):
+        with open(MEMORY_CSV_FILE_PATH, 'w', newline='') as csvfile:
             header = ["user_name", "owner_id", "user_message", "llm_response", "conversations_summary", "created_at"]
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(header)
 
-            print(f"CSV file path: {CSV_FILE_PATH}")
+            print(f"CSV file path: {MEMORY_CSV_FILE_PATH}")
 
     # Append the new memory data to the CSV file
-    with open(CSV_FILE_PATH, 'a', newline='') as csvfile:
+    with open(MEMORY_CSV_FILE_PATH, 'a', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow([
             new_memory.user_name,
