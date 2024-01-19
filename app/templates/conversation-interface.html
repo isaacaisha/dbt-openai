@@ -72,26 +72,21 @@
         <form id="prompt-form" method="POST">
 
             {{ writing_text_form.csrf_token }}
-<!--
-            {% if not current_user.is_authenticated %}
-                <div class="alert alert-info text-center">
-                    <div>Not Authenticated. Reload & Retry... .</div>
-                    <div>🤣 Or LOGIN 😂</div>
-                    <div>¡!¡ 😭 ¡!¡</div>
-                </div>
-            {% endif %}
--->
+
             {% for message in get_flashed_messages() %}
                 <div class="alert alert-info text-center">
                     {{ message }}
                 </div>
             {% endfor %}
 
-            {% if error_message %}
-                <div class="alert alert-info text-center">
-                    {{ error_message }}
-                </div>
-            {% endif %}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="alert-danger text-center">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
             <div class="text-center">
                 <hr class="mb-3" style="color:yellow;">
                 <div class="mb-5 alert error" id="error-message" style="display: none;"></div>

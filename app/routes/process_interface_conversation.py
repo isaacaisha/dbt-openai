@@ -1,7 +1,7 @@
 import json
 import pytz
 
-from flask import Blueprint, render_template, request, send_file, jsonify
+from flask import Blueprint, render_template, request, send_file, jsonify, flash, redirect, url_for
 from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
@@ -126,10 +126,8 @@ def interface_answer():
             "answer_audio_path": audio_file_path,
         })
     else:
-        error_message = 'RETRY 😭r LogIn ¡!¡'
-        return render_template('conversation-interface.html', current_user=current_user,
-                               writing_text_form=TextAreaForm(), error_message=error_message,
-                               date=datetime.now().strftime("%a %d %B %Y")), 401
+        flash('¡!¡ 😂RETRY 😭r LogIn🤣 ¡!¡')
+        return redirect(url_for('conversation_interface')), 401
 
 
 @interface_conversation_bp.route('/interface-audio')

@@ -47,6 +47,15 @@
                 {% endif %}
 
                 <form method="POST" action="{{ url_for('delete_conversation') }}">
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <p class="alert-danger text-center">{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
                     <!-- Include CSRF token -->
                     <span style="display:none;">{{ wtf.form_field(delete_conversation_form.csrf_token) }}</span>
 
