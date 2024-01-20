@@ -53,15 +53,15 @@ def generate_conversation_context(user_input, user_conversations):
     # Create a list of JSON strings for each conversation
     conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
-    # Combine the first 1 and last 9 entries into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[-3:])}]"
+    # Combine the last entry into a valid JSON array
+    qdocs = f"[{','.join(conversation_strings[-1:])}]"
 
     # Convert 'created_at' values to string
     created_at_list = [str(memory.created_at) for memory in user_conversations]
 
     # Include 'created_at' in the conversation context
     conversation_context = {
-        "created_at": created_at_list[-3:],
+        "created_at": created_at_list[-1:],
         "conversations": json.loads(qdocs),
         "user_name": current_user.name,
         "user_message": user_input,
@@ -194,16 +194,18 @@ def show_story():
         memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n'
         memory_buffer += '\n'.join(
             [f'{memory.user_name}: {memory.user_message}\n·SìįSí· Dbt: {memory.llm_response}' for memory in
-             memory_load])
+             memory_load][-3:])
 
-        # Load the summary data for the current user
-        summary_conversation = memory_summary.load_memory_variables({'owner_id': owner_id})
+        # Fetch the list of Memory objects for the current user
+        memory_summary_list = Memory.query.filter_by(owner_id=owner_id).all()
+        # Load the summary data for each memory object
+        summary_conversation = [memory.conversations_summary for memory in memory_summary_list][-3:]
 
         print(f'memory_buffer_story:\n{memory_buffer}\n')
-        print(f'memory_load_story:\n{memory_load}\n')
+        print(f'memory_load_story:\n{memory_load[-3:]}\n')
         print(f'summary_conversation_story:\n{summary_conversation}\n')
         return render_template('show-history.html', current_user=current_user, owner_id=owner_id,
-                               memory_load=memory_load, memory_buffer=memory_buffer,
+                               memory_load=memory_load[-3:], memory_buffer=memory_buffer,
                                summary_conversation=summary_conversation,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:

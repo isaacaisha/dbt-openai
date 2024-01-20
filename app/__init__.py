@@ -1,10 +1,13 @@
 import os
 import secrets
+from datetime import timedelta
+
 import openai
 
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask
 from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
 
 from .databases.database import database_bp
 from .forms.app_forms import app_form_bp
@@ -24,6 +27,18 @@ _ = load_dotenv(find_dotenv())  # read local .env file
 def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static')
     Bootstrap(app)
+
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_PERMANENT'] = True
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+
+    login_manager = LoginManager()
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
+
+    login_manager.init_app(app)
 
     try:
         openai_api_key = os.environ['OPENAI_API_KEY']

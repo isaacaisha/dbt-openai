@@ -35,29 +35,32 @@
 
         <div id="resultMemo" style="" class="text-center mb-3">
             <hr class="mb-3" style="color:yellow;">
-            <h3 style="margin-top:0;">Memory Buffer</h3>
-            <textarea class="textarea-memory mb-3" style="color:green;">{{ memory_buffer|indent(4)|safe }}</textarea>
-
-            <hr class="mb-5" style="color:yellow;">
-            <hr class="mb-3" style="color:red;">
-
-            <h3 style="margin-top:0;">Summary</h3>
-            <textarea class="textarea-memory mb-3" style="color:red;">{{ summary_conversation|safe }}</textarea>
-
-            <hr class="mb-5" style="color:red;">
-            <hr class="mb-3" style="color:green;">
 
             <h3 style="margin-top:0;">Memory Load</h3>
             <textarea class="textarea-memory mb-3" style="color:purple;">
             {% if memory_load %}
                 {% for memory in memory_load %}
-                    {{ memory.user_name }}: {{ memory.user_message }}
-                    ·SìįSí· Dbt: {{ memory.llm_response }}
+                    {{ memory.user_name }}:
+                {{ memory.user_message }}
+                    ·SìįSí· Dbt:
+                {{ memory.llm_response }}
                 {% endfor %}
             {% else %}
                 No memory load data available.
             {% endif %}
             </textarea>
+
+            <hr class="mb-5" style="color:yellow;">
+            <hr class="mb-3" style="color:red;">
+
+            <h3 style="margin-top:0;">Summary</h3>
+            <textarea class="textarea-memory mb-3" style="color:#17a2b8;">{{ summary_conversation|safe }}</textarea>
+
+            <hr class="mb-5" style="color:red;">
+            <hr class="mb-3" style="color:green;">
+
+            <h3 style="margin-top:0;">Memory Buffer</h3>
+            <textarea class="textarea-memory mb-3" style="color:green;">{{ memory_buffer|indent(4)|safe }}</textarea>
 
             <hr class="mb-5" style="color:green;">
             <hr class="mb-3" style="color:yellow;">
