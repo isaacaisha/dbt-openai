@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, make_response
 from flask_login import login_user, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -21,13 +21,13 @@ def register():
             return redirect(url_for('login'))
 
         hash_and_salted_password = generate_password_hash(
-            register_form.password.data,
+            register_form.password.data.lower().strip(),
             method='pbkdf2:sha256',
             salt_length=8
         )
 
         new_user = User()
-        new_user.email = request.form['email']
+        new_user.email = request.form['email'].lower().strip()
         new_user.name = request.form['name']
         new_user.password = hash_and_salted_password
 
@@ -49,8 +49,8 @@ def login():
     login_form = LoginForm()
 
     if request.method == "POST":
-        email = request.form.get('email')
-        password = request.form.get('password')
+        email = request.form.get('email').lower().strip()
+        password = request.form.get('password').lower().strip()
         remember_me = login_form.remember_me.data
 
         # Find user by email entered.
@@ -68,9 +68,16 @@ def login():
 
         # Email exists and password correct
         else:
+            # Log in the user
             login_user(user, remember=remember_me)
-            # Redirect to the desired page after login
-            return redirect(url_for('conversation_interface'))
+
+            # Create the response object
+            response = make_response(redirect(url_for('conversation_interface')))
+
+            # Set the 'user_id' cookie with the user's ID
+            response.set_cookie('user_id', str(user.id), samesite='None', secure=True)
+
+            return response
 
     return render_template("login.html", login_form=login_form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))

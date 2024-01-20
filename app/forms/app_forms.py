@@ -11,14 +11,14 @@ class RegisterForm(FlaskForm):
     email = StringField("Email:", validators=[DataRequired(), validators.Email()])
     password = PasswordField("Password:", validators=[DataRequired(), validators.Length(min=6)])
     name = StringField("Name:", validators=[DataRequired()])
-    submit = SubmitField("SIGN M€ UP ¡!¡")
+    submit = SubmitField("SIGN ME UP ¡!¡")
 
 
 class LoginForm(FlaskForm):
     email = StringField("Email:", validators=[DataRequired(), validators.Email()])
     password = PasswordField("Password:", validators=[DataRequired()])
     remember_me = BooleanField('Remember Me: ', default=True)
-    submit = SubmitField("LET M€ IN ¡!¡")
+    submit = SubmitField("GET ME IN ¡!¡")
 
 
 class TextAreaFormIndex(FlaskForm):
