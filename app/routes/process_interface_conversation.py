@@ -13,6 +13,7 @@ from time import sleep
 
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.csv_files.database_into_csv import save_last_memory_to_csv
 from app.forms.app_forms import TextAreaForm
 from app.models.memory import Memory, db
 
@@ -194,6 +195,9 @@ def save_to_database(user_input, response):
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
+
+        # Save the data to the save_last_memory_to_csv
+        save_last_memory_to_csv()
 
     except SQLAlchemyError as err:
         # Log the exception or handle it as needed

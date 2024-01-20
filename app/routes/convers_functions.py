@@ -23,7 +23,9 @@ def select_conversation():
         url = url_for('get_conversation', conversation_id=selected_conversation_id)
         return redirect(url)
     else:
-        return redirect(url_for('select_conversation'))
+        return render_template('conversation-by-id.html',
+                               select_conversation_form=select_conversation_form, current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_functionality_bp.route('/conversation/<int:conversation_id>')

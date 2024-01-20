@@ -52,7 +52,8 @@ function sendRequest(prompt) {
             } else if (xhr.status === 401) {
                 // Handle 401 Unauthorized status
                 var errorContainer = document.getElementById('error-message');
-                errorContainer.textContent = "You are not logged in. Please log in to access this page.\n¡!¡😭¡!¡\n";
+                errorContainer.textContent =
+                    "REL😎AD\nYou are not logged in. Please log in to access this page.\n¡!¡😭¡!¡\n";
                 errorContainer.style.display = 'block';
             } else {
                 // Handle other HTTP status codes
