@@ -5,6 +5,8 @@ from datetime import datetime
 from app.forms.app_forms import ConversationIdForm, DeleteForm
 from app.models.memory import Memory, db
 
+from time import sleep
+
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
 # Maximum number of retries
@@ -15,64 +17,53 @@ MAX_RETRIES = 3
 def select_conversation():
     select_conversation_form = ConversationIdForm()
 
-    for retry_count in range(MAX_RETRIES):
-        try:
-            if request.method == "POST" and select_conversation_form.validate_on_submit():
-                print(f"Form data: {select_conversation_form.data}")
+    if request.method == "POST" and select_conversation_form.validate_on_submit():
+        print(f"Form data: {select_conversation_form.data}")
 
-                # Retrieve the selected conversation ID
-                selected_conversation_id = select_conversation_form.conversation_id.data
+        # Retrieve the selected conversation ID
+        selected_conversation_id = select_conversation_form.conversation_id.data
 
-                # Construct the URL string for the 'get_conversation' route
-                url = url_for('get_conversation', conversation_id=selected_conversation_id)
-
-                return redirect(url)
-
-            else:
-                return render_template('conversation-by-id.html',
-                                       select_conversation_form=select_conversation_form, current_user=current_user,
-                                       date=datetime.now().strftime("%a %d %B %Y"))
-
-        except Exception as err:
-            flash(f'Maximum number of retries reached.')
-            flash('Please log in to access this page.')
-            flash(f'Error: {err}.')
-            print(f"Unexpected {err}, {type(err)}")
-            if retry_count == MAX_RETRIES - 1:
-                flash(f'Maximum number of retries reached.')
-                flash('Please log in to access this page.')
-                return redirect(url_for('select_conversation'))
+        # Construct the URL string for the 'get_conversation' route
+        url = url_for('get_conversation', conversation_id=selected_conversation_id)
+        return redirect(url)
+    else:
+        return render_template('conversation-by-id.html',
+                               select_conversation_form=select_conversation_form, current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_functionality_bp.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     conversation_ = Memory.query.filter_by(id=conversation_id).first()
 
-    if not conversation_:
-        # Conversation isn't found, return a not found message
-        return render_template('conversation-not-found.html', current_user=current_user,
-                               conversation_=conversation_, conversation_id=conversation_id,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    try:
-        if conversation_.owner_id != current_user.id:
-            # User doesn't have access, return a forbidden message
-            return render_template('conversation-forbidden.html', current_user=current_user,
+    for retry_count in range(MAX_RETRIES):
+        if not conversation_:
+            # Conversation isn't found, return a not found message
+            return render_template('conversation-not-found.html', current_user=current_user,
                                    conversation_=conversation_, conversation_id=conversation_id,
                                    date=datetime.now().strftime("%a %d %B %Y"))
-    except Exception as err:
-        flash(f'Maximum number of retries reached.')
-        flash('Please log in to access this page.')
-        flash(f'Error: {err}.')
-        print(f"Unexpected {err}, {type(err)}")
-        return redirect(url_for('select_conversation'))
 
-    else:
-        # Format created_at timestamp
-        formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
-        return render_template('conversation-details.html', current_user=current_user,
-                               conversation_=conversation_, formatted_created_at=formatted_created_at,
-                               conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
+        try:
+            if conversation_.owner_id != current_user.id:
+                # User doesn't have access, return a forbidden message
+                return render_template('conversation-forbidden.html', current_user=current_user,
+                                       conversation_=conversation_, conversation_id=conversation_id,
+                                       date=datetime.now().strftime("%a %d %B %Y"))
+        except Exception as err:
+            sleep(3)  # Add a delay between retries
+            print(f"Unexpected {err}, {type(err)}")
+            if retry_count == MAX_RETRIES - 1:
+                flash(f'Maximum number of retries reached.')
+                flash('Please log in to access this page 😭.')
+                flash(f'Error: {err}.')
+                return redirect(url_for('select_conversation'))
+
+        else:
+            # Format created_at timestamp
+            formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
+            return render_template('conversation-details.html', current_user=current_user,
+                                   conversation_=conversation_, formatted_created_at=formatted_created_at,
+                                   conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_functionality_bp.route('/delete-conversation', methods=['GET', 'POST'])
@@ -117,11 +108,10 @@ def delete_conversation():
                                    current_user=current_user, delete_conversation_form=delete_conversation_form)
 
         except Exception as err:
-            flash(f'Maximum number of retries reached.')
-            flash('Please log in to access this page.')
-            flash(f'Error: {err}.')
+            sleep(3)  # Add a delay between retries
             print(f"Unexpected {err}, {type(err)}")
             if retry_count == MAX_RETRIES - 1:
                 flash(f'Maximum number of retries reached.')
-                flash('Please log in to access this page.')
+                flash('Please log in to access this page 😭.')
+                flash(f'Error: {err}.')
                 return redirect(url_for('delete_conversation'))

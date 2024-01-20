@@ -147,13 +147,13 @@ def interface_answer():
         except Exception as err:
             # Log the exception or handle it as needed
             flash(f'Maximum number of retries reached.')
-            flash('Please log in to access this page.')
+            flash('Please log in to access this page 😭.')
             flash(f'Error: {err}.')
             print(f"Unexpected {err}, {type(err)}")
             retry_count += 1
             sleep(1)  # Add a delay between retries, if needed
 
-    flash('Max retries reached.')
+    flash('Max retries reached 😭.')
     flash('Please log in to access this page.')
     return redirect(url_for('conversation_interface')), 500
 
