@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, IntegerField, validators
-from wtforms.fields.simple import StringField, PasswordField, TextAreaField
+from wtforms.fields.simple import StringField, PasswordField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired
 
 app_form_bp = Blueprint('forms', __name__)
@@ -17,6 +17,7 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = StringField("Email:", validators=[DataRequired(), validators.Email()])
     password = PasswordField("Password:", validators=[DataRequired()])
+    remember_me = BooleanField('Remember Me: ', default=True)
     submit = SubmitField("LET M€ IN ¡!¡")
 
 

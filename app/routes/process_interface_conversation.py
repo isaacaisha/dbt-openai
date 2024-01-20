@@ -1,4 +1,3 @@
-import csv
 import json
 import pytz
 
@@ -16,7 +15,6 @@ from app.forms.app_forms import TextAreaForm
 from app.models.memory import Memory, db
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
-
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
