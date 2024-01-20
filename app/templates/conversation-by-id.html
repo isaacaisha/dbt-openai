@@ -39,7 +39,7 @@
             <div class="col-lg-8 col-md-10 mx-auto mb-3">
 
                 {% if error_message %}
-                    <div class="alert alert-info text-center">
+                    <div class="alert alert-warning text-center">
                         {{ error_message }}
                     </div>
                 {% endif %}
@@ -49,7 +49,7 @@
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
                             {% for message in messages %}
-                                <h5 class="alert-danger text-center">{{ message }}</h5>
+                                <h5 class="alert-info text-center">{{ message }}</h5>
                             {% endfor %}
                         {% endif %}
                     {% endwith %}

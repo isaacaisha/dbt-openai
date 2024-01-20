@@ -1,4 +1,6 @@
 import json
+from time import sleep
+
 import pytz
 
 from flask import Blueprint, render_template, request, send_file, jsonify, flash, redirect, url_for
@@ -20,6 +22,9 @@ llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
+
+# Maximum number of retries
+MAX_RETRIES = 3
 
 
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
@@ -114,17 +119,35 @@ def interface_answer():
         # Generate conversation context
         conversation_context = generate_conversation_context(user_input, user_conversations)
 
-        # Handle llm response and save data to the database
-        assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
+        # Initialize retry counter
+        retry_count = 0
 
-        # Save the data to the database
-        save_to_database(user_input, response)
+        while retry_count < MAX_RETRIES:
+            try:
+                # Handle llm response and save data to the database
+                assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
 
-        # Return the response as JSON, including both text and the path to the audio file
-        return jsonify({
-            "answer_text": assistant_reply,
-            "answer_audio_path": audio_file_path,
-        })
+                # Save the data to the database
+                save_to_database(user_input, response)
+
+                # Return the response as JSON, including both text and the path to the audio file
+                return jsonify({
+                    "answer_text": assistant_reply,
+                    "answer_audio_path": audio_file_path,
+                })
+
+            except Exception as err:
+                # Log the exception or handle it as needed
+                flash(f'Maximum number of retries reached.')
+                flash('Please log in to access this page.')
+                flash(f'Error: {err}.')
+                print(f"Unexpected {err}, {type(err)}")
+                retry_count += 1
+                sleep(1)  # Add a delay between retries, if needed
+
+        flash('Max retries reached.')
+        flash('Please log in to access this page.')
+        return redirect(url_for('conversation_interface')), 500
     else:
         flash('¡!¡ 😂RETRY 😭r LogIn🤣 ¡!¡')
         return redirect(url_for('conversation_interface')), 401
@@ -191,15 +214,15 @@ def show_story():
         # Modify your query to filter by owner_id
         memory_load = Memory.query.filter_by(owner_id=owner_id).all()
 
-        memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n'
+        memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n\n'
         memory_buffer += '\n'.join(
-            [f'{memory.user_name}: {memory.user_message}\n·SìįSí· Dbt: {memory.llm_response}' for memory in
+            [f'{memory.user_name}: {memory.user_message}\n·SìįSí· Dbt: {memory.llm_response}\n' for memory in
              memory_load][-3:])
 
         # Fetch the list of Memory objects for the current user
         memory_summary_list = Memory.query.filter_by(owner_id=owner_id).all()
         # Load the summary data for each memory object
-        summary_conversation = [memory.conversations_summary for memory in memory_summary_list][-3:]
+        summary_conversation = '\n'.join([memory.conversations_summary for memory in memory_summary_list][-3:])
 
         print(f'memory_buffer_story:\n{memory_buffer}\n')
         print(f'memory_load_story:\n{memory_load[-3:]}\n')
