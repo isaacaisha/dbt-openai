@@ -1,6 +1,8 @@
 import os
+from datetime import timedelta
 
-from flask_login import login_required
+from flask_login import login_required, LoginManager
+from app.models.memory import User
 
 from app import create_app
 
@@ -26,6 +28,20 @@ from app.routes.convers_functions import (select_conversation as conversation_se
 
 
 app = create_app()
+
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+
+login_manager = LoginManager()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+
+login_manager.init_app(app)
 
 
 # ------------------------------------------ @app.routes --------------------------------------------------------------#
