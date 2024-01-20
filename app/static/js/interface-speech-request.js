@@ -49,6 +49,16 @@ function sendRequest(prompt) {
                 audio.oncanplay = function() {
                     audio.play();
                 };
+            } else if (xhr.status === 401) {
+                // Handle 401 Unauthorized status
+                var errorContainer = document.getElementById('error-message');
+                errorContainer.textContent = "You are not logged in. Please log in to access this page.\n¡!¡😭¡!¡\n";
+                errorContainer.style.display = 'block';
+            } else {
+                // Handle other HTTP status codes
+                var errorContainer = document.getElementById('error-message');
+                errorContainer.textContent = "Unexpected error. Please try again later.";
+                errorContainer.style.display = 'block';
             }
         }
     };
