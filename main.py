@@ -17,13 +17,15 @@ from app.routes.process_interface_conversation import (conversation_interface as
                                                        interface_serve_audio as process_interface_audio_llm,
                                                        show_story as history)
 
-from app.routes.llm_conversation import (get_all_conversations as all_conversation_llm,
-                                         get_conversations_jsonify as conversation_jsonify_llm)
-
 from app.routes.convers_functions import (select_conversation as conversation_selected,
                                           get_conversation as access_conversation,
                                           delete_conversation as conversation_deleted)
 
+from app.routes.llm_conversation import (get_all_conversations as all_conversation_llm,
+                                         get_conversations_jsonify as conversation_jsonify_llm)
+
+from app.csv_files.database_into_csv import (save_database_to_csv as database_csv,
+                                             save_database_to_csv_route as route_csv)
 
 app = create_app()
 
@@ -116,6 +118,15 @@ def delete_conversation():
 @app.route("/api/conversations-jsonify")
 def get_conversations_jsonify():
     return conversation_jsonify_llm()
+
+
+def save_database_to_csv():
+    return database_csv()
+
+
+@app.route('/save-database-to-csv', methods=['GET'])
+def save_database_to_csv_route():
+    return route_csv()
 
 
 if __name__ == '__main__':
