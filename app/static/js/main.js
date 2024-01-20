@@ -82,7 +82,30 @@ document.getElementById('generateButton').addEventListener('click', function (ev
         document.getElementById('error-message').textContent = "";
         document.getElementById('error-message').style.display = 'none';
     }
+
+    // Check the response status code after the form submission
+    fetch('/interface/answer', {
+        method: 'POST',
+        body: new FormData(document.getElementById('prompt-form')),
+    }).then(response => {
+        if (response.status === 401) {
+            // Display an error message for 401 Unauthorized
+            document.getElementById('error-message').textContent =
+            "You are not logged in. Please log in to access this page.\n¡!¡😭¡!¡\n";
+            document.getElementById('error-message').style.display = 'block';
+        } else if (!response.ok) {
+            // Handle other error cases if needed
+            console.error('Error:', response.status);
+        } else {
+            // Clear any previous error message
+            document.getElementById('error-message').textContent = "";
+            document.getElementById('error-message').style.display = 'none';
+        }
+    }).catch(error => {
+        console.error('Fetch error:', error);
+    });
 });
+
 
 // Listen for input in the textarea and store the text
 document.getElementById('userInput').addEventListener('input', function () {

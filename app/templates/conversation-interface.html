@@ -86,6 +86,20 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
+            <!-- Other content in your template -->
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-danger text-center">
+      {% for message in messages %}
+        {{ message }}<br>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Other content in your template -->
+
 
             <div class="text-center">
                 <hr class="mb-3" style="color:yellow;">

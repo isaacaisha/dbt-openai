@@ -1,5 +1,4 @@
 import json
-from time import sleep
 
 import pytz
 
@@ -10,6 +9,7 @@ from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from datetime import datetime
+from time import sleep
 
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -109,21 +109,22 @@ def handle_llm_response(user_input, conversation_context):
 
 @interface_conversation_bp.route('/interface/answer', methods=['POST'])
 def interface_answer():
-    # Check if the user is authenticated
-    if current_user.is_authenticated:
-        user_input = request.form['prompt']
+    # Initialize retry counter
+    retry_count = 0
+    writing_text_form = TextAreaForm()
 
-        # Get conversations only for the current user
-        user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+    while retry_count < MAX_RETRIES:
+        try:
+            # Check if the user is authenticated
+            if current_user.is_authenticated:
+                user_input = request.form['prompt']
 
-        # Generate conversation context
-        conversation_context = generate_conversation_context(user_input, user_conversations)
+                # Get conversations only for the current user
+                user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-        # Initialize retry counter
-        retry_count = 0
+                # Generate conversation context
+                conversation_context = generate_conversation_context(user_input, user_conversations)
 
-        while retry_count < MAX_RETRIES:
-            try:
                 # Handle llm response and save data to the database
                 assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
 
@@ -136,21 +137,25 @@ def interface_answer():
                     "answer_audio_path": audio_file_path,
                 })
 
-            except Exception as err:
-                # Log the exception or handle it as needed
-                flash(f'Maximum number of retries reached.')
+            else:
+                flash('Max retries reached.')
                 flash('Please log in to access this page.')
-                flash(f'Error: {err}.')
-                print(f"Unexpected {err}, {type(err)}")
-                retry_count += 1
-                sleep(1)  # Add a delay between retries, if needed
+                message = 'Max retries reached 😭.\nPlease log in to access this page.'
+                return render_template('conversation-interface.html', writing_text_form=writing_text_form,
+                                       message=message, date=datetime.now().strftime("%a %d %B %Y")), 401
 
-        flash('Max retries reached.')
-        flash('Please log in to access this page.')
-        return redirect(url_for('conversation_interface')), 500
-    else:
-        flash('¡!¡ 😂RETRY 😭r LogIn🤣 ¡!¡')
-        return redirect(url_for('conversation_interface')), 401
+        except Exception as err:
+            # Log the exception or handle it as needed
+            flash(f'Maximum number of retries reached.')
+            flash('Please log in to access this page.')
+            flash(f'Error: {err}.')
+            print(f"Unexpected {err}, {type(err)}")
+            retry_count += 1
+            sleep(1)  # Add a delay between retries, if needed
+
+    flash('Max retries reached.')
+    flash('Please log in to access this page.')
+    return redirect(url_for('conversation_interface')), 500
 
 
 @interface_conversation_bp.route('/interface-audio')
