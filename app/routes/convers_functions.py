@@ -2,9 +2,9 @@ from flask import Blueprint, render_template, flash, url_for, redirect, request
 from flask_login import current_user
 from datetime import datetime
 
+from app.databases.database import get_db
 from app.forms.app_forms import ConversationIdForm, DeleteForm
 from app.models.memory import Memory, db
-
 
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
@@ -30,7 +30,11 @@ def select_conversation():
 
 @conversation_functionality_bp.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    conversation_ = Memory.query.filter_by(id=conversation_id).first()
+    # conversation_ = Memory.query.filter_by(id=conversation_id).first()
+
+    with get_db() as db:
+        # conversation_ = Memory.query.filter_by(id=conversation_id).first()
+        conversation_ = db.query(Memory).filter_by(id=conversation_id).first()
 
     try:
         if not conversation_:
