@@ -65,7 +65,7 @@ def delete_conversation():
             # Get the conversation_id from the form
             conversation_id = delete_conversation_form.conversation_id.data
             # Query the database to get the conversation to be deleted
-            conversation_to_delete = Memory.query.filter_by(id=conversation_id).first()  # Use Memory.query directly
+            conversation_to_delete = Memory.query.get(conversation_id)
             # Check if the conversation exists
             if not conversation_to_delete:
                 return render_template('conversation-not-found.html', current_user=current_user,
