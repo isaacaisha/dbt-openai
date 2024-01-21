@@ -132,6 +132,9 @@ def interface_answer():
                 # Save the data to the database
                 save_to_database(user_input, response)
 
+                # Save the data to the save_last_memory_to_csv
+                save_last_memory_to_csv()
+
                 # Return the response as JSON, including both text and the path to the audio file
                 return jsonify({
                     "answer_text": assistant_reply,
@@ -195,9 +198,6 @@ def save_to_database(user_input, response):
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
-
-        # Save the data to the save_last_memory_to_csv
-        save_last_memory_to_csv()
 
     except SQLAlchemyError as err:
         # Log the exception or handle it as needed

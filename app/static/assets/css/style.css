@@ -1,6 +1,4 @@
  body {
-    /*font-family: Arial, sans-serif;
-    text-align: center;*/
     color: #fff;
     background-image: url('../images/space.jpg');
     background-size: cover;
@@ -11,10 +9,6 @@
 large-image {
      width: 100%;
      max-width: 600px;
- }
-
-.completed {
-     text-decoration: 0.3rem line-through green;
  }
 
 #content > div.container-fluid > div > div {
@@ -156,7 +150,7 @@ label {
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
-/* inputs textarea 👨‍💻🚀 */
+/* inputs textarea 🚀 */
 #email, #name, #writing_text, #text_writing {
     color: #1295FA;
 }
@@ -174,6 +168,10 @@ label {
     width: 2.7rem;
 }
 
+.micro {
+    border: 0.1rem solid #000;
+}
+
 .loading {
     border: 0.1rem solid #AEFAFC;
     border-radius: 2.3rem;
@@ -188,11 +186,7 @@ label {
     width: 2.7rem;
 }
 
-.micro {
-    border: 0.1rem solid #000;
-}
-
-.language-btn, .btn-story {
+button.language-btn, .back-home {
     background-color: #9A30F3;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
@@ -202,8 +196,8 @@ label {
     text-decoration: None;
 }
 
-.language-btn:hover {
-    color: #000;
+button.language-btn:hover {
+    color: yellow;
 }
 
 #langAr, .btn-story:hover {
@@ -241,20 +235,10 @@ label {
 }
 
 .textarea-memory {
-    color: red;
+    color: #fd7e14;
     height: 199px;
     line-height: 1.9rem;
     padding: 0.9rem;
-}
-
-#final-result-speech-content {
-    border: 0.1rem solid #1295FA;
-    border-radius: 0.9rem;
-    color:purple;
-    font-family: 'Merriweather', sans-serif;
-    font-display: swap;
-    height: 91px;
-    min-height: 55px;
 }
 
 #userInput::placeholder {
@@ -272,19 +256,6 @@ textarea#generatedText {
     margin-bottom: 1rem;
 }
 
-.generate-text {
-    color: #fff;
-    background-color: #1295FA;
-    border: 0.1rem solid #AEFAFC;
-}
-
-.generate-text:hover {
-    background-color: #1295FA;
-    border: 0.1rem solid #73DD7E;
-    color: #73DD7E;
-}
-
-# --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
 .label_ {
     background-color: #fff;
     border-radius: 19%;
@@ -293,87 +264,52 @@ textarea#generatedText {
     padding: 0.1rem;
 }
 
-#start-button, #final_result {
+#start-button {
     color: #fff;
     background-color: #1295FA;
     border: 0.1rem solid #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
-#start-button:hover, #final_result:hover {
+#start-button:hover {
     color: #73DD7E;
 }
 
-#speechRecognitionButton, #final_result_speech {
+#speechRecognitionButton {
     color: #fff;
     background-color: #30ABB7;
     border: 0.1rem solid #AEFAFC;
     font-family: 'Cardo';
 }
 
-#speechRecognitionButton:hover, #final_result_speech:hover, .btn.replay {
+#speechRecognitionButton:hover {
     background-color: 9A30F3;
     border: 0.1rem solid #73DD7E;
     color: #9A30F3;
 }
 
-#generateButton, #showResultButton {
-    color: #37EC37;
-}
-
-#generateButton:hover {
-    color: #fff;
-}
-
-.generate-text {
-    color: #fff;
-    background-color: #9A30F3;
+#generateButton, #playbackButton {
+    background-color: #AEFAFC;;
     border: 0.1rem solid #AEFAFC;
-    margin-top: 1rem;
-    font-family: 'Merriweather', sans-serif;
+    color: #8e2cb8;
 }
 
-.generate-text:hover {
-    background-color: #9A30F3;
-    color: #73DD7E;
+#generateButton:hover, #playbackButton:hover {
+    color: #30ABB7;
 }
 
 #final-result-content, #resultMemo > h3 {
     color: #1295FA;
 }
 
-textarea#writing_text.form-control, #final-result-content {
+textarea#writing_text.form-control {
     min-height: 55px;
     font-family: 'Merriweather', sans-serif;
     height: 55px;
 }
 
-#final-result-content {
-    margin: 0 0 1rem;
-    background-color: #fff;
-    padding: 0.5rem;
-}
-
 #showResultButton {
     font-size: 1.09rem;
-}
-
-.info-btn > a {
-    color: #fff;
-    font-family: 'Merriweather', sans-serif;
-    font-size: 0.9rem;
-    text-decoration: None;
-}
-
-.info-btn > a:hover {
-    color: #000;
-}
-
-.btn.conversation-details {
-    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
-    border: 0.1rem solid #AEFAFC;
-    border-radius: 0.3rem;
-    font-size: 1.1rem;
 }
 
 .btn.fastapi-docs {
