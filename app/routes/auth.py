@@ -14,6 +14,11 @@ def register():
     register_form = RegisterForm()
 
     if request.method == "POST":
+        # Check if the passwords match
+        if register_form.password.data != register_form.confirm_password.data:
+            flash("Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡")
+            return redirect(url_for('register'))
+
         # If user's email already exists
         if User.query.filter_by(email=register_form.email.data).first():
             # Send a flash message
