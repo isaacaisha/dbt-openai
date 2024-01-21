@@ -13,7 +13,6 @@ from time import sleep
 
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.csv_files.database_into_csv import save_last_memory_to_csv
 from app.forms.app_forms import TextAreaForm
 from app.models.memory import Memory, db
 
@@ -131,9 +130,6 @@ def interface_answer():
 
                 # Save the data to the database
                 save_to_database(user_input, response)
-
-                # Save the data to the save_last_memory_to_csv
-                save_last_memory_to_csv()
 
                 # Return the response as JSON, including both text and the path to the audio file
                 return jsonify({
