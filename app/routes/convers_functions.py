@@ -30,7 +30,7 @@ def select_conversation():
 
 @conversation_functionality_bp.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    conversation_ = Memory.query.filter_by(id=conversation_id).first()
+    conversation_ = Memory.query.get(conversation_id)
 
     try:
         if not conversation_:
@@ -47,7 +47,6 @@ def get_conversation(conversation_id):
         print(f"Unexpected {err}, {type(err)}")
         flash(f'😂RETRY🤣')
         flash('Or Please log in to access this page.')
-        # flash(f'Error: {err}.')
         return redirect(url_for('select_conversation'))
     else:
         # Format created_at timestamp
@@ -66,7 +65,7 @@ def delete_conversation():
             # Get the conversation_id from the form
             conversation_id = delete_conversation_form.conversation_id.data
             # Query the database to get the conversation to be deleted
-            conversation_to_delete = Memory.query.filter_by(id=conversation_id).first()  # Use Memory.query directly
+            conversation_to_delete = Memory.query.get(conversation_id)
             # Check if the conversation exists
             if not conversation_to_delete:
                 return render_template('conversation-delete-not-found.html', current_user=current_user,
@@ -86,6 +85,5 @@ def delete_conversation():
     except Exception as err:
         flash(f'🤣RETRY😂')
         flash('Or Please log in to access this page.')
-        # flash(f'Error: {err}.')
         print(f"Unexpected {err}, {type(err)}")
         return redirect(url_for('delete_conversation'))
