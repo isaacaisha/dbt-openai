@@ -14,7 +14,6 @@ from time import sleep
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.csv_files.database_into_csv import save_last_memory_to_csv
-from app.databases.database import get_db
 from app.forms.app_forms import TextAreaForm
 from app.models.memory import Memory, db
 
@@ -222,10 +221,7 @@ def show_story():
         owner_id = current_user.id
 
         # Modify your query to filter by owner_id
-        # memory_load = Memory.query.filter_by(owner_id=owner_id).all()
-
-        with get_db() as db:
-            memory_load = db.query(Memory).filter_by(owner_id=owner_id).all()
+        memory_load = Memory.query.filter_by(owner_id=owner_id).all()
 
         memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n\n'
         memory_buffer += '\n'.join(
@@ -233,11 +229,9 @@ def show_story():
              memory_load][-3:])
 
         # Fetch the list of Memory objects for the current user
-        # memory_summary_list = Memory.query.filter_by(owner_id=owner_id).all()
-        with get_db() as db:
-            memory_summary_list = db.query(Memory).filter_by(owner_id=owner_id).all()
-            # Load the summary data for each memory object
-            summary_conversation = '\n'.join([memory.conversations_summary for memory in memory_summary_list][-3:])
+        memory_summary_list = Memory.query.filter_by(owner_id=owner_id).all()
+        # Load the summary data for each memory object
+        summary_conversation = '\n'.join([memory.conversations_summary for memory in memory_summary_list][-3:])
 
         print(f'memory_buffer_story:\n{memory_buffer}\n')
         print(f'memory_load_story:\n{memory_load[-3:]}\n')
