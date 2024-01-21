@@ -20,8 +20,6 @@ from .routes.home_process import home_conversation_bp
 from .routes.convers_functions import conversation_functionality_bp
 from .routes.llm_conversation import llm_conversation_bp
 
-from .csv_files.database_into_csv import memory_db_csv_bp
-
 
 _ = load_dotenv(find_dotenv())  # read local .env file
 
@@ -75,7 +73,6 @@ def create_app():
     app.register_blueprint(conversation_functionality_bp, name='conversation_function')
     app.register_blueprint(llm_conversation_bp, name='llm_conversation')
     app.register_blueprint(schemas_bp, name='schemas')
-    app.register_blueprint(memory_db_csv_bp, name='memory_conversations')
 
     return app
 

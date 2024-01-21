@@ -30,7 +30,6 @@ def select_conversation():
 
 @conversation_functionality_bp.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    #conversation_ = Memory.query.filter_by(id=conversation_id).first()
     conversation_ = Memory.query.get(conversation_id)
 
     try:
@@ -67,15 +66,13 @@ def delete_conversation():
             conversation_id = delete_conversation_form.conversation_id.data
             # Query the database to get the conversation to be deleted
             conversation_to_delete = Memory.query.filter_by(id=conversation_id).first()  # Use Memory.query directly
-            # Query the database to get the conversation to be deleted
-            #conversation_to_delete = Memory.query.get(conversation_id)
             # Check if the conversation exists
             if not conversation_to_delete:
-                return render_template('conversation-delete-not-found.html', current_user=current_user,
+                return render_template('conversation-not-found.html', current_user=current_user,
                                        conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
             # Check if the current user is the owner of the conversation
             if conversation_to_delete.owner_id != current_user.id:
-                return render_template('conversation-delete-forbidden.html', current_user=current_user,
+                return render_template('conversation-forbidden.html', current_user=current_user,
                                        conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
             else:
                 # Delete the conversation
