@@ -186,7 +186,7 @@ label {
     width: 2.7rem;
 }
 
-button.language-btn, .back-home {
+button.language-btn {
     background-color: #9A30F3;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
@@ -312,6 +312,19 @@ textarea#writing_text.form-control {
     font-size: 1.09rem;
 }
 
+/* btn back-home */
+.back-home > a {
+    border: 0.1rem solid #9A70F3;
+    border-radius: 19%;
+    color: #fff;
+    font-size: .9rem;
+    padding: .7rem;
+}
+
+.back-home > a:hover {
+    color: #fff;
+}
+
 .btn.fastapi-docs {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.1rem solid #AEFAFC;
@@ -344,7 +357,6 @@ hr.mb-3, body hr {
     border: 0.1rem solid;
     border-radius: 0.5rem;
     margin: 0 3rem;
-    #margin-top: 1.9rem;
 }
 
 #footer {

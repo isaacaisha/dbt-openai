@@ -38,7 +38,7 @@ def get_all_conversations():
                                )
 
     except Exception as err:
-        flash(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
+        print(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
         return render_template('authentication-error.html', error_message='User not authenticated',
                                current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
 
