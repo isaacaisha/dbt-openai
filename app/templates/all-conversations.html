@@ -38,6 +38,12 @@
         <h3 class="text-center mb-3" style="margin-top:0;">Your Conversations</h3>
         <hr class="mb-3" style="color:green;">
 
+        <div class="text-center">
+            {% if not serialized_conversations %}
+            <h3 style="color:#fff;">first interact with<br><span style="color:#9A30F3;">·SìįSí·Dbt·</span></h3>
+            {% endif %}
+        </div>
+
         <!--<div class="d-flex justify-content-end">-->
         <div class="d-flex justify-content-center mb-5">
             <button class="btn btn-outline-info submit scroll-down "
@@ -56,7 +62,7 @@
                     <span style="color:#9A30F3;">
                         <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
                     </span><br>
-                    <span style="color:#1295FA;"><strong>SìįSí Dbt Response:</strong> {{ conversation_.llm_response|safe }}</span><br>
+                    <span style="color:#1295FA;"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
                     <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
                     <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
                 </li>
@@ -80,7 +86,7 @@
             <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:purple;">
                 "conversation_id": "{{ conversation.id }}"
                 "{{ conversation.user_name }}": "{{ conversation.user_message }}"
-                "·SìįSí· Dbt": "{{ conversation.llm_response }}"
+                "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
                 "conversation_summary": "{{ conversation.conversations_summary }}"
                 "created_at": "{{ conversation.created_at }}"
             </textarea>

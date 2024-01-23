@@ -33,10 +33,16 @@
         <h3 class="text-center conversations-details" style="margin-top:0;">Actual Conversation</h3>
         <hr class="mb-5" style="color:green;">
 
+        <div class="text-center">
+            {% if not serialized_conversations %}
+            <h3 style="color:#fff;">first interact with<br><span style="color:#9A30F3;">·SìįSí·Dbt·</span></h3>
+            {% endif %}
+        </div>
+
         <div id="resultMemo" style="" class="text-center mb-3">
             <hr class="mb-3" style="color:yellow;">
 
-            <h3 style="margin-top:0;">Memory Load</h3>
+            <h3 style="margin-top:0; color:#17a2b8;">Memory Load</h3>
             <textarea class="textarea-memory mb-3" style="color:purple;">
             {% if memory_load %}
                 {% for memory in memory_load %}
@@ -46,20 +52,20 @@
                 {{ memory.llm_response }}
                 {% endfor %}
             {% else %}
-                No Data Available. First Interact With ·SìįSí·
+                No Data Available. First Interact With ·SìįSí·Dbt·
             {% endif %}
             </textarea>
 
             <hr class="mb-5" style="color:yellow;">
             <hr class="mb-3" style="color:red;">
 
-            <h3 style="margin-top:0;">Summary</h3>
+            <h3 style="margin-top:0; color:#17a2b8;">Summary</h3>
             <textarea class="textarea-memory mb-3" style="color:#17a2b8;">{{ summary_conversation|safe }}</textarea>
 
             <hr class="mb-5" style="color:red;">
             <hr class="mb-3" style="color:green;">
 
-            <h3 style="margin-top:0;">Memory Buffer</h3>
+            <h3 style="margin-top:0; color:#17a2b8;">Memory Buffer</h3>
             <textarea class="textarea-memory mb-3" style="color:green;">{{ memory_buffer|safe }}</textarea>
 
             <hr class="mb-5" style="color:green;">
