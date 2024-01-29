@@ -12,7 +12,6 @@ from flask_login import LoginManager
 from .databases.database import database_bp
 from .forms.app_forms import app_form_bp
 from .models.memory import memory_bp, db, User
-from .schemas.schemas import schemas_bp
 
 from .routes.auth import auth_bp
 from .routes.process_interface_conversation import interface_conversation_bp
@@ -72,7 +71,6 @@ def create_app():
     app.register_blueprint(interface_conversation_bp, name='conversation_interface')
     app.register_blueprint(conversation_functionality_bp, name='conversation_function')
     app.register_blueprint(llm_conversation_bp, name='llm_conversation')
-    app.register_blueprint(schemas_bp, name='schemas')
 
     return app
 
