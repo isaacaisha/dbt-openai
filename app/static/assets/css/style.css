@@ -58,13 +58,31 @@ large-image {
     margin-bottom: 0rem;
 }
 
+/* SìįSí Dbt 🚀 navbar-brand */
 #content > nav > a {
-    color: #20c997;
+    color: #9ED2C6;
 }
 
+/* Menu navbar-toggler-icon 🚀  */
 #content > nav > button {
-    color: #20c997;
-    border: 0.1rem solid #20c997;
+    color: #9ED2C6;
+    border: 0.1rem solid  #9ED2C6;
+}
+
+.navbar-toggler-icon {
+  background-color: #9ED2C6;
+  border: 0.09rem solid #9ED2C6;
+  border-top-left-radius: 55%;
+  border-bottom-right-radius: 55%;
+}
+
+.navbar-toggler-icon:hover {
+  background-color: #9ED2C6;
+  border: 0.09rem solid #9ED2C6;
+  border-radius: 0;
+  border-top-right-radius: 55%;
+  border-bottom-left-radius: 55%;
+  font-size: 1.5rem;
 }
 
 #navbarSupportedContent > ul > li > a {
