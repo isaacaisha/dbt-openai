@@ -70,15 +70,12 @@ large-image {
 }
 
 .navbar-toggler-icon {
-  background-color: #9ED2C6;
   border: 0.09rem solid #9ED2C6;
   border-top-left-radius: 55%;
   border-bottom-right-radius: 55%;
 }
 
 .navbar-toggler-icon:hover {
-  background-color: #9ED2C6;
-  border: 0.09rem solid #9ED2C6;
   border-radius: 0;
   border-top-right-radius: 55%;
   border-bottom-left-radius: 55%;
