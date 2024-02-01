@@ -171,7 +171,7 @@ label, input, #userInput, #generatedText, textarea, #historiesContainerJson > pr
 }
 
 /* textarea 🚀 */
-#historiesContainerJson > pre {
+input, #userInput, #historiesContainerJson > pre {
     color: #9ED2C6 !important;
 }
 
@@ -239,7 +239,6 @@ button.language-btn:hover {
 #userInput, #generatedText, #final-result-content.form-control.result, .textarea-memory {
     border: 0.1rem solid #1295FA;
     border-radius: 0.9rem;
-    color:#0041F6;
     font-family: 'Montserrat', sans-serif;
     font-display: swap;
     height: 91px;
@@ -265,7 +264,7 @@ button.language-btn:hover {
 }
 
 textarea#generatedText {
-    color: #096752;
+    color: #AEFAFC;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin-bottom: 1rem;
 }
@@ -273,7 +272,7 @@ textarea#generatedText {
 .label_ {
     background-color: #fff;
     border-radius: 19%;
-    color: #096752;
+    color: #AEFAFC;
     font-size: 1rem;
     padding: 0.1rem;
 }
