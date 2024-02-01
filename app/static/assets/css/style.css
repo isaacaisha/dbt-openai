@@ -165,15 +165,14 @@ label {
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
-/* inputs textarea 🚀 */
-#email, #name, #writing_text, #text_writing {
-    color: #1295FA;
+/* textarea 🚀 */
+label, input, #userInput, #generatedText, textarea, #historiesContainerJson > pre {
+    background-color: rgba(0, 0, 0, 0.175) !important;
 }
 
-#submit.success.btn.submit {
-    background-color: #5cb85c;
-    border-color: #4cae4c;
-    color: blue;
+/* textarea 🚀 */
+#historiesContainerJson > pre {
+    color: #9ED2C6 !important;
 }
 
 .crown, .micro {

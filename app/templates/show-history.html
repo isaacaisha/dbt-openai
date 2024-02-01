@@ -43,7 +43,7 @@
             <hr class="mb-3" style="color:yellow;">
 
             <h3 style="margin-top:0; color:#17a2b8;">Memory Load</h3>
-            <textarea class="textarea-memory mb-3" style="color:purple;">
+            <textarea class="textarea-memory mb-3" style="color:#9ED2C6;">
             {% if memory_load %}
                 {% for memory in memory_load %}
                     {{ memory.user_name }}:
@@ -60,13 +60,13 @@
             <hr class="mb-3" style="color:red;">
 
             <h3 style="margin-top:0; color:#17a2b8;">Summary</h3>
-            <textarea class="textarea-memory mb-3" style="color:#17a2b8;">{{ summary_conversation|safe }}</textarea>
+            <textarea class="textarea-memory mb-3" style="color:#AEFAFC;">{{ summary_conversation|safe }}</textarea>
 
             <hr class="mb-5" style="color:red;">
             <hr class="mb-3" style="color:green;">
 
             <h3 style="margin-top:0; color:#17a2b8;">Memory Buffer</h3>
-            <textarea class="textarea-memory mb-3" style="color:green;">{{ memory_buffer|safe }}</textarea>
+            <textarea class="textarea-memory mb-3" style="color:#9ED2C6;">{{ memory_buffer|safe }}</textarea>
 
             <hr class="mb-5" style="color:green;">
             <hr class="mb-3" style="color:yellow;">
