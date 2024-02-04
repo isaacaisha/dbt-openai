@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
 from flask_login import current_user
 from datetime import datetime
 
@@ -10,10 +10,13 @@ llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='t
 @llm_conversation_bp.route("/get-all-conversations")
 def get_all_conversations():
     try:
-        owner_id = current_user.id
-
-        # Fetch memories from the database
-        conversations = Memory.query.filter_by(owner_id=owner_id).all()
+        if current_user.is_authenticated:
+            owner_id = current_user.id
+            # Fetch memories from the database
+            conversations = Memory.query.filter_by(owner_id=owner_id).all()
+        else:
+            # Handle a case where user is not authenticated
+            return redirect(url_for('get_all_conversations'))
 
         # Create a list to store serialized data for each Memory object
         serialized_conversations = []

@@ -235,6 +235,6 @@ def show_story():
                                summary_conversation=summary_conversation,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
-        return render_template('authentication-error.html', error_message='User not authenticated',
+        return render_template('show-history.html', error_message='User not authenticated',
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
