@@ -68,6 +68,12 @@
 
             {{ writing_text_form.csrf_token }}
 
+            {% if not current_user.is_authenticated: %}
+                <div class="alert alert-info text-center">
+                    User isn't authenticated, RELOAD or LOGIN -¡!¡-
+                </div>
+            {% endif %}
+
             {% for message in get_flashed_messages() %}
                 <div class="alert alert-info text-center">
                     {{ message }}
@@ -81,20 +87,6 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-            <!-- Other content in your template -->
-
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div class="alert alert-danger text-center">
-      {% for message in messages %}
-        {{ message }}<br>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
-
-<!-- Other content in your template -->
-
 
             <div class="text-center">
                 <hr class="mb-3" style="color:yellow;">

@@ -53,7 +53,7 @@ function sendRequest(prompt) {
                 // Handle 401 Unauthorized status
                 var errorContainer = document.getElementById('error-message');
                 errorContainer.textContent =
-                    "RE-CLICK\nOr You are not logged in. Please log in to access this page.\n¡!¡😭¡!¡\n";
+                    "RE-CLICK\nOr You are not Authenticated. Please log in to access this page.\n-¡!¡-😭-¡!¡-\n";
                 errorContainer.style.display = 'block';
             } else {
                 // Handle other HTTP status codes

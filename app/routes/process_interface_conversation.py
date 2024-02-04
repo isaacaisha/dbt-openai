@@ -2,14 +2,13 @@ import json
 
 import pytz
 
-from flask import Blueprint, render_template, request, send_file, jsonify, flash, redirect, url_for
+from flask import Blueprint, render_template, request, send_file, jsonify, redirect, url_for
 from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from datetime import datetime
-from time import sleep
 
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -22,9 +21,6 @@ llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
-
-# Maximum number of retries
-MAX_RETRIES = 3
 
 
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
@@ -109,53 +105,29 @@ def handle_llm_response(user_input, conversation_context):
 
 @interface_conversation_bp.route('/interface/answer', methods=['POST'])
 def interface_answer():
-    # Initialize retry counter
-    retry_count = 0
-    writing_text_form = TextAreaForm()
+    # Check if the user is authenticated
+    if current_user.is_authenticated:
+        user_input = request.form['prompt']
 
-    while retry_count < MAX_RETRIES:
-        try:
-            # Check if the user is authenticated
-            if current_user.is_authenticated:
-                user_input = request.form['prompt']
+        # Get conversations only for the current user
+        user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
 
-                # Get conversations only for the current user
-                user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+        # Generate conversation context
+        conversation_context = generate_conversation_context(user_input, user_conversations)
 
-                # Generate conversation context
-                conversation_context = generate_conversation_context(user_input, user_conversations)
+        # Handle llm response and save data to the database
+        assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
 
-                # Handle llm response and save data to the database
-                assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
+        # Save the data to the database
+        save_to_database(user_input, response)
 
-                # Save the data to the database
-                save_to_database(user_input, response)
-
-                # Return the response as JSON, including both text and the path to the audio file
-                return jsonify({
-                    "answer_text": assistant_reply,
-                    "answer_audio_path": audio_file_path,
-                })
-
-            else:
-                flash('Max retries reached.')
-                flash('Please log in to access this page.')
-                message = 'Max retries reached 😭.\nPlease log in to access this page.'
-                return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                                       message=message, date=datetime.now().strftime("%a %d %B %Y")), 401
-
-        except Exception as err:
-            # Log the exception or handle it as needed
-            flash(f'Maximum number of retries reached.')
-            flash('Please log in to access this page 😭.')
-            flash(f'Error: {err}.')
-            print(f"Unexpected {err}, {type(err)}")
-            retry_count += 1
-            sleep(1)  # Add a delay between retries, if needed
-
-    flash('Max retries reached 😭.')
-    flash('Please log in to access this page.')
-    return redirect(url_for('conversation_interface')), 500
+        # Return the response as JSON, including both text and the path to the audio file
+        return jsonify({
+            "answer_text": assistant_reply,
+            "answer_audio_path": audio_file_path,
+        })
+    else:
+        return redirect(url_for('interface_answer')), 401
 
 
 @interface_conversation_bp.route('/interface-audio')
