@@ -221,7 +221,7 @@ def show_story():
 
         memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n\n'
         memory_buffer += '\n'.join(
-            [f'{memory.user_name}: {memory.user_message}\n·SìįSí· Dbt: {memory.llm_response}\n' for memory in
+            [f'{memory.user_name}: {memory.user_message}\n·SìįSí·Dbt·: {memory.llm_response}\n' for memory in
              memory_load])
         # Fetch the list of Memory objects for the current user
         memory_summary_list = Memory.query.filter_by(owner_id=owner_id).all()
@@ -235,6 +235,7 @@ def show_story():
                                summary_conversation=summary_conversation,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
-        return render_template('show-history.html', error_message='User not authenticated',
+        error_message = 'User not authenticated, RELOAD or LOGIN -¡!¡-'
+        return render_template('show-history.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))

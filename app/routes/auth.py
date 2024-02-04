@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, make_response
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -76,13 +76,8 @@ def login():
             # Log in the user
             login_user(user, remember=remember_me)
 
-            # Create the response object
-            response = make_response(redirect(url_for('conversation_interface')))
-
-            # Set the 'user_id' cookie with the user's ID
-            response.set_cookie('user_id', str(user.id), samesite='None', secure=True)
-
-            return response
+            # Redirect to the appropriate page after login
+            return redirect(url_for('conversation_interface'))
 
     return render_template("login.html", login_form=login_form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))

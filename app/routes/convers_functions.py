@@ -43,17 +43,17 @@ def get_conversation(conversation_id):
             return render_template('conversation-forbidden.html', current_user=current_user,
                                    conversation_=conversation_, conversation_id=conversation_id,
                                    date=datetime.now().strftime("%a %d %B %Y"))
+        else:
+            # Format created_at timestamp
+            formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
+            return render_template('conversation-details.html', current_user=current_user,
+                                   conversation_=conversation_, formatted_created_at=formatted_created_at,
+                                   conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         print(f"Unexpected {err}, {type(err)}")
-        flash(f'REL😎AD & 😂RETRY🤣')
+        flash(f'😂RETRY🤣')
         flash('Or Please log in to access this page.')
         return redirect(url_for('select_conversation'))
-    else:
-        # Format created_at timestamp
-        formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
-        return render_template('conversation-details.html', current_user=current_user,
-                               conversation_=conversation_, formatted_created_at=formatted_created_at,
-                               conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_functionality_bp.route('/delete-conversation', methods=['GET', 'POST'])
@@ -83,7 +83,7 @@ def delete_conversation():
         return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
                                current_user=current_user, delete_conversation_form=delete_conversation_form)
     except Exception as err:
-        flash(f'REL😎AD & 🤣RETRY😂')
+        flash(f'🤣RETRY😂')
         flash('Or Please log in to access this page.')
         print(f"Unexpected {err}, {type(err)}")
         return redirect(url_for('delete_conversation'))

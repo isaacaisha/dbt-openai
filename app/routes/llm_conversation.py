@@ -9,41 +9,38 @@ llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='t
 
 @llm_conversation_bp.route("/get-all-conversations")
 def get_all_conversations():
-    try:
-        if current_user.is_authenticated:
-            owner_id = current_user.id
-            # Fetch memories from the database
-            conversations = Memory.query.filter_by(owner_id=owner_id).all()
-        else:
-            # Handle a case where user is not authenticated
-            return redirect(url_for('get_all_conversations'))
+    if current_user.is_authenticated:
+        owner_id = current_user.id
+        # Fetch memories from the database
+        conversations = Memory.query.filter_by(owner_id=owner_id).all()
+    else:
+        # Handle a case where user is not authenticated
+        error_message = 'User not authenticated, RELOAD or LOGIN -¡!¡-'
+        return render_template('all-conversations.html', error_message=error_message,
+                               current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
-        # Create a list to store serialized data for each Memory object
-        serialized_conversations = []
+    # Create a list to store serialized data for each Memory object
+    serialized_conversations = []
 
-        for conversation_ in conversations:
-            serialized_history = {
-                "id": conversation_.id,
-                "owner_id": conversation_.owner_id,
-                "user_name": conversation_.user_name,
-                "user_message": conversation_.user_message,
-                "llm_response": conversation_.llm_response,
-                "conversations_summary": conversation_.conversations_summary,
-                'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
-            }
+    for conversation_ in conversations:
+        serialized_history = {
+            "id": conversation_.id,
+            "owner_id": conversation_.owner_id,
+            "user_name": conversation_.user_name,
+            "user_message": conversation_.user_message,
+            "llm_response": conversation_.llm_response,
+            "conversations_summary": conversation_.conversations_summary,
+            'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
+        }
 
-            serialized_conversations.append(serialized_history)
+        serialized_conversations.append(serialized_history)
 
-        return render_template('all-conversations.html',
-                               current_user=current_user, owner_id=owner_id, conversations=serialized_conversations,
-                               serialized_conversations=serialized_conversations,
-                               date=datetime.now().strftime("%a %d %B %Y")
-                               )
-
-    except Exception as err:
-        print(f'Unexpected: {str(err)}, \ntype: {type(err)} 😭 ¡!¡')
-        return render_template('authentication-error.html', error_message='User not authenticated',
-                               current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
+    return render_template('all-conversations.html',
+                           current_user=current_user, owner_id=owner_id, conversations=serialized_conversations,
+                           serialized_conversations=serialized_conversations,
+                           date=datetime.now().strftime("%a %d %B %Y")
+                           )
 
 
 @llm_conversation_bp.route('/api/conversations-jsonify', methods=['GET'])
