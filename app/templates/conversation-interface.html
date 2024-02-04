@@ -69,9 +69,9 @@
             {{ writing_text_form.csrf_token }}
 
             {% if not current_user.is_authenticated: %}
-                <div class="alert alert-info text-center">
+                <h5 class="alert alert-info text-center">
                     User isn't authenticated, RELOAD or LOGIN -¡!¡-
-                </div>
+                </h5>
             {% endif %}
 
             {% for message in get_flashed_messages() %}
