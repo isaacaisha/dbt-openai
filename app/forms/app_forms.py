@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, IntegerField, validators
 from wtforms.fields.simple import StringField, PasswordField, BooleanField, TextAreaField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, InputRequired, NumberRange
 
 app_form_bp = Blueprint('forms', __name__)
 
@@ -39,7 +39,7 @@ class TextAreaForm(FlaskForm):
 
 
 class ConversationIdForm(FlaskForm):
-    conversation_id = IntegerField("Conversation ID:")
+    conversation_id = IntegerField("Conversation ID:", validators=[InputRequired(), NumberRange(min=1)])
     submit = SubmitField('SELECT ¡!¡')
 
 
