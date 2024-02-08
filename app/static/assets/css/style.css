@@ -415,19 +415,19 @@ hr.mb-3, body hr {
 
 /* Style the Popup Container */
 .popup-container {
-    display: none;
+    /* display: none; */
     /* Initially hide the container */
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: white;
-    padding: 20px;
+    padding: 19px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 9999;
     /* Ensure it's on top of other elements */
+    z-index: 9999;
 }
 
 /* Style the Popup Content */
