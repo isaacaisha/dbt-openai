@@ -163,6 +163,7 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #fff;
+    background-image: url('../images/space.jpg');
     padding: 19px;
     border: 1px solid #ccc;
     border-radius: 5px;
