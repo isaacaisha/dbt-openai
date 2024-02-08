@@ -195,10 +195,12 @@ def show_story():
         memory_buffer += '\n'.join(
             [f'{memory.user_name}: {memory.user_message}\n·SìįSí·Dbt·: {memory.llm_response}\n' for memory in
              memory_load])
+        
         # Fetch the list of Memory objects for the current user
-        memory_summary_list = Memory.query.filter_by(owner_id=owner_id).all()
-        # Load the summary data for each memory object
-        summary_conversation = '\n'.join([memory.conversations_summary for memory in memory_summary_list][-3:])
+        memory_summary_list = Memory.query.filter_by(owner_id=owner_id).order_by(Memory.created_at.desc()).limit(3).all()
+        # Load the summary data for the lastest 3 conversations for each memory object from memory_summary_list
+        summary_conversation = '\n'.join([memory.conversations_summary for memory in memory_summary_list])
+
         print(f'memory_buffer_story:\n{memory_buffer}\n')
         print(f'memory_load_story:\n{memory_load}\n')
         print(f'summary_conversation_story:\n{summary_conversation}\n')

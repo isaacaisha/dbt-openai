@@ -1,66 +1,79 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template
 from flask_login import current_user
 from datetime import datetime
 
 from app.models.memory import Memory
 
+
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
+
+
+def get_conversations(owner_id=None, limit=None, order_by_desc=False):
+    query = Memory.query
+    if owner_id is not None:
+        query = query.filter_by(owner_id=owner_id)
+    if order_by_desc:
+        query = query.order_by(Memory.id.desc())
+    if limit is not None:
+        query = query.limit(limit)
+    return query.all()
+
+
+def serialize_conversation(conversation):
+    return {
+        "id": conversation.id,
+        "owner_id": conversation.owner_id,
+        "user_name": conversation.user_name,
+        "user_message": conversation.user_message,
+        "llm_response": conversation.llm_response,
+        "conversations_summary": conversation.conversations_summary,
+        'created_at': conversation.created_at.strftime("%a %d %B %Y %H:%M:%S"),
+    }
 
 
 @llm_conversation_bp.route("/get-all-conversations")
 def get_all_conversations():
-    if current_user.is_authenticated:
-        owner_id = current_user.id
-        # Fetch memories from the database
-        conversations = Memory.query.filter_by(owner_id=owner_id).all()
-    else:
-        # Handle a case where user is not authenticated
+    if not current_user.is_authenticated:
         error_message = 'User not authenticated, RELOAD or LOGIN -¡!¡-'
         return render_template('all-conversations.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
-    # Create a list to store serialized data for each Memory object
-    serialized_conversations = []
-
-    for conversation_ in conversations:
-        serialized_history = {
-            "id": conversation_.id,
-            "owner_id": conversation_.owner_id,
-            "user_name": conversation_.user_name,
-            "user_message": conversation_.user_message,
-            "llm_response": conversation_.llm_response,
-            "conversations_summary": conversation_.conversations_summary,
-            'created_at': conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S"),
-        }
-
-        serialized_conversations.append(serialized_history)
+    owner_id = current_user.id
+    conversations = get_conversations(owner_id=owner_id)
+    serialized_conversations = [serialize_conversation(conversation) for conversation in conversations]
 
     return render_template('all-conversations.html',
                            current_user=current_user, owner_id=owner_id, conversations=serialized_conversations,
                            serialized_conversations=serialized_conversations,
-                           date=datetime.now().strftime("%a %d %B %Y")
-                           )
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+@llm_conversation_bp.route("/first-last-conversations")
+def firtest_latest_conversations():
+    if not current_user.is_authenticated:
+        error_message = 'User not authenticated, RELOAD or LOGIN -¡!¡-'
+        return render_template('first-last-conversations.html', error_message=error_message,
+                               current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+
+    owner_id = current_user.id
+    first_conversations = get_conversations(owner_id=owner_id, limit=3)
+    serialized_first_conversations = [serialize_conversation(conversation) for conversation in first_conversations]
+
+    last_conversations = get_conversations(owner_id=owner_id, limit=3, order_by_desc=True)
+    serialized_last_conversations = [serialize_conversation(conversation) for conversation in last_conversations]
+
+    return render_template('first-last-conversations.html',
+                           current_user=current_user, owner_id=owner_id,
+                           first_conversations=serialized_first_conversations,
+                           last_conversations=serialized_last_conversations,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @llm_conversation_bp.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
-    # Fetch memories from the database
-    conversations = Memory.query.all()
-    # Convert the conversations to a list of dictionaries
-    serialized_conversations = []
-
-    for conversation_ in conversations:
-        conversation_dict = {
-            'id': conversation_.id,
-            'user_name': conversation_.user_name,
-            'user_message': conversation_.user_message,
-            'llm_response': conversation_.llm_response,
-            "conversations_summary": conversation_.conversations_summary,
-            'created_at': conversation_.created_at.strftime("%a %d %B %Y"),
-        }
-
-        serialized_conversations.append(conversation_dict)
+    conversations = get_conversations()
+    serialized_conversations = [serialize_conversation(conversation) for conversation in conversations]
 
     return render_template('database-conversations.html', date=datetime.now().strftime("%a %d %B %Y"),
                            current_user=current_user, serialized_conversations=serialized_conversations)

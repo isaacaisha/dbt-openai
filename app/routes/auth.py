@@ -17,13 +17,13 @@ def register():
         # Check if the passwords match
         if register_form.password.data != register_form.confirm_password.data:
             flash("Passwords do not match. Please enter matching passwords ¡!¡😭¡!¡")
-            return redirect(url_for('register'))
+            return redirect(url_for('auth.register'))
 
         # If user's email already exists
         if User.query.filter_by(email=register_form.email.data).first():
             # Send a flash message
             flash("You've already signed up with that email, log in instead! ¡!!🤣¡!¡")
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
         hash_and_salted_password = generate_password_hash(
             register_form.password.data.lower().strip(),
@@ -43,7 +43,7 @@ def register():
         # Log in and authenticate the user after adding details to the database.
         login_user(new_user)
 
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
 
     return render_template("register.html", register_form=register_form,
                            current_user=current_user, date=datetime.now().strftime("%a %d %B %Y"))
@@ -64,12 +64,12 @@ def login():
         # Email doesn't exist
         if not user:
             flash("That email does not exist, try again ¡!¡😭¡!¡")
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
         # Password incorrect
         elif not check_password_hash(user.password, password):
             flash('Password incorrect, please try again 😭')
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
         # Email exists and password correct
         else:

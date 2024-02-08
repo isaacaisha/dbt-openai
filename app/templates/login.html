@@ -43,7 +43,7 @@
                         </div>
                     {% endfor %}
 
-                    <form method="POST" action="{{ url_for('login') }}">
+                    <form method="POST" action="{{ url_for('auth.login') }}">
 
                         {% with messages = get_flashed_messages() %}
                             {% if messages %}

@@ -44,7 +44,7 @@
                     </div>
                 {% endif %}
 
-                <form method="POST" action="{{ url_for('select_conversation') }}">
+                <form method="POST" action="{{ url_for('conversation_function.select_conversation') }}">
 
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}

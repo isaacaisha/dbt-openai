@@ -1,0 +1,201 @@
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
+{% include 'bootstrap/base.html' %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="py-1">
+            <h1 class="">All Your Conversations ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+{% if error_message %}
+<div class="alert alert-info text-center">
+    {{ error_message }}
+</div>
+{% endif %}
+
+<div class="content container conversations-details">
+
+    <!-- Page Header -->
+
+    <div class="">
+
+        <hr class="mb-3" style="color:green;">
+        <h3 class="text-center mb-3" style="margin-top:0;">Your Firtest & Latest Conversations</h3>
+        <hr class="mb-3" style="color:green;">
+
+        <div class="text-center">
+            {% if not first_conversations %}
+            <h3 style="color:#fff;">first, interact with<br><span style="color:#9A30F3;">·SìįSí·Dbt·</span></h3>
+            {% endif %}
+        </div>
+
+        <!--<div class="d-flex justify-content-end">-->
+        <div class="d-flex justify-content-center mb-5">
+            <button class="btn btn-outline-info submit scroll-down " onclick="scrollDown()" id="scrollDownButton"
+                style="position:fixed">
+                ⇩
+            </button>
+        </div>
+        <h4 class="text-center">3 Firtest Conversations</h4>
+        <ul>
+            {% for conversation_ in first_conversations %}
+            <li>
+                <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
+                <!--
+                    <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
+                    <span style="color:#30ABB7;"><strong>Username:</strong> {{ conversation_.user_name }}</span><br>
+                    -->
+                <span style="color:#9A30F3;">
+                    <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
+                </span><br>
+                <span style="color:#1295FA;"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe
+                    }}</span><br>
+                <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe
+                    }}</span><br>
+                <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <hr class="mb-3" style="color:rgb(64, 64, 172);">
+        <hr class="mb-5" style="color:rgb(64, 64, 172);">
+
+        <h4 class="text-center">3 Latest Conversations</h4>
+        <ul>
+            {% for conversation_ in last_conversations %}
+            <li>
+                <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
+                <!--
+                            <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
+                            <span style="color:#30ABB7;"><strong>Username:</strong> {{ conversation_.user_name }}</span><br>
+                            -->
+                <span style="color:#9A30F3;">
+                    <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
+                </span><br>
+                <span style="color:#1295FA;"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe
+                    }}</span><br>
+                <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe
+                    }}</span><br>
+                <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+            </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+
+
+    <hr class="mb-3" style="color:green;">
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <div class="text-center">
+        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
+            Show Conversations
+        </button>
+    </div>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesContainer" class="mb-3" style="display: none;">
+        <h4 class="text-center">3 Firtest Conversations</h4>
+        {% for conversation in first_conversations %}
+        <!--{{ conversation|tojson(indent=4)|safe }}-->
+        <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
+                "conversation_id": "{{ conversation.id }}"
+                "{{ conversation.user_name }}": "{{ conversation.user_message }}"
+                "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+                "conversation_summary": "{{ conversation.conversations_summary }}"
+                "created_at": "{{ conversation.created_at }}"
+            </textarea>
+        {% endfor %}
+        <h4 class="text-center">3 Latest Conversations</h4>
+        {% for conversation in last_conversations %}
+        <!--{{ conversation|tojson(indent=4)|safe }}-->
+        <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
+                "conversation_id": "{{ conversation.id }}"
+                "{{ conversation.user_name }}": "{{ conversation.user_message }}"
+                "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+                "conversation_summary": "{{ conversation.conversations_summary }}"
+                "created_at": "{{ conversation.created_at }}"
+            </textarea>
+        {% endfor %}
+    </div>
+
+    <hr class="mb-5" style="color:green;">
+    <hr class="mb-3" style="color:yellow;">
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <div class="text-center">
+        <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
+            Show Conversations json
+        </button>
+    </div>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesContainerJson" class="mb-3" style="display: none;">
+        <h4 class="text-center">3 Firtest Conversations</h4>
+        {% for conversation in first_conversations %}
+        <pre style="color:purple;">
+                {{ conversation|tojson(indent=4)|safe }}
+            </pre>
+        {% endfor %}
+        <h4 class="text-center">3 Latest Conversations</h4>
+        {% for conversation in last_conversations %}
+        <pre style="color:purple;">
+                {{ conversation|tojson(indent=4)|safe }}
+            </pre>
+        {% endfor %}
+    </div>
+
+    <hr class="mb-5" style="color:yellow;">
+    <hr class="mb-3" style="color:red;">
+
+    <div class="text-center">
+        <button type="button" class="btn btn-outline back-home mb-3">
+            <a href="{{ url_for('conversation_interface') }}" class="">Back Home -¡!¡-</a>
+        </button>
+    </div>
+
+    <hr class="mb-5" style="color:red;">
+
+</div>
+
+<script>
+    // Function to toggle histories container
+    function toggleHistories() {
+        var container = document.getElementById('historiesContainer');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // Function to toggle histories JSON container
+    function toggleHistoriesJson() {
+        var container = document.getElementById('historiesContainerJson');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
+    <!-- JavaScript for scrolling down -->
+    function scrollDown() {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+</script>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer_ %} {% endblock %}

@@ -43,7 +43,7 @@
                         </div>
                     {% endfor %}
 
-                    <form method="POST" action="{{ url_for('register') }}" accept-charset="UTF-8">
+                    <form method="POST" action="{{ url_for('auth.register') }}" accept-charset="UTF-8">
 
                         {% with messages = get_flashed_messages() %}
                             {% if messages %}

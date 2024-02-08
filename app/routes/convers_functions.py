@@ -20,7 +20,7 @@ def select_conversation():
         selected_conversation_id = select_conversation_form.conversation_id.data
 
         # Construct the URL string for the 'get_conversation' route
-        url = url_for('get_conversation', conversation_id=selected_conversation_id)
+        url = url_for('conversation_function.get_conversation', conversation_id=selected_conversation_id)
         return redirect(url)
     else:
         return render_template('conversation-by-id.html',
@@ -53,7 +53,7 @@ def get_conversation(conversation_id):
         print(f"Unexpected {err}, {type(err)}")
         flash(f'😂RETRY🤣')
         flash('Or Please log in to access this page.')
-        return redirect(url_for('select_conversation'))
+        return redirect(url_for('conversation_function.select_conversation'))
 
 
 @conversation_functionality_bp.route('/delete-conversation', methods=['GET', 'POST'])
@@ -79,11 +79,11 @@ def delete_conversation():
                 db.session.delete(conversation_to_delete)
                 db.session.commit()
                 flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted 😎')
-                return redirect(url_for('delete_conversation'))
+                return redirect(url_for('conversation_function.delete_conversation'))
         return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
                                current_user=current_user, delete_conversation_form=delete_conversation_form)
     except Exception as err:
         flash(f'🤣RETRY😂')
         flash('Or Please log in to access this page.')
         print(f"Unexpected {err}, {type(err)}")
-        return redirect(url_for('delete_conversation'))
+        return redirect(url_for('conversation_function.delete_conversation'))

@@ -46,7 +46,7 @@
                     </div>
                 {% endif %}
 
-                <form method="POST" action="{{ url_for('delete_conversation') }}">
+                <form method="POST" action="{{ url_for('conversation_function.delete_conversation') }}">
 
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
