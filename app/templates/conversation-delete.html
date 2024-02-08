@@ -59,7 +59,7 @@
                     <!-- Include CSRF token -->
                     <span style="display:none;">{{ wtf.form_field(delete_conversation_form.csrf_token) }}</span>
 
-                    {{ wtf.form_field(delete_conversation_form.conversation_id) }}
+                    {{ wtf.form_field(delete_conversation_form.conversation_id, autofocus=true) }}
                     <div class="mb-1 text-center">{{ wtf.form_field(delete_conversation_form.submit, class="submit btn btn-danger") }}</div>
                 </form>
 

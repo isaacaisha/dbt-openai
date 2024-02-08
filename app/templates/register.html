@@ -56,7 +56,7 @@
                         <!-- Include CSRF token -->
                         {{ register_form.csrf_token }}
 
-                        {{ wtf.form_field(register_form.email) }}
+                        {{ wtf.form_field(register_form.email, autofocus=true) }}
                         {{ wtf.form_field(register_form.password) }}
                         {{ wtf.form_field(register_form.confirm_password) }}
                         {{ wtf.form_field(register_form.name) }}

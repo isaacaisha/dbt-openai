@@ -174,9 +174,9 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     max-width: 559px; /* Set maximum width to prevent it from becoming too wide */
 }
 
-/* Style the Popup Content */
-.popup-content {
-    text-align: center;
+/* Style the ol Content */
+ol {
+    text-align: left;
 }
 
 /* Style the Show Button */
