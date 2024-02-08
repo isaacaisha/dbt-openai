@@ -192,9 +192,9 @@ def show_story():
         memory_load = Memory.query.filter_by(owner_id=owner_id).order_by(Memory.created_at.desc()).limit(3).all()
 
         memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n\n'
-        memory_buffer += '\n'.join(
-            [f'{memory.user_name}: {memory.user_message}\n·SìįSí·Dbt·: {memory.llm_response}\n' for memory in
-             memory_load])
+        memory_buffer += '\n\n'.join(
+            [f'{memory.user_name}: {memory.user_message}\n\n·SìįSí·Dbt·: {memory.llm_response}\n\n' + '-' * 19 for memory in memory_load]
+            )
         
         # Fetch the list of Memory objects for the current user
         memory_summary_list = Memory.query.filter_by(owner_id=owner_id).order_by(Memory.created_at.desc()).limit(3).all()
