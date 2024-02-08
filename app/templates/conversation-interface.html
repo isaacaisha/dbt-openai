@@ -152,7 +152,7 @@
         {% if answer %}
             <!-- Play the audio response -->
             <audio id="response-audio" controls class="submit btn btn-outline-info">
-                <source src="{{ url_for('interface_serve_audio') }}" type="audio/mp3">
+                <source src="{{ url_for('conversation_interface.interface_serve_audio') }}" type="audio/mp3">
                 Your browser does not support the audio element.
             </audio>
         {% endif %}

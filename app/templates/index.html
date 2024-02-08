@@ -30,19 +30,18 @@
 {% block content %}
 {% autoescape true %}
 
-    <div class="content container">
+    <div class="content container text-center">
         <!-- Page Header -->
-
         <hr style="color:red;">
 
-        <h3 class="text-center log-register-h3">Interact With<br>
+        <h3 class="log-register-h3">Interact With<br>
             <span class="artificial-intelligence">SìįSí</span><br>Register & Log in
         </h3>
 
         <hr class="mb-3" style="color:yellow;">
     </div>
 
-    <div class="content">
+    <div class="content text-center">
 
         <!-- Navbar -->
         <nav class="navbar nav-home">
@@ -59,10 +58,38 @@
                            href="{{ url_for('auth.login') }}" style="color:#1295FA;">Login</a>
                     </li>
                 </ul>
-                <p class="text-center" style="color:gold;">🔥∞To Use All Features∞🔥</p>
+                <p style="color:gold;">🔥∞To Use All Features∞🔥</p>
             </div>
-
         </nav>
+
+        <!-- Add a button to trigger the popup -->
+        <button id="showPopupButton" type="button" class="btn btn-outline-info mb-3 submit">Show Instructions Popup</button>
+        
+        <!-- Popup Container -->
+        <div id="popupContainer" class="popup-container">
+            <!-- Popup Content -->
+            <div class="popup-content">
+                <!-- Close Button -->
+                <button id="closePopupButton" type="button" class="btn btn-outline-info mb-3 submit">Close</button>
+                <!-- Popup Content Here -->
+                <p>Welcome to the <span style="color: mediumslateblue;">SìįSí</span> app!<br>Here are some instructions...</p>
+                <!-- Ordered List -->
+                <ol>
+                    <li>First 
+                        <span style="color: mediumslateblue;">Click On Your Favorite Language</span> (e.g.:عربي -¡!¡- Arabic)
+                    </li>
+                    <li>Second 
+                        <span style="color: mediumslateblue;">Click On Start Writing</span> (to write a text) or 
+                        <span style="color: mediumslateblue;">Click on Speech Recognition</span> (to speech a text)
+                    </li>
+                    <li>Third 
+                        <span style="color: mediumslateblue;">Click On Get The Response</span> 
+                        (to get <span style="color: mediumslateblue;">SìįSí</span> answer)
+                    </li>
+                </ol>
+            </div>
+        </div>
+
     </div>
 
     <div class="content">
@@ -171,7 +198,7 @@
                         ¡!¡ ·SìįSí·Dbt·SìįSí· ¡!¡
                     </button>
                     <audio id="response-audio" controls class="submit btn btn-outline-info" style="display:none;">
-                        <source src="{{ url_for('home_audio') }}" type="audio/mp3">
+                        <source src="{{ url_for('conversation_home.home_audio') }}" type="audio/mp3">
                         Your browser does not support the audio element.
                     </audio>
                 </div>
@@ -186,6 +213,27 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
     <script src="{{ url_for('static', filename='js/home-speech-request.js')}}"></script>
+    <script>
+        // Show Popup Function
+            function showPopup() {
+                $('#popupContainer').show(); // Show the popup container
+            }
+
+            // Hide Popup Function
+            function hidePopup() {
+                $('#popupContainer').hide(); // Hide the popup container
+            }
+
+            // Event Listener for Show Popup Button
+            $('#showPopupButton').click(function () {
+                showPopup(); // Call the showPopup function when the button is clicked
+            });
+
+            // Event Listener for Close Popup Button
+            $('#closePopupButton').click(function () {
+                hidePopup(); // Call the hidePopup function when the close button is clicked
+            });
+    </script>
 
 {% endautoescape %}
 {% endblock %}

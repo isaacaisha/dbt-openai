@@ -77,7 +77,7 @@ def login():
             login_user(user, remember=remember_me)
 
             # Redirect to the appropriate page after login
-            return redirect(url_for('conversation_interface'))
+            return redirect(url_for('conversation_interface.conversation_interface'))
 
     return render_template("login.html", login_form=login_form, current_user=current_user,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -86,4 +86,4 @@ def login():
 @auth_bp.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('home'))
+    return redirect(url_for('conversation_home.home'))

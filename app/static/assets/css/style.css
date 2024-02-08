@@ -412,3 +412,40 @@ hr.mb-3, body hr {
 #content > div.content > div.container.conversations-details > div > a {
     text-decoration: None;
 }
+
+/* Style the Popup Container */
+.popup-container {
+    display: none;
+    /* Initially hide the container */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    /* Ensure it's on top of other elements */
+}
+
+/* Style the Popup Content */
+.popup-content {
+    text-align: center;
+}
+
+/* Style the Show Button */
+#showPopupButton {
+    border: 0.1rem solid;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+/* Style the Close Button */
+#closePopupButton {
+    background-color: #ddd;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
