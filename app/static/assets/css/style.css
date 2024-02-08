@@ -449,3 +449,7 @@ hr.mb-3, body hr {
     padding: 5px 10px;
     cursor: pointer;
 }
+
+.underline {
+    text-decoration: underline;
+}
