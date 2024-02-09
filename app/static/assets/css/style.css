@@ -184,12 +184,11 @@ ol {
     padding: 5px 10px;
 }
 
-/* Style the x Button */
+/* Style the Close Button */
 #closePopupButton {
     background-color: #0d1515;
     border: 0.1rem solid #AEFAFC;
     border-radius: 100%;
-    color: red;
     padding: 5px 10px;
 }
 
