@@ -16,7 +16,7 @@ large-image {
 }
 
 #content > div.container-fluid > div > div > h1, #content > div > div.container-fluid > div > div > h1{
-    background-color: #fff;
+    background-color: #000;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
     color: #9126E8;
@@ -162,7 +162,6 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #fff;
     background-image: url('../images/space.jpg');
     padding: 19px;
     border: 1px solid #ccc;
@@ -183,19 +182,27 @@ ol {
 #showPopupButton {
     border: 0.1rem solid;
     padding: 5px 10px;
-    cursor: pointer;
 }
 
-/* Style the Close Button */
+/* Style the x Button */
 #closePopupButton {
-    background-color: #ddd;
-    border: none;
+    background-color: #0d1515;
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 100%;
+    color: red;
     padding: 5px 10px;
-    cursor: pointer;
+}
+
+.SìįSí {
+    color: gold;
+}
+
+.mediumslateblue {
+    color: mediumslateblue;
 }
 
 .underline {
-    color: #fff;
+    color: gold;
     text-decoration: underline;
 }
 
