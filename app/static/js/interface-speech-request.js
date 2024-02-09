@@ -58,7 +58,7 @@ function sendRequest(prompt) {
             } else {
                 // Handle other HTTP status codes
                 var errorContainer = document.getElementById('error-message');
-                errorContainer.textContent = "Unexpected error. Please try again later.";
+                errorContainer.textContent = "Unexpected error. Please RETRY or Login.";
                 errorContainer.style.display = 'block';
             }
         }
