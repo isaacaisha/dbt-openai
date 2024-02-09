@@ -62,9 +62,10 @@
                     <ul class="navbar-nav ml-auto">
                         {% if not current_user.is_authenticated: %}
                         <li class="nav-item">
-                            <a class="nav-link remove-active-state log-in" aria-current="page" href="{{ url_for('auth.login_logout') }}">
+                            <a class="nav-link remove-active-state log-out" aria-current="page" href="{{ url_for('auth.login') }}">
                               <span style="font-size:1.9rem;">∞<br>∞Reload∞<br>or<br></span>
-                              <span style="font-size:1.45rem; color:gold">Log Out</span><br></a>
+                              <span style="font-size:1.45rem; color:gold">Log Out</span><br>
+                            </a>
                         </li>
                         {% else %}
                         <li class="nav-item">
