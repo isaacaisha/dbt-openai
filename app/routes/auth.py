@@ -83,6 +83,12 @@ def login():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
+@auth_bp.route('/login-logout')
+def login_logout():
+    logout_user()
+    return redirect(url_for('auth.login'))
+
+
 @auth_bp.route('/logout')
 def logout():
     logout_user()
