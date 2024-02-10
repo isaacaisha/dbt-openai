@@ -36,7 +36,7 @@ def serialize_conversation(conversation):
 def get_all_conversations():
     if not current_user.is_authenticated:
         error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
-        return render_template('all-conversations.html', error_message=error_message,
+        return render_template('conversation-all.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -49,14 +49,14 @@ def get_all_conversations():
 
     # Get the offset from the query parameter, default to 0 if not provided
     offset = request.args.get('offset', default=None, type=int)
-    
+
     # Get the search from the query parameter, default to None if not provided
     search = request.args.get('search', default=None, type=str)
 
     conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search)
     serialized_conversations = [serialize_conversation(conversation) for conversation in conversations]
 
-    return render_template('all-conversations.html',
+    return render_template('conversation-all.html',
                            current_user=current_user, owner_id=owner_id,
                            limit=limit, offset=offset, search=search,
                            conversations=serialized_conversations,

@@ -71,7 +71,17 @@
             </div>
         </form>
 
-        <h4 class="text-center">{{ limit }} Firtest Conversations</h4>
+        <div class="container mb-3">
+            <h4 class="text-center"><span style="color:#9A30F3;">{{ limit }}</span> Firtest Conversations</h4>
+            {% if offset %}
+                <h4 class="text-center"><span style="color:#9A30F3;">{{ offset }}</span> Conversations Skipped</h4>
+            {% endif %}
+            {% if search %}
+                <h4 class="text-center">Search the word <span style="color:#9A30F3;">{{ search }}</span> 
+                    from <span style="color:#9A30F3;">{{ current_user.name }}</span> conversations to retrieve it</h4>
+            {% endif %}
+        </div>
+
         <ul>
             {% for conversation_ in first_conversations %}
             <li>
