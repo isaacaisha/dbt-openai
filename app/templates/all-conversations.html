@@ -51,6 +51,36 @@
                 ⇩
             </button>
         </div>
+             
+        <form action="{{ url_for('llm_conversation.get_all_conversations') }}" method="GET" class="text-center">
+            <div class="form-group">
+                <label for="limit" class="form-label label_">Enter the NUMBER of conversations you want to RETRIEVE:</label>
+                <div class="input-group">
+                    <input type="number" id="limit" name="limit" min="1" max="9991" class="form-control form-control-sm mb-3">
+                </div>
+                <label for="offset" class="form-label label_">Enter the NUMBER of conversations you want to SKIP:</label>
+                <div class="input-group">
+                    <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
+                </div>
+                <label for="search" class="form-label label_">Enter a WORD from <span style="color:#9A30F3;">{{ current_user.name }}</span> conversations to RETRIEVE IT:</label>
+                <div class="input-group">
+                    <input type="string" id="search" name="search"  class="form-control form-control-sm mb-3">
+                    <!-- Single submit button -->
+                    <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('get_all_conversations')" style="border: .1rem solid;">Submit</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="container mb-3">
+            <h4 class="text-center">Total of <span style="color:#9A30F3;">{{ limit }}</span> Conversations</h4>
+            {% if offset %}
+            <h4 class="text-center"><span style="color:#9A30F3;">{{ offset }}</span> Conversations Skipped</h4>
+            {% endif %}
+            {% if search %}
+            <h4 class="text-center">Search the word <span style="color:#9A30F3;">{{ search }}</span> from <span
+                    style="color:#9A30F3;">{{ current_user.name }}</span> conversations to retrieve it</h4>
+            {% endif %}
+        </div>
         <ul>
             {% for conversation_ in conversations %}
                 <li>
@@ -145,6 +175,13 @@
                behavior: 'smooth'
            });
        }
+</script>
+
+<script>
+    // Function to set the form action based on the button clicked
+    function setFormAction(action) {
+        document.getElementById('formAction').value = action;
+    }
 </script>
 
 {% endautoescape %}
