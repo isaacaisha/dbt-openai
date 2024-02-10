@@ -70,23 +70,11 @@
 
             {% if not current_user.is_authenticated: %}
                 <h5 class="alert alert-info text-center">
-                    User isn't authenticated, RELOAD or LOGIN -¡!¡-
+                    -¡!¡- RELOAD or LOGIN -¡!¡-
                 </h5>
             {% endif %}
 
-            {% for message in get_flashed_messages() %}
-                <div class="alert alert-info text-center">
-                    {{ message }}
-                </div>
-            {% endfor %}
-
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <h5 class="alert-danger text-center">{{ message }}</h5>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
 
             <div class="text-center">
                 <hr class="mb-3" style="color:yellow;">

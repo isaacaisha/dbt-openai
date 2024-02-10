@@ -69,17 +69,18 @@ document.getElementById('generateButton').addEventListener('click', function (ev
 
     if (speechData === "" && inputText === "") {
         // Display an error message if both fields are empty
-        document.getElementById('error-message').textContent = "Please,\nYou Have To Speech or Enter Text\nFirst 😝";
-        document.getElementById('error-message').style.display = 'block';
+        document.getElementById('error-message').textContent = "Please, You Have To Speech or Enter Text First 😝";
 
-        // Hide the "Final Result" content since there's no recognized speech or input text
-        document.getElementById('final-result-speech-content').style.display = 'none';
+        // Show the error message
+        document.getElementById('error-message').style.display = 'block';
 
         // Prevent the form from submitting when both fields are empty
         event.preventDefault();
     } else {
         // Clear any previous error message
         document.getElementById('error-message').textContent = "";
+
+        // Hide the error message
         document.getElementById('error-message').style.display = 'none';
     }
 });
