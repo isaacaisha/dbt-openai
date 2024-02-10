@@ -53,7 +53,7 @@ def get_all_conversations():
 def convers_head_tail():
     if not current_user.is_authenticated:
         error_message = 'User not authenticated, RELOAD or LOGIN -¡!¡-'
-        return render_template('conversations-head-tail.html', error_message=error_message,
+        return render_template('conversation-head-tail.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -68,7 +68,7 @@ def convers_head_tail():
     last_conversations = get_conversations(owner_id=owner_id, limit=limit, order_by_desc=True)
     serialized_last_conversations = [serialize_conversation(conversation) for conversation in last_conversations]
 
-    return render_template('conversations-head-tail.html',
+    return render_template('conversation-head-tail.html',
                            current_user=current_user, owner_id=owner_id, limit=limit,
                            first_conversations=serialized_first_conversations,
                            last_conversations=serialized_last_conversations,
