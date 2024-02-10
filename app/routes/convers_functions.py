@@ -51,7 +51,7 @@ def get_conversation(conversation_id):
                                    conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as err:
         print(f"Unexpected {err}, {type(err)}")
-        flash('😂RELOAD & RETRY🤣')
+        flash('😂RETRY🤣')
         flash('Or Please log in to access this page.')
         return redirect(url_for('conversation_function.select_conversation'))
 
@@ -83,7 +83,7 @@ def delete_conversation():
         return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
                                current_user=current_user, delete_conversation_form=delete_conversation_form)
     except Exception as err:
-        flash('🤣RELOD & RETRY😂')
+        flash('🤣RETRY😂')
         flash('Or Please log in to access this page.')
         print(f"Unexpected {err}, {type(err)}")
         return redirect(url_for('conversation_function.delete_conversation'))
