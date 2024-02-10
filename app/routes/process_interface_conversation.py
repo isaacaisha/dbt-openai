@@ -209,7 +209,7 @@ def show_story():
                                summary_conversation=summary_conversation,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
-        error_message = 'User not authenticated, RELOAD or LOGIN -¡!¡-'
+        error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
         return render_template('show-history.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))

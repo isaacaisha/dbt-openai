@@ -144,11 +144,7 @@
 
                 {{ home_form.csrf_token }}
 
-                {% if error_message %}
-                    <div class="alert alert-info text-center">
-                        {{ error_message }}
-                    </div>
-                {% endif %}
+                <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
 
                 <div class="text-center">
                     <hr class="mb-3" style="color:green;">
