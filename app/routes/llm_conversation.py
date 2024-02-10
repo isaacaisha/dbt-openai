@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from flask_login import current_user
 from datetime import datetime
 
@@ -48,23 +48,28 @@ def get_all_conversations():
                            serialized_conversations=serialized_conversations,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
-@llm_conversation_bp.route("/first-last-conversations")
-def firtest_latest_conversations():
+
+@llm_conversation_bp.route("/convers-head-tail")
+def convers_head_tail():
     if not current_user.is_authenticated:
         error_message = 'User not authenticated, RELOAD or LOGIN -¡!¡-'
-        return render_template('first-last-conversations.html', error_message=error_message,
+        return render_template('conversations-head-tail.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     owner_id = current_user.id
-    first_conversations = get_conversations(owner_id=owner_id, limit=3)
+    
+    # Get the limit from the query parameter, default to 3 if not provided
+    limit = request.args.get('limit', default=3, type=int)
+
+    first_conversations = get_conversations(owner_id=owner_id, limit=limit)
     serialized_first_conversations = [serialize_conversation(conversation) for conversation in first_conversations]
 
-    last_conversations = get_conversations(owner_id=owner_id, limit=3, order_by_desc=True)
+    last_conversations = get_conversations(owner_id=owner_id, limit=limit, order_by_desc=True)
     serialized_last_conversations = [serialize_conversation(conversation) for conversation in last_conversations]
 
-    return render_template('first-last-conversations.html',
-                           current_user=current_user, owner_id=owner_id,
+    return render_template('conversations-head-tail.html',
+                           current_user=current_user, owner_id=owner_id, limit=limit,
                            first_conversations=serialized_first_conversations,
                            last_conversations=serialized_last_conversations,
                            date=datetime.now().strftime("%a %d %B %Y"))

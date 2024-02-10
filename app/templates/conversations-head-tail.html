@@ -51,7 +51,18 @@
                 ⇩
             </button>
         </div>
-        <h4 class="text-center">3 Firtest Conversations</h4>
+             
+        <form action="{{ url_for('llm_conversation.convers_head_tail') }}" method="GET" class="text-center">
+            <div class="form-group">
+                <label for="limit" class="form-label">Enter the number of conversations you want to retrieve:</label>
+                <div class="input-group">
+                    <input type="number" id="limit" name="limit" min="1" max="19" class="form-control form-control-sm mb-3">
+                    <button class="btn btn-outline-info mb-3" type="submit" style="border: .1rem solid;">Submit</button>
+                </div>
+            </div>
+        </form>
+
+        <h4 class="text-center">{{ limit }} Firtest Conversations</h4>
         <ul>
             {% for conversation_ in first_conversations %}
             <li>
@@ -75,7 +86,7 @@
         <hr class="mb-3" style="color:rgb(64, 64, 172);">
         <hr class="mb-5" style="color:rgb(64, 64, 172);">
 
-        <h4 class="text-center">3 Latest Conversations</h4>
+        <h4 class="text-center">{{ limit }} Latest Conversations</h4>
         <ul>
             {% for conversation_ in last_conversations %}
             <li>
@@ -110,7 +121,7 @@
 
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesContainer" class="mb-3" style="display: none;">
-        <h4 class="text-center">3 Firtest Conversations</h4>
+        <h4 class="text-center">{{ limit }} Firtest Conversations</h4>
         {% for conversation in first_conversations %}
         <!--{{ conversation|tojson(indent=4)|safe }}-->
         <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
@@ -121,7 +132,7 @@
                 "created_at": "{{ conversation.created_at }}"
             </textarea>
         {% endfor %}
-        <h4 class="text-center">3 Latest Conversations</h4>
+        <h4 class="text-center">{{ limit }} Latest Conversations</h4>
         {% for conversation in last_conversations %}
         <!--{{ conversation|tojson(indent=4)|safe }}-->
         <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
@@ -146,13 +157,13 @@
 
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesContainerJson" class="mb-3" style="display: none;">
-        <h4 class="text-center">3 Firtest Conversations</h4>
+        <h4 class="text-center">{{ limit }} Firtest Conversations</h4>
         {% for conversation in first_conversations %}
         <pre style="color:purple;">
                 {{ conversation|tojson(indent=4)|safe }}
             </pre>
         {% endfor %}
-        <h4 class="text-center">3 Latest Conversations</h4>
+        <h4 class="text-center">{{ limit }} Latest Conversations</h4>
         {% for conversation in last_conversations %}
         <pre style="color:purple;">
                 {{ conversation|tojson(indent=4)|safe }}
