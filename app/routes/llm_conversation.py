@@ -40,7 +40,7 @@ def serialize_conversation(conversation):
 def get_all_conversations():
     if not current_user.is_authenticated:
         error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
-        return render_template('all-conversations.html', error_message=error_message,
+        return render_template('conversation-all.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
