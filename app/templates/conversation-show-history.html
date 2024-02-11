@@ -46,6 +46,37 @@
                 {% endif %}
 
             {% else %}
+                <div class="d-flex justify-content-center mb-5">
+                    <button class="btn btn-outline-info submit scroll-down " onclick="scrollDown()" id="scrollDownButton"
+                        style="position:fixed">
+                        ⇩
+                    </button>
+                </div>
+                
+                <form action="{{ url_for('llm_conversation.show_story') }}" method="GET" class="text-center">
+                    <div class="form-group">
+                        <label for="limit" class="form-label label_">Enter the <span style="color:#f3f030;">number</span> of
+                            conversations <span style="color:#f3f030;">you want to retrieve</span>:</label>
+                        <div class="input-group">
+                            <input type="number" id="limit" name="limit" min="1" max="9991" class="form-control form-control-sm mb-3">
+                        </div>
+                        <label for="offset" class="form-label label_">Enter the <span style="color:#f3f030;">number</span> of
+                            conversations <span style="color:#f3f030;">you want to skip</span>:</label>
+                        <div class="input-group">
+                            <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
+                        </div>
+                        <label for="search" class="form-label label_">Enter a <span style="color:#f3f030;">word</span> <span
+                                style="color:#fff;">from {{ current_user.name }}</span> conversations <span style="color:#f3f030;">to
+                                retrieve it</span>:</label>
+                        <div class="input-group">
+                            <input type="string" id="search" name="search" class="form-control form-control-sm mb-3">
+                            <!-- Single submit button -->
+                            <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('get_all_conversations')"
+                                style="border: .1rem solid;">Submit</button>
+                        </div>
+                    </div>
+                </form>
+
                 <div id="resultMemo" class="text-center mb-3">
                     <hr class="mb-3" style="color:yellow;">
                 
@@ -77,6 +108,30 @@
                 
                     <hr class="mb-5" style="color:green;">
                     <hr class="mb-3" style="color:yellow;">
+
+                    <!-- Add a button to trigger the display of serialized_histories -->
+                    <div class="text-center">
+                        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
+                            Show Conversations
+                        </button>
+                    </div>
+
+                    <!-- Add a div to contain the serialized histories -->
+                    <div id="historiesContainer" class="mb-3" style="display: none;">
+                        {% for conversation in serialized_memory_load %}
+                        <!--{{ conversation|tojson(indent=4)|safe }}-->
+                        <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
+                                            "conversation_id": "{{ conversation.id }}"
+                                            "{{ conversation.user_name }}": "{{ conversation.user_message }}"
+                                            "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+                                            "conversation_summary": "{{ conversation.conversations_summary }}"
+                                            "created_at": "{{ conversation.created_at }}"
+                                        </textarea>
+                        {% endfor %}
+                    </div>
+
+                    <hr class="mb-5" style="color:yellow;">
+                    <hr class="mb-3" style="color:red;">
                 
                     <div class="text-center">
                         <button type="button" class="btn btn-outline back-home mb-3">
@@ -84,13 +139,43 @@
                         </button>
                     </div>
                 
-                    <hr class="mb-5" style="color:yellow;">
+                    <hr class="mb-5" style="color:red;">
                 </div>
-            {% endif %}
 
+            {% endif %}
+                
         </div>
 
     </div>
+
+<script>
+    // Function to toggle histories container
+    function toggleHistories() {
+        var container = document.getElementById('historiesContainer');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // Function to toggle histories JSON container
+    function toggleHistoriesJson() {
+        var container = document.getElementById('historiesContainerJson');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
+    <!-- JavaScript for scrolling down -->
+    function scrollDown() {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+</script>
+
+<script>
+    // Function to set the form action based on the button clicked
+    function setFormAction(action) {
+        document.getElementById('formAction').value = action;
+    }
+</script>
 
 {% endautoescape %}
 {% endblock %}
