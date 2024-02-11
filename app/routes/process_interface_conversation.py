@@ -181,35 +181,3 @@ def save_to_database(user_input, response):
         "memory_buffer": memory_buffer,
         "memory_load": memory_load,
     })
-
-
-@interface_conversation_bp.route('/conversation-show-history')
-def show_story():
-    if current_user.is_authenticated:
-        owner_id = current_user.id
-
-        # Fetch the 3 latest Memory objects for the current user
-        memory_load = Memory.query.filter_by(owner_id=owner_id).order_by(Memory.created_at.desc()).limit(3).all()
-
-        memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n\n'
-        memory_buffer += '\n\n'.join(
-            [f'{memory.user_name}: {memory.user_message}\n\n·SìįSí·Dbt·: {memory.llm_response}\n\n' + '-' * 19 for memory in memory_load]
-            )
-        
-        # Fetch the list of Memory objects for the current user
-        memory_summary_list = Memory.query.filter_by(owner_id=owner_id).order_by(Memory.created_at.desc()).limit(3).all()
-        # Load the summary data for the lastest 3 conversations for each memory object from memory_summary_list
-        summary_conversation = '\n'.join([memory.conversations_summary for memory in memory_summary_list])
-
-        print(f'memory_buffer_story:\n{memory_buffer}\n')
-        print(f'memory_load_story:\n{memory_load}\n')
-        print(f'summary_conversation_story:\n{summary_conversation}\n')
-        return render_template('conversation-show-history.html', current_user=current_user, owner_id=owner_id,
-                               memory_load=memory_load, memory_buffer=memory_buffer,
-                               summary_conversation=summary_conversation,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-    else:
-        error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
-        return render_template('conversation-show-history.html', error_message=error_message,
-                               current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
