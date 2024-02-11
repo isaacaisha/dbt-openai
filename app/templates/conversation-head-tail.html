@@ -139,10 +139,10 @@
             <!-- Add a div to contain the serialized histories -->
             <div id="historiesContainer" class="mb-3" style="display: none;">
             
-                <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Latest Conversations</h4>
+                <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Firtest Conversations</h4>
                 {% for conversation in first_conversations %}
                 <!--{{ conversation|tojson(indent=4)|safe }}-->
-                <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
+                <textarea class="form-control mb-5" id="userInput" name="text_writing"  style="color:#449395 !important;">
                         "conversation_id": "{{ conversation.id }}"
                         "{{ conversation.user_name }}": "{{ conversation.user_message }}"
                         "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
@@ -177,7 +177,7 @@
             <div id="historiesContainerJson" class="mb-3" style="display: none;">
                 <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Firtest Conversations</h4>
                 {% for conversation in first_conversations %}
-                <pre style="color:purple;">
+                <pre style=" color:#449395 !important;">
                         {{ conversation|tojson(indent=4)|safe }}
                     </pre>
                 {% endfor %}
