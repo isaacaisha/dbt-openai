@@ -3,6 +3,17 @@ document.querySelectorAll('.btn:not(.language-btn, .submit)').forEach(function(b
     btn.disabled = true;
 });
 
+// Function to enable content when a language is selected
+function enableContent() {
+    // Show the content container
+    document.getElementById('content-container').style.display = 'block';
+
+    // Enable all buttons with the class "btn"
+    document.querySelectorAll('.btn').forEach(function (btn) {
+        btn.disabled = false;
+    });
+}
+
 // Add click event listeners to language buttons
 var languageButtons = document.querySelectorAll('.language-btn');
 languageButtons.forEach(function(button) {
@@ -17,6 +28,9 @@ languageButtons.forEach(function(button) {
         // Enable all buttons with the class "btn"
         document.querySelectorAll('.btn').forEach(function(btn) {
             btn.disabled = false;
+
+        // Call the enableContent function to show the content container and enable all buttons
+        enableContent();
         });
     });
 });

@@ -26,24 +26,18 @@
 
         <hr class="mb-3" style="color:green;">
         <h3 class="text-center conversations-details" style="margin-top:0;">Recent Conversation</h3>
-        <hr class="mb-5" style="color:green;">
+        <hr class="mb-3" style="color:green;">
 
         <div class="text-center">
-
-            {% if error_message %}
-            <div class="alert alert-info text-center">
-                {{ error_message }}
-            </div>
+            {% if search_message %}
+                <div class="alert alert-danger mb-5">{{ search_message }}</div>
             {% endif %}
 
             {% if not memory_load %}
-                <div class="alert alert-danger">{{ search_message }}</div>
-                <h3 style="color:#fff;">first, interact with<br><span style="color:#9A30F3;">·SìįSí·Dbt·</span></h3>
-
                 {% if error_message %}
-                <div class="alert alert-info text-center mb-5">
-                    {{ error_message }}
-                </div>
+                    <div class="alert alert-info mb-5">
+                        {{ error_message }}
+                    </div>
                 {% endif %}
 
             {% else %}
