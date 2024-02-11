@@ -71,6 +71,19 @@
                         </div>
                     </div>
                 </form>
+            
+                <div class="container conversations-details mb-3">
+                    {% if limit %}
+                        <h4 class="text-center">Total of <span style="color:#f3f030;">{{ limit }}</span> Conversations</h4>
+                    {% endif %}
+                    {% if offset %}
+                        <h4 class="text-center"><span style="color:#f3f030;">{{ offset }}</span> Conversations Skipped</h4>
+                    {% endif %}
+                    {% if search %}
+                        <h4 class="text-center">Search the word <span style="color:#f3f030;">{{ search }}</span> 
+                            <span style="color:#fff;">from {{ current_user.name }}</span> conversations to retrieve it</h4>
+                    {% endif %}
+                </div>
 
                 <div id="resultMemo" class="text-center mb-3">
                     <hr class="mb-3" style="color:yellow;">

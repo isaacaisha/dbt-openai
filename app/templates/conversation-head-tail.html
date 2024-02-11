@@ -72,7 +72,9 @@
             </form>
         
             <div class="container mb-3">
-                <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Firtest Conversations</h4>
+                {% if limit %}
+                    <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Firtest Conversations</h4>
+                {% endif %}
                 {% if offset %}
                     <h4 class="text-center"><span style="color:#f3f030;">{{ offset }}</span> Conversations Skipped</h4>
                 {% endif %}

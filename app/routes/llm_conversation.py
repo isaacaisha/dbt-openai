@@ -131,6 +131,7 @@ def show_story():
                                    memory_load=memory_load, memory_buffer=memory_buffer,
                                    summary_conversation=summary_conversation,
                                    serialized_memory_load=serialized_memory_load,
+                                   limit=limit, offset=offset, search=search,
                                    search_message=search_message,
                                    date=datetime.now().strftime("%a %d %B %Y"))
 
@@ -138,6 +139,7 @@ def show_story():
                                memory_load=memory_load, memory_buffer=memory_buffer,
                                summary_conversation=summary_conversation,
                                serialized_memory_load=serialized_memory_load,
+                               limit=limit, offset=offset, search=search,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
         error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
