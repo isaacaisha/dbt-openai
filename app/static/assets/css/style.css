@@ -154,7 +154,7 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     /* display: none; */
     /* Initially hide the container */
     position: fixed;
-    top: 50%;
+    top: 67%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-image: url('../images/space.jpg');
