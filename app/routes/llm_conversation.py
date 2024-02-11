@@ -12,7 +12,7 @@ def get_conversations(owner_id=None, limit=None, offset=None, search=None, order
     if owner_id is not None:
         query = query.filter_by(owner_id=owner_id)
     if search is not None:
-        query = query.filter(Memory.user_message.ilike(f"%{search}%"))
+        query = query.filter(Memory.user_message.ilike(f"%{search.strip()}%"))
     if order_by_desc:
         query = query.order_by(Memory.id.desc())
     if limit is not None:
