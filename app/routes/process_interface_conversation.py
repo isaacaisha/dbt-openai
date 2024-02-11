@@ -210,6 +210,6 @@ def show_story():
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
         error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
-        return render_template('show-history.html', error_message=error_message,
+        return render_template('conversation-show-history.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))

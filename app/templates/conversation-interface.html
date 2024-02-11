@@ -72,15 +72,9 @@
         <div class="container">
             <form id="prompt-form" method="POST">
 
-            {{ writing_text_form.csrf_token }}
+                {{ writing_text_form.csrf_token }}
 
-            {% if not current_user.is_authenticated: %}
-                <h5 class="alert alert-info text-center">
-                    -¡!¡- RELOAD or LOGIN -¡!¡-
-                </h5>
-            {% endif %}
-
-            <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
+                <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
 
                 <div class="text-center">
                     <hr class="mb-3" style="color:yellow;">
