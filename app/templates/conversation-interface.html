@@ -32,9 +32,9 @@
     <hr class="green mb-3">
     <h3 class="conversations mb-3">1°Click on your Favorite Language</h3>
     <hr class="green">
-    <h5 class="alert alert-info text-center mb-5">-¡!¡- RELOAD or LOGIN -¡!¡-</h5>
+    <div class="alert alert-info text-center mb-5">-¡!¡- RELOAD or LOGIN -¡!¡-</div>
 {% else %}
-    <div class="conversations content container">
+    <div class="container conversations">
         <div class="mb-1">
             <hr class="green">
 
@@ -69,29 +69,26 @@
             </button>
         </div>
 
-        <div id="content-container"  style="display: none;" class="container">
+        <div id="content-container"  style="display: none;">
             <form id="prompt-form" method="POST">
 
                 {{ writing_text_form.csrf_token }}
 
                 <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
 
-                <div>
-                    <hr class="gold mb-3">
-                    <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
-                    <div>
-                        <button id="start-button" type="button" class="btn mb-3">
-                            Start Writing ¡!¡
-                        </button>
-                    </div>
+                <hr class="gold mb-3">
+                <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
+                
+                <button id="start-button" type="button" class="btn mb-3">
+                    Start Writing ¡!¡
+                </button>
 
-                    <hr class="gold mb-3">
+                <hr class="gold mb-3">
 
-                    <!-- Add a button for speech recognition -->
-                    <button id="speechRecognitionButton" type="button" class="btn mb-3">
-                        Speech Recognition ¡!¡
-                    </button>
-                </div>
+                <!-- Add a button for speech recognition -->
+                <button id="speechRecognitionButton" type="button" class="btn mb-3">
+                    Speech Recognition ¡!¡
+                </button>
 
                 <hr class="gold mb-5">
 
@@ -109,21 +106,18 @@
                 </div>
 
 
-                <div>
-                    <hr class="crimson mb-3">
-                    <button id="generateButton" class="mb-3 btn generate-text" type="submit">
+                <hr class="crimson mb-3">
+                <button id="generateButton" class="mb-3 btn generate-text" type="submit">
                     Get The Response 🔥¡!¡<img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">¡!¡🔥
                 </button>
-                </div>
             </form>
 
             <hr class="crimson mb-5">
 
-            <div>
-                <hr class="green mb-3">
-                <label>:…·SìįSí·Dbt·…:</label>
-                <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
-            </div>
+            <hr class="green mb-3">
+            <label>:…·SìįSí·Dbt·…:</label>
+            <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
+
             {% if answer %}
                 <!-- Display the text response -->
                 <div id="response-text" class="white mb-3">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
@@ -132,7 +126,7 @@
             <!-- Add a button for speech synthesis playback -->
             <div class="mb-3">
                 <span>(PlayBack Audio)</span><br>
-                    <button id="playbackButton" type="button" class="btn btn-outline">
+                <button id="playbackButton" type="button" class="btn btn-outline">
                     ¡!¡ ·SìįSí·Dbt·SìįSí· ¡!¡
                 </button>
             </div>

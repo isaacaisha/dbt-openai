@@ -27,6 +27,7 @@
 {% autoescape true %}
 
 <div class="conversations content container">
+
     <div class="mb-3">
         <hr class="green mb-3">
         <h3 class="gold" style="margin-top:0;">Sorry Not Found</h3>
@@ -46,13 +47,12 @@
     <hr class="gold mb-5">
     <hr class="crimson mb-3">
 
-    <div>
-        <button type="button" class="btn btn-outline back-home mb-3">
-            <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
-        </button>
-    </div>
+    <button type="button" class="btn btn-outline back-home mb-3">
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
+    </button>
 
     <hr class="crimson mb-5">
+    
 </div>
 
 {% endautoescape %}

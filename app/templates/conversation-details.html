@@ -23,26 +23,17 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="conversations content container">
+<div class="container text-center">
 
-    <!-- Page Header -->
-    {% if error_message %}
-    <div class="alert alert-info">
-        {{ error_message }}
-    </div>
-    {% endif %}
+    <hr class="green mb-3">
+    <h3 class="conversations">Conversation Details</h3>
+    <hr class="green mb-5">
+    <hr class="gold mb-3">
+    <span class="white"><strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}</span><br>
+    <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
+    <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
+    <span class="created"><strong>Created At:</strong> {{ formatted_created_at }}</span><br><br>
 
-    <div class="container conversations-details">
-        <hr class="green mb-3">
-        <h3 class="conversations">Conversation Details</h3>
-        <hr class="green mb-5">
-        <hr class="gold mb-3">
-        <span class="white"><strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}</span><br>
-        <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
-        <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
-        <span class="created"><strong>Created At:</strong> {{ formatted_created_at }}</span><br><br>
-
-    </div>
 
     <div class="mb-3">
         <a href="{{ url_for('conversation_function.select_conversation') }}" class="white">
@@ -53,11 +44,9 @@
     <hr class="gold mb-5">
     <hr class="crimson mb-3">
 
-    <div>
-        <button type="button" class="btn btn-outline back-home mb-3">
-            <a href="{{ url_for('conversation_interface.conversation_interface') }}">Back Home -¡!¡-</a>
-        </button>
-    </div>
+    <button type="button" class="btn btn-outline back-home mb-3">
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}">Back Home -¡!¡-</a>
+    </button>
 
     <hr class="crimson mb-5">
 

@@ -24,28 +24,12 @@
 
 <div class="conversations content container">
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p class="alert alert-danger">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    {% if error_message %}
-    <div class="alert alert-info">
-        {{ error_message }}
-    </div>
-    {% endif %}
-
     <hr class="green mb-3">
 
     <!-- Add a button to trigger the display of serialized_histories -->
-    <div>
-        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
-            -¡!¡- Show Database Conversations -¡!¡-
-        </button>
-    </div>
+    <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
+        -¡!¡- Show Database Conversations -¡!¡-
+    </button>
 
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesContainer" style="display: none;">
@@ -59,7 +43,7 @@
         </div>
 
         {% for conversation in serialized_conversations %}
-            <textarea class="form-control ul-conversations mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
+            <textarea class="form-control align-left mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
                 "conversation_id": "{{ conversation.id }}"
                 "{{ conversation.user_name }}": "{{ conversation.user_message }}"
                 "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
@@ -74,16 +58,14 @@
     <hr class="gold mb-3">
 
     <!-- Add a button to trigger the display of serialized_histories -->
-    <div>
-        <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
-            -¡!¡- Show Database Conversations json -¡!¡-
-        </button>
-    </div>
+    <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
+        -¡!¡- Show Database Conversations json -¡!¡-
+    </button>
 
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesContainerJson" class="mb-3" style="display: none;">
         {% for conversation in serialized_conversations %}
-            <pre class="ul-conversations">
+            <pre class="align-left">
                 {{ conversation|tojson(indent=4)|safe }}
             </pre>
         {% endfor %}
@@ -92,13 +74,11 @@
     <hr class="gold mb-5">
     <hr class="crimson mb-3">
 
-    <div>
-        <button type="button" class="btn btn-outline back-home mb-3">
-            <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
-        </button>
-    </div>
+    <button type="button" class="btn btn-outline back-home mb-3">
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
+    </button>
 
-    <hr class="crmson mb-5">
+    <hr class="crimson mb-5">
 
 </div>
 

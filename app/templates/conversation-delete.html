@@ -24,57 +24,45 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="conversations content">
+<div class="container text-center">
 
-    <div class="container">
+    <hr class="crimson mb-3">
+    <h3 class="conversations crimson mb-3">Delete a Conversation</h3>
 
-        <hr class="crimson mb-3">
-        <h3 class="conversations crimson mb-3">Delete a Conversation</h3>
+    <hr class="crimson mb-5">
+    <hr class="gold mb-3">
 
-        <hr class="crimson mb-5">
-        <hr class="gold mb-3">
+    <div class="row">
 
-        <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto content mb-3">
 
-            <div class="col-lg-8 col-md-10 mx-auto content mb-3">
+            <form method="POST" action="{{ url_for('conversation_function.delete_conversation') }}">
 
-                {% if error_message %}
-                    <div class="alert alert-danger">
-                        {{ error_message }}
-                    </div>
-                {% endif %}
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <h5 class="alert-warning">{{ message }}</h5>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
 
-                <form method="POST" action="{{ url_for('conversation_function.delete_conversation') }}">
+                {{ wtf.form_field(delete_conversation_form.csrf_token) }}
 
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            {% for message in messages %}
-                                <h5 class="alert-warning">{{ message }}</h5>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
+                <span class="align-left">{{ wtf.form_field(delete_conversation_form.conversation_id, autofocus=true) }}</span>
+                {{ wtf.form_field(delete_conversation_form.submit, class="submit btn btn-danger") }}
+            </form>
 
-                    <span style="display:none;">{{ wtf.form_field(delete_conversation_form.csrf_token) }}</span>
-
-                    <span style="text-align: left;">{{ wtf.form_field(delete_conversation_form.conversation_id, autofocus=true) }}</span>
-                    <div class="mb-1">{{ wtf.form_field(delete_conversation_form.submit, class="submit btn btn-danger") }}</div>
-                </form>
-
-            </div>
         </div>
-
-        <hr class="gold mb-5">
-        <hr class="green mb-3">
-
-        <div>
-            <button type="button" class="btn btn-outline back-home mb-3">
-                <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
-            </button>
-        </div>
-
-        <hr class="mb-5" style="color:green;">
-
     </div>
+
+    <hr class="gold mb-5">
+    <hr class="green mb-3">
+
+    <button type="button" class="btn btn-outline back-home mb-3">
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
+    </button>
+
+    <hr class="green mb-5">
 
 </div>
 

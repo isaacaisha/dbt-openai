@@ -223,7 +223,7 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
 }
 
 textarea#userInput {
-    color: #17a2b8 !important;
+    color: #72e9fc !important;
 }
 
 .history-title {
@@ -236,9 +236,6 @@ textarea#userInput {
     text-decoration: underline;
 }
 
-/* 1°Click on your Favorite Language */
-#content > div.content.container > div.text-center.mb-1 > h3,
-#resultMemo > h3:nth-child(2), #resultMemo > h3,
 .conversations-details {
     color: #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
@@ -251,8 +248,17 @@ textarea#userInput {
     text-align: center;
 }
 
-.ul-conversations {
+.align-left {
     text-align: left;
+}
+
+/* Click to Go Back to Select Conversation */
+#content>div.conversations.container>div>a:hover {
+    color: #6ABFA6;
+}
+
+/* Click to Go Back to Select Conversation */#content>div.conversations.container>div>a {
+    text-decoration: underline;
 }
 
 label {
@@ -340,6 +346,11 @@ button.language-btn:hover {
     min-height: 55px;
     padding: 0.3rem;
     width: 100%;
+}
+
+/* crsf_token */
+#content>div.container.text-center>div.row>div>form>div>label{
+    display: none;
 }
 
 .textarea-memory {
