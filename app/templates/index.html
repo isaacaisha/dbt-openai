@@ -32,13 +32,13 @@
 
     <div class="content container text-center">
         <!-- Page Header -->
-        <hr style="color:red;">
+        <hr class="crimson">
 
         <h3 class="log-register-h3">Interact With<br>
             <span class="artificial-intelligence">SìįSí</span><br>Register & Log in
         </h3>
 
-        <hr class="mb-3" style="color:yellow;">
+        <hr class="gold mb-3">
     </div>
 
     <div class="content text-center">
@@ -58,7 +58,7 @@
                            href="{{ url_for('auth.login') }}">Login</a>
                     </li>
                 </ul>
-                <p style="color:gold; margin-bottom:0;">🔥∞To Use All Features∞🔥</p>
+                <p class="gold" style="margin-bottom:0;">🔥∞To Use All Features∞🔥</p>
             </div>
         </nav>
 
@@ -66,13 +66,13 @@
         <button id="showPopupButton" type="button" class="btn mb-3 submit">Show Instructions</button>
         
         <!-- Popup Container -->
-        <div id="popupContainer" class="popup-container  conversations-details" style="display: none;">
+        <div id="popupContainer" class="popup-container  conversations" style="display: none;">
             <!-- Popup Content -->
             <div class="popup-content">
                 <!-- Popup Content Here -->
                 <p>Welcome to the <span class="SìįSí">-¡!¡-SìįSí-¡!¡-</span> app</p>
                 <!-- Ordered List -->
-                <ol>
+                <ol class=" ul-conversations">
                     <li> 
                         <span class="mediumslateblue">Click On Your Favorite Language</span><br>(e.g.:عربي -¡!¡- Arabic)
                     </li>
@@ -84,10 +84,10 @@
                         <span class="mediumslateblue">Click On Get The Response</span><br>
                         (to get SìįSí answer)
                     </li>
-                    <li>
+                    <li class="text-center">
                         <span class="mediumslateblue">🔥To Use All Features🔥</span><br>
                         <span>
-                            <a href="{{ url_for('auth.register') }}" class="underline">Register</a> then 
+                            <a href="{{ url_for('auth.register') }}" class="underline">Register</a> & 
                             <a href="{{ url_for('auth.login') }}" class="underline">Login</a>
                         </span>
                     </li>
@@ -104,9 +104,9 @@
     <div class="content">
 
         <div class="container text-center mb-1">
-            <hr class="mb-3" style="color:yellow;">
+            <hr class="gold mb-3">
 
-            <h3 class="mb-5" style="color:#AEFAFC;">1°Click on your Favorite Language</h3>
+            <h3 class="conversations mb-5">1°Click on your Favorite Language</h3>
 
             <div>
                 <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5">
@@ -145,7 +145,7 @@
                 <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
 
                 <div class="text-center">
-                    <hr class="mb-3" style="color:green;">
+                    <hr class="green mb-3">
                     <div class="mb-3 alert error" id="error-message" style="display: none;"></div>
                     <div>
                         <button id="start-button" type="button" class="btn mb-3">
@@ -153,8 +153,8 @@
                         </button>
                     </div>
 
-                    <hr class="mb-5" style="color:green;">
-                    <hr class="mb-3" style="color:red;">
+                    <hr class="green mb-5" >
+                    <hr class="crimson mb-3">
 
                     <!-- Add a button for speech recognition -->
                     <button id="speechRecognitionButton" type="button" class="btn mb-3">
@@ -162,7 +162,7 @@
                     </button>
                 </div>
 
-                <hr class="mb-5" style="color:red;">
+                <hr class="crimson mb-5">
 
                 <div id="textarea-container" style="display: none;">
                     <label for="userInput" class="label_ text-center">
@@ -173,7 +173,7 @@
                     <hr style="display: block; color:yellow">
                 </div>
 
-                <hr class="mb-3" style="color:yellow">
+                <hr class="gold mb-3">
 
                 <div id="loading-indicator" style="display:none;" class="text-center mb-3">
                     <p>Loading...</p>
@@ -189,15 +189,15 @@
                 </div>
             </form>
 
-            <hr class="mb-5" style="color:yellow">
+            <hr class="gold mb-5">
 
             <div class="text-center">
-                <hr class="mb-3" style="color:green">
+                <hr class="green mb-3">
                 <label>:…·SìįSí·Dbt·…:</label>
                 <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
 
                 <!-- Add a button for speech synthesis playback -->
-                <div class="mb-3 text-center">
+                <div class="mb-3">
                     <span>(PlayBack)</span><br>
                     <button id="playbackButton" type="button" class="btn btn-outline">
                         ¡!¡ ·SìįSí·Dbt·SìįSí· ¡!¡
@@ -209,7 +209,7 @@
                 </div>
             </div>
 
-            <hr class="mb-5" style="color:green">
+            <hr class="green mb-5">
 
         </div>
 

@@ -23,51 +23,43 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="content container">
+<div class="conversations content container">
 
     <!-- Page Header -->
     {% if error_message %}
-    <div class="alert alert-info text-center">
+    <div class="alert alert-info">
         {{ error_message }}
     </div>
     {% endif %}
 
     <div class="container conversations-details">
-        <hr class="mb-3" style="color:green;">
-        <h3 class="text-center" style="margin-top:0;">Conversation Details</h3>
-        <hr class="mb-5" style="color:green;">
-        <hr class="mb-3" style="color:yellow;">
-                    <!--
-                    <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
-                    <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
-                    <span style="color:#30ABB7;">
-                    <strong>Username:</strong> {{ conversation_.user_name }}
-                    </span><br>
-                    -->
-                    <span style="color:#9A30F3;"><strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}</span><br>
-                    <span style="color:#1295FA;"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
-                    <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
-                    <span><strong>Created At:</strong> {{ formatted_created_at }}</span><br><br>
-
+        <hr class="green mb-3">
+        <h3 class="conversations">Conversation Details</h3>
+        <hr class="green mb-5">
+        <hr class="gold mb-3">
+        <span class="white"><strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}</span><br>
+        <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
+        <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
+        <span class="created"><strong>Created At:</strong> {{ formatted_created_at }}</span><br><br>
 
     </div>
 
-    <div class="mb-3 text-center">
-        <a href="{{ url_for('conversation_function.select_conversation') }}" style="color:#fff;">
+    <div class="mb-3">
+        <a href="{{ url_for('conversation_function.select_conversation') }}" class="white">
             Click to Go Back to Conversation Selection
         </a>
     </div>
 
-    <hr class="mb-5" style="color:yellow;">
-    <hr class="mb-3" style="color:red;">
+    <hr class="gold mb-5">
+    <hr class="crimson mb-3">
 
-    <div class="text-center">
+    <div>
         <button type="button" class="btn btn-outline back-home mb-3">
-            <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
+            <a href="{{ url_for('conversation_interface.conversation_interface') }}">Back Home -¡!¡-</a>
         </button>
     </div>
 
-    <hr class="mb-5" style="color:red;">
+    <hr class="crimson mb-5">
 
 </div>
 

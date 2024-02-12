@@ -186,12 +186,49 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     padding: 5px 10px;
 }
 
-.SìįSí {
+.green {
+    color: darkgreen;
+}
+
+.SìįSí, .gold {
     color: gold;
+}
+
+.crimson {
+    color: crimson;
+}
+
+.white {
+    color: #fff;
 }
 
 .mediumslateblue {
     color: mediumslateblue;
+}
+
+.convers-id {
+    color: #cdfcf5;;
+}
+
+.llm-response {
+    color: #70f8fd;
+}
+
+.summary {
+    color: #AEFAFC;
+}
+
+.created {
+    color: #d0ebec;
+}
+
+textarea#userInput {
+    color: #17a2b8 !important;
+}
+
+.history-title {
+    color: #17a2b8 !important;
+    margin-top: 0;
 }
 
 .underline {
@@ -205,6 +242,17 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
 .conversations-details {
     color: #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
+}
+
+.conversations {
+    color: #AEFAFC;
+    font-family: 'Lora', 'Times New Roman', serif;
+    margin-top: 0;
+    text-align: center;
+}
+
+.ul-conversations {
+    text-align: left;
 }
 
 label {
@@ -295,7 +343,7 @@ button.language-btn:hover {
 }
 
 .textarea-memory {
-    color: #fd7e14;
+    color: #4bedc7;;
     height: 199px;
     line-height: 1.9rem;
     padding: 0.9rem;
@@ -453,9 +501,4 @@ hr.mb-3, body hr {
 
 #home-tab2 > a, #profile-tab2 {
     font-size: 2.7rem;
-}
-
-/* link: Click to Go Back to Conversation Selection */
-#content > div.content > div.container.conversations-details > div > a {
-    text-decoration: None;
 }

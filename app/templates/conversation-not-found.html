@@ -26,33 +26,33 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="content container">
-    <div class="text-center mb-3">
-        <hr class="mb-3" style="color:green;">
-        <h3 style="color:yellow; margin-top:0;">Sorry Not Found</h3>
-        <hr class="mb-5" style="color:green;">
-        <hr class="mb-3" style="color:yellow;">
-        <h3 style="color:#9ED2C6; margin-top:0;">
-            Conversation with:<br>ID 🔥<span style="color:yellow;">{{ conversation_id }}</span>🔥<br>not found<br>¡!¡ 😭 ¡!¡
+<div class="conversations content container">
+    <div class="mb-3">
+        <hr class="green mb-3">
+        <h3 class="gold" style="margin-top:0;">Sorry Not Found</h3>
+        <hr class="green mb-5">
+        <hr class="gold mb-3">
+        <h3 class="conversations">
+            Conversation with:<br>ID 🔥<span class="gold">{{ conversation_id }}</span>🔥<br>not found<br>¡!¡ 😭 ¡!¡
         </h3>
     </div>
 
-    <div class="mb-3 text-center">
-        <a href="javascript:history.back();" style="color:#fff;">
+    <div class="mb-3">
+        <a href="javascript:history.back();" class="white">
             Click to Go Back to Select Conversation
         </a>
     </div>
 
-    <hr class="mb-5" style="color:yellow;">
-    <hr class="mb-3" style="color:red;">
+    <hr class="gold mb-5">
+    <hr class="crimson mb-3">
 
-    <div class="text-center">
+    <div>
         <button type="button" class="btn btn-outline back-home mb-3">
             <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
         </button>
     </div>
 
-    <hr class="mb-5" style="color:red;">
+    <hr class="crimson mb-5">
 </div>
 
 {% endautoescape %}

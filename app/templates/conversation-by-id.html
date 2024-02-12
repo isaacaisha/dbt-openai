@@ -23,23 +23,21 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="content">
-
-    <!-- Page Header -->
+<div class="conversations content">
 
     <div class="container">
 
-        <hr class="mb-3" style="color:green;">
-        <h3 class="conversations-details text-center mb-3" style="margin-top:0;">Select a Conversation</h3>
+        <hr class="green mb-3">
+        <h3 class="conversations mb-3">Select a Conversation</h3>
 
-        <hr class="mb-5" style="color:green;">
-        <hr class="mb-3" style="color:yellow;">
+        <hr class="green mb-5">
+        <hr class="gold mb-3">
 
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto mb-3">
 
                 {% if error_message %}
-                    <div class="alert alert-warning text-center">
+                    <div class="alert alert-warning">
                         {{ error_message }}
                     </div>
                 {% endif %}
@@ -49,7 +47,7 @@
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
                             {% for message in messages %}
-                                <h5 class="alert-info text-center">{{ message }}</h5>
+                                <h5 class="alert-info">{{ message }}</h5>
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
@@ -57,22 +55,22 @@
                     <!-- Include CSRF token -->
                     <span style="display:none;">{{ wtf.form_field(select_conversation_form.csrf_token) }}</span>
 
-                    {{ wtf.form_field(select_conversation_form.conversation_id, autofocus=true) }}
-                    <div class="mb-1 text-center">{{ wtf.form_field(select_conversation_form.submit, class="submit btn btn-success") }}</div>
+                    <span style="text-align: left;">{{ wtf.form_field(select_conversation_form.conversation_id, autofocus=true) }}</span>
+                    <div class="mb-1">{{ wtf.form_field(select_conversation_form.submit, class="submit btn btn-success") }}</div>
                 </form>
 
             </div>
         </div>
 
-        <hr class="mb-5" style="color:yellow;">
-        <hr class="mb-3" style="color:red;">
+        <hr class="gold mb-5">
+        <hr class="crimson mb-3">
 
-        <div class="text-center">
+        <div>
             <button type="button" class="btn btn-outline back-home mb-3">
                 <a href="{{ url_for('conversation_interface.conversation_interface') }}">Back Home -¡!¡-</a>
             </button>
         </div>
-        <hr class="mb-5" style="color:red;">
+        <hr class="crimson mb-5">
 
     </div>
 

@@ -22,13 +22,13 @@
 {% block content %}
 {% autoescape true %}
 
-    <div class="content container">
+    <div class="conversations content container">
 
-        <hr class="mb-3" style="color:green;">
-        <h3 class="text-center conversations-details" style="margin-top:0;">Recent Conversation</h3>
-        <hr class="mb-3" style="color:green;">
+        <hr class="green mb-3">
+        <h3 class="conversations">Recent Conversation</h3>
+        <hr class="green mb-3">
 
-        <div class="text-center">
+        <div>
             {% if search_message %}
                 <div class="alert alert-danger mb-5">{{ search_message }}</div>
             {% endif %}
@@ -48,21 +48,22 @@
                     </button>
                 </div>
                 
-                <form action="{{ url_for('llm_conversation.show_story') }}" method="GET" class="text-center">
+                <form action="{{ url_for('llm_conversation.show_story') }}" method="GET">
                     <div class="form-group">
-                        <label for="limit" class="form-label label_">Enter the <span style="color:#f3f030;">number</span> of
-                            conversations <span style="color:#f3f030;">you want to retrieve</span>:</label>
+                        <label for="limit" class="form-label label_">
+                            Enter the <span class="gold">number</span> of conversations <span class="gold">you want to retrieve</span>:
+                        </label>
                         <div class="input-group">
                             <input type="number" id="limit" name="limit" min="1" max="9991" class="form-control form-control-sm mb-3">
                         </div>
-                        <label for="offset" class="form-label label_">Enter the <span style="color:#f3f030;">number</span> of
-                            conversations <span style="color:#f3f030;">you want to skip</span>:</label>
+                        <label for="offset" class="form-label label_">Enter the <span class="gold">number</span> of
+                            conversations <span class="gold">you want to skip</span>:</label>
                         <div class="input-group">
                             <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
                         </div>
-                        <label for="search" class="form-label label_">Enter a <span style="color:#f3f030;">word</span> <span
-                                style="color:#fff;">from {{ current_user.name }}</span> conversations <span style="color:#f3f030;">to
-                                retrieve it</span>:</label>
+                        <label for="search" class="form-label label_">Enter a <span class="gold">word</span> 
+                            <span style="color:#fff;">from {{ current_user.name }}</span> conversations 
+                            <span class="gold">to retrieve it</span>:</label>
                         <div class="input-group">
                             <input type="string" id="search" name="search" class="form-control form-control-sm mb-3">
                             <!-- Single submit button -->
@@ -74,22 +75,22 @@
             
                 <div class="container conversations-details mb-3">
                     {% if limit %}
-                        <h4 class="text-center">Total of <span style="color:#f3f030;">{{ limit }}</span> Conversations</h4>
+                        <h4 class="text-center">Total of <span class="gold">{{ limit }}</span> Conversations</h4>
                     {% endif %}
                     {% if offset %}
-                        <h4 class="text-center"><span style="color:#f3f030;">{{ offset }}</span> Conversations Skipped</h4>
+                        <h4 class="text-center"><span class="gold">{{ offset }}</span> Conversations Skipped</h4>
                     {% endif %}
                     {% if search %}
-                        <h4 class="text-center">Search the word <span style="color:#f3f030;">{{ search }}</span> 
-                            <span style="color:#fff;">from {{ current_user.name }}</span> conversations to retrieve it</h4>
+                        <h4 class="text-center">Search the word <span class="gold">{{ search }}</span> 
+                            <span class="white">from {{ current_user.name }}</span> conversations to retrieve it</h4>
                     {% endif %}
                 </div>
 
-                <div id="resultMemo" class="text-center mb-3">
-                    <hr class="mb-3" style="color:yellow;">
+                <div id="resultMemo" class="mb-3">
+                    <hr class="gold mb-3">
                 
-                    <h3 style="margin-top:0; color:#17a2b8;">Memory Load</h3>
-                    <textarea class="textarea-memory mb-3" style="color:#9ED2C6;">
+                    <h3 class="history-title">Memory Load</h3>
+                    <textarea class="textarea-memory mb-3">
                     {% if memory_load %}
                         {% for memory in memory_load %}
                             {{ memory.user_name }}:
@@ -102,23 +103,23 @@
                     {% endif %}
                     </textarea>
                 
-                    <hr class="mb-5" style="color:yellow;">
-                    <hr class="mb-3" style="color:red;">
+                    <hr class="gold mb-5">
+                    <hr class="crimson mb-3">
                 
-                    <h3 style="margin-top:0; color:#17a2b8;">Summary</h3>
+                    <h3 class="history-title">Summary</h3>
                     <textarea class="textarea-memory mb-3" style="color:#AEFAFC;">{{ summary_conversation|safe }}</textarea>
                 
-                    <hr class="mb-5" style="color:red;">
-                    <hr class="mb-3" style="color:green;">
+                    <hr class="crimson mb-5">
+                    <hr class="green mb-3">
                 
-                    <h3 style="margin-top:0; color:#17a2b8;">Memory Buffer</h3>
-                    <textarea class="textarea-memory mb-3" style="color:#9ED2C6;">{{ memory_buffer|safe }}</textarea>
+                    <h3 class="history-title">Memory Buffer</h3>
+                    <textarea class="textarea-memory mb-3">{{ memory_buffer|safe }}</textarea>
                 
-                    <hr class="mb-5" style="color:green;">
-                    <hr class="mb-3" style="color:yellow;">
+                    <hr class="green mb-5">
+                    <hr class="gold mb-3">
 
                     <!-- Add a button to trigger the display of serialized_histories -->
-                    <div class="text-center">
+                    <div>
                         <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
                             Show Conversations
                         </button>
@@ -127,8 +128,7 @@
                     <!-- Add a div to contain the serialized histories -->
                     <div id="historiesContainer" class="mb-3" style="display: none;">
                         {% for conversation in serialized_memory_load %}
-                        <!--{{ conversation|tojson(indent=4)|safe }}-->
-                        <textarea class="form-control mb-3" id="userInput" name="text_writing" style="color:#AEFAFC !important;">
+                        <textarea class="form-control mb-3" id="userInput" name="text_writing">
                             "conversation_id": "{{ conversation.id }}"
                             "{{ conversation.user_name }}": "{{ conversation.user_message }}"
                             "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
@@ -138,16 +138,16 @@
                         {% endfor %}
                     </div>
 
-                    <hr class="mb-5" style="color:yellow;">
-                    <hr class="mb-3" style="color:red;">
+                    <hr class="gold mb-5">
+                    <hr class="crimson mb-3">
                 
-                    <div class="text-center">
+                    <div>
                         <button type="button" class="btn btn-outline back-home mb-3">
                             <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
                         </button>
                     </div>
                 
-                    <hr class="mb-5" style="color:red;">
+                    <hr class="crimson mb-5">
                 </div>
 
             {% endif %}

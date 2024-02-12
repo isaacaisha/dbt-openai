@@ -7,6 +7,7 @@ from app.models.memory import Memory
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
 
+
 def get_conversations(owner_id=None, limit=None, offset=None, search=None, order_by_desc=False):
     query = Memory.query
     if owner_id is not None:
@@ -20,6 +21,7 @@ def get_conversations(owner_id=None, limit=None, offset=None, search=None, order
     if offset is not None:
         query = query.offset(offset)
     return query.all()
+
 
 def serialize_conversation(conversation):
     return {

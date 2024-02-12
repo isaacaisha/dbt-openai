@@ -22,29 +22,27 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="content container conversations-details">
+<div class="content container conversations">
 
-    <!-- Page Header -->
     <div class="">
-        <hr class="mb-3" style="color:green;">
-        <h3 class="text-center mb-3" style="margin-top:0;">Your Firtest & Latest Conversations</h3>
-        <hr class="mb-3" style="color:green;">
+        <hr class="green mb-3">
+        <h3 class="conversations">Your Firtest & Latest Conversations</h3>
+        <hr class="green mb-3">
     </div>
 
     {% if search_message %}
-        <div class="alert alert-danger text-center mb-5">{{ search_message }}</div>
+        <div class="alert alert-danger mb-5">{{ search_message }}</div>
     {% endif %}
 
-    <div class="text-center">
+    <div>
         {% if not first_conversations %}
             {% if error_message %}
-                <div class="alert alert-info text-center mb-5">
+                <div class="alert alert-info mb-5">
                     {{ error_message }}
                 </div>
             {% endif %}
 
         {% else %}
-            <!--<div class="d-flex justify-content-end">-->
             <div class="d-flex justify-content-center mb-5">
                 <button class="btn btn-outline-info submit scroll-down " onclick="scrollDown()" id="scrollDownButton"
                     style="position:fixed">
@@ -52,20 +50,20 @@
                 </button>
             </div>
 
-            <form action="{{ url_for('llm_conversation.convers_head_tail') }}" method="GET" class="text-center">
+            <form action="{{ url_for('llm_conversation.convers_head_tail') }}" method="GET">
                 <div class="form-group">
-                    <label for="limit" class="form-label label_">Enter the <span style="color:#f3f030;">number</span> of conversations <span style="color:#f3f030;">you want to retrieve</span>:</label>
+                    <label for="limit" class="form-label label_">Enter the <span class="gold">number</span> of conversations <span class="gold">you want to retrieve</span>:</label>
                     <div class="input-group">
                         <input type="number" id="limit" name="limit" min="1" max="9991" class="form-control form-control-sm mb-3">
                     </div>
-                    <label for="offset" class="form-label label_">Enter the <span style="color:#f3f030;">number</span> of conversations <span style="color:#f3f030;">you want to skip</span>:</label>
+                    <label for="offset" class="form-label label_">Enter the <span class="gold">number</span> of conversations <span class="gold">you want to skip</span>:</label>
                     <div class="input-group">
                         <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
                     </div>
-                    <label for="search" class="form-label label_">Enter a <span style="color:#f3f030;">word</span> <span style="color:#fff;">from {{ current_user.name }}</span> conversations <span style="color:#f3f030;">to retrieve it</span>:</label>
+                    <label for="search" class="form-label label_">Enter a <span class="gold">word</span> <span class="white">from {{ current_user.name }}</span> conversations <span class="gold">to retrieve it</span>:</label>
                     <div class="input-group">
                         <input type="string" id="search" name="search"  class="form-control form-control-sm mb-3">
-                        <!-- Single submit button -->
+                        
                         <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('get_all_conversations')" style="border: .1rem solid;">Submit</button>
                     </div>
                 </div>
@@ -73,33 +71,27 @@
         
             <div class="container mb-3">
                 {% if limit %}
-                    <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Firtest Conversations</h4>
+                    <h4><span class="gold">{{ limit }}</span> Firtest Conversations</h4>
                 {% endif %}
                 {% if offset %}
-                    <h4 class="text-center"><span style="color:#f3f030;">{{ offset }}</span> Conversations Skipped</h4>
+                    <h4><span class="gold">{{ offset }}</span> Conversations Skipped</h4>
                 {% endif %}
                 {% if search %}
-                    <h4 class="text-center">Search the word <span style="color:#f3f030;">{{ search }}</span> 
-                    <span style="color:#fff;">from {{ current_user.name }}</span> conversations to retrieve it</h4>
+                    <h4>Search the word <span class="gold">{{ search }}</span> 
+                    <span class="white">from {{ current_user.name }}</span> conversations to retrieve it</h4>
                 {% endif %}
             </div>
         
-            <ul>
+            <ul class="ul-conversations">
                 {% for conversation_ in first_conversations %}
                 <li>
-                    <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
-                    <!--
-                        <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
-                        <span style="color:#30ABB7;"><strong>Username:</strong> {{ conversation_.user_name }}</span><br>
-                        -->
-                    <span style="color:#9A30F3;">
+                    <span class="convers-id"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
+                    <span class="white">
                         <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
                     </span><br>
-                    <span style="color:#1295FA;"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe
-                        }}</span><br>
-                    <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe
-                        }}</span><br>
-                    <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+                    <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
+                    <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
+                    <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
                 </li>
                 {% endfor %}
             </ul>
@@ -107,32 +99,30 @@
             <hr class="mb-3" style="color:rgb(64, 64, 172);">
             <hr class="mb-5" style="color:rgb(64, 64, 172);">
         
-            <h4 class="text-center"><span style="color:#9A30F3;">{{ limit }}</span> Latest Conversations</h4>
-            <ul>
+            <h4><span class="gold">{{ limit }}</span> Latest Conversations</h4>
+            <ul class="ul-conversations">
                 {% for conversation_ in last_conversations %}
                 <li>
-                    <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
+                    <span class="convers-id"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
                     <!--
                                 <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
                                 <span style="color:#30ABB7;"><strong>Username:</strong> {{ conversation_.user_name }}</span><br>
                                 -->
-                    <span style="color:#9A30F3;">
+                    <span class="white">
                         <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
                     </span><br>
-                    <span style="color:#1295FA;"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe
-                        }}</span><br>
-                    <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe
-                        }}</span><br>
-                    <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+                    <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
+                    <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
+                    <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
                 </li>
                 {% endfor %}
             </ul>
 
 
-            <hr class="mb-3" style="color:green;">
+            <hr class="green mb-3">
 
             <!-- Add a button to trigger the display of serialized_histories -->
-            <div class="text-center">
+            <div>
                 <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
                     Show Conversations
                 </button>
@@ -141,10 +131,9 @@
             <!-- Add a div to contain the serialized histories -->
             <div id="historiesContainer" class="mb-3" style="display: none;">
             
-                <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Firtest Conversations</h4>
+                <h4><span class="gold">{{ limit }}</span> Firtest Conversations</h4>
                 {% for conversation in first_conversations %}
-                <!--{{ conversation|tojson(indent=4)|safe }}-->
-                <textarea class="form-control mb-5" id="userInput" name="text_writing"  style="color:#449395 !important;">
+                    <textarea class="ul-conversations form-control mb-5" id="userInput" name="text_writing">
                         "conversation_id": "{{ conversation.id }}"
                         "{{ conversation.user_name }}": "{{ conversation.user_message }}"
                         "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
@@ -152,10 +141,9 @@
                         "created_at": "{{ conversation.created_at }}"
                     </textarea>
                 {% endfor %}
-                <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Latest Conversations</h4>
+                <h4><span class="gold">{{ limit }}</span> Latest Conversations</h4>
                 {% for conversation in last_conversations %}
-                <!--{{ conversation|tojson(indent=4)|safe }}-->
-                <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
+                    <textarea class="form-control mb-5 ul-conversations" id="userInput" name="text_writing">
                         "conversation_id": "{{ conversation.id }}"
                         "{{ conversation.user_name }}": "{{ conversation.user_message }}"
                         "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
@@ -165,11 +153,11 @@
                 {% endfor %}
             </div>
         
-            <hr class="mb-5" style="color:green;">
-            <hr class="mb-3" style="color:yellow;">
+            <hr class="green mb-5">
+            <hr class="gold mb-3">
         
             <!-- Add a button to trigger the display of serialized_histories -->
-            <div class="text-center">
+            <div>
                 <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
                     Show Conversations json
                 </button>
@@ -177,30 +165,30 @@
         
             <!-- Add a div to contain the serialized histories -->
             <div id="historiesContainerJson" class="mb-3" style="display: none;">
-                <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Firtest Conversations</h4>
+                <h4><span class="gold">{{ limit }}</span> Firtest Conversations</h4>
                 {% for conversation in first_conversations %}
-                <pre style=" color:#449395 !important;">
+                <pre class="ul-conversations">
                         {{ conversation|tojson(indent=4)|safe }}
                     </pre>
                 {% endfor %}
-                <h4 class="text-center"><span style="color:#f3f030;">{{ limit }}</span> Latest Conversations</h4>
+                <h4><span class="gold">{{ limit }}</span> Latest Conversations</h4>
                 {% for conversation in last_conversations %}
-                <pre style="color:purple;">
+                <pre class="ul-conversations">
                         {{ conversation|tojson(indent=4)|safe }}
                     </pre>
                 {% endfor %}
             </div>
         
-            <hr class="mb-5" style="color:yellow;">
-            <hr class="mb-3" style="color:red;">
+            <hr class="gold mb-5">
+            <hr class="crimson mb-3">
         
-            <div class="text-center">
+            <div>
                 <button type="button" class="btn btn-outline back-home mb-3">
                     <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
                 </button>
             </div>
         
-            <hr class="mb-5" style="color:red;">
+            <hr class="crimson mb-5">
         {% endif %}
     </div>
 
