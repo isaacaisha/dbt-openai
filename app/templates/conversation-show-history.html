@@ -22,14 +22,20 @@
 {% block content %}
 {% autoescape true %}
 
-    <div class="conversations content container">
+    <div class="conversations container">
 
         <hr class="green mb-3">
         <h3 class="conversations">Recent Conversation</h3>
         <hr class="green mb-3">
 
         {% if search_message %}
-            <div class="alert alert-danger mb-5">{{ search_message }}</div>
+            <div class="alert alert-danger">{{ search_message }}</div>
+
+            <div class="mb-5">
+                <a href="javascript:history.back();" class="white">
+                    Click to Go Back
+                </a>
+            </div>
         {% endif %}
 
         {% if not memory_load %}

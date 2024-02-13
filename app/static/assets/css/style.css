@@ -253,12 +253,13 @@ textarea#userInput {
 }
 
 /* Click to Go Back to Select Conversation */
-#content>div.conversations.container>div>a:hover {
-    color: #6ABFA6;
+#content>div>div>a, #content>div.conversations.container>div>a {
+    text-decoration: underline;
 }
 
-/* Click to Go Back to Select Conversation */#content>div.conversations.container>div>a {
-    text-decoration: underline;
+/* Click to Go Back to Select Conversation */
+#content>div>div>a:hover, #content>div.conversations.container>div>a:hover {
+    color: #6ABFA6;
 }
 
 label {
