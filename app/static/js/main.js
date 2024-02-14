@@ -107,14 +107,3 @@ document.getElementById('generateButton').addEventListener('click', function (ev
 document.getElementById('userInput').addEventListener('input', function () {
     userTextData = document.getElementById('userInput').value;
 });
-
-// Send a keep-alive signal to the server every 5 minutes
-setInterval(function () {
-    fetch('/keep-alive', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ alive: true })
-    });
-}, 5 * 60 * 1000); // 5 minutes in milliseconds

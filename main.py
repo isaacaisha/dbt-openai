@@ -3,13 +3,6 @@ from app import create_app
 
 app = create_app()
 
-
-@app.route('/keep-alive', methods=['POST'])
-def keep_alive():
-    # Do nothing, just return a response
-    return '', 204  # No content
-
-
 if __name__ == '__main__':
     # Clean up any previous temporary audio files
     home_temp_audio_file = 'home_temp_audio.mp3'
