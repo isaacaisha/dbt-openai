@@ -9,7 +9,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 
-from .databases.database import database_bp
+from .databases.database import SQLALCHEMY_DATABASE_URL, database_bp
 from .forms.app_forms import app_form_bp
 from .models.memory import memory_bp, db, User
 
@@ -52,9 +52,7 @@ def create_app():
     # Set it as the Flask application's secret key
     app.secret_key = secret_key
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = (
-        f"postgresql://{os.environ['user']}:{os.environ['password']}@"
-        f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}")
+    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URL
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JSON_AS_ASCII'] = False
 
