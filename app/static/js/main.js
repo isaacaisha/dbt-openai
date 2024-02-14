@@ -1,5 +1,5 @@
 // Disable all buttons with the class "btn" except language selection buttons
-document.querySelectorAll('.btn:not(.language-btn, .submit)').forEach(function(btn) {
+document.querySelectorAll('.btn:not(.language-btn, .submit)').forEach(function (btn) {
     btn.disabled = true;
 });
 
@@ -16,43 +16,46 @@ function enableContent() {
 
 // Add click event listeners to language buttons
 var languageButtons = document.querySelectorAll('.language-btn');
-languageButtons.forEach(function(button) {
-    button.addEventListener('click', function() {
+languageButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
         // Remove the 'active' class from all buttons
-        languageButtons.forEach(function(btn) {
+        languageButtons.forEach(function (btn) {
             btn.classList.remove('active');
         });
+
         // Add the 'active' class to the clicked button
         button.classList.add('active');
 
         // Enable all buttons with the class "btn"
-        document.querySelectorAll('.btn').forEach(function(btn) {
+        document.querySelectorAll('.btn').forEach(function (btn) {
             btn.disabled = false;
+        });
 
         // Call the enableContent function to show the content container and enable all buttons
         enableContent();
-        });
     });
 });
 
+// Function to capitalize sentences in a textarea
 function capitalizeSentences(textarea) {
-            // Get the current value of the textarea
-            let currentValue = textarea.value;
+    // Get the current value of the textarea
+    let currentValue = textarea.value;
 
-            // Split the text into sentences based on periods followed by a space
-            let sentences = currentValue.split('. ');
+    // Split the text into sentences based on periods followed by a space
+    let sentences = currentValue.split('. ');
 
-            // Capitalize the first letter of each sentence and join them back together
-            let capitalizedText = sentences.map(sentence => {
-                return sentence.charAt(0).toUpperCase() + sentence.slice(1);
-            }).join('. ');
+    // Capitalize the first letter of each sentence and join them back together
+    let capitalizedText = sentences.map(sentence => {
+        return sentence.charAt(0).toUpperCase() + sentence.slice(1);
+    }).join('. ');
 
-            // Set the updated value
-            textarea.value = capitalizedText;
-        }
+    // Set the updated value
+    textarea.value = capitalizedText;
+}
 
-let userTextData = ""; // Initialize a variable to store the text data
-let typingTimeout; // Initialize a variable to track typing timeout
+// Initialize variables to store text data and track typing timeout
+let userTextData = "";
+let typingTimeout;
 
 // Function to handle the "Start" button click
 document.getElementById('start-button').addEventListener('click', function () {
@@ -77,6 +80,7 @@ document.getElementById('start-button').addEventListener('click', function () {
     });
 });
 
+// Function to handle the "Generate" button click
 document.getElementById('generateButton').addEventListener('click', function (event) {
     const speechData = userSpeechData.trim(); // Get the trimmed speech data
     const inputText = userInput.value.trim(); // Get the trimmed input text
@@ -103,3 +107,14 @@ document.getElementById('generateButton').addEventListener('click', function (ev
 document.getElementById('userInput').addEventListener('input', function () {
     userTextData = document.getElementById('userInput').value;
 });
+
+// Send a keep-alive signal to the server every 5 minutes
+setInterval(function () {
+    fetch('/keep-alive', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ alive: true })
+    });
+}, 5 * 60 * 1000); // 5 minutes in milliseconds
