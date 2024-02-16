@@ -177,7 +177,7 @@ def liked_conversations():
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
-    owner_id = current_user.id
+        owner_id = current_user.id
 
     limit = request.args.get('limit', default=3, type=int)
     offset = request.args.get('offset', default=None, type=int)
