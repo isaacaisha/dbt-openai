@@ -13,6 +13,8 @@ def get_conversations(owner_id=None, limit=None, offset=None, search=None, order
         query = query.filter_by(owner_id=owner_id)
     if search is not None:
         query = query.filter(Memory.user_message.ilike(f"%{search.strip()}%"))
+    if liked_value is not None:
+        query = query.filter(Memory.liked == liked_value)
     if order_by_desc:
         query = query.order_by(Memory.id.desc())
     if limit is not None:
@@ -167,26 +169,36 @@ def update_like(conversation_id):
 
 @llm_conversation_bp.route('/liked-conversations')
 def liked_conversations():
-    if current_user.is_authenticated:
-        owner_id = current_user.id
-
-        # Filter conversations by the liked status (liked > 0)
-        liked_conversations = Memory.query.filter(Memory.owner_id == owner_id, Memory.liked > 0).all()
-
-        # Serialize the liked conversations
-        serialized_liked_conversations = [serialize_conversation(conversation) for conversation in liked_conversations]
-
-        return render_template('conversation-liked.html',
-                               current_user=current_user,
-                               owner_id=owner_id,
-                               liked_conversations=serialized_liked_conversations,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-    else:
+    if not current_user.is_authenticated:
         error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
-        return render_template('conversation-liked',
-                               error_message=error_message,
+        return render_template('conversation-all.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
+
+    owner_id = current_user.id
+
+    limit = request.args.get('limit', default=3, type=int)
+    offset = request.args.get('offset', default=None, type=int)
+    search = request.args.get('search', default=None, type=str)
+
+    liked_conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search, liked_value=1)
+
+    serialized_liked_conversations = [serialize_conversation(conversation) for conversation in liked_conversations]
+
+    if not serialized_liked_conversations:
+        search_message = f"No conversations found for search term: '{search}'"
+        return render_template('conversation-liked.html',
+                               current_user=current_user, owner_id=owner_id,
+                               limit=limit, offset=offset, search=search,
+                               search_message=search_message,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    
+    return render_template('conversation-liked.html',
+                           current_user=current_user,
+                           owner_id=owner_id,
+                           liked_conversations=serialized_liked_conversations,
+                           limit=limit, offset=offset, search=search,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @llm_conversation_bp.route('/api/conversations-jsonify', methods=['GET'])
