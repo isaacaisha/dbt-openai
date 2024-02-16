@@ -1,4 +1,4 @@
-//JavaScript code to handle like / unlike
+// JavaScript code to handle like / unlike
 $(document).ready(function () {
     // Handle click event on like button
     $('.like-button').click(function () {
@@ -21,8 +21,12 @@ $(document).ready(function () {
                 // Update button background color based on liked status
                 if (liked) {
                     button.css('color', 'pink');
+                    // Show the message
+                    $('#likeMessage').show();
                 } else {
                     button.css('color', 'lightcyan');
+                    // Hide the message if unliked
+                    $('#likeMessage').hide();
                 }
             },
             error: function (xhr, status, error) {

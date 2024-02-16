@@ -95,10 +95,14 @@
                     <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
                     <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
                     <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+                    
                     <!-- Add a icon to indicate like -->
                     <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked
                         %}style="color: pink;" {% endif %}>
                         <i class="fa fa-heart fa-2x"></i> <!-- Use "fa-2x" class to make the icon twice as large -->
+                    </div>
+                    <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
+                        You can access your liked conversations {{ conversation_.id }} from the menu.
                     </div>
                 </li>
             {% endfor %}
