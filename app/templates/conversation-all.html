@@ -95,6 +95,11 @@
                     <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
                     <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
                     <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+                    <!-- Add a icon to indicate like -->
+                    <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked
+                        %}style="color: pink;" {% endif %}>
+                        <i class="fa fa-heart fa-2x"></i> <!-- Use "fa-2x" class to make the icon twice as large -->
+                    </div>
                 </li>
             {% endfor %}
         </ul>
@@ -148,34 +153,9 @@
 
 </div>
 
-<script>
-    // Function to toggle histories container
-    function toggleHistories() {
-        var container = document.getElementById('historiesContainer');
-        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
-    }
+<script src="{{ url_for('static', filename='js/like-unlike-convers.js') }}"></script>
 
-    // Function to toggle histories JSON container
-    function toggleHistoriesJson() {
-        var container = document.getElementById('historiesContainerJson');
-        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
-    }
-
-    <!-- JavaScript for scrolling down -->
-    function scrollDown() {
-           window.scrollTo({
-               top: document.body.scrollHeight,
-               behavior: 'smooth'
-           });
-       }
-</script>
-
-<script>
-    // Function to set the form action based on the button clicked
-    function setFormAction(action) {
-        document.getElementById('formAction').value = action;
-    }
-</script>
+<script src="{{ url_for('static', filename='js/toggle-histories.js') }}"></script>
 
 {% endautoescape %}
 {% endblock %}

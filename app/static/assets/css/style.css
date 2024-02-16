@@ -514,3 +514,14 @@ hr.mb-3, body hr {
 #home-tab2 > a, #profile-tab2 {
     font-size: 2.7rem;
 }
+
+/* navbare like icon btn */
+#navbarSupportedContent>ul>li:nth-child(5)>a>i {
+    color: pink;
+}
+
+/* like icon btn */
+.like-button,
+.text-center {
+    color: #70f8fd;
+}
