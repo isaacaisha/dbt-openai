@@ -1,0 +1,170 @@
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
+{% include 'bootstrap/base.html' %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="py-1">
+            <h1 class="">All Your Conversations ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+<div class="container text-center">
+
+    <hr class="green mb-3">
+    <h3 class="conversations mb-3">Your Liked Conversations</h3>
+    <hr class="green mb-5">
+
+    {% if search_message %}
+    <div class="alert alert-danger">{{ search_message }}</div>
+
+    <div class="mb-5">
+        <a href="javascript:history.back();" class="white">
+            Click to Go Back
+        </a>
+    </div>
+    {% endif %}
+
+    {% if not liked_conversations %}
+    {% if error_message %}
+    <div class="alert alert-info mb-5">
+        {{ error_message }}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="d-flex justify-content-center mb-5">
+        <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton"
+            style="position:fixed">
+            ⇩
+        </button>
+    </div>
+
+    <form action="{{ url_for('llm_conversation.get_all_conversations') }}" method="GET">
+        <div class="form-group align-left">
+            <label for="limit" class="form-label label_">Enter the <span class="gold">number</span> of conversations
+                <span class="gold">you want to retrieve</span>:</label>
+            <div class="input-group">
+                <input type="number" id="limit" name="limit" min="1" max="9991"
+                    class="form-control form-control-sm mb-3">
+            </div>
+            <label for="offset" class="form-label label_">Enter the <span class="gold">number</span> of conversations
+                <span class="gold">you want to skip</span>:</label>
+            <div class="input-group">
+                <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
+            </div>
+            <label for="search" class="form-label label_">Enter a <span class="gold">word</span> <span
+                    class="white">from {{ current_user.name }}</span> conversations <span class="gold">to retrieve
+                    it</span>:</label>
+            <div class="input-group">
+                <input type="string" id="search" name="search" class="form-control form-control-sm mb-3">
+            </div>
+            <div class="text-center">
+                <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('get_all_conversations')"
+                    style="border: .1rem solid;">Submit</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="container conversations mb-3">
+        {% if limit %}
+        <h4>Total of <span class="gold">{{ limit }}</span> Conversations</h4>
+        {% endif %}
+        {% if offset %}
+        <h4><span class="gold">{{ offset }}</span> Conversations Skipped</h4>
+        {% endif %}
+        {% if search %}
+        <h4>Search the word <span class="gold">{{ search }}</span>
+            <span class="white">from {{ current_user.name }} conversations</span> to retrieve it
+        </h4>
+        {% endif %}
+    </div>
+
+    <ul class="align-left">
+        {% for conversation_ in liked_conversations %}
+        <li>
+            <span class="convers-id"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
+            <span class="white">
+                <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
+            </span><br>
+            <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
+            <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
+            <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+            <!-- Add a icon to indicate like -->
+            <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if
+                conversation_.liked %}style="color: pink;" {% endif %}>
+                <i class="fa fa-heart fa-2x"></i> <!-- Use "fa-2x" class to make the icon twice as large -->
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <hr class="green mb-3">
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
+        Show Conversations
+    </button>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesContainer" class="align-left mb-3" style="display: none;">
+        {% for conversation in liked_conversations %}
+        <textarea class="form-control mb-3" id="userInput" name="text_writing">
+                    "conversation_id": "{{ conversation.id }}"
+                    "{{ conversation.user_name }}": "{{ conversation.user_message }}"
+                    "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+                    "conversation_summary": "{{ conversation.conversations_summary }}"
+                    "created_at": "{{ conversation.created_at }}"
+                </textarea>
+        {% endfor %}
+    </div>
+
+    <hr class="green mb-5">
+    <hr class="gold mb-3">
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
+        Show Conversations json
+    </button>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesContainerJson" class="align-left mb-3" style="display: none;">
+        {% for conversation in liked_conversations %}
+        <pre>
+                    {{ conversation|tojson(indent=4)|safe }}
+                </pre>
+        {% endfor %}
+    </div>
+
+    <hr class="gold mb-5">
+    <hr class="crimson mb-3">
+
+    <button type="button" class="btn btn-outline back-home mb-3">
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
+    </button>
+
+    <hr class="crimson mb-5">
+    {% endif %}
+
+</div>
+
+<script src="{{ url_for('static', filename='js/like-unlike-convers.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/toggle-histories.js') }}"></script>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer_ %} {% endblock %}
