@@ -185,7 +185,7 @@ def liked_conversations():
     offset = request.args.get('offset', default=None, type=int)
     search = request.args.get('search', default=None, type=str)
 
-    liked_conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search, liked_value=1)
+    liked_conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search, order_by_desc=True, liked_value=1)
 
     serialized_liked_conversations = [serialize_conversation(conversation) for conversation in liked_conversations]
 
