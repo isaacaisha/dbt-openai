@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request
 from flask_login import current_user
 from datetime import datetime
 
-from app.models.memory import Memory
+from app.models.memory import Memory, db
 
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
@@ -29,7 +29,8 @@ def serialize_conversation(conversation):
         "user_message": conversation.user_message,
         "llm_response": conversation.llm_response,
         "conversations_summary": conversation.conversations_summary,
-        'created_at': conversation.created_at.strftime("%a %d %B %Y %H:%M:%S"),
+        "created_at": conversation.created_at.strftime("%a %d %B %Y %H:%M:%S"),
+        "liked": conversation.liked,
     }
 
 
@@ -144,6 +145,45 @@ def show_story():
         return render_template('conversation-show-history.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@llm_conversation_bp.route('/update-like/<int:conversation_id>', methods=['POST'])
+def update_like(conversation_id):
+    # Get the liked status from the request data
+    liked = request.json.get('liked')
+
+    # Find the corresponding Memory object in the database
+    conversation = Memory.query.get_or_404(conversation_id)
+
+    # Update the liked status of the conversation
+    conversation.liked = liked
+
+    # Commit the changes to the database
+    db.session.commit()
+
+    # Return a success response
+    return 'Liked status updated successfully', 200
+
+
+@llm_conversation_bp.route('/liked-conversations')
+def liked_conversations():
+    if not current_user.is_authenticated:
+        # Handle unauthenticated users if needed
+        return "Unauthorized", 401
+
+    owner_id = current_user.id
+
+    # Filter conversations by the liked status (liked > 0)
+    liked_conversations = Memory.query.filter(Memory.owner_id == owner_id, Memory.liked > 0).all()
+
+    # Serialize the liked conversations
+    serialized_liked_conversations = [serialize_conversation(conversation) for conversation in liked_conversations]
+
+    return render_template('liked-conversations.html',
+                           current_user=current_user,
+                           owner_id=owner_id,
+                           liked_conversations=serialized_liked_conversations,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @llm_conversation_bp.route('/api/conversations-jsonify', methods=['GET'])

@@ -17,6 +17,8 @@ class Memory(db.Model):
     llm_response = db.Column(db.String(255), nullable=False)
     conversations_summary = db.Column(db.String, nullable=False)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
+    # Optional liked column
+    liked = db.Column(db.Integer, default=0)
 
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
