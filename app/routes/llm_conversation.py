@@ -167,23 +167,28 @@ def update_like(conversation_id):
 
 @llm_conversation_bp.route('/liked-conversations')
 def liked_conversations():
-    if not current_user.is_authenticated:
-        # Handle unauthenticated users if needed
-        return "Unauthorized", 401
+    if current_user.is_authenticated:
+        owner_id = current_user.id
 
-    owner_id = current_user.id
+        owner_id = current_user.id
 
-    # Filter conversations by the liked status (liked > 0)
-    liked_conversations = Memory.query.filter(Memory.owner_id == owner_id, Memory.liked > 0).all()
+        # Filter conversations by the liked status (liked > 0)
+        liked_conversations = Memory.query.filter(Memory.owner_id == owner_id, Memory.liked > 0).all()
 
-    # Serialize the liked conversations
-    serialized_liked_conversations = [serialize_conversation(conversation) for conversation in liked_conversations]
+        # Serialize the liked conversations
+        serialized_liked_conversations = [serialize_conversation(conversation) for conversation in liked_conversations]
 
-    return render_template('liked-conversations.html',
-                           current_user=current_user,
-                           owner_id=owner_id,
-                           liked_conversations=serialized_liked_conversations,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+        return render_template('liked-conversations.html',
+                               current_user=current_user,
+                               owner_id=owner_id,
+                               liked_conversations=serialized_liked_conversations,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
+        return render_template('liked-conversations.html',
+                               error_message=error_message,
+                               current_user=current_user,
+                               date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @llm_conversation_bp.route('/api/conversations-jsonify', methods=['GET'])
