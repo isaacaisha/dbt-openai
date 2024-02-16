@@ -51,8 +51,8 @@
             ⇩
         </button>
     </div>
-
-    <form action="{{ url_for('llm_conversation.get_all_conversations') }}" method="GET">
+<!--
+    <form action="{{ url_for('llm_conversation.liked_conversations') }}" method="GET">
         <div class="form-group align-left">
             <label for="limit" class="form-label label_">Enter the <span class="gold">number</span> of conversations
                 <span class="gold">you want to retrieve</span>:</label>
@@ -72,7 +72,7 @@
                 <input type="string" id="search" name="search" class="form-control form-control-sm mb-3">
             </div>
             <div class="text-center">
-                <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('get_all_conversations')"
+                <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('liked_conversations')"
                     style="border: .1rem solid;">Submit</button>
             </div>
         </div>
@@ -91,7 +91,7 @@
         </h4>
         {% endif %}
     </div>
-
+-->
     <ul class="align-left">
         {% for conversation_ in liked_conversations %}
         <li>
@@ -106,6 +106,9 @@
             <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if
                 conversation_.liked %}style="color: pink;" {% endif %}>
                 <i class="fa fa-heart fa-2x"></i> <!-- Use "fa-2x" class to make the icon twice as large -->
+            </div>
+            <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
+                You can access your liked conversations {{ conversation_.id }} from the menu.
             </div>
         </li>
         {% endfor %}

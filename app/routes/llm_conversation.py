@@ -176,14 +176,14 @@ def liked_conversations():
         # Serialize the liked conversations
         serialized_liked_conversations = [serialize_conversation(conversation) for conversation in liked_conversations]
 
-        return render_template('liked-conversations.html',
+        return render_template('conversation-liked.html',
                                current_user=current_user,
                                owner_id=owner_id,
                                liked_conversations=serialized_liked_conversations,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
         error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
-        return render_template('liked-conversations.html',
+        return render_template('conversation-liked',
                                error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
