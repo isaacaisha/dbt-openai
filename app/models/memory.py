@@ -10,12 +10,12 @@ memory_bp = Blueprint('memory', __name__)
 
 
 class Memory(db.Model):
-    __tablename__ = 'test'
+    __tablename__ = 'memories'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_name = db.Column(db.String(255), nullable=False)
-    user_message = db.Column(db.String(255), nullable=False)
-    llm_response = db.Column(db.String(255), nullable=False)
-    conversations_summary = db.Column(db.String, nullable=False)
+    user_message = db.Column(db.Text, nullable=False)
+    llm_response = db.Column(db.Text, nullable=False)
+    conversations_summary = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
     # Optional liked column
     liked = db.Column(db.Integer, default=0)
