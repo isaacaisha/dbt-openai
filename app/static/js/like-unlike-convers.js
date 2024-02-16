@@ -10,7 +10,7 @@ $(document).ready(function () {
 
         // Send AJAX request to update liked status
         $.ajax({
-            url: '/update-like/' + conversationId,
+            url: '/update-like/' + conversationId + '?limit=3&offset=0&search=test', // Example of passing parameters
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ liked: liked }),

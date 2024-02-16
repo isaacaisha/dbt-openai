@@ -170,8 +170,6 @@ def liked_conversations():
     if current_user.is_authenticated:
         owner_id = current_user.id
 
-        owner_id = current_user.id
-
         # Filter conversations by the liked status (liked > 0)
         liked_conversations = Memory.query.filter(Memory.owner_id == owner_id, Memory.liked > 0).all()
 
