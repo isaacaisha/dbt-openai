@@ -31,14 +31,14 @@
 {% if not current_user.is_authenticated: %}
     <hr class="green mb-3">
     <h3 class="conversations mb-3">1°Click on your Favorite Language</h3>
-    <hr class="green">
+    <hr class="green mb-5">
     <div class="alert alert-info text-center mb-5">-¡!¡- RELOAD or LOGIN -¡!¡-</div>
 {% else %}
     <div class="container conversations">
         <div class="mb-1">
-            <hr class="green">
-
-            <h3 class="mb-5">1°Click on your Favorite Language</h3>
+            <hr class="green mb-3">
+            <h3 class="conversations">1°Click on your Favorite Language</h3>
+            <hr class="green mb-5">
 
             <div>
                 <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5">
