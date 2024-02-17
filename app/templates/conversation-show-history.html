@@ -99,12 +99,12 @@
                 <h3 class="history-title">Memory Load</h3>
                 <textarea class="textarea-memory mb-3">
                     {% for memory in memory_load %}
-                        {{ memory.user_name }}:
-                    {{ memory.user_message }}
-                        ·SìįSí·Dbt·:
-                    {{ memory.llm_response }}
-                    
-                    ---------------------------
+                    {{ memory.user_name }}: {{ memory.user_message }}
+
+                    ·SìįSí·Dbt·: {{ memory.llm_response }}
+                    Conversation nbr: {{ memory.id }}
+
+                        ---------------------
                     {% endfor %}
                 </textarea>
             
