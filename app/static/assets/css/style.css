@@ -107,23 +107,22 @@ large-image {
 }
 
 /* register-home & log-in-home index.html */
-#navbarSupportedContent > ul > li:nth-child(1) > a.register-home,
-#navbarSupportedContent > ul > li:nth-child(3) > a.log-in-home {
+#navbarSupportedContent > ul > li > a.register-home,
+#navbarSupportedContent > ul > li > a.log-in-home {
     background-color: #0d1515;
     border: 0.1rem solid #17a2b8;
     border-radius: 19rem;
     color: gold;
     font-size: 2.1rem;
-    #margin: 0 1rem;
     padding: 1.3rem;
     transform: rotate(7deg);
 
     /* Set a fixed width */
-    width: 150px; /* Adjust the width based on your design */
+    width: 145px; /* Adjust the width based on your design */
     box-sizing: border-box; /* Include padding and border in the element's total width */
 }
 
-#navbarSupportedContent > ul > li:nth-child(3) > a.log-in-home {
+#navbarSupportedContent > ul > li > a.log-in-home {
     transform: rotate(-7deg);
 }
 

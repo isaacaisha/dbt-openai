@@ -103,6 +103,8 @@
                     {{ memory.user_message }}
                         ·SìįSí·Dbt·:
                     {{ memory.llm_response }}
+                    
+                    ---------------------------
                     {% endfor %}
                 </textarea>
             
@@ -116,7 +118,7 @@
                 <hr class="green mb-3">
             
                 <h3 class="history-title">Memory Buffer</h3>
-                <textarea class="textarea-memory mb-3">{{ memory_buffer|safe }}</textarea>
+                <textarea class="textarea-memory text-center mb-3">{{ memory_buffer|safe }}</textarea>
             
                 <hr class="green mb-5">
                 <hr class="gold mb-3">
