@@ -54,39 +54,41 @@
 
     <form action="{{ url_for('llm_conversation.liked_conversations') }}" method="GET">
         <div class="form-group align-left">
-            <label for="limit" class="form-label label_">Enter the <span class="gold">number</span> of conversations
-                <span class="gold">you want to retrieve</span>:</label>
+            <label for="limit" class="form-label label_">
+                Enter the <span class="gold">number</span> of conversations <span class="gold">you want to retrieve:</span>:
+            </label>
             <div class="input-group">
-                <input type="number" id="limit" name="limit" min="1" max="9991"
-                    class="form-control form-control-sm mb-3">
+                <input type="number" id="limit" name="limit" min="1" max="9991" class="form-control form-control-sm mb-3">
             </div>
-            <label for="offset" class="form-label label_">Enter the <span class="gold">number</span> of conversations
-                <span class="gold">you want to skip</span>:</label>
+            <label for="offset" class="form-label label_">
+                Enter the <span class="gold">number</span> of conversations <span class="gold">you want to skip:</span>:
+            </label>
             <div class="input-group">
                 <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
             </div>
-            <label for="search" class="form-label label_">Enter a <span class="gold">word</span> <span
-                    class="white">from {{ current_user.name }}</span> conversations <span class="gold">to retrieve
-                    it</span>:</label>
+            <label for="search" class="form-label label_">
+                Enter a <span class="gold">word</span> <span class="white">from {{ current_user.name }}</span> conversations <span class="gold">to retrieve:</span>
+            </label>
             <div class="input-group">
                 <input type="string" id="search" name="search" class="form-control form-control-sm mb-3">
             </div>
             <div class="text-center">
-                <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('liked_conversations')"
-                    style="border: .1rem solid;">Submit</button>
+                <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('liked_conversations')" style="border: .1rem solid;">
+                    Submit
+                </button>
             </div>
         </div>
     </form>
 
     <div class="container conversations mb-3">
         {% if limit %}
-        <h4>Total of <span class="gold">{{ limit }}</span> Conversations</h4>
+            <h4>Total of <span class="gold">{{ limit }}</span> Conversations</h4>
         {% endif %}
         {% if offset %}
-        <h4><span class="gold">{{ offset }}</span> Conversations Skipped</h4>
+            <h4><span class="gold">{{ offset }}</span> Conversations Skipped</h4>
         {% endif %}
         {% if search %}
-        <h4>Search the word <span class="gold">{{ search }}</span>
+            <h4>Search the word <span class="gold">{{ search }}</span>
             <span class="white">from {{ current_user.name }} conversations</span> to retrieve it
         </h4>
         {% endif %}
@@ -94,23 +96,24 @@
 
     <ul class="align-left">
         {% for conversation_ in liked_conversations %}
-        <li>
-            <span class="convers-id"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
-            <span class="white">
-                <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
-            </span><br>
-            <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
-            <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
-            <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
-            <!-- Add a icon to indicate like -->
-            <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if
-                conversation_.liked %}style="color: pink;" {% endif %}>
-                <i class="fa fa-heart fa-2x"></i> <!-- Use "fa-2x" class to make the icon twice as large -->
-            </div>
-            <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
-                You can access your liked conversations {{ conversation_.id }} from the menu.
-            </div>
-        </li>
+            <li>
+                <span class="convers-id"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
+                <span class="white">
+                    <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
+                </span><br>
+                <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
+                <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
+                <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+                <!-- Add a icon to indicate like -->
+                <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
+                    <!-- Use "fa-2x" class to make the icon twice as large -->
+                    <i class="fa fa-heart fa-2x mb-3"></i>
+                    <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
+                        You can access your liked conversations from the menu.
+                    </div>
+                    <hr class="text-center" style="margin: 0 37%;">
+                </div>
+            </li>
         {% endfor %}
     </ul>
 

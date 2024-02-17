@@ -34,9 +34,9 @@
     <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
     <span class="created"><strong>Created At:</strong> {{ formatted_created_at }}</span><br><br>
     <!-- Add a icon to indicate like -->
-    <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked
-        %}style="color: pink;" {% endif %}>
-        <i class="fa fa-heart fa-2x"></i> <!-- Use "fa-2x" class to make the icon twice as large -->
+    <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
+        <!-- Use "fa-2x" class to make the icon twice as large -->
+        <i class="fa fa-heart fa-2x"></i>
     </div>
 
 
