@@ -252,7 +252,7 @@ button.language-btn {
     border-radius: 0.3rem;
     color: #fff;
     font-family: 'Merriweather', sans-serif;
-    font-size: 1.3rem;
+    font-size: 1rem;
     text-decoration: None;
 }
 
@@ -388,7 +388,7 @@ textarea#writing_text.form-control {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin: 0.5rem;
     transform: rotate(37deg);
 }
@@ -397,7 +397,7 @@ textarea#writing_text.form-control {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin: 0.5rem;
     transform: rotate(-37deg);
 }
