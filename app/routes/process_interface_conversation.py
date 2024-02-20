@@ -3,7 +3,7 @@ import json
 import pytz
 
 from flask import Blueprint, render_template, request, send_file, jsonify, redirect, url_for
-from flask_login import current_user, login_required
+from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
@@ -23,7 +23,6 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 
-@login_required
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
     writing_text_form = TextAreaForm()
@@ -104,7 +103,6 @@ def handle_llm_response(user_input, conversation_context):
     return assistant_reply, interface_audio_file_path, response
 
 
-@login_required
 @interface_conversation_bp.route('/interface/answer', methods=['POST'])
 def interface_answer():
     # Check if the user is authenticated
