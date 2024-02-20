@@ -62,7 +62,7 @@
                     <ul class="navbar-nav ml-auto">
                         {% if not current_user.is_authenticated: %}
                         <li class="nav-item">
-                            <a class="nav-link remove-active-state log-out" aria-current="page" href="{{ url_for('auth.logout') }}">
+                            <a class="nav-link log-out" aria-current="page" href="{{ url_for('auth.logout') }}">
                               <span style="font-size:1.9rem;">∞<br>∞Reload∞<br>or<br></span>
                               <span class="gold" style="font-size:1.45rem;">Log Out</span><br>
                             </a>
@@ -90,7 +90,7 @@
                             <a class="nav-link"  href="{{ url_for('conversation_function.delete_conversation') }}">Delete Conversation</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link remove-active-state log-out" href="{{ url_for('auth.logout') }}">Log Out</a>
+                            <a class="nav-link log-out" href="{{ url_for('auth.logout') }}">Log Out</a>
                         </li>
                         {% endif %}
                     </ul>
