@@ -51,7 +51,7 @@ def get_all_conversations():
     offset = request.args.get('offset', default=None, type=int)
     search = request.args.get('search', default=None, type=str)
 
-    conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search, order_by_desc=True)
+    conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search)
     serialized_conversations = [serialize_conversation(conversation) for conversation in conversations]
 
     # Check if any conversations were found for the search term
