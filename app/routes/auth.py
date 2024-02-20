@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -75,6 +75,8 @@ def login():
         else:
             # Log in the user
             login_user(user, remember=remember_me)
+
+            session['active_state'] = request.url  # Store active state in session
 
             # Redirect to the appropriate page after login
             return redirect(url_for('conversation_interface.conversation_interface'))
