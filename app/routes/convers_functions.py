@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, flash, url_for, redirect, request
-from flask_login import current_user
+from flask_login import current_user, login_required
 from datetime import datetime
 
 from app.forms.app_forms import ConversationIdForm, DeleteForm
@@ -9,6 +9,7 @@ from app.models.memory import Memory, db
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
 
+@login_required
 @conversation_functionality_bp.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
     select_conversation_form = ConversationIdForm()
@@ -27,7 +28,7 @@ def select_conversation():
                                select_conversation_form=select_conversation_form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
-
+@login_required
 @conversation_functionality_bp.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
     conversation_ = Memory.query.get(conversation_id)
@@ -56,6 +57,7 @@ def get_conversation(conversation_id):
         return redirect(url_for('conversation_function.select_conversation'))
 
 
+@login_required
 @conversation_functionality_bp.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
     delete_conversation_form = DeleteForm()

@@ -44,5 +44,6 @@ class ConversationIdForm(FlaskForm):
 
 
 class DeleteForm(FlaskForm):
-    conversation_id = IntegerField("Conversation ID:")
+    conversation_id = IntegerField("Conversation ID:", validators=[InputRequired(), NumberRange(min=1)])
+    submit = SubmitField('SELECT ¡!¡')
     submit = SubmitField('DELETE ¡!¡')

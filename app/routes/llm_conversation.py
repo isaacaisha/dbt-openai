@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request
-from flask_login import current_user
+from flask_login import current_user, login_required
 from datetime import datetime
 
 from app.models.memory import Memory, db
@@ -36,6 +36,7 @@ def serialize_conversation(conversation):
     }
 
 
+@login_required
 @llm_conversation_bp.route("/get-all-conversations")
 def get_all_conversations():
     if not current_user.is_authenticated:
@@ -70,6 +71,7 @@ def get_all_conversations():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
+@login_required
 @llm_conversation_bp.route("/convers-head-tail")
 def convers_head_tail():
     if not current_user.is_authenticated:
@@ -107,6 +109,7 @@ def convers_head_tail():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
+@login_required
 @llm_conversation_bp.route('/conversation-show-history')
 def show_story():
     if current_user.is_authenticated:
@@ -149,6 +152,7 @@ def show_story():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
+@login_required
 @llm_conversation_bp.route('/update-like/<int:conversation_id>', methods=['POST'])
 def update_like(conversation_id):
     # Get the liked status from the request data
@@ -167,6 +171,7 @@ def update_like(conversation_id):
     return 'Liked status updated successfully', 200
 
 
+@login_required
 @llm_conversation_bp.route('/liked-conversations')
 def liked_conversations():
     if not current_user.is_authenticated:
@@ -201,6 +206,7 @@ def liked_conversations():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
+@login_required
 @llm_conversation_bp.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
     conversations = get_conversations()
