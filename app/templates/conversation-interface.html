@@ -16,9 +16,9 @@
     <div class="p-1 rounded-3 jumbotron">
         <div class="container-fluid py-1">
             <h1 class="">
-                <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
                 SìįSí DBT OpenAI
-                <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
             </h1>
         </div>
     </div>
@@ -50,7 +50,7 @@
                 ¡!¡ English ¡!¡
             </button>
 
-            <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+            <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
 
             <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn">
                 ¡!¡ Spanish ¡!¡
@@ -110,7 +110,7 @@
 
                 <hr class="crimson mb-3">
                 <button id="generateButton" class="mb-3 btn generate-text" type="submit">
-                    Get The Response 🔥¡!¡<img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">¡!¡🔥
+                    Get The Response 🔥¡!¡<img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
                 </button>
             </form>
 
