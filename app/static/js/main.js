@@ -33,6 +33,9 @@ languageButtons.forEach(function (button) {
 
         // Call the enableContent function to show the content container and enable all buttons
         enableContent();
+        
+        // Hide the language buttons container
+        document.getElementById('hiddeLanguage').style.display = 'none';
     });
 });
 

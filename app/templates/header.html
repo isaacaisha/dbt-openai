@@ -111,23 +111,24 @@
             <!-- Content -->
             {% block content %}{% endblock %}
 
-            <div class="container text-center mb-3">
+        </div>
+
+        <div id="footer">
+            <!-- Footer -->
+            {% block footer %} {% endblock %}
+            <footer>
+              <div class="container text-center mb-3">
                 <button id="fastapi-docs" type="button" class="btn fastapi-docs">
                     <a style="color:#fff;" href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs" target="_blank">FastAPI-1</a>
                 </button>
-
+              
                 <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
 
                 <button id="fastapi-redoc" type="button" class="btn fastapi-redoc">
                     <a style="color:#fff;" href="https://openai-dbt-api-18753ef200f1.herokuapp.com/redoc" target="_blank">FastAPI-2</a>
                 </button>
-            </div>
+              </div>
 
-        </div>
-        <div id="footer">
-            <!-- Footer -->
-            {% block footer %} {% endblock %}
-            <footer>
               <div class="container container-margin">
                 <div class="row">
                   <div class="col-lg-8 col-md-10 mx-auto">
