@@ -44,7 +44,7 @@
                 <!-- Include CSRF token -->
                 {{ wtf.form_field(select_conversation_form.csrf_token) }}
                 <span class="align-left">{{ wtf.form_field(select_conversation_form.conversation_id, autofocus=true) }}</span>
-                {{ wtf.form_field(select_conversation_form.submit, class="submit btn btn-success") }}
+                {{ wtf.form_field(select_conversation_form.submit, class="submit nav-link btn btn-success") }}
             </form>
         </div>
     </div>
@@ -53,7 +53,7 @@
     <hr class="crimson mb-3">
 
     <button type="button" class="btn btn-outline back-home mb-3">
-        <a href="{{ url_for('conversation_interface.conversation_interface') }}">Back Home -¡!¡-</a>
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="nav-link">Back Home -¡!¡-</a>
     </button>
 
     <hr class="crimson mb-5">

@@ -75,7 +75,7 @@
                             <a class="nav-link" href="{{ url_for('llm_conversation.get_all_conversations') }}">Conversations</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link"  href="{{ url_for('llm_conversation.show_story') }}">Conversation History I</a>
+                            <a class="nav-link" href="{{ url_for('llm_conversation.show_story') }}">Conversation History I</a>
                         </li>
                         <li class="nav-item">
                           <a class="nav-link" href="{{ url_for('llm_conversation.convers_head_tail') }}">Conversation History II</a>
@@ -84,10 +84,10 @@
                           <a class="nav-link" href="{{ url_for('llm_conversation.liked_conversations') }}">Conversation -¡!¡-<i class="fa fa-heart"></i>-¡!¡-</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link"  href="{{ url_for('conversation_function.select_conversation') }}">Conversation ID</a>
+                            <a class="nav-link" href="{{ url_for('conversation_function.select_conversation') }}">Conversation ID</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link"  href="{{ url_for('conversation_function.delete_conversation') }}">Delete Conversation</a>
+                            <a class="nav-link" href="{{ url_for('conversation_function.delete_conversation') }}">Delete Conversation</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link log-out" href="{{ url_for('auth.logout') }}">Log Out</a>
@@ -170,7 +170,7 @@
               </div>
               {% if current_user.id == 1: %}
               <div class="mb-3 text-center">
-                  <a href="{{ url_for('llm_conversation.get_conversations_jsonify') }}" style="color:#fff;">
+                  <a href="{{ url_for('llm_conversation.get_conversations_jsonify') }}" class="nav-link white">
                       Click to Get MEM😎RY Conversations Jsonify
                   </a>
               </div>

@@ -49,7 +49,7 @@
                 {{ wtf.form_field(delete_conversation_form.csrf_token) }}
 
                 <span class="align-left">{{ wtf.form_field(delete_conversation_form.conversation_id, autofocus=true) }}</span>
-                {{ wtf.form_field(delete_conversation_form.submit, class="submit btn btn-danger") }}
+                {{ wtf.form_field(delete_conversation_form.submit, class="submit nav-link btn btn-danger") }}
             </form>
 
         </div>
@@ -59,7 +59,7 @@
     <hr class="green mb-3">
 
     <button type="button" class="btn btn-outline back-home mb-3">
-        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="nav-link">Back Home -¡!¡-</a>
     </button>
 
     <hr class="green mb-5">
