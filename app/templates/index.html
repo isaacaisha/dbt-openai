@@ -101,42 +101,47 @@
 
     <div class="content">
 
-        <div class="container text-center mb-1">
-            <hr class="crimson mb-5">
+        <hr class="crimson mb-5">
 
-            <hr class="gold mb-3">
-            <h3 class="conversations">1°Click on your Favorite Language</h3>
-            <hr class="gold mb-5">
-            <hr class="green mb-3">
+        <div id="hiddeLanguage">
 
-            <div>
-                <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5">
-                عربي ¡!¡ Arabic
+            <div class="text-center mb-1">
+
+                <hr class="gold mb-3">
+                <h3 class="conversations">1°Click on your Favorite Language</h3>
+                <hr class="gold mb-5">
+                <hr class="green mb-3">
+
+                <div>
+                    <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5">
+                    عربي ¡!¡ Arabic
+                    </button>
+                </div>
+
+                <button id="langEn" data-lang="en-US" type="button" class="btn language-btn">
+                    !¡! English ¡!¡
+                </button>
+
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
+
+                <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn">
+                    ¡!¡ Spanish ¡!¡
                 </button>
             </div>
 
-            <button id="langEn" data-lang="en-US" type="button" class="btn language-btn">
-                !¡! English ¡!¡
-            </button>
+            <div class="mb-2">
+                <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn">
+                    ¡!¡ Brazil ¡!¡
+                </button>
+            </div>
 
-            <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
+            <div class="text-center">
+                <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn mb-3">
+                    ¡!¡ French ¡!¡
+                </button>
+                <hr class="green mb-5">
+            </div>
 
-            <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn">
-                ¡!¡ Spanish ¡!¡
-            </button>
-        </div>
-
-        <div class="container mb-2">
-            <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn">
-                ¡!¡ Brazil ¡!¡
-            </button>
-        </div>
-
-        <div class="container text-center">
-            <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn mb-3">
-                ¡!¡ French ¡!¡
-            </button>
-            <hr class="green mb-5">
         </div>
 
         <div id="content-container"  style="display: none;" class="container">
