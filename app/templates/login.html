@@ -41,7 +41,7 @@
                     </div>
                 {% endfor %}
 
-                <form method="POST" action="{{ url_for('auth.login') }}" class="nav-link">
+                <form method="POST" action="{{ url_for('auth.login') }}">
 
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
