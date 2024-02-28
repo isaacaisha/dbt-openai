@@ -52,7 +52,7 @@
         </button>
     </div>
 
-    <form action="{{ url_for('llm_conversation.liked_conversations') }}" method="GET">
+    <form action="{{ url_for('llm_conversation.liked_conversations') }}" method="GET" class="nav-link">
         <div class="form-group align-left">
             <label for="limit" class="form-label label_">
                 Enter the <span class="gold">number</span> of conversations <span class="gold">you want to retrieve:</span>:
@@ -73,7 +73,7 @@
                 <input type="string" id="search" name="search" class="form-control form-control-sm mb-3">
             </div>
             <div class="text-center">
-                <button class="nav-link btn btn-outline-info mb-3" type="submit" onclick="setFormAction('liked_conversations')" style="border: .1rem solid;">
+                <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('liked_conversations')" style="border: .1rem solid;">
                     Look for
                 </button>
             </div>
