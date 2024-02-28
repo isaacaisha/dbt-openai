@@ -33,7 +33,7 @@
 
     <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto mb-3">
-            <form method="POST" action="{{ url_for('conversation_function.select_conversation') }}">
+            <form method="POST" action="{{ url_for('conversation_function.select_conversation') }}" class="nav-link">
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
@@ -44,7 +44,7 @@
                 <!-- Include CSRF token -->
                 {{ wtf.form_field(select_conversation_form.csrf_token) }}
                 <span class="align-left">{{ wtf.form_field(select_conversation_form.conversation_id, autofocus=true) }}</span>
-                {{ wtf.form_field(select_conversation_form.submit, class="submit nav-link btn btn-success") }}
+                {{ wtf.form_field(select_conversation_form.submit, class="submit btn btn-success") }}
             </form>
         </div>
     </div>

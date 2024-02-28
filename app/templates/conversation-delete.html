@@ -36,7 +36,7 @@
 
         <div class="col-lg-8 col-md-10 mx-auto content mb-3">
 
-            <form method="POST" action="{{ url_for('conversation_function.delete_conversation') }}">
+            <form method="POST" action="{{ url_for('conversation_function.delete_conversation') }}" class="nav-link">
 
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
@@ -49,7 +49,7 @@
                 {{ wtf.form_field(delete_conversation_form.csrf_token) }}
 
                 <span class="align-left">{{ wtf.form_field(delete_conversation_form.conversation_id, autofocus=true) }}</span>
-                {{ wtf.form_field(delete_conversation_form.submit, class="submit nav-link btn btn-danger") }}
+                {{ wtf.form_field(delete_conversation_form.submit, class="submit btn btn-danger") }}
             </form>
 
         </div>
