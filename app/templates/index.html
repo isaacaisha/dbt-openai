@@ -29,9 +29,9 @@
 
 {% block content %}
 {% autoescape true %}
+<!--
 
     <div class="container text-center">
-<!--
         <hr class="crimson mb-5">
 
         <h3 class="log-register-h3">Interact With<br>
@@ -102,6 +102,7 @@
     <div class="content">
 
         <hr class="green mb-5">
+<!--
 
         <div id="hiddeLanguage">
 
@@ -163,7 +164,7 @@
                     <hr class="gold mb-5" >
                     <hr class="crimson mb-3">
 
-                    <!-- Add a button for speech recognition -->
+                    <!-- Add a button for speech recognition ->
                     <button id="speechRecognitionButton" type="button" class="btn mb-3">
                         Speech Recognition ¡!¡
                     </button>
@@ -203,7 +204,7 @@
                 <label>:…·SìįSí·Dbt·…:</label>
                 <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
 
-                <!-- Add a button for speech synthesis playback -->
+                <!-- Add a button for speech synthesis playback ->
                 <div class="mb-3">
                     <span>(PlayBack)</span><br>
                     <button id="playbackButton" type="button" class="btn btn-outline">
@@ -221,7 +222,7 @@
         </div>
 
     </div>
-
+-->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
     <script src="{{ url_for('static', filename='js/home-speech-request.js')}}"></script>
