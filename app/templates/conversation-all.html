@@ -51,6 +51,12 @@
                 ⇩
             </button>
         </div>
+        <br>
+        <div style="position:fixed">
+            <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
+                You can access your liked conversations from the menu.
+            </div>
+        </div>
 
         <form action="{{ url_for('llm_conversation.get_all_conversations') }}" method="GET">
             <div class="form-group align-left">
@@ -105,13 +111,9 @@
                     <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
                     
                     <!-- Add a icon to indicate like -->
-                    <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" 
-                    {% if conversation_.liked %}style="color: pink;" {% endif %}>
+                    <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
                         <!-- Use "fa-2x" class to make the icon twice as large -->
-                        <i class="fa fa-heart fa-2x mb-3"></i> 
-                        <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
-                            You can access your liked conversations from the menu.
-                        </div>
+                        <i class="fa fa-heart fa-2x mb-3"></i>
                         <hr class="text-center" style="margin: 0 37%;">
                     </div>
                 </li>
