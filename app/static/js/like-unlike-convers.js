@@ -1,4 +1,3 @@
-// JavaScript code to handle like / unlike
 $(document).ready(function () {
     // Handle click event on like button
     $('.like-button').click(function () {
@@ -23,6 +22,11 @@ $(document).ready(function () {
                     button.css('color', 'pink');
                     // Show the message
                     $('#likeMessage').show();
+
+                    // Hide the message after 3 seconds
+                    setTimeout(function () {
+                        $('#likeMessage').hide();
+                    }, 3000); // 3000 milliseconds = 3 seconds
                 } else {
                     button.css('color', 'lightcyan');
                     // Hide the message if unliked
