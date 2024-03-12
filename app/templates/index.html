@@ -29,6 +29,7 @@
 
 {% block content %}
 {% autoescape true %}
+<!--
 
     <div class="content container text-center">
         <!-- Page Header -->
@@ -159,7 +160,7 @@
                     <hr class="mb-5" style="color:green;">
                     <hr class="mb-3" style="color:red;">
 
-                    <!-- Add a button for speech recognition -->
+                    <!-- Add a button for speech recognition ->
                     <button id="speechRecognitionButton" type="button" class="btn mb-3">
                         Speech Recognition ¡!¡
                     </button>
@@ -217,7 +218,7 @@
         </div>
 
     </div>
-
+-->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
     <script src="{{ url_for('static', filename='js/home-speech-request.js')}}"></script>
