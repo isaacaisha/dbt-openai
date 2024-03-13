@@ -164,7 +164,7 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     /* Ensure it's on top of other elements */
     z-index: 9999;
-    width: 91%; /* Adjust width as needed */
+    width: 73%; /* Adjust width as needed */
     max-width: 559px; /* Set maximum width to prevent it from becoming too wide */
 }
 
@@ -175,6 +175,11 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     border-radius: 19%;
     color: #17a2b8;
     padding: 1px 5px;
+}
+
+/* h6-close-btn */
+.h6-close-btn {
+    color: #17a2b8;
 }
 
 /* Style the Close Button */
