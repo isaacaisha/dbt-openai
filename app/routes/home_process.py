@@ -18,6 +18,30 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
 @home_conversation_bp.route("/", methods=["GET", "POST"])
 def home():
+    # home_form = TextAreaFormIndex()
+    # user_input = None
+    # response = None
+# 
+    # if request.method == "POST" and home_form.validate_on_submit():
+    #     print(f"Form data: {home_form.data}\n")
+# 
+    #     # Retrieve form data using the correct key
+    #     user_input = request.form['text_writing']
+# 
+    #     # Use the LLM to generate a response based on user input
+    #     response = conversation.predict(input=user_input)
+# 
+    #     print(f"user_input: {user_input}")
+    #     print(f"response: {response}\n")
+# 
+    # memory_buffer = memory.buffer_as_str
+    # memory_load = memory.load_memory_variables({})
+
+    return render_template('index.html', date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@home_conversation_bp.route("/conversation-test", methods=["GET", "POST"])
+def home_test():
     home_form = TextAreaFormIndex()
     user_input = None
     response = None
@@ -37,10 +61,11 @@ def home():
     memory_buffer = memory.buffer_as_str
     memory_load = memory.load_memory_variables({})
 
-    return render_template('index.html', home_form=home_form,
+    return render_template('conversation-test.html', home_form=home_form,
                            current_user=current_user, user_input=user_input, response=response,
                            memory_buffer=memory_buffer, memory_load=memory_load,
                            date=datetime.now().strftime("%a %d %B %Y"))
+
 
 
 @home_conversation_bp.route('/home/answer', methods=['POST'])
