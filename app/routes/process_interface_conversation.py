@@ -103,7 +103,7 @@ def handle_llm_response(user_input, conversation_context):
     return assistant_reply, interface_audio_file_path, response
 
 
-@interface_conversation_bp.route('/interface-answer', methods=['POST'])
+@interface_conversation_bp.route('/interface/answer', methods=['POST'])
 def interface_answer():
     # Check if the user is authenticated
     if current_user.is_authenticated:
