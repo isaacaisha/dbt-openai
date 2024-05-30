@@ -3,9 +3,6 @@ from app import create_app
 
 app = create_app()
 
-# Heroku provides the DATABASE_URL environment variable
-DATABASE_URL = os.environ['HEROKU_DATABASE_URL']
-
 if __name__ == '__main__':
     # Clean up any previous temporary audio files
     home_temp_audio_file = 'home_temp_audio.mp3'
