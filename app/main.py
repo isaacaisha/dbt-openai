@@ -1,5 +1,4 @@
 import os
-import sys
 import secrets
 from datetime import timedelta
 
@@ -8,9 +7,6 @@ from dotenv import load_dotenv, find_dotenv
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
-
-# Ensure current directory is in the sys.path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from database import SQLALCHEMY_DATABASE_URL, db, database_bp
 from app_forms import app_form_bp
