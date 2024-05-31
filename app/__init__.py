@@ -9,15 +9,15 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 
-from .databases.database import SQLALCHEMY_DATABASE_URL, database_bp
-from .forms.app_forms import app_form_bp
-from .models.memory import memory_bp, db, User
+from database import SQLALCHEMY_DATABASE_URL, database_bp
+from app_forms import app_form_bp
+from memory import memory_bp, db, User
 
-from .routes.auth import auth_bp
-from .routes.process_interface_conversation import interface_conversation_bp
-from .routes.home_process import home_conversation_bp
-from .routes.convers_functions import conversation_functionality_bp
-from .routes.llm_conversation import llm_conversation_bp
+from routes.auth import auth_bp
+from routes.process_interface_conversation import interface_conversation_bp
+from routes.home_process import home_conversation_bp
+from routes.convers_functions import conversation_functionality_bp
+from routes.llm_conversation import llm_conversation_bp
 
 
 _ = load_dotenv(find_dotenv())  # read local .env file

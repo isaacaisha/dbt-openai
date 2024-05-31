@@ -1,10 +1,9 @@
 from flask import Blueprint
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
+from database import db
 
-db = SQLAlchemy()
 
 memory_bp = Blueprint('memory', __name__)
 
@@ -24,8 +23,6 @@ class Memory(db.Model):
 
     # Add a foreign key relationship to the User model
     owner = relationship('User', foreign_keys=[owner_id])
-    # Add relationship for likes with foreign_keys argument
-    likes = relationship('Like', back_populates='memory', foreign_keys='[Like.memory_id]')
 
     def __repr__(self):
         return f"<Memory id={self.id}>"
@@ -45,12 +42,4 @@ class User(db.Model, UserMixin):
     # Flask-Login required methods
     def get_id(self):
         return str(self.id)
-
-
-class Like(db.Model, UserMixin):
-    __tablename__ = 'likes'
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey("memories.id", ondelete="CASCADE"), primary_key=True)
-
-    memory_id = db.Column(db.Integer, db.ForeignKey('memories.id'))
-    memory = relationship("Memory", back_populates="likes", foreign_keys="[Like.memory_id]")
+    
