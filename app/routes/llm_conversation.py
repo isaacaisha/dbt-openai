@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request
 from flask_login import current_user
 from datetime import datetime
 
-from app.models.memory import Memory, db
+from memory import Memory, db
 
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
@@ -163,6 +163,9 @@ def update_like(conversation_id):
 
     # Update the liked status of the conversation
     conversation.liked = liked
+
+    # Add the updated conversation object to the session
+    db.session.add(conversation)
 
     # Commit the changes to the database
     db.session.commit()

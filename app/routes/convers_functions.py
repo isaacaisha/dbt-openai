@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, flash, url_for, redirect, request
 from flask_login import current_user
 from datetime import datetime
 
-from app.forms.app_forms import ConversationIdForm, DeleteForm
-from app.models.memory import Memory, db
+from app_forms import ConversationIdForm, DeleteForm
+from memory import Memory, db
 
 
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
