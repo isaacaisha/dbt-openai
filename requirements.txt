@@ -119,5 +119,6 @@ watchfiles==0.21.0
 wcwidth==0.2.10
 websockets==12.0
 Werkzeug==2.3.7
+wheel==0.43.0
 WTForms==3.0.1
 yarl==1.9.2
