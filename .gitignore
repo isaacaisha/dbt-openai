@@ -128,7 +128,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env/
 .venv
 env/
 venv/
@@ -168,3 +167,8 @@ cython_debug/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/flask.env
+
+
+# Ignore .env file
+.env
+.env/
