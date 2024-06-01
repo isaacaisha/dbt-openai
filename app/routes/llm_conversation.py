@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request
 from flask_login import current_user, login_required
 from datetime import datetime
 
-from memory import Memory, db
+from app.memory import Memory, db
 
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')

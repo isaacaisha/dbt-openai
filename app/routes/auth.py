@@ -3,8 +3,8 @@ from flask_login import login_user, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
-from app_forms import LoginForm, RegisterForm
-from memory import User, db
+from app.app_forms import LoginForm, RegisterForm
+from app.memory import User, db
 
 auth_bp = Blueprint('auth', __name__)
 

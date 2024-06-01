@@ -2,7 +2,7 @@ from flask import Blueprint
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
-from database import db
+from app.database import db
 
 
 memory_bp = Blueprint('memory', __name__)

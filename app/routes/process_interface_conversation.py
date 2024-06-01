@@ -12,8 +12,8 @@ from datetime import datetime
 
 from sqlalchemy.exc import SQLAlchemyError
 
-from app_forms import TextAreaForm
-from memory import Memory, db
+from app.app_forms import TextAreaForm
+from app.memory import Memory, db
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
