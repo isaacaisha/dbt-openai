@@ -53,6 +53,7 @@ jsonpointer==2.4
 langchain==0.0.337
 langserve==0.0.26
 langsmith==0.0.65
+Mako==1.3.5
 markdown-it-py==3.0.0
 MarkupSafe==2.1.3
 marshmallow==3.20.1
@@ -70,6 +71,7 @@ passlib==1.7.4
 pexpect==4.8.0
 pipdeptree==2.13.0
 prompt-toolkit==3.0.40
+psycopg-binary==3.1.12
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
 ptyprocess==0.7.0
@@ -101,7 +103,7 @@ sse-starlette==1.6.5
 stack-data==0.6.3
 starlette==0.27.0
 tenacity==8.2.3
-tiktoken==0.5.1
+tiktoken==0.7.0
 tqdm==4.66.1
 traitlets==5.13.0
 types-requests==2.31.0.10
