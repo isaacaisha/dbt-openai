@@ -30,16 +30,15 @@
 {% block content %}
 {% autoescape true %}
 
-    <div class="content container text-center">
-        <!-- Page Header -->
-        <hr style="color:red;">
+    <div>
+        <hr class="crimson mb-3">
 
         <h3 class="log-register-h3 mb-3">To Interact With<br>
             <span class="artificial-intelligence">·SìįSí·Dbt·</span>
             <br>The Artificial Intelligence:<br>Get Register & Login
         </h3>
 
-        <hr class="mb-3" style="color:yellow;">
+        <hr class="gold mb-5">
     </div>
     
     <div class="content text-center">
@@ -57,173 +56,11 @@
                            href="{{ url_for('auth.login') }}">Login</a>
                     </li>
                 </ul>
-                <p style="color:gold; margin-bottom:0;">🔥∞To Use All Features∞🔥</p>
+                <p class="gold" style="margin-bottom:0;">🔥∞ To Use All Features ∞🔥</p>
             </div>
         </nav>
     
         <hr class="green" style="margin-bottom: 19%;">
-<!--
-        <!-- Add a button to trigger the popup ->
-        <button id="showPopupButton" type="button" class="btn mb-3 submit">Show Instructions</button>
-        
-        <!-- Popup Container -->
-        <div id="popupContainer" class="popup-container  conversations-details" style="display: none;">
-            <!-- Popup Content -->
-            <div class="popup-content">
-                <!-- Popup Content Here ->
-                <p>Welcome to the <span class="SìįSí">-¡!¡-SìįSí-¡!¡-</span> app</p>
-                <!-- Ordered List -->
-                <ol>
-                    <li> 
-                        <span class="mediumslateblue">Click On Your Favorite Language</span><br>(e.g.:عربي -¡!¡- Arabic)
-                    </li>
-                    <li> 
-                        <span class="mediumslateblue">Click On Start Writing</span><br>(to write a text) or<br>
-                        <span class="mediumslateblue">Click on Speech Recognition</span><br>(to speech a text)
-                    </li>
-                    <li> 
-                        <span class="mediumslateblue">Click On Get The Response</span><br>
-                        (to get SìįSí answer)
-                    </li>
-                    <li>
-                        <span class="mediumslateblue">🔥To Use All Features🔥</span><br>
-                        <span>
-                            <a href="{{ url_for('auth.register') }}" class="underline">Register</a> then 
-                            <a href="{{ url_for('auth.login') }}" class="underline">Login</a>
-                        </span>
-                    </li>
-                    <li><span class="mediumslateblue">-¡!¡-ENJOY-¡!¡-</span></li>
-                </ol>
-                <!-- Close Button ->
-                <h6>Close Button</h6>
-                <button id="closePopupButton" type="button" class="btn btn-outline-info mb-3 submit">x</button>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="content">
-
-        <div class="container text-center mb-1">
-            <hr class="mb-3" style="color:yellow;">
-
-            <h3 class="mb-5" style="color:#AEFAFC;">1°Click on your Favorite Language</h3>
-
-                <div>
-                    <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5">
-                    عربي ¡!¡ Arabic
-                    </button>
-                </div>
-
-                <button id="langEn" data-lang="en-US" type="button" class="btn language-btn">
-                    !¡! English ¡!¡
-                </button>
-
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
-
-                <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn">
-                    ¡!¡ Spanish ¡!¡
-                </button>
-            </div>
-
-            <div class="mb-2">
-                <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn">
-                    ¡!¡ Brazil ¡!¡
-                </button>
-            </div>
-
-            <div class="text-center">
-                <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn mb-3">
-                    ¡!¡ French ¡!¡
-                </button>
-                <hr class="crimson mb-5">
-            </div>
-
-        </div>
-
-        <div id="content-container"  style="display: none;" class="container">
-            <form id="prompt-form" method="POST">
-
-                {{ home_form.csrf_token }}
-
-                <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
-
-                <div class="text-center">
-                    <hr class="mb-3" style="color:green;">
-                    <div class="mb-3 alert error" id="error-message" style="display: none;"></div>
-                    <div>
-                        <button id="start-button" type="button" class="btn mb-3">
-                            Start Writing ¡!¡
-                        </button>
-                    </div>
-
-                    <hr class="mb-5" style="color:green;">
-                    <hr class="mb-3" style="color:red;">
-
-                    <!-- Add a button for speech recognition ->
-                    <button id="speechRecognitionButton" type="button" class="btn mb-3">
-                        Speech Recognition ¡!¡
-                    </button>
-                </div>
-
-                <hr class="mb-5" style="color:red;">
-
-                <div id="textarea-container" style="display: none;" class=" align-left">
-                    <label for="userInput" class="label_">
-                        Start Writing to Test:<br>(be Specific for a better result)
-                    </label>
-                    <textarea class="form-control mb-5" id="userInput" name="text_writing"
-                              placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
-                    <hr style="display: block; color:yellow">
-                </div>
-
-                <hr class="mb-3" style="color:yellow">
-
-                <div id="loading-indicator" style="display:none;" class="text-center mb-3">
-                    <p>Loading...</p>
-                    <img class="loading" src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g" alt="Loading">
-                </div>
-
-
-
-                <div class="text-center">
-                    <button id="generateButton" class="mb-3 btn generate-text" type="submit">
-                    Get The Response 🔥¡!¡<img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
-                </button>
-                </div>
-            </form>
-
-            <hr class="mb-5" style="color:yellow">
-
-            <div class="text-center">
-                <hr class="mb-3" style="color:green">
-                <label>:…·SìįSí·Dbt·…:</label>
-                <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
-
-                <!-- Add a button for speech synthesis playback -->
-                <div class="mb-3 text-center">
-                    <span>(PlayBack)</span><br>
-                    <button id="playbackButton" type="button" class="btn btn-outline">
-                        ¡!¡ ·SìįSí·Dbt·SìįSí· ¡!¡
-                    </button>
-                    <audio id="response-audio" controls class="submit btn btn-outline-info" style="display:none;">
-                        <source src="{{ url_for('conversation_home.home_audio') }}" type="audio/mp3">
-                        Your browser does not support the audio element.
-                    </audio>
-                </div>
-            </div>
-
-            <hr class="mb-5" style="color:green">
-
-        </div>
-
-    </div>
-
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
-    <script src="{{ url_for('static', filename='js/home-speech-request.js')}}"></script>
-
--->
 
 {% endautoescape %}
 {% endblock %}

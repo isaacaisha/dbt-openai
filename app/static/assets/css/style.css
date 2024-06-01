@@ -191,12 +191,49 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     padding: 5px 10px;
 }
 
-.SìįSí {
+.green {
+    color: darkgreen;
+}
+
+.SìįSí, .gold {
     color: gold;
+}
+
+.crimson {
+    color: crimson;
+}
+
+.white {
+    color: #fff;
 }
 
 .mediumslateblue {
     color: mediumslateblue;
+}
+
+.convers-id {
+    color: #cdfcf5;;
+}
+
+.llm-response {
+    color: #70f8fd;
+}
+
+.summary {
+    color: #AEFAFC;
+}
+
+.created {
+    color: #d0ebec;
+}
+
+textarea#userInput {
+    color: #72e9fc !important;
+}
+
+.history-title {
+    color: #17a2b8 !important;
+    margin-top: 0;
 }
 
 .underline {
@@ -204,12 +241,30 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     text-decoration: underline;
 }
 
-/* 1°Click on your Favorite Language */
-#content > div.content.container > div.text-center.mb-1 > h3,
-#resultMemo > h3:nth-child(2), #resultMemo > h3,
 .conversations-details {
     color: #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
+}
+
+.conversations {
+    color: #AEFAFC;
+    font-family: 'Lora', 'Times New Roman', serif;
+    margin-top: 0;
+    text-align: center;
+}
+
+.align-left {
+    text-align: left;
+}
+
+/* Click to Go Back to Select Conversation */
+#content>div>div>a, #content>div.conversations.container>div>a {
+    text-decoration: underline;
+}
+
+/* Click to Go Back to Select Conversation */
+#content>div>div>a:hover, #content>div.conversations.container>div>a:hover {
+    color: #6ABFA6;
 }
 
 label {
@@ -299,8 +354,13 @@ button.language-btn:hover {
     width: 100%;
 }
 
+/* crsf_token */
+#content>div.container.text-center>div.row>div>form>div>label{
+    display: none;
+}
+
 .textarea-memory {
-    color: #fd7e14;
+    color: #4bedc7;;
     height: 199px;
     line-height: 1.9rem;
     padding: 0.9rem;
@@ -460,7 +520,13 @@ hr.mb-3, body hr {
     font-size: 2.7rem;
 }
 
-/* link: Click to Go Back to Conversation Selection */
-#content > div.content > div.container.conversations-details > div > a {
-    text-decoration: None;
+/* navbare like icon btn */
+#navbarSupportedContent>ul>li:nth-child(5)>a>i {
+    color: pink;
+}
+
+/* like icon btn */
+.like-button,
+.text-center {
+    color: #70f8fd;
 }

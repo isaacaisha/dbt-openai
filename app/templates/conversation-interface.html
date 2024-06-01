@@ -29,16 +29,59 @@
 {% autoescape true %}
 
 {% if not current_user.is_authenticated: %}
-    <hr class="mb-3" style="color:green;">
-    <h3 class="text-center mb-3" style="color: #bce8f1; margin-top: 0;">1°Click on your Favorite Language</h3>
-    <hr style="color:green;">
-    <h5 class="alert alert-info text-center mb-5">-¡!¡- RELOAD or LOGIN -¡!¡-</h5>
+    <hr class="green mb-3">
+    <h3 class="conversations mb-3">1°Click on your Favorite Language</h3>
+    <hr class="green mb-3">
+    <div class="alert alert-info text-center mb-5">-¡!¡- RELOAD or LOGIN -¡!¡-</div>
 {% else %}
-    <div class="content container">
-        <div class=" text-center mb-1">
-            <hr style="color:green;">
+    <div class="container conversations">
+        <hr class="green mb-3">
 
-            <h3 class="mb-5">1°Click on your Favorite Language</h3>
+        <!-- Add a button to trigger the popup -->
+        <button id="showPopupButton" type="button" class="btn mb-3 submit">Show Instructions</button>
+        
+        <!-- Popup Container -->
+        <div id="popupContainer" class="popup-container  conversations" style="display: none;">
+            <!-- Popup Content -->
+            <div class="popup-content">
+                <!-- Popup Content Here -->
+                <p>Welcome to the<br><span class="SìįSí">-¡!¡-SìįSí-¡!¡-</span><br>app</p>
+                <!-- Ordered List -->
+                <ol class="align-left">
+                    <li> 
+                        <span class="mediumslateblue">Click On Your Favorite Language</span><br>(e.g.:عربي -¡!¡- Arabic)
+                    </li>
+                    <li> 
+                        <span class="mediumslateblue">Click On Start Writing</span><br>(to write a text) or<br>
+                        <span class="mediumslateblue">Click on Speech Recognition</span><br>(to speech a text)
+                    </li>
+                    <li> 
+                        <span class="mediumslateblue">Click On Get The Response</span><br>
+                        (to get SìįSí's answer)
+                    </li>
+                    <!--
+                    <li class="text-center">
+                        <span class="mediumslateblue">🔥To Use All Features🔥</span><br>
+                        <span>
+                            <a href="{{ url_for('auth.register') }}" class="underline">Register</a> & 
+                            <a href="{{ url_for('auth.login') }}" class="underline">Login</a>
+                        </span>
+                    </li>
+                    <li><span class="mediumslateblue">-¡!¡-ENJOY-¡!¡-</span></li>
+                    -->
+                </ol>
+                <!-- Close Button -->
+                <h6 class="h6-close-btn">Close Button</h6>
+                <button id="closePopupButton" type="button" class="btn btn-outline-info mb-3 submit">x</button>
+            </div>
+        </div>
+
+        <div id="hiddeLanguage">
+
+            <div class="mb-1">
+                <hr class="green mb-3">
+                <h3 class="conversations">1°Click on your Favorite Language</h3>
+                <hr class="green mb-3">
 
                 <div>
                     <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5">
@@ -57,82 +100,80 @@
                 </button>
             </div>
 
-        <div class="text-center mb-2">
-            <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn">
-                ¡!¡ Brazil ¡!¡
-            </button>
+            <div class="mb-2">
+                <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn">
+                    ¡!¡ Brazil ¡!¡
+                </button>
+            </div>
+
+            <div class="mb-3">
+                <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn">
+                    ¡!¡ French ¡!¡
+                </button>
+            </div>
+
         </div>
 
-        <div class="text-center mb-5">
-            <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn">
-                ¡!¡ French ¡!¡
-            </button>
-        </div>
+        <hr class="green mb-5">
 
-        <div id="content-container"  style="display: none;" class="container">
+        <div id="content-container"  style="display: none;">
             <form id="prompt-form" method="POST">
 
                 {{ writing_text_form.csrf_token }}
 
                 <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
 
-                <div class="text-center">
-                    <hr class="mb-3" style="color:yellow;">
-                    <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
-                    <div>
-                        <button id="start-button" type="button" class="btn mb-3">
-                            Start Writing ¡!¡
-                        </button>
-                    </div>
+                <hr class="gold mb-3">
+                <div class="mb-5 alert error" id="error-message" style="display: none;"></div>
+                
+                <button id="start-button" type="button" class="btn mb-3">
+                    Start Writing ¡!¡
+                </button>
 
-                    <hr class="mb-3" style="color:yellow;">
+                <hr class="gold mb-3">
 
-                    <!-- Add a button for speech recognition -->
-                    <button id="speechRecognitionButton" type="button" class="btn mb-3">
-                        Speech Recognition ¡!¡
-                    </button>
-                </div>
+                <!-- Add a button for speech recognition -->
+                <button id="speechRecognitionButton" type="button" class="btn mb-3">
+                    Speech Recognition ¡!¡
+                </button>
 
-                <hr class="mb-5" style="color:yellow;">
+                <hr class="gold mb-5">
 
-                <div id="textarea-container" style="display: none;">
-                    <label for="userInput" class="label_ text-center">
+                <div id="textarea-container" style="display: none;" class="align-left">
+                    <label for="userInput" class="label_ align-left">
                         Write Your Text, below:<br>(be Specific for a better result)
                     </label>
                     <textarea class="form-control mb-5" id="userInput" name="writing_text"
                               placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
                 </div>
 
-                <div id="loading-indicator" style="display:none;" class="text-center mb-3">
+                <div id="loading-indicator" style="display:none;" class="mb-3">
                     <p>Loading...</p>
                     <img class="loading" src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g" alt="Loading">
                 </div>
 
 
-                <div class="text-center">
-                    <hr class="mb-3" style="color:red">
-                    <button id="generateButton" class="mb-3 btn generate-text" type="submit">
-                    Get The Response 🔥¡!¡<img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">¡!¡🔥
+                <hr class="crimson mb-3">
+                <button id="generateButton" class="mb-3 btn generate-text" type="submit">
+                    Get The Response 🔥¡!¡<img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
                 </button>
-                </div>
             </form>
 
-            <hr class="mb-5" style="color:red">
+            <hr class="crimson mb-5">
 
-            <div class="text-center">
-                <hr class="mb-3" style="color:green;">
-                <label>:…·SìįSí·Dbt·…:</label>
-                <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
-            </div>
+            <hr class="green mb-3">
+            <label>:…·SìįSí·Dbt·…:</label>
+            <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
+
             {% if answer %}
                 <!-- Display the text response -->
-                <div id="response-text" class="text-center mb-3" style="color:#fff;">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
+                <div id="response-text" class="white mb-3">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
             {% endif %}
 
             <!-- Add a button for speech synthesis playback -->
-            <div class="mb-3 text-center">
+            <div class="mb-3">
                 <span>(PlayBack Audio)</span><br>
-                    <button id="playbackButton" type="button" class="btn btn-outline">
+                <button id="playbackButton" type="button" class="btn btn-outline">
                     ¡!¡ ·SìįSí·Dbt·SìįSí· ¡!¡
                 </button>
             </div>
@@ -145,7 +186,7 @@
                 </audio>
             {% endif %}
 
-            <hr class="mb-5" style="color:green">
+            <hr class="green mb-5">
 
         </div>
     </div>

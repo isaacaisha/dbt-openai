@@ -1,5 +1,4 @@
 import json
-
 import pytz
 
 from flask import Blueprint, render_template, request, send_file, jsonify, redirect, url_for
@@ -14,6 +13,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.app_forms import TextAreaForm
 from app.memory import Memory, db
+
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 

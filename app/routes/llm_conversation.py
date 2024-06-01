@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request
-from flask_login import current_user, login_required
+from flask_login import current_user
 from datetime import datetime
 
 from app.memory import Memory, db
@@ -7,14 +7,13 @@ from app.memory import Memory, db
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
 
+
 def get_conversations(owner_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
     query = Memory.query
     if owner_id is not None:
         query = query.filter_by(owner_id=owner_id)
     if search is not None:
         query = query.filter(Memory.user_message.ilike(f"%{search.strip()}%"))
-    if liked_value is not None:
-        query = query.filter(Memory.liked == liked_value)
     if liked_value is not None:
         query = query.filter(Memory.liked == liked_value)
     if order_by_desc:
@@ -73,7 +72,6 @@ def get_all_conversations():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@login_required
 @llm_conversation_bp.route("/convers-head-tail")
 def convers_head_tail():
     if not current_user.is_authenticated:
@@ -111,7 +109,6 @@ def convers_head_tail():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@login_required
 @llm_conversation_bp.route('/conversation-show-history')
 def show_story():
     if current_user.is_authenticated:
@@ -156,7 +153,6 @@ def show_story():
                                date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@login_required
 @llm_conversation_bp.route('/update-like/<int:conversation_id>', methods=['POST'])
 def update_like(conversation_id):
     # Get the liked status from the request data
@@ -178,7 +174,6 @@ def update_like(conversation_id):
     return 'Liked status updated successfully', 200
 
 
-@login_required
 @llm_conversation_bp.route('/liked-conversations')
 def liked_conversations():
     if not current_user.is_authenticated:
@@ -187,7 +182,7 @@ def liked_conversations():
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
-        owner_id = current_user.id
+    owner_id = current_user.id
 
     limit = request.args.get('limit', default=3, type=int)
     offset = request.args.get('offset', default=None, type=int)
@@ -211,39 +206,8 @@ def liked_conversations():
                            liked_conversations=serialized_liked_conversations,
                            limit=limit, offset=offset, search=search,
                            date=datetime.now().strftime("%a %d %B %Y"))
-    if not current_user.is_authenticated:
-        error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
-        return render_template('conversation-all.html', error_message=error_message,
-                               current_user=current_user,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    owner_id = current_user.id
-
-    limit = request.args.get('limit', default=3, type=int)
-    offset = request.args.get('offset', default=None, type=int)
-    search = request.args.get('search', default=None, type=str)
-
-    liked_conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search, liked_value=1)
-
-    serialized_liked_conversations = [serialize_conversation(conversation) for conversation in liked_conversations]
-
-    if not serialized_liked_conversations:
-        search_message = f"No conversations found for search term: '{search}'"
-        return render_template('conversation-liked.html',
-                               current_user=current_user, owner_id=owner_id,
-                               limit=limit, offset=offset, search=search,
-                               search_message=search_message,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-    
-    return render_template('conversation-liked.html',
-                           current_user=current_user,
-                           owner_id=owner_id,
-                           liked_conversations=serialized_liked_conversations,
-                           limit=limit, offset=offset, search=search,
-                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@login_required
 @llm_conversation_bp.route('/api/conversations-jsonify', methods=['GET'])
 def get_conversations_jsonify():
     conversations = get_conversations()

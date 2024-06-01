@@ -22,142 +22,150 @@
 {% block content %}
 {% autoescape true %}
 
-<div class="content container">
+<div class="container text-center">
+    
+    <hr class="green mb-3">
+    <h3 class="conversations mb-3">Your Conversations</h3>
+    <hr class="green mb-3">
 
-    <!-- Page Header -->
+    {% if search_message %}
+        <div class="alert alert-danger">{{ search_message }}</div>
 
-    <div class="text-center">
-        <hr class="mb-3" style="color:green;">
-        <h3 class="text-center mb-3" style="color: #bce8f1; margin-top:0;">Your Conversations</h3>
-        <hr class="mb-3" style="color:green;">
+        <div class="mb-5">
+            <a href="javascript:history.back();" class="white">
+                Click to Go Back
+            </a>
+        </div>
+    {% endif %}
 
-        {% if search_message %}
-            <div class="alert alert-danger mb-5">{{ search_message }}</div>
+    {% if not conversations %}
+        {% if error_message %}
+            <div class="alert alert-info mb-5">
+                {{ error_message }}
+            </div>
         {% endif %}
+    {% else %} 
+        <div class="d-flex justify-content-center mb-5">
+            <button class="btn btn-outline-info submit scroll-down text-center"
+                    onclick="scrollDown()" id="scrollDownButton" style="position:fixed">
+                ⇩
+            </button>
+        </div>
+        <br>
+        <div style="position:fixed">
+            <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
+                You can access your liked conversations from the menu.
+            </div>
+        </div>
 
-        {% if not conversations %}
-            {% if error_message %}
-                <div class="alert alert-info mb-5">
-                    {{ error_message }}
+        <form action="{{ url_for('llm_conversation.get_all_conversations') }}" method="GET">
+            <div class="form-group align-left">
+                <label for="limit" class="form-label label_">
+                    Enter the <span class="gold">number</span> of conversations <span class="gold">you want to retrieve</span>:
+                </label>
+                <div class="input-group">
+                    <input type="number" id="limit" name="limit" min="1" max="9991" class="form-control form-control-sm mb-3">
                 </div>
-            {% endif %}
-        {% else %}
-        
-            <div class="conversations-details">
-            
-                <!--<div class="d-flex justify-content-end">-->
-                <div class="d-flex justify-content-center mb-5">
-                    <button class="btn btn-outline-info submit scroll-down "
-                            onclick="scrollDown()" id="scrollDownButton" style="position:fixed">
-                        ⇩
+                <label for="offset" class="form-label label_">
+                    Enter the <span class="gold">number</span> of conversations <span class="gold">you want to skip</span>:
+                </label>
+                <div class="input-group">
+                    <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
+                </div>
+                <label for="search" class="form-label label_">
+                    Enter a <span class="gold">word</span> <span class="white">from {{ current_user.name }}</span> conversations <span class="gold">to retrieve it</span>:
+                </label>
+                <div class="input-group">
+                    <input type="string" id="search" name="search"  class="form-control form-control-sm mb-3">
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('get_all_conversations')" style="border: .1rem solid;">
+                        Look for
                     </button>
                 </div>
-
-                <form action="{{ url_for('llm_conversation.get_all_conversations') }}" method="GET" class="text-center">
-                    <div class="form-group">
-                        <label for="limit" class="form-label label_">Enter the <span style="color:#f3f030;">number</span> of conversations <span style="color:#f3f030;">you want to retrieve</span>:</label>
-                        <div class="input-group">
-                            <input type="number" id="limit" name="limit" min="1" max="9991" class="form-control form-control-sm mb-3">
-                        </div>
-                        <label for="offset" class="form-label label_">Enter the <span style="color:#f3f030;">number</span> of conversations <span style="color:#f3f030;">you want to skip</span>:</label>
-                        <div class="input-group">
-                            <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
-                        </div>
-                        <label for="search" class="form-label label_">Enter a <span style="color:#f3f030;">word</span> <span style="color:#fff;">from {{ current_user.name }}</span> conversations <span style="color:#f3f030;">to retrieve it</span>:</label>
-                        <div class="input-group">
-                            <input type="string" id="search" name="search"  class="form-control form-control-sm mb-3">
-                            <!-- Single submit button -->
-                            <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('get_all_conversations')" style="border: .1rem solid;">Submit</button>
-                        </div>
+            </div>
+        </form>
+     
+        <div class="container conversations mb-3">
+            {% if limit %}
+                <h4>Total of <span class="gold">{{ limit }}</span> Conversations</h4>
+            {% endif %}
+            {% if offset %}
+                <h4><span class="gold">{{ offset }}</span> Conversations Skipped</h4>
+            {% endif %}
+            {% if search %}
+                <h4>Search the word <span class="gold">{{ search }}</span> 
+                    <span class="white">from {{ current_user.name }} conversations</span> to retrieve it</h4>
+            {% endif %}
+        </div>
+     
+        <ul class="align-left">
+            {% for conversation_ in conversations %}
+                <li>
+                    <span class="convers-id"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
+                    <span class="white">
+                        <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
+                    </span><br>
+                    <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
+                    <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
+                    <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
+                    
+                    <!-- Add a icon to indicate like -->
+                    <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
+                        <!-- Use "fa-2x" class to make the icon twice as large -->
+                        <i class="fa fa-heart fa-2x mb-3"></i>
+                        <hr class="text-center" style="margin: 0 37%;">
                     </div>
-                </form>
-            
-                <div class="container mb-3">
-                    {% if limit %}
-                        <h4 class="text-center">Total of <span style="color:#f3f030;">{{ limit }}</span> Conversations</h4>
-                    {% endif %}
-                    {% if offset %}
-                        <h4 class="text-center"><span style="color:#f3f030;">{{ offset }}</span> Conversations Skipped</h4>
-                    {% endif %}
-                    {% if search %}
-                        <h4 class="text-center">Search the word <span style="color:#f3f030;">{{ search }}</span> 
-                            <span style="color:#fff;">from {{ current_user.name }}</span> conversations to retrieve it</h4>
-                    {% endif %}
-                </div>
-            
-                <ul>
-                    {% for conversation_ in conversations %}
-                        <li>
-                            <span style="color:#37EC37;"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
-                            <!--
-                            <span style="color:#00FFAB;"><strong>Owner ID:</strong> {{ conversation_.owner_id }}</span><br>
-                            <span style="color:#30ABB7;"><strong>Username:</strong> {{ conversation_.user_name }}</span><br>
-                            -->
-                            <span style="color:#9A30F3;">
-                                <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
-                            </span><br>
-                            <span style="color:#1295FA;"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
-                            <span style="color:#73DD7E;"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
-                            <span><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                </li>
+            {% endfor %}
+        </ul>
+    
+        <hr class="green mb-3">
         
-            <hr class="mb-3" style="color:green;">
+        <!-- Add a button to trigger the display of serialized_histories -->
+        <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
+            Show Conversations
+        </button>
+
+        <!-- Add a div to contain the serialized histories -->
+        <div id="historiesContainer" class="align-left mb-3" style="display: none;">
+            {% for conversation in conversations %}
+                <textarea class="form-control mb-3" id="userInput" name="text_writing">
+                    "conversation_id": "{{ conversation.id }}"
+                    "{{ conversation.user_name }}": "{{ conversation.user_message }}"
+                    "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+                    "conversation_summary": "{{ conversation.conversations_summary }}"
+                    "created_at": "{{ conversation.created_at }}"
+                </textarea>
+            {% endfor %}
+        </div>
+
+        <hr class="green mb-5">
+        <hr class="gold mb-3">
+
+        <!-- Add a button to trigger the display of serialized_histories -->
+        <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
+            Show Conversations json
+        </button>
+
+        <!-- Add a div to contain the serialized histories -->
+        <div id="historiesContainerJson" class="align-left mb-3" style="display: none;">
+            {% for conversation in conversations %}
+                <pre>
+                    {{ conversation|tojson(indent=4)|safe }}
+                </pre>
+            {% endfor %}
+        </div>
+    
+        <hr class="gold mb-5">
+        <hr class="crimson mb-3">
         
-            <!-- Add a button to trigger the display of serialized_histories -->
-            <div class="text-center">
-                <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
-                    Show Conversations
-                </button>
-            </div>
-        
-            <!-- Add a div to contain the serialized histories -->
-            <div id="historiesContainer" class="mb-3" style="display: none;">
-                {% for conversation in conversations %}
-                    <!--{{ conversation|tojson(indent=4)|safe }}-->
-                    <textarea class="form-control mb-5" id="userInput" name="text_writing" style="color:#17a2b8 !important;">
-                        "conversation_id": "{{ conversation.id }}"
-                        "{{ conversation.user_name }}": "{{ conversation.user_message }}"
-                        "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                        "conversation_summary": "{{ conversation.conversations_summary }}"
-                        "created_at": "{{ conversation.created_at }}"
-                    </textarea>
-                {% endfor %}
-            </div>
-        
-            <hr class="mb-5" style="color:green;">
-            <hr class="mb-3" style="color:yellow;">
-        
-            <!-- Add a button to trigger the display of serialized_histories -->
-            <div class="text-center">
-                <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
-                    Show Conversations json
-                </button>
-            </div>
-        
-            <!-- Add a div to contain the serialized histories -->
-            <div id="historiesContainerJson" class="mb-3" style="display: none;" style="color:#AEFAFC !important;">
-                {% for conversation in conversations %}
-                    <pre>
-                        {{ conversation|tojson(indent=4)|safe }}
-                    </pre>
-                {% endfor %}
-            </div>
-        
-            <hr class="mb-5" style="color:yellow;">
-            <hr class="mb-3" style="color:red;">
-        
-            <div class="text-center">
-                <button type="button" class="btn btn-outline back-home mb-3">
-                    <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
-                </button>
-            </div>
-        
-            <hr class="mb-5" style="color:red;">
-        {% endif %}
-    </div>
+        <button type="button" class="btn btn-outline back-home mb-3">
+            <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="nav-link">Back Home -¡!¡-</a>
+        </button>
+
+        <hr class="crimson mb-5">
+    {% endif %}
 
 </div>
 
