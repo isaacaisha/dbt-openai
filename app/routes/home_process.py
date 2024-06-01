@@ -6,7 +6,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from datetime import datetime
 
-from app_forms import TextAreaFormIndex
+from app.app_forms import TextAreaFormIndex
 
 
 home_conversation_bp = Blueprint('conversation_home', __name__)

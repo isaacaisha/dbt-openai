@@ -8,15 +8,15 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 
-from database import SQLALCHEMY_DATABASE_URL, db, database_bp
-from app_forms import app_form_bp
-from memory import memory_bp, User
+from app.database import SQLALCHEMY_DATABASE_URL, db, database_bp
+from app.app_forms import app_form_bp
+from app.memory import memory_bp, User
 
-from routes.auth import auth_bp
-from routes.process_interface_conversation import interface_conversation_bp
-from routes.home_process import home_conversation_bp
-from routes.convers_functions import conversation_functionality_bp
-from routes.llm_conversation import llm_conversation_bp
+from app.routes.auth import auth_bp
+from app.routes.process_interface_conversation import interface_conversation_bp
+from app.routes.home_process import home_conversation_bp
+from app.routes.convers_functions import conversation_functionality_bp
+from app.routes.llm_conversation import llm_conversation_bp
 
 load_dotenv(find_dotenv())
 
