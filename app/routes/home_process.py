@@ -11,7 +11,7 @@ from app.app_forms import TextAreaFormIndex
 
 home_conversation_bp = Blueprint('conversation_home', __name__)
 
-llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")
+llm = ChatOpenAI(temperature=0.0, model="gpt-4-turbo")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
