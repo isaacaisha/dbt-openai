@@ -64,8 +64,8 @@ def generate_conversation_context(user_input, user_conversations):
 
     # Include 'created_at' in the conversation context
     conversation_context = {
-        "created_at": created_at_list[-1:],
-        "conversations": json.loads(qdocs),
+        # "created_at": created_at_list[-1:],
+        # "conversations": json.loads(qdocs),
         "user_name": current_user.name,
         "user_message": user_input,
     }

@@ -1,0 +1,48 @@
+services:
+  ai:
+    build: .
+    depends_on:
+      - postgres
+    ports: 
+      - "8000:8000"
+    volumes:
+      - .:/usr/src/app # :ro -> extra security (for read-only)
+    command: uvicorn main:asgi_app --host 0.0.0.0 --port 8000 --reload
+  #   env_file:
+  #     - ./.env
+    # To use pgAdmin
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_URL=postgresql://postgres:Toure7Medina@localhost:5432/siisi_ai
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=siisi_ai
+      - DB_USER=postgres
+      - DB_PASSWORD=Toure7Medina
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=siisi_ai
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Toure7Medina
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+  #   # to use Heroku
+  #   environment:
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY} 
+  #     - DATABASE_URL=postgres://u20fvjrrilseeq:p62b87800abbfd1cbeb3195acff0c98f34036c2c4892f9fa9fb37541e4996f7ef@ccba8a0vn4fb2p.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d2785i2iibkaot
+  #     - DB_HOST=ccba8a0vn4fb2p.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com
+  #     - DB_NAME=d2785i2iibkaot
+  #     - DB_USER=u20fvjrrilseeq
+  #     - DB_PORT=5432
+  #     - DB_PASSWORD=p62b87800abbfd1cbeb3195acff0c98f34036c2c4892f9fa9fb37541e4996f7ef
+# 
+  # postgres:
+  #   image: postgres:latest
+  #   environment:
+  #     - POSTGRES_DB=d2785i2iibkaot
+  #     - POSTGRES_USER=u12s4g1lu2ogt7
+  #     - POSTGRES_PASSWORD=pd94e1410622cfaf5b2d31d24d1ea6a7ce841c4060118d72ec08d6cf2d8eed828
+
+volumes:
+  postgres-db:
