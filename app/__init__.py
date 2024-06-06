@@ -4,7 +4,7 @@ from datetime import timedelta
 
 import openai
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 
@@ -63,5 +63,9 @@ def create_app():
     app.register_blueprint(interface_conversation_bp, name='conversation_interface')
     app.register_blueprint(conversation_functionality_bp, name='conversation_function')
     app.register_blueprint(llm_conversation_bp, name='llm_conversation')
+
+    @app.route('/sitemap.xml')
+    def sitemap():
+        return send_from_directory(app.static_folder, 'sitemap.xml')
 
     return app
