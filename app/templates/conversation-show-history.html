@@ -97,12 +97,12 @@
                 <hr class="gold mb-3">
             
                 <h3 class="history-title">Memory Load</h3>
-                <textarea class="textarea-memory mb-3">
+                <textarea class="textarea-memory text-center mb-3">
                     {% for memory in memory_load %}
+                    Conversation nbr: {{ memory.id }}
                     {{ memory.user_name }}: {{ memory.user_message }}
 
                     ·SìįSí·Dbt·: {{ memory.llm_response }}
-                    Conversation nbr: {{ memory.id }}
 
                         ---------------------
                     {% endfor %}
@@ -112,7 +112,7 @@
                 <hr class="crimson mb-3">
             
                 <h3 class="history-title">Summary</h3>
-                <textarea class="textarea-memory mb-3" style="color:#AEFAFC;">{{ summary_conversation|safe }}</textarea>
+                <textarea class="textarea-memory mb-3" style="color:#AEFAFC;">{{ summary_conversations|safe }}</textarea>
             
                 <hr class="crimson mb-5">
                 <hr class="green mb-3">

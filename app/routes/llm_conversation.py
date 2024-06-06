@@ -24,14 +24,16 @@ def get_conversations(owner_id=None, limit=None, offset=None, search=None, order
         query = query.offset(offset)
     return query.all()
 
-def serialize_conversation(conversation):
+
+def serialize_conversation(conversation, last_summary_only=True):
+    summary = conversation.conversations_summary.split('\n')[-1] if last_summary_only else conversation.conversations_summary
     return {
         "id": conversation.id,
         "owner_id": conversation.owner_id,
         "user_name": conversation.user_name,
         "user_message": conversation.user_message,
         "llm_response": conversation.llm_response,
-        "conversations_summary": conversation.conversations_summary,
+        "conversations_summary": summary,
         "created_at": conversation.created_at.strftime("%a %d %B %Y %H:%M:%S"),
         "liked": conversation.liked,
     }
@@ -118,39 +120,40 @@ def show_story():
         offset = request.args.get('offset', default=None, type=int)
         search = request.args.get('search', default=None, type=str)
 
+        # Fetch conversations based on the provided search parameters
         memory_load = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search, order_by_desc=True)
-        serialized_memory_load = [serialize_conversation(memory) for memory in memory_load]
+        serialized_memory_load = [serialize_conversation(memory, last_summary_only=True) for memory in memory_load]
 
-        memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n\n'
-        memory_buffer += '\n\n'.join(
-            [f'{memory.user_name}: {memory.user_message}\n\n·SìįSí·Dbt·: {memory.llm_response}\n\n' + '-' * 19 for memory in memory_load]
+        if memory_load:
+            memory_buffer = f'{current_user.name}(owner_id:{owner_id}):\n\n'
+            memory_buffer += '\n\n'.join(
+                [f'{memory.user_name}: {memory.user_message}\n\n·SìįSí·Dbt·: {memory.llm_response}\n\n' + '-' * 19 for memory in memory_load]
             )
 
-        memory_summary_list = Memory.query.filter_by(owner_id=owner_id).order_by(Memory.created_at.desc()).limit(limit).all()
-        summary_conversation = '\n'.join([memory.conversations_summary for memory in memory_summary_list])
+            summary_conversations = '\n'.join([memory.conversations_summary.split('\n')[-1] for memory in memory_load])
 
-        # Check if any conversations were found for the search term
-        if not serialized_memory_load:
+            return render_template('conversation-show-history.html',
+                                   current_user=current_user, owner_id=owner_id,
+                                   memory_load=memory_load, memory_buffer=memory_buffer,
+                                   summary_conversations=summary_conversations,
+                                   serialized_memory_load=serialized_memory_load,
+                                   limit=limit, offset=offset, search=search,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
+        else:
             search_message = f"No conversations found for search term: '{search}'"
             return render_template('conversation-show-history.html', current_user=current_user, owner_id=owner_id,
-                                   memory_load=memory_load, memory_buffer=memory_buffer,
-                                   summary_conversation=summary_conversation,
+                                   memory_load=memory_load, memory_buffer='',
+                                   summary_conversations='',
                                    serialized_memory_load=serialized_memory_load,
                                    limit=limit, offset=offset, search=search,
                                    search_message=search_message,
                                    date=datetime.now().strftime("%a %d %B %Y"))
-
-        return render_template('conversation-show-history.html', current_user=current_user, owner_id=owner_id,
-                               memory_load=memory_load, memory_buffer=memory_buffer,
-                               summary_conversation=summary_conversation,
-                               serialized_memory_load=serialized_memory_load,
-                               limit=limit, offset=offset, search=search,
-                               date=datetime.now().strftime("%a %d %B %Y"))
     else:
         error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
         return render_template('conversation-show-history.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
+
 
 
 @llm_conversation_bp.route('/update-like/<int:conversation_id>', methods=['POST'])
@@ -190,7 +193,7 @@ def liked_conversations():
 
     liked_conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search, order_by_desc=True, liked_value=1)
 
-    serialized_liked_conversations = [serialize_conversation(conversation) for conversation in liked_conversations]
+    serialized_liked_conversations = [serialize_conversation(conversation, last_summary_only=True) for conversation in liked_conversations]
 
     if not serialized_liked_conversations:
         search_message = f"No conversations found for search term: '{search}'"
