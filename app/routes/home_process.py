@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, send_file, jsonify
 from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from datetime import datetime
 
@@ -11,7 +11,7 @@ from app.app_forms import TextAreaFormIndex
 
 home_conversation_bp = Blueprint('conversation_home', __name__)
 
-llm = ChatOpenAI(temperature=0.0, model="gpt-4-turbo")
+llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
