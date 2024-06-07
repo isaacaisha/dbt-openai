@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, IntegerField, validators
 from wtforms.fields.simple import StringField, PasswordField, BooleanField, TextAreaField
-from wtforms.validators import DataRequired, InputRequired, NumberRange
+from wtforms.validators import DataRequired, InputRequired, NumberRange, EqualTo
 
 app_form_bp = Blueprint('forms', __name__)
 
@@ -20,6 +20,17 @@ class LoginForm(FlaskForm):
     password = PasswordField("Password:", validators=[DataRequired()])
     remember_me = BooleanField('Remember Me: ', default=True)
     submit = SubmitField("GET ME IN ¡!¡")
+
+
+class PasswordResetRequestForm(FlaskForm):
+    email = StringField('Email:', validators=[DataRequired(), validators.Email()])
+    submit = SubmitField('Request Password Reset')
+
+
+class PasswordResetForm(FlaskForm):
+    password = PasswordField('New Password:', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm New Password:', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
 
 
 class TextAreaFormIndex(FlaskForm):

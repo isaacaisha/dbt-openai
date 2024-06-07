@@ -1,12 +1,13 @@
 import os
 import secrets
-from datetime import timedelta
-
 import openai
+
+from datetime import timedelta
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
+from flask_mail import Mail
 
 from app.database import SQLALCHEMY_DATABASE_URL, db, database_bp
 from app.app_forms import app_form_bp
@@ -55,6 +56,17 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = 'medusadbt@gmail.com'
+    email_password = os.getenv('EMAIL_PASS')
+    app.config['MAIL_PASSWORD'] = email_password
+    app.config['MAIL_DEFAULT_SENDER'] = ('Your Name', 'your-email@example.com')
+    
+    mail = Mail(app)
+
     app.register_blueprint(database_bp, name='database')
     app.register_blueprint(app_form_bp, name='forms')
     app.register_blueprint(memory_bp, name='memory')
@@ -63,6 +75,12 @@ def create_app():
     app.register_blueprint(interface_conversation_bp, name='conversation_interface')
     app.register_blueprint(conversation_functionality_bp, name='conversation_function')
     app.register_blueprint(llm_conversation_bp, name='llm_conversation')
+
+
+    @app.route('/robots.txt')
+    def robots_txt():
+        return send_from_directory(app.static_folder, 'robots.txt') 
+
 
     @app.route('/sitemap.xml')
     def sitemap():

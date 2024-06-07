@@ -1,0 +1,43 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href='static/assets/images/favicon1.ico'>
+{% include 'bootstrap/base.html' %}
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="py-1">
+            <h1 class="">Reset Password Token ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+<div class="text-center mb-5">
+    <h1>Reset Password Token</h1>
+    <hr class="green mb-3">
+    <form method="POST" action="{{ url_for('auth.reset_with_token', token=token) }}">
+        {{ form.hidden_tag() }}
+        <div>{{ form.password.label }} {{ form.password(size=32) }}</div>
+        <div class="mb-3">{{ form.confirm_password.label }} {{ form.confirm_password(size=32) }}</div>
+        <button type="button" class="btn btn-warning mb-3">{{ form.submit() }}</button>
+    </form>
+    <hr class="green mb-5">
+</div>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer_ %} {% endblock %}

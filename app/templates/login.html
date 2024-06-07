@@ -65,7 +65,14 @@
         <hr class="gold mb-3">
 
         <div class="text-center">
-        <button type="button" class="btn btn-outline back-home mb-3">
+            <button type="button" class="btn btn-outline back-home mb-3">
+                <a href="{{ url_for('auth.reset_password') }}" class="nav-link">Reset Password -¡!¡-</a>
+            </button>
+
+            <hr class="crimson mb-3">
+            <hr class="crimson mb-3"> 
+            
+            <button type="button" class="btn btn-outline back-home mb-3">
                 <a href="{{ url_for('conversation_home.home') }}" class="">Back Home -¡!¡-</a>
             </button>
         </div>

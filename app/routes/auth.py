@@ -1,9 +1,12 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+import secrets
+from flask import Blueprint, current_app, render_template, redirect, url_for, flash, request
 from flask_login import login_user, current_user, logout_user
+from flask_mail import Mail, Message
+from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
-from app.app_forms import LoginForm, RegisterForm
+from app.app_forms import LoginForm, PasswordResetForm, PasswordResetRequestForm, RegisterForm
 from app.memory import User, db
 
 auth_bp = Blueprint('auth', __name__)
@@ -87,3 +90,63 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('conversation_home.home'))
+
+
+# Generate a secure secret key
+secret_key = secrets.token_hex(16)
+
+# Initialize the URLSafeTimedSerializer with the secret key
+s = URLSafeTimedSerializer(secret_key)
+
+def send_reset_email(user, token):
+    reset_url = url_for('auth.reset_with_token', token=token, _external=True)
+    msg = Message('Password Reset Request', recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{reset_url}
+
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    mail = current_app.extensions['mail']
+    mail.send(msg)
+
+
+@auth_bp.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('conversation_interface.conversation_interface'))
+
+    form = PasswordResetRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = s.dumps(user.email, salt='password-reset-salt')
+            send_reset_email(user, token)
+            flash('A password reset link has been sent to your email.', 'info')
+        else:
+            flash('Email not found!', 'danger')
+        return redirect(url_for('auth.login'))
+
+    return render_template('reset_password.html', form=form, date=datetime.now().strftime("%a %d %B %Y"))
+
+@auth_bp.route('/reset/<token>', methods=['GET', 'POST'])
+def reset_with_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('conversation_interface.conversation_interface'))
+
+    try:
+        email = s.loads(token, salt='password-reset-salt', max_age=3600)  # 1 hour expiration
+    except SignatureExpired:
+        flash('The password reset link has expired.', 'danger')
+        return redirect(url_for('auth.reset_password'))
+
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=email).first()
+        if user:
+            hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256', salt_length=8)
+            user.password = hashed_password
+            db.session.commit()
+            flash('Your password has been updated!', 'success')
+            return redirect(url_for('auth.login'))
+
+    return render_template('reset_with_token.html', form=form, token=token)
