@@ -43,14 +43,6 @@ def conversation_interface():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-def generate_conversation_context(user_input):
-    conversation_context = {
-        "user_name": current_user.name,
-        "user_message": user_input,
-    }
-    return conversation_context
-
-
 def handle_llm_response(user_input, conversation_context):
     response = conversation.predict(input=json.dumps(conversation_context))
 
@@ -69,6 +61,14 @@ def handle_llm_response(user_input, conversation_context):
     memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
 
     return assistant_reply, interface_audio_file_path, response
+
+
+def generate_conversation_context(user_input):
+    conversation_context = {
+        "user_name": current_user.name,
+        "user_message": user_input,
+    }
+    return conversation_context
 
 
 @login_required

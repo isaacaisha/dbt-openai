@@ -11,7 +11,7 @@ memory_bp = Blueprint('memory', __name__)
 class Memory(db.Model):
     __tablename__ = 'memories'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    user_name = db.Column(db.String(255), nullable=False)
+    user_name = db.Column(db.String(73), nullable=False)
     user_message = db.Column(db.Text, nullable=False)
     llm_response = db.Column(db.Text, nullable=False)
     conversations_summary = db.Column(db.Text, nullable=False)
@@ -31,9 +31,9 @@ class Memory(db.Model):
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    name = db.Column(db.String(255), nullable=False)
-    email = db.Column(db.String(255), nullable=False, unique=True)
-    password = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(73), nullable=False)
+    email = db.Column(db.String(73), nullable=False, unique=True)
+    password = db.Column(db.String(73), nullable=False)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
 
     def __repr__(self):
