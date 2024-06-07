@@ -63,7 +63,7 @@ def create_app():
     app.config['MAIL_USERNAME'] = 'medusadbt@gmail.com'
     email_password = os.getenv('EMAIL_PASS')
     app.config['MAIL_PASSWORD'] = email_password
-    app.config['MAIL_DEFAULT_SENDER'] = ('Your Name', 'your-email@example.com')
+    app.config['MAIL_DEFAULT_SENDER'] = ('·SìįSí·Dbt·', 'your-email@example.com')
     
     mail = Mail(app)
 
