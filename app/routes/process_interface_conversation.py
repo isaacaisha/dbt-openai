@@ -20,7 +20,7 @@ interface_conversation_bp = Blueprint('conversation_interface', __name__)
 llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
-memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=5)
+memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
 
 
 @login_required
@@ -113,13 +113,18 @@ def save_to_database(user_input, response):
         created_at=created_at
     )
 
-    memory_attributes = vars(new_memory)
-    print(memory_attributes) 
+    # memory_attributes = vars(new_memory)
+    print(f'owner_id: {new_memory.owner_id}\nuser_name: {new_memory.user_name}\n'
+          f'user_message: {new_memory.user_message}\nllm_response: {new_memory.llm_response}\n'
+          f'conversations_summary: {new_memory.conversations_summary}\ncreated_at: {created_at}') 
 
     try:
         db.session.add(new_memory)
         db.session.commit()
         db.session.refresh(new_memory)
+
+        # Clear or reset the memory summary after saving
+        memory_summary.clear()
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})

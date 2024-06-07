@@ -190,7 +190,11 @@
 
         </div>
     </div>
+    <input type="hidden" id="timezone" name="timezone">
 {% endif %}
+<script>
+    document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+</script>
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
