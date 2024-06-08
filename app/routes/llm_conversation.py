@@ -7,6 +7,8 @@ from app.memory import Memory, db
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
 
+error_message = '-¡!¡- LOGIN -¡!¡-'
+
 
 def get_conversations(owner_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
     query = Memory.query
@@ -43,7 +45,6 @@ def serialize_conversation(conversation, last_summary_only=True):
 @llm_conversation_bp.route("/get-all-conversations")
 def get_all_conversations():
     if not current_user.is_authenticated:
-        error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
         return render_template('conversation-all.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -77,7 +78,6 @@ def get_all_conversations():
 @llm_conversation_bp.route("/convers-head-tail")
 def convers_head_tail():
     if not current_user.is_authenticated:
-        error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
         return render_template('conversation-head-tail.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -149,7 +149,6 @@ def show_story():
                                    search_message=search_message,
                                    date=datetime.now().strftime("%a %d %B %Y"))
     else:
-        error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
         return render_template('conversation-show-history.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
@@ -180,7 +179,6 @@ def update_like(conversation_id):
 @llm_conversation_bp.route('/liked-conversations')
 def liked_conversations():
     if not current_user.is_authenticated:
-        error_message = '-¡!¡- RELOAD or LOGIN -¡!¡-'
         return render_template('conversation-all.html', error_message=error_message,
                                current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
