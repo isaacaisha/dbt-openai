@@ -4,6 +4,8 @@ from app.routes.auth import send_reset_email, s
 from tests.config_test import app, db
 
 
+# URL: pytest -v -s -x tests/test_auth.py
+
 def test_register_success(client):
     response = client.post(url_for('auth.register'), data={
         'email': 'newuser@example.com',

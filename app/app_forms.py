@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, IntegerField, validators
 from wtforms.fields.simple import StringField, PasswordField, BooleanField, TextAreaField
-from wtforms.validators import DataRequired, InputRequired, NumberRange, EqualTo
+from wtforms.validators import DataRequired, InputRequired, NumberRange, EqualTo, ValidationError
 
 app_form_bp = Blueprint('forms', __name__)
 
@@ -25,6 +25,11 @@ class LoginForm(FlaskForm):
 class PasswordResetRequestForm(FlaskForm):
     email = StringField('Email:', validators=[DataRequired(), validators.Email()])
     submit = SubmitField('Request Password Reset')
+
+    def validate_email(form, field):
+        field.data = field.data.strip().lower()
+        if not field.data:
+            raise ValidationError('Invalid email address.')
 
 
 class PasswordResetForm(FlaskForm):

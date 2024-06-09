@@ -30,9 +30,11 @@
     <hr class="green mb-3">
     <form method="POST" action="{{ url_for('auth.reset_with_token', token=token) }}">
         {{ form.hidden_tag() }}
-        <div>{{ form.password.label }} {{ form.password(size=32) }}</div>
-        <div class="mb-3">{{ form.confirm_password.label }} {{ form.confirm_password(size=32) }}</div>
-        <button type="button" class="btn btn-warning mb-3">{{ form.submit() }}</button>
+        <div class="mb-4">{{ form.password.label }} {{ form.password(class_="form-control form-control-lg") }}</div>
+        <hr class="gold mb-3">
+        <div class="mb-4">{{ form.confirm_password.label }} {{ form.confirm_password(class_="form-control form-control-lg") }}</div>
+        <hr class="crimson mb-4">
+        <button type="button" class="btn btn-warning mb-4">{{ form.submit() }}</button>
     </form>
     <hr class="green mb-5">
 </div>

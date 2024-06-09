@@ -2,7 +2,7 @@ import secrets
 from flask import Blueprint, current_app, render_template, redirect, url_for, flash, request
 from flask_login import login_user, current_user, logout_user
 from flask_mail import Mail, Message
-from itsdangerous import SignatureExpired, URLSafeTimedSerializer
+from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
@@ -138,6 +138,13 @@ def reset_with_token(token):
     except SignatureExpired:
         flash('The password reset link has expired.', 'danger')
         return redirect(url_for('auth.reset_password'))
+    except BadTimeSignature:
+        flash('The password reset link is no more valid.', 'danger')
+        return redirect(url_for('auth.reset_password'))
+    except Exception as e:
+        flash(f'An error occurred: {str(e)}', 'danger')
+        return redirect(url_for('auth.reset_password'))
+
 
     form = PasswordResetForm()
     if form.validate_on_submit():
