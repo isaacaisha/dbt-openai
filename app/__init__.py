@@ -8,8 +8,7 @@ from flask import Flask, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
-
-from app.database import SQLALCHEMY_DATABASE_URL, db, database_bp
+from app.database import db, init_app, database_bp
 from app.app_forms import app_form_bp
 from app.memory import memory_bp, User
 
@@ -21,7 +20,7 @@ from app.routes.llm_conversation import llm_conversation_bp
 
 load_dotenv(find_dotenv())
 
-def create_app():
+def create_app(config=None):
     app = Flask(__name__, template_folder='templates', static_folder='static')
     Bootstrap(app)
 
@@ -47,11 +46,11 @@ def create_app():
     secret_key = secrets.token_hex(19)
     app.secret_key = secret_key
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URL
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JSON_AS_ASCII'] = False
-
-    db.init_app(app)
+    if config:
+        app.config.update(config)
+        init_app(app, app.config['SQLALCHEMY_DATABASE_URI'])
+    else:
+        init_app(app)
 
     with app.app_context():
         db.create_all()
@@ -79,7 +78,7 @@ def create_app():
 
     @app.route('/robots.txt')
     def robots_txt():
-        return send_from_directory(app.static_folder, 'robots.txt') 
+        return send_from_directory(app.static_folder, 'robots.txt')
 
 
     @app.route('/sitemap.xml')

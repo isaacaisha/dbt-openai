@@ -63,8 +63,10 @@
                         {% if not current_user.is_authenticated: %}
                         <li class="nav-item">
                             <a class="nav-link log-out" aria-current="page" href="{{ url_for('auth.logout') }}">
-                              <span style="font-size:1.9rem;">∞<br>∞Reload∞<br>or<br></span>
-                              <span class="gold" style="font-size:1.45rem;">Log Out</span><br>
+                              <span style="font-size:1.9rem;">∞<br>∞ New session ∞<br></span>
+                              <button type="button" class="btn btn-secondary">
+                                <span class="gold" style="font-size:1.45rem;">Log Out</span><br>
+                              </button>
                             </a>
                         </li>
                         {% else %}

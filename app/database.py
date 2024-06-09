@@ -23,7 +23,10 @@ SQLALCHEMY_DATABASE_URL = (
 # Initialize SQLAlchemy
 db = SQLAlchemy()
 
-def init_app(app):
-    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URL
+def init_app(app, db_url=None):
+    if db_url:
+        app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URL
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)

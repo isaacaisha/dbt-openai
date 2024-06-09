@@ -102,7 +102,8 @@ def save_to_database(user_input, response):
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)
 
-    created_at = datetime.now(pytz.timezone('Europe/Madrid')) # datetime.now().strftime("%a %d %B %Y %H:%M:%S")
+    timezone = pytz.timezone('Europe/Madrid')
+    created_at = datetime.now(timezone)
 
     new_memory = Memory(
         user_name=current_user.name,

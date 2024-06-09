@@ -7,7 +7,7 @@ from app.memory import Memory, db
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
 
-error_message = '-¡!¡- LOGIN -¡!¡-'
+error_message = '-¡!¡- SESSION END UP -¡!¡-'
 
 
 def get_conversations(owner_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):

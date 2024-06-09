@@ -33,7 +33,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(73), nullable=False)
     email = db.Column(db.String(73), nullable=False, unique=True)
-    password = db.Column(db.String(73), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
 
     def __repr__(self):
