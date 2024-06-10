@@ -31,7 +31,7 @@ def select_conversation():
 @login_required
 @conversation_functionality_bp.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    conversation_ = Memory.query.get(conversation_id)
+    conversation_ = db.session.get(Memory, conversation_id)
 
     try:
         if not conversation_:
@@ -65,8 +65,10 @@ def delete_conversation():
         if request.method == "POST":
             # Get the conversation_id from the form
             conversation_id = delete_conversation_form.conversation_id.data
+            
             # Query the database to get the conversation to be deleted
-            conversation_to_delete = Memory.query.get(conversation_id)
+            conversation_to_delete = db.session.get(Memory, conversation_id)
+
             # Check if the conversation exists
             if not conversation_to_delete:
                 return render_template('conversation-not-found.html', current_user=current_user,

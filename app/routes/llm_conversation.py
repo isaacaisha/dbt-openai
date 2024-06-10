@@ -160,8 +160,8 @@ def update_like(conversation_id):
     # Get the liked status from the request data
     liked = request.json.get('liked')
 
-    # Find the corresponding Memory object in the database
-    conversation = Memory.query.get_or_404(conversation_id)
+    # Find the corresponding Memory object in the database using db.session.get()
+    conversation = db.session.get(Memory, conversation_id)
 
     # Update the liked status of the conversation
     conversation.liked = liked

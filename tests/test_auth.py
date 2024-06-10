@@ -1,7 +1,7 @@
 from flask import current_app, url_for
 from app import User
 from app.routes.auth import send_reset_email, s
-from tests.config_test import app, db
+from tests.conftest import db
 
 
 # URL: pytest -v -s -x tests/test_auth.py
@@ -28,28 +28,25 @@ def test_register_passwords_do_not_match(client):
     assert b"Passwords do not match" in response.data
 
 
-def test_register_email_exists(client):
-    existing_user = User(email='existinguser@example.com', name='Existing User', password='password123')
-    db.session.add(existing_user)
-    db.session.commit()
-
+def test_register_email_exists(client, user1):
     response = client.post(url_for('auth.register'), data={
-        'email': 'existinguser@example.com',
-        'name': 'New User',
-        'password': 'password123',
-        'confirm_password': 'password123'
+        'email': user1.email,
+        'name': user1.name,
+        'password': 'password1',
+        'confirm_password': 'password1'
     }, follow_redirects=True)
     assert response.status_code == 200
     assert b"Welcome Back" in response.data
 
 
-def test_login(client):
+def test_login(client, user1):
     response = client.post(url_for('auth.login'), data={
-        'email': 'user@example.com',
-        'password': 'password'
+        'email': user1.email,
+        'password': user1.password
     }, follow_redirects=True)
     assert response.status_code == 200
-    assert b"Welcome Back" in response.data 
+    assert b"Welcome Back" in response.data
+
 
 def test_logout(client):
     response = client.get(url_for('auth.logout'), follow_redirects=True)
