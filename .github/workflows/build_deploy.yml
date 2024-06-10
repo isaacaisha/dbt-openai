@@ -100,6 +100,6 @@ jobs:
           username: ${{ secrets.PROD_USERNAME }}
           password: ${{ secrets.PROD_PASSWORD }}
           script: |
-            cd /home/siisi/siisi-ai-app/src
+            cd /home/siisi-ai/app/src
             git pull
             echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart api
