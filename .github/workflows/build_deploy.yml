@@ -93,13 +93,13 @@ jobs:
           heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
           heroku_email: ${{secrets.HEROKU_EMAIL}}
       
-      #- name: deploying to Ubuntu server
-      #  uses: appleboy/ssh-action@v1.0.3
-      #  with:
-      #    host: ${{ secrets.PROD_HOST }}
-      #    username: ${{ secrets.PROD_USERNAME }}
-      #    password: ${{ secrets.PROD_PASSWORD }}
-      #    script: |
-      #      cd /home/siisi/siisi-unbuntu/src
-      #      git pull
-      #      echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart api
+      - name: deploying to Ubuntu server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          password: ${{ secrets.PROD_PASSWORD }}
+          script: |
+            cd /home/siisi/siisi-ai-app/src
+            git pull
+            echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart api
