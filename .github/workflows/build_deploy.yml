@@ -4,18 +4,18 @@ on: [push, pull_request]
 
 jobs:
   build:
-    #environment:
-    #  name: dbt-openai
-    #env:
-    #  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-    #  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-    #  DB_HOST: ${{ secrets.DB_HOST }}
-    #  DB_PORT: ${{ secrets.DB_PORT }}
-    #  DB_DATABASE: ${{ secrets.DB_DATABASE }}
-    #  DB_USER: ${{ secrets.DB_USER }}
-    #  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-    #  EMAIL_PASS: ${{secrets. EMAIL_PASS }}
-#
+    environment:
+      name: dbt-openai
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      EMAIL_PASS: ${{secrets. EMAIL_PASS }}
+
     #services:
     #  postgres:
     #    image: postgres
