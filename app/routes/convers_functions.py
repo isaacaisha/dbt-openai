@@ -9,9 +9,12 @@ from app.memory import Memory, db
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
 
 
-@login_required
 @conversation_functionality_bp.route('/select-conversation-id', methods=['GET', 'POST'])
 def select_conversation():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+    
     select_conversation_form = ConversationIdForm()
 
     if request.method == "POST":
@@ -28,64 +31,61 @@ def select_conversation():
                                select_conversation_form=select_conversation_form, current_user=current_user,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
-@login_required
+
 @conversation_functionality_bp.route('/conversation/<int:conversation_id>')
 def get_conversation(conversation_id):
-    conversation_ = db.session.get(Memory, conversation_id)
-
-    try:
-        if not conversation_:
-            # Conversation isn't found, return a not found message
-            return render_template('conversation-not-found.html', current_user=current_user,
-                                   conversation_=conversation_, conversation_id=conversation_id,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-        if conversation_.owner_id != current_user.id:
-            # User doesn't have access, return a forbidden message
-            return render_template('conversation-forbidden.html', current_user=current_user,
-                                   conversation_=conversation_, conversation_id=conversation_id,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
-        else:
-            # Format created_at timestamp
-            formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
-            return render_template('conversation-details.html', current_user=current_user,
-                                   conversation_=conversation_, formatted_created_at=formatted_created_at,
-                                   conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
-    except Exception as err:
-        print(f"Unexpected {err}, {type(err)}")
+    if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
-        return redirect(url_for('conversation_function.select_conversation'))
+        return redirect(url_for('auth.login'))
+    
+    conversation_ = db.session.get(Memory, conversation_id)
+    if not conversation_:
+        # Conversation isn't found, return a not found message
+        return render_template('conversation-not-found.html', current_user=current_user,
+                               conversation_=conversation_, conversation_id=conversation_id,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    
+    if conversation_.owner_id != current_user.id:
+        # User doesn't have access, return a forbidden message
+        return render_template('conversation-forbidden.html', current_user=current_user,
+                               conversation_=conversation_, conversation_id=conversation_id,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        # Format created_at timestamp
+        formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
+        return render_template('conversation-details.html', current_user=current_user,
+                               conversation_=conversation_, formatted_created_at=formatted_created_at,
+                               conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
 
-@login_required
 @conversation_functionality_bp.route('/delete-conversation', methods=['GET', 'POST'])
 def delete_conversation():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+    
     delete_conversation_form = DeleteForm()
 
-    try:
-        if request.method == "POST":
-            # Get the conversation_id from the form
-            conversation_id = delete_conversation_form.conversation_id.data
-            
-            # Query the database to get the conversation to be deleted
-            conversation_to_delete = db.session.get(Memory, conversation_id)
-
-            # Check if the conversation exists
-            if not conversation_to_delete:
-                return render_template('conversation-not-found.html', current_user=current_user,
-                                       conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
-            # Check if the current user is the owner of the conversation
-            if conversation_to_delete.owner_id != current_user.id:
-                return render_template('conversation-forbidden.html', current_user=current_user,
-                                       conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
-            else:
-                # Delete the conversation
-                db.session.delete(conversation_to_delete)
-                db.session.commit()
-                flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted 😎')
-                return redirect(url_for('conversation_function.delete_conversation'))
-        return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
+    if request.method == "POST":
+        # Get the conversation_id from the form
+        conversation_id = delete_conversation_form.conversation_id.data
+        
+        # Query the database to get the conversation to be deleted
+        conversation_to_delete = db.session.get(Memory, conversation_id)
+        # Check if the conversation exists
+        if not conversation_to_delete:
+            return render_template('conversation-not-found.html', current_user=current_user,
+                                   conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
+        # Check if the current user is the owner of the conversation
+        if conversation_to_delete.owner_id != current_user.id:
+            return render_template('conversation-forbidden.html', current_user=current_user,
+                                   conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
+        else:
+            # Delete the conversation
+            db.session.delete(conversation_to_delete)
+            db.session.commit()
+            flash(f'Conversation with ID: 🔥{conversation_id}🔥 deleted 😎')
+            return redirect(url_for('conversation_function.delete_conversation'))
+    return render_template('conversation-delete.html', date=datetime.now().strftime("%a %d %B %Y"),
                                current_user=current_user, delete_conversation_form=delete_conversation_form)
-    except Exception as err:
-        flash('😂Please login to access this page.🤣')
-        print(f"Unexpected {err}, {type(err)}")
-        return redirect(url_for('conversation_function.delete_conversation'))
+    

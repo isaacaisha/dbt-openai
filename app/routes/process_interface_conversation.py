@@ -1,7 +1,7 @@
 import json
 import pytz
 
-from flask import Blueprint, render_template, request, send_file, jsonify, redirect, url_for
+from flask import Blueprint, flash, render_template, request, send_file, jsonify, redirect, url_for
 from flask_login import current_user, login_required
 from gtts import gTTS
 from langchain.chains import ConversationChain
@@ -26,6 +26,10 @@ memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
 @login_required
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+    
     writing_text_form = TextAreaForm()
     user_input = None
     answer = None

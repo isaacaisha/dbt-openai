@@ -28,12 +28,6 @@
 {% block content %}
 {% autoescape true %}
 
-{% if not current_user.is_authenticated: %}
-    <hr class="green mb-3">
-    <h3 class="conversations mb-3">1°Click on your Favorite Language</h3>
-    <hr class="green mb-3">
-    <div class="alert alert-info text-center mb-5">-¡!¡- SESSION END UP -¡!¡-</div>
-{% else %}
     <div class="container conversations">
         <hr class="green mb-3">
 
@@ -59,16 +53,6 @@
                         <span class="mediumslateblue">Click On Get The Response</span><br>
                         (to get SìįSí's answer)
                     </li>
-                    <!--
-                    <li class="text-center">
-                        <span class="mediumslateblue">🔥To Use All Features🔥</span><br>
-                        <span>
-                            <a href="{{ url_for('auth.register') }}" class="underline">Register</a> & 
-                            <a href="{{ url_for('auth.login') }}" class="underline">Login</a>
-                        </span>
-                    </li>
-                    <li><span class="mediumslateblue">-¡!¡-ENJOY-¡!¡-</span></li>
-                    -->
                 </ol>
                 <!-- Close Button -->
                 <h6 class="h6-close-btn">Close Button</h6>

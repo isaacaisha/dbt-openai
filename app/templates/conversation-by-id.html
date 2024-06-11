@@ -34,13 +34,7 @@
     <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto mb-3">
             <form method="POST" action="{{ url_for('conversation_function.select_conversation') }}">
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for message in messages %}
-                            <h5 class="alert-info">{{ message }}</h5>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+                
                 <!-- Include CSRF token -->
                 {{ wtf.form_field(select_conversation_form.csrf_token) }}
                 <span class="align-left">{{ wtf.form_field(select_conversation_form.conversation_id, autofocus=true) }}</span>
