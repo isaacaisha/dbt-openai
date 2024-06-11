@@ -123,6 +123,13 @@ large-image {
     box-sizing: border-box; /* Include padding and border in the element's total width */
 }
 
+.description  {
+    background-color: #0d1515;
+    border: 0.1rem solid #17a2b8;
+    border-radius: 19rem;
+    padding: 0.7rem;
+}
+
 #navbarSupportedContent > ul > li > a.log-in-home {
     transform: rotate(-7deg);
 }

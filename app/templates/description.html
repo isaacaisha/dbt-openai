@@ -1,0 +1,87 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href='static/assets/images/favicon1.ico'>
+{% include 'bootstrap/base.html' %}
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid mb-5">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="py-1">
+            <h1>Description ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+<div class="container">
+    <div class="text-center mb-4">
+        <h2>Welcome to <span class="text-primary">·SìįSí·Dbt·</span> - Your Personal AI Assistant!</h2>
+    </div>
+
+    <div class="white mb-4">
+        <p><span class="fw-bold">·SìįSí·Dbt·</span> is an innovative platform powered by cutting-edge AI technology,
+            designed to enhance your productivity
+            and simplify your daily tasks. With <span class="fw-bold">·SìįSí·Dbt·</span>, you have access to a versatile
+            AI assistant that can assist you in
+            a wide range of activities, from answering questions and providing information to completing tasks and
+            offering
+            personalized recommendations.</p>
+    </div>
+
+    <div class="mb-4">
+        <h3 class="text-center">Why Choose <span class="text-primary">·SìįSí·Dbt·</span>?</h3>
+    </div>
+    <div>
+        <ul class="white">
+            <li><span class="fw-bold">Efficiency:</span> Say goodbye to time-consuming tasks and mundane chores. <span
+                    class="fw-bold">·SìįSí·Dbt·</span> streamlines your workflow by automating repetitive tasks and
+                providing quick and accurate responses to your inquiries.</li>
+            <li><span class="fw-bold">Personalization:</span> Tailored to your needs and preferences, <span
+                    class="fw-bold">·SìįSí·Dbt·</span> learns from your interactions and adapts to your unique style.
+            </li>
+            <li><span class="fw-bold">Versatility:</span> From scheduling appointments and managing to-do lists to
+                generating creative ideas and offering valuable insights, <span class="fw-bold">·SìįSí·Dbt·</span>
+                offers a wide range of features to suit your needs.</li>
+            <li><span class="fw-bold">Accessibility:</span> Access <span class="fw-bold">·SìįSí·Dbt·</span> anytime,
+                anywhere, from any device.</li>
+            <li><span class="fw-bold">Reliability:</span> Powered by ChatGPT, one of the most advanced AI models
+                developed by OpenAI, <span class="fw-bold">·SìįSí·Dbt·</span> delivers accurate and insightful
+                responses, ensuring that you receive reliable information and assistance whenever you need it.</li>
+        </ul>
+    </div>
+
+    <div class="text-center mb-4">
+        <h3>Getting Started with <span class="text-primary">·SìįSí·Dbt·</span></h3>
+    </div>
+    <div class="white">
+        <p>Ready to experience the benefits of <span class="fw-bold">·SìįSí·Dbt·</span>? Simply sign up for an account
+            and start interacting with your personal AI assistant today. Join the growing community of <span
+                class="fw-bold">·SìįSí·Dbt·</span> users and unlock the full potential of AI-powered assistance. With
+            <span class="fw-bold">·SìįSí·Dbt·</span>, the future of productivity and convenience is at your fingertips.
+        </p>
+    </div>
+</div>
+
+        <div class="text-center">
+            <button type="button" class="btn btn-outline back-home mb-3">
+                <a href="{{ url_for('conversation_home.home') }}" class="">Back Home -¡!¡-</a>
+            </button>
+        </div>
+<hr class="mb-5">
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer_ %} {% endblock %}

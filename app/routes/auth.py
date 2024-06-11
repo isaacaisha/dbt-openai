@@ -156,4 +156,9 @@ def reset_with_token(token):
             flash('Your password has been updated!', 'success')
             return redirect(url_for('auth.login'))
 
-    return render_template('reset_with_token.html', form=form, token=token)
+    return render_template('reset_with_token.html', form=form, token=token, date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@auth_bp.route('/description', methods=['GET'])
+def description():
+    return render_template("description.html", date=datetime.now().strftime("%a %d %B %Y"))
