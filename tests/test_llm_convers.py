@@ -1,4 +1,5 @@
 from flask import url_for
+from flask_login import login_user
 from tests.conftest import create_conversation, login
 
 
@@ -8,6 +9,11 @@ def test_get_all_conversations_with_data(client, user1):
     with client.application.test_request_context():
         # Log in the user
         login_response = login(client, user1.email, 'password1')
+        assert login_response.status_code == 200, "Login failed, expected status code 200"
+    
+        # Log in the test user
+        login_user(user1)
+        
         assert login_response.status_code == 200
         assert b'Welcome Back' in login_response.data  # Verify successful login
 

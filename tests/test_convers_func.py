@@ -1,6 +1,6 @@
 from flask import url_for
 from flask_login import login_user, logout_user
-from tests.conftest import db, create_user, create_conversation
+from tests.conftest import db, create_user, create_conversation, login
 
 
 # URL: pytest -v -s -x tests/test_convers_func.py
@@ -8,20 +8,25 @@ from tests.conftest import db, create_user, create_conversation
 def test_unauthenticated_delete_conversation(client):
     with client.application.test_request_context():
         response = client.post(url_for('conversation_function.delete_conversation'), data={'conversation_id': 1})
-        assert response.status_code == 200  
-        assert b'New session' in response.data
+        assert response.status_code == 302
 
 
 def test_unauthenticated_get_conversation(client):
     with client.application.test_request_context():
         response = client.get(url_for('conversation_function.get_conversation', conversation_id=1))
-        assert response.status_code == 200
-        assert b'New session' in response.data
+        assert response.status_code == 302
 
 
 # Test the select_conversation route
-def test_select_conversation(client):
+def test_select_conversation(client, user1):
     with client.application.test_request_context():
+        # Log in the user
+        login_response = login(client, user1.email, 'password1')
+        assert login_response.status_code == 200, "Login failed, expected status code 200"
+    
+        # Log in the test user
+        login_user(user1)
+        
         response = client.post(url_for('conversation_function.select_conversation'), data={'conversation_id': 1})
         assert response.status_code == 302  # Expecting a redirect
         expected_path = url_for('conversation_function.get_conversation', conversation_id=1)
