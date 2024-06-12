@@ -46,6 +46,27 @@ def conversation_interface():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
+def generate_conversation_context(user_input, user_conversations):
+    # Create a list of JSON strings for each conversation
+    conversation_strings = [memory.conversations_summary for memory in user_conversations]
+
+    # Combine the last entry into a valid JSON array
+    qdocs = f"[{','.join(conversation_strings[-1:])}]"
+
+    # Convert 'created_at' values to string
+    created_at_list = [str(memory.created_at) for memory in user_conversations]
+
+    # Include 'created_at' in the conversation context
+    conversation_context = {
+        "created_at": created_at_list[-1:],
+        "conversations": json.loads(qdocs),
+        "user_name": current_user.name,
+        "user_message": user_input,
+    }
+
+    return conversation_context
+
+
 def handle_llm_response(user_input, conversation_context):
     response = conversation.predict(input=json.dumps(conversation_context))
 
@@ -66,19 +87,15 @@ def handle_llm_response(user_input, conversation_context):
     return assistant_reply, interface_audio_file_path, response
 
 
-def generate_conversation_context(user_input):
-    conversation_context = {
-        "user_name": current_user.name,
-        "user_message": user_input,
-    }
-    return conversation_context
-
-
 @interface_conversation_bp.route('/interface/answer', methods=['POST'])
 def interface_answer():
     if current_user.is_authenticated:
         user_input = request.form['prompt']
-        conversation_context = generate_conversation_context(user_input)
+        # Get conversations only for the current user
+        user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+        # Generate conversation context
+        conversation_context = generate_conversation_context(user_input, user_conversations)
+        print(f"conversation_context:\n{conversation_context}\n")
         assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
         save_to_database(user_input, response)
 
