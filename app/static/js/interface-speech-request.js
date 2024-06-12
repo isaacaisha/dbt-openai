@@ -22,6 +22,9 @@ function sendRequest(prompt) {
                 if (response.answer_text) {
                     textarea.style.display = 'block';
 
+                    // Scroll to the bottom of the container while text is being added
+                    smoothScrollToBottomWhileTyping(response.answer_text);
+
                     // Use the SpeechSynthesis API to read the response aloud
                     var speech = new SpeechSynthesisUtterance(response.answer_text);
 
@@ -36,6 +39,13 @@ function sendRequest(prompt) {
                     // Add <lang> tags with the xml:lang attribute to switch languages
                     speech.text = response.answer_text;
 
+                    // Scroll as the speech is being spoken
+                    speech.onboundary = function (event) {
+                        if (event.name === 'word') {
+                            smoothScrollToBottom();
+                        }
+                    };
+
                     window.speechSynthesis.speak(speech);
                 } else {
                     textarea.style.display = 'none';
@@ -49,18 +59,6 @@ function sendRequest(prompt) {
                 audio.oncanplay = function() {
                     audio.play();
                 };
-            } else if (xhr.status === 401) {
-                // Handle 401 Unauthorized status
-                var errorContainer = document.getElementById('error-message');
-                errorContainer.textContent =
-                    "-¡!¡- RE-CLICK Or LOGIN -¡!¡-";
-                errorContainer.style.display = 'block';
-            } else {
-                // Handle other HTTP status codes
-                var errorContainer = document.getElementById('error-message');
-                errorContainer.textContent =
-                    "-¡!¡- RE-CLICK Or LOGIN -¡!¡-";
-                errorContainer.style.display = 'block';
             }
         }
     };
@@ -77,6 +75,48 @@ function showLoading() {
 function hideLoading() {
     var loadingIndicator = document.getElementById('loading-indicator');
     loadingIndicator.style.display = 'none';
+}
+
+// Function to smoothly scroll the textarea to the bottom
+function smoothScrollToBottom() {
+    var textarea = document.getElementById('generatedText');
+    var start = textarea.scrollTop;
+    var end = textarea.scrollHeight;
+    var change = end - start;
+    var duration = 1000; // Duration for scrolling
+    var startTime = performance.now();
+
+    function scroll(timestamp) {
+        var elapsed = timestamp - startTime;
+        var progress = Math.min(elapsed / duration, 1);
+        textarea.scrollTop = start + (change * progress);
+        if (progress < 1) {
+            requestAnimationFrame(scroll);
+        }
+    }
+
+    requestAnimationFrame(scroll);
+}
+
+// Function to scroll gradually while text is being typed
+function smoothScrollToBottomWhileTyping(text) {
+    var textarea = document.getElementById('generatedText');
+    textarea.value = ''; // Clear the textarea before typing starts
+
+    var index = 0;
+    var typingSpeed = 57; // Adjust this value to control typing speed
+
+    function typeText() {
+        if (index < text.length) {
+            textarea.value += text[index++];
+            textarea.scrollTop = textarea.scrollHeight; // Scroll to bottom as text is typed
+            setTimeout(typeText, typingSpeed);
+        } else {
+            smoothScrollToBottom(); // Ensure final scroll to bottom
+        }
+    }
+
+    typeText();
 }
 
 // Add an event listener to the form for submitting

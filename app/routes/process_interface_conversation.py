@@ -23,7 +23,6 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
 
 
-@login_required
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
     if not current_user.is_authenticated:
@@ -75,7 +74,6 @@ def generate_conversation_context(user_input):
     return conversation_context
 
 
-@login_required
 @interface_conversation_bp.route('/interface/answer', methods=['POST'])
 def interface_answer():
     if current_user.is_authenticated:

@@ -54,16 +54,6 @@
                         <span class="mediumslateblue">Click On Get The Response</span><br>
                         (to get SìįSí's answer)
                     </li>
-                    <!--
-                    <li class="text-center">
-                        <span class="mediumslateblue">🔥To Use All Features🔥</span><br>
-                        <span>
-                            <a href="{{ url_for('auth.register') }}" class="underline">Register</a> & 
-                            <a href="{{ url_for('auth.login') }}" class="underline">Login</a>
-                        </span>
-                    </li>
-                    <li><span class="mediumslateblue">-¡!¡-ENJOY-¡!¡-</span></li>
-                    -->
                 </ol>
                 <!-- Close Button -->
                 <h6 class="h6-close-btn">Close Button</h6>
@@ -158,7 +148,7 @@
 
             <hr class="green mb-3">
             <label>:…·SìįSí·Dbt·…:</label>
-            <textarea id="generatedText" class="mb-3 form-control result" style="display: none;"></textarea>
+            <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
 
             {% if answer %}
                 <!-- Display the text response -->

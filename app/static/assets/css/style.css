@@ -260,6 +260,11 @@ textarea#userInput {
     text-align: center;
 }
 
+.scroll_conversations {
+    max-height: 500px; /* Set this to the maximum height you want */
+    overflow-y: auto;
+}
+
 .align-left {
     text-align: left;
 }
