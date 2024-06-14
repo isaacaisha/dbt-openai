@@ -390,6 +390,7 @@ button.language-btn:hover {
 textarea#generatedText {
     color: #AEFAFC;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    height: 127px;
     margin-bottom: 1rem;
 }
 
