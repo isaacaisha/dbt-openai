@@ -8,7 +8,7 @@ from flask import Blueprint, flash, render_template, request, send_file, jsonify
 from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from datetime import datetime
 
@@ -16,7 +16,6 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.app_forms import TextAreaForm
 from app.memory import Memory, db
-from langchain_community.embeddings.openai import OpenAIEmbeddings
 
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
