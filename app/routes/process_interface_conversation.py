@@ -1,8 +1,11 @@
 import json
 import pytz
+import os
+import numpy as np
+from scipy.spatial.distance import cosine
 
 from flask import Blueprint, flash, render_template, request, send_file, jsonify, redirect, url_for
-from flask_login import current_user, login_required
+from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
 from langchain_openai import ChatOpenAI
@@ -13,10 +16,12 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.app_forms import TextAreaForm
 from app.memory import Memory, db
+from langchain_community.embeddings.openai import OpenAIEmbeddings
 
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
+openai = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
 llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
@@ -68,7 +73,11 @@ def generate_conversation_context(user_input, user_conversations):
 
 
 def handle_llm_response(user_input, conversation_context):
-    response = conversation.predict(input=json.dumps(conversation_context))
+    if not conversation_context:
+        # Handle new user without previous context
+        response = conversation.predict(input=user_input)
+    else:
+        response = conversation.predict(input=json.dumps(conversation_context))
 
     if isinstance(response, str):
         assistant_reply = response
@@ -87,15 +96,47 @@ def handle_llm_response(user_input, conversation_context):
     return assistant_reply, interface_audio_file_path, response
 
 
+def find_most_relevant_conversation(user_query, embeddings):
+    query_embedding = openai.embed_query(user_query)
+    similarities = [1 - cosine(query_embedding, embedding) for embedding in embeddings]
+    most_similar_index = np.argmax(similarities)
+    return most_similar_index, similarities[most_similar_index]
+
+
 @interface_conversation_bp.route('/interface/answer', methods=['POST'])
 def interface_answer():
     if current_user.is_authenticated:
         user_input = request.form['prompt']
-        # Get conversations only for the current user
         user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
-        # Generate conversation context
-        conversation_context = generate_conversation_context(user_input, user_conversations)
-        print(f"conversation_context:\n{conversation_context}\n")
+        
+        # Generate embeddings
+        embeddings = [
+            openai.embed_query(memory.user_message) for memory in user_conversations
+        ]
+
+        if not embeddings:
+            # Handle new users with no embeddings
+            assistant_reply, audio_file_path, response = handle_llm_response(user_input, {})
+            save_to_database(user_input, response)
+
+            return jsonify({
+                "answer_text": assistant_reply,
+                "answer_audio_path": audio_file_path,
+            })
+
+        index, similarity = find_most_relevant_conversation(user_input, embeddings)
+        most_relevant_memory = user_conversations[index]
+
+        conversation_context = {
+            "user_name": current_user.name,
+            "user_message": user_input,
+            "most_relevant_conversation": {
+                "user_message": most_relevant_memory.user_message,
+                "llm_response": most_relevant_memory.llm_response,
+                "similarity": similarity
+            }
+        }
+
         assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
         save_to_database(user_input, response)
 
@@ -104,8 +145,8 @@ def interface_answer():
             "answer_audio_path": audio_file_path,
         })
     else:
-        return redirect(url_for('conversation_interface.interface_answer')), 401
-    
+        return jsonify({"error": "User not authenticated"}), 401
+
 
 @interface_conversation_bp.route('/interface-audio')
 def interface_serve_audio():
@@ -116,8 +157,10 @@ def interface_serve_audio():
         return "File not found", 404
     
 
-@interface_conversation_bp.route('/save-to-database', methods=['POST'])
 def save_to_database(user_input, response):
+    # Generate embedding for the user message
+    embedding = openai.embed_query(user_input)
+
     conversations_summary = memory_summary.load_memory_variables({})
     conversations_summary_str = json.dumps(conversations_summary)
 
@@ -129,11 +172,11 @@ def save_to_database(user_input, response):
         owner_id=current_user.id,
         user_message=user_input,
         llm_response=response,
+        embedding=np.array(embedding).tobytes(),  # Convert to bytes for storage
         conversations_summary=conversations_summary_str,
         created_at=created_at
     )
 
-    # memory_attributes = vars(new_memory)
     print(f'owner_id: {new_memory.owner_id}\nuser_name: {new_memory.user_name}\n'
           f'user_message: {new_memory.user_message}\nllm_response: {new_memory.llm_response}\n'
           f'conversations_summary: {new_memory.conversations_summary}\ncreated_at: {created_at}') 

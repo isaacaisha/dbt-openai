@@ -16,8 +16,8 @@ class Memory(db.Model):
     llm_response = db.Column(db.Text, nullable=False)
     conversations_summary = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
-    # Optional liked column
-    liked = db.Column(db.Integer, default=0)
+    liked = db.Column(db.Integer, default=0) # Optional liked column
+    embedding = db.Column(db.LargeBinary, nullable=True)  # Add this line for embedding
 
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 

@@ -8,6 +8,7 @@ from flask import Flask, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_migrate import Migrate
 from app.database import db, init_app, database_bp
 from app.app_forms import app_form_bp
 from app.memory import memory_bp, User
@@ -51,6 +52,9 @@ def create_app(config=None):
         init_app(app, app.config['SQLALCHEMY_DATABASE_URI'])
     else:
         init_app(app)
+
+    # Initialize Flask-Migrate
+    migrate = Migrate(app, db)
 
     with app.app_context():
         db.create_all()
