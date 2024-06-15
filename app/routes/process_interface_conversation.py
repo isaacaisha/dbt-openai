@@ -50,30 +50,7 @@ def conversation_interface():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-def handle_llm_response(user_input, conversation_context):
-    if not conversation_context:
-        # Handle new user without previous context
-        response = conversation.predict(input=user_input)
-    else:
-        response = conversation.predict(input=json.dumps(conversation_context))
-
-    if isinstance(response, str):
-        assistant_reply = response
-    else:
-        if isinstance(response, dict) and 'choices' in response:
-            assistant_reply = response['choices'][0]['message']['content']
-        else:
-            assistant_reply = None
-
-    tts = gTTS(assistant_reply)
-    interface_audio_file_path = 'interface_temp_audio.mp3'
-    tts.save(interface_audio_file_path)
-
-    memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
-
-    return assistant_reply, interface_audio_file_path, response
-
-
+# Function to find the most relevant conversation based on user query
 def find_most_relevant_conversation(user_query, embeddings):
     query_embedding = openai.embed_query(user_query)
     similarities = [1 - cosine(query_embedding, embedding) for embedding in embeddings]
@@ -81,6 +58,7 @@ def find_most_relevant_conversation(user_query, embeddings):
     return most_similar_index, similarities[most_similar_index]
 
 
+# Route to handle answering user input
 @interface_conversation_bp.route('/interface/answer', methods=['POST'])
 def interface_answer():
     if current_user.is_authenticated:
@@ -111,9 +89,20 @@ def interface_answer():
             "most_relevant_conversation": {
                 "user_message": most_relevant_memory.user_message,
                 "llm_response": most_relevant_memory.llm_response,
+                "created_at": str(most_relevant_memory.created_at), 
                 "similarity": similarity
-            }
+            },
+            "previous_conversations": [
+                {
+                    "user_message": memory.user_message,
+                    "llm_response": memory.llm_response,
+                    "created_at": str(memory.created_at) 
+                } for memory in user_conversations
+            ]
         }
+        
+        # # Print the context being sent to the LLM -> for debugging
+        # print("Conversation Context:", json.dumps(conversation_context, indent=2))
 
         assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
         save_to_database(user_input, response)
@@ -126,6 +115,36 @@ def interface_answer():
         return jsonify({"error": "User not authenticated"}), 401
 
 
+# Function to handle the response from the language model
+def handle_llm_response(user_input, conversation_context):
+    if not conversation_context:
+        # Handle new user without previous context
+        response = conversation.predict(input=user_input)
+    else:
+        # # Print the context being sent to the LLM -> for debugging
+        # print("Sending context to LLM:", json.dumps(conversation_context, indent=2))
+        
+        # Ensure the context is properly structured and passed to the LLM
+        response = conversation.predict(input=json.dumps(conversation_context))
+
+    if isinstance(response, str):
+        assistant_reply = response
+    else:
+        if isinstance(response, dict) and 'choices' in response:
+            assistant_reply = response['choices'][0]['message']['content']
+        else:
+            assistant_reply = None
+
+    tts = gTTS(assistant_reply)
+    interface_audio_file_path = 'interface_temp_audio.mp3'
+    tts.save(interface_audio_file_path)
+
+    memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
+
+    return assistant_reply, interface_audio_file_path, response
+
+
+# Route to serve interface audio file
 @interface_conversation_bp.route('/interface-audio')
 def interface_serve_audio():
     interface_audio_file_path = 'interface_temp_audio.mp3'
@@ -135,6 +154,7 @@ def interface_serve_audio():
         return "File not found", 404
     
 
+# Function to save conversation to database
 def save_to_database(user_input, response):
     # Generate embedding for the user message
     embedding = openai.embed_query(user_input)
