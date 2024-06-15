@@ -50,27 +50,6 @@ def conversation_interface():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-def generate_conversation_context(user_input, user_conversations):
-    # Create a list of JSON strings for each conversation
-    conversation_strings = [memory.conversations_summary for memory in user_conversations]
-
-    # Combine the last entry into a valid JSON array
-    qdocs = f"[{','.join(conversation_strings[-1:])}]"
-
-    # Convert 'created_at' values to string
-    created_at_list = [str(memory.created_at) for memory in user_conversations]
-
-    # Include 'created_at' in the conversation context
-    conversation_context = {
-        "created_at": created_at_list[-1:],
-        "conversations": json.loads(qdocs),
-        "user_name": current_user.name,
-        "user_message": user_input,
-    }
-
-    return conversation_context
-
-
 def handle_llm_response(user_input, conversation_context):
     if not conversation_context:
         # Handle new user without previous context
