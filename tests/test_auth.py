@@ -56,7 +56,7 @@ def test_logout(client):
     with client.application.test_request_context():
         response = client.get(url_for('auth.logout'), follow_redirects=True)
         assert response.status_code == 200
-        assert b"Register & Login" in response.data 
+        assert b"To Use All Features" in response.data 
 
 
 def test_send_reset_email(client):
