@@ -41,24 +41,10 @@
     <hr class="gold mb-5">
 </div>
 
-<div class="content text-center">
+<div class="container content text-center">
     <hr class="green mb-1">
 
-    <!-- Navbar -->
-    <nav class="navbar nav-home">
-        <div id="navbarSupportedContent">
-            <ul class="navbar-nav" style="display: inline-block;">
-                <li class="nav-item" style="display: inline-block;">
-                    <a class="nav-link register-home" href="{{ url_for('auth.register') }}">Register</a>
-                </li>
-                <li class="nav-item" style="display: inline-block;">
-                    <a class="nav-link active log-in-home" aria-current="page"
-                        href="{{ url_for('auth.login') }}">Login</a>
-                </li>
-            </ul>
-            <p class="gold" style="margin-bottom:0;">🔥∞ ...To Use All Features... ∞🔥</p>
-        </div>
-    </nav>
+    <h1>🤣TEST😂</h1>
 
     <hr class="green mb-3">
     
@@ -74,9 +60,6 @@
                 <!-- Ordered List -->
                 <ol class="align-left">
                     <li> 
-                        <span class="mediumslateblue">Click On Your Favorite Language</span><br>(e.g.:عربي -¡!¡- Arabic)
-                    </li>
-                    <li> 
                         <span class="mediumslateblue">Click On Start Writing</span><br>(to write a text) or<br>
                         <span class="mediumslateblue">Click on Speech Recognition</span><br>(to speech a text)
                     </li>
@@ -84,69 +67,29 @@
                         <span class="mediumslateblue">Click On Get The Response</span><br>
                         (to get SìįSí answer)
                     </li>
+                    <li> 
+                        <span class="mediumslateblue">Click On ·SìįSí·Dbt·SìįSí·</span><br>(to listen the playback)
+                    </li>
                     <li class="text-center">
                         <span class="mediumslateblue">🔥To Use All Features🔥</span><br>
                         <a href="{{ url_for('auth.register') }}" class="underline">Register</a> & 
                         <a href="{{ url_for('auth.login') }}" class="underline">Login</a>
                     </li>
-                    <li><span class="mediumslateblue">-¡!¡-SIISI CHACAL-¡!¡-</span></li>
                 </ol>
+                <span>Enjoy</span>
                 <!-- Close Button -->
                 <h6>Close Button</h6>
                 <button id="closePopupButton" type="button" class="btn btn-outline-info mb-3 submit">x</button>
             </div>
         </div>
 
+        <hr class="green mb-5">
+
     </div>
 
     <div class="content">
 
-        <hr class="green mb-5">
-
-        <div id="hiddeLanguage">
-
-            <div class="text-center mb-1">
-
-                <hr class="gold mb-3">
-                <h3 class="conversations">1°Click on your Favorite Language<br></h3>
-                <div class="mb-3">to adjust the response's accent</div>
-                
-                <hr class="gold mb-5">
-                <hr class="crimson mb-3">
-
-                <div>
-                    <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5">
-                    عربي ¡!¡ Arabic
-                    </button>
-                </div>
-
-                <button id="langEn" data-lang="en-US" type="button" class="btn language-btn">
-                    !¡! English ¡!¡
-                </button>
-
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
-
-                <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn">
-                    ¡!¡ Spanish ¡!¡
-                </button>
-            </div>
-
-            <div class="text-center mb-2">
-                <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn">
-                    ¡!¡ Brazil ¡!¡
-                </button>
-            </div>
-
-            <div class="text-center">
-                <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn mb-3">
-                    ¡!¡ French ¡!¡
-                </button>
-                <hr class="crimson mb-5">
-            </div>
-
-        </div>
-
-        <div id="content-container"  style="display: none;" class="container">
+        <div id="content-container" class="container">
             <form id="prompt-form" method="POST">
 
                 {{ home_form.csrf_token }}

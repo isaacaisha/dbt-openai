@@ -4,6 +4,7 @@ from gtts import gTTS
 from langchain.chains import ConversationChain
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
+from langdetect import detect
 from datetime import datetime
 
 from app.app_forms import TextAreaFormIndex
@@ -18,25 +19,6 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
 @home_conversation_bp.route("/", methods=["GET", "POST"])
 def home():
-    # home_form = TextAreaFormIndex()
-    # user_input = None
-    # response = None
-# 
-    # if request.method == "POST" and home_form.validate_on_submit():
-    #     print(f"Form data: {home_form.data}\n")
-# 
-    #     # Retrieve form data using the correct key
-    #     user_input = request.form['text_writing']
-# 
-    #     # Use the LLM to generate a response based on user input
-    #     response = conversation.predict(input=user_input)
-# 
-    #     print(f"user_input: {user_input}")
-    #     print(f"response: {response}\n")
-# 
-    # memory_buffer = memory.buffer_as_str
-    # memory_load = memory.load_memory_variables({})
-
     return render_template('index.html', date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -47,8 +29,6 @@ def home_test():
     response = None
 
     if request.method == "POST" and home_form.validate_on_submit():
-        print(f"Form data: {home_form.data}\n")
-
         # Retrieve form data using the correct key
         user_input = request.form['text_writing']
 
@@ -73,6 +53,9 @@ def home_answer():
     user_message = request.form['prompt']
     print(f'User Input:\n{user_message} 😎\n')
 
+    # Detect the language of the user's message
+    detected_lang = detect(user_message)
+
     # Extend the conversation with the user's message
     response = conversation.predict(input=user_message)
 
@@ -84,7 +67,7 @@ def home_answer():
         assistant_reply = response.choices[0].message['content']
 
     # Convert the text response to speech using gTTS
-    tts = gTTS(assistant_reply)
+    tts = gTTS(assistant_reply, lang=detected_lang)
 
     # Create a temporary audio file
     audio_file_path = 'temp_audio.mp3'
@@ -95,6 +78,7 @@ def home_answer():
     return jsonify({
         "answer_text": assistant_reply,
         "answer_audio_path": audio_file_path,
+        "detected_lang": detected_lang,
     })
 
 

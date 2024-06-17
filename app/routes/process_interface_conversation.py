@@ -10,6 +10,7 @@ from gtts import gTTS
 from langchain.chains import ConversationChain
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
+from langdetect import detect
 from datetime import datetime
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -63,6 +64,10 @@ def find_most_relevant_conversation(user_query, embeddings):
 def interface_answer():
     if current_user.is_authenticated:
         user_input = request.form['prompt']
+
+        # Detect the language of the user's message
+        detected_lang = detect(user_input)
+
         user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
         
         # Generate embeddings
@@ -72,12 +77,13 @@ def interface_answer():
 
         if not embeddings:
             # Handle new users with no embeddings
-            assistant_reply, audio_file_path, response = handle_llm_response(user_input, {})
+            assistant_reply, audio_file_path, response = handle_llm_response(user_input, {}, detected_lang)
             save_to_database(user_input, response)
 
             return jsonify({
                 "answer_text": assistant_reply,
                 "answer_audio_path": audio_file_path,
+                "detected_lang": detected_lang,
             })
 
         index, similarity = find_most_relevant_conversation(user_input, embeddings)
@@ -100,30 +106,25 @@ def interface_answer():
                 } for memory in user_conversations
             ]
         }
-        
-        # # Print the context being sent to the LLM -> for debugging
-        # print("Conversation Context:", json.dumps(conversation_context, indent=2))
 
-        assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context)
+        assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context, detected_lang)
         save_to_database(user_input, response)
 
         return jsonify({
             "answer_text": assistant_reply,
             "answer_audio_path": audio_file_path,
+            "detected_lang": detected_lang,
         })
     else:
         return jsonify({"error": "User not authenticated"}), 401
 
 
 # Function to handle the response from the language model
-def handle_llm_response(user_input, conversation_context):
+def handle_llm_response(user_input, conversation_context, detected_lang):
     if not conversation_context:
         # Handle new user without previous context
         response = conversation.predict(input=user_input)
     else:
-        # # Print the context being sent to the LLM -> for debugging
-        # print("Sending context to LLM:", json.dumps(conversation_context, indent=2))
-        
         # Ensure the context is properly structured and passed to the LLM
         response = conversation.predict(input=json.dumps(conversation_context))
 
@@ -135,7 +136,10 @@ def handle_llm_response(user_input, conversation_context):
         else:
             assistant_reply = None
 
-    tts = gTTS(assistant_reply)
+
+    # Convert the text response to speech using gTTS
+    tts = gTTS(assistant_reply, lang=detected_lang)
+
     interface_audio_file_path = 'interface_temp_audio.mp3'
     tts.save(interface_audio_file_path)
 

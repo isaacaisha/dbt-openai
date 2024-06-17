@@ -30,7 +30,7 @@
 
 {% if current_user.is_authenticated: %}
     <div class="container conversations">
-        <hr class="green mb-3">
+        <hr class="crimson mb-3">
 
         <!-- Add a button to trigger the popup -->
         <button id="showPopupButton" type="button" class="btn mb-3 submit">Show Instructions</button>
@@ -44,66 +44,27 @@
                 <!-- Ordered List -->
                 <ol class="align-left">
                     <li> 
-                        <span class="mediumslateblue">Click On Your Favorite Language</span><br>(e.g.:عربي -¡!¡- Arabic)
-                    </li>
-                    <li> 
                         <span class="mediumslateblue">Click On Start Writing</span><br>(to write a text) or<br>
                         <span class="mediumslateblue">Click on Speech Recognition</span><br>(to speech a text)
                     </li>
                     <li> 
-                        <span class="mediumslateblue">Click On Get The Response</span><br>
-                        (to get SìįSí's answer)
+                        <span class="mediumslateblue">Click On Get The Response</span><br>(to get SìįSí's answer)
+                    </li>
+                    <li> 
+                        <span class="mediumslateblue">Click On ·SìįSí·Dbt·SìįSí·</span><br>(to listen the playback)
                     </li>
                 </ol>
+                <span>Enjoy</span>
                 <!-- Close Button -->
                 <h6 class="h6-close-btn">Close Button</h6>
                 <button id="closePopupButton" type="button" class="btn btn-outline-info mb-3 submit">x</button>
             </div>
         </div>
 
-        <div id="hiddeLanguage">
+        <hr class="crimson mb-5">
 
-            <div class="mb-1">
-                <hr class="green mb-3">
-                <h3 class="conversations">1°Click on your Favorite Language</h3>
-                <div class="mb-3">to adjust the response's accent</div>
-                <hr class="green mb-3">
-
-                <div>
-                    <button id="langAr" data-lang="ar-AR" type="button" class="btn language-btn mb-5">
-                    عربي ¡!¡ Arabic
-                    </button>
-                </div>
-
-                <button id="langEn" data-lang="en-US" type="button" class="btn language-btn">
-                    ¡!¡ English ¡!¡
-                </button>
-
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
-
-                <button id="langEs" data-lang="es-ES" type="button" class="btn language-btn">
-                    ¡!¡ Spanish ¡!¡
-                </button>
-            </div>
-
-            <div class="mb-2">
-                <button id="langPt" data-lang="pt-BR" type="button" class=" btn language-btn">
-                    ¡!¡ Brazil ¡!¡
-                </button>
-            </div>
-
-            <div class="mb-3">
-                <button id="langFr" data-lang="fr-FR" type="button" class="btn language-btn">
-                    ¡!¡ French ¡!¡
-                </button>
-            </div>
-
-        </div>
-
-        <hr class="green mb-5">
-
-        <div id="content-container"  style="display: none;">
-            <form id="prompt-form" method="POST">
+        <div id="content-container">
+            <form id="prompt-form" method="POST" action="{{ url_for('conversation_interface.interface_answer') }}">
 
                 {{ writing_text_form.csrf_token }}
 
@@ -139,13 +100,13 @@
                 </div>
 
 
-                <hr class="crimson mb-3">
+                <hr class="green mb-3">
                 <button id="generateButton" class="mb-3 btn generate-text" type="submit">
                     Get The Response 🔥¡!¡<img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
                 </button>
             </form>
 
-            <hr class="crimson mb-5">
+            <hr class="green mb-5">
 
             <hr class="green mb-3">
             <label>:…·SìįSí·Dbt·…:</label>

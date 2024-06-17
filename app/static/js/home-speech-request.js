@@ -18,6 +18,9 @@ function sendRequest(prompt) {
                 var textarea = document.getElementById('generatedText');
                 textarea.value = response.answer_text;
 
+                // Store the detected language as a data attribute
+                textarea.dataset.detectedLang = response.detected_lang || 'es-ES';
+
                 // Toggle visibility of the textarea based on response
                 if (response.answer_text) {
                     textarea.style.display = 'block';
@@ -28,16 +31,8 @@ function sendRequest(prompt) {
                     // Use the SpeechSynthesis API to read the response aloud
                     var speech = new SpeechSynthesisUtterance(response.answer_text);
 
-                    // Get the active language button and set speech.lang based on its data-lang attribute
-                    var activeLanguageButton = document.querySelector('.language-btn.active');
-                    if (activeLanguageButton) {
-                        speech.lang = activeLanguageButton.getAttribute('data-lang');
-                    } else {
-                        speech.lang = 'es-ES'; // Default to Spanish if no language is selected
-                    }
-
-                    // Add <lang> tags with the xml:lang attribute to switch languages
-                    speech.text = response.answer_text;
+                    // Use the detected language from the response
+                    speech.lang = response.detected_lang || 'es-ES';
 
                     // Scroll as the speech is being spoken
                     speech.onboundary = function (event) {
@@ -132,16 +127,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Use the SpeechSynthesis API to read the response aloud
         var speech = new SpeechSynthesisUtterance(document.getElementById('generatedText').value);
 
-        // Get the active language button and set speech.lang based on its data-lang attribute
-        var activeLanguageButton = document.querySelector('.language-btn.active');
-        if (activeLanguageButton) {
-            speech.lang = activeLanguageButton.getAttribute('data-lang');
-        } else {
-            speech.lang = 'es-ES'; // Default to Spanish if no language is selected
-        }
-
-        // Add <lang> tags with the xml:lang attribute to switch languages
-        speech.text = document.getElementById('generatedText').value;
+        // Use the detected language from the response
+        var detectedLang = document.getElementById('generatedText').dataset.detectedLang;
+        speech.lang = detectedLang || 'es-ES'; // Use detected language
 
         window.speechSynthesis.speak(speech);
     });
