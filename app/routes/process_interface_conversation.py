@@ -22,7 +22,7 @@ from app.memory import Memory, db
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
 openai = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
-llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
+llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
@@ -68,11 +68,13 @@ def interface_answer():
         # Detect the language of the user's message
         detected_lang = detect(user_input)
 
-        user_conversations = Memory.query.filter_by(owner_id=current_user.id).all()
+        # Limit to 91 most recent conversations
+        user_conversations = Memory.query.filter_by(
+            owner_id=current_user.id).order_by(Memory.created_at.desc()).limit(91).all()  
         
-        # Generate embeddings
+        # Generate embeddings from the stored binary data
         embeddings = [
-            openai.embed_query(memory.user_message) for memory in user_conversations
+            np.frombuffer(memory.embedding, dtype=float) for memory in user_conversations
         ]
 
         if not embeddings:
