@@ -22,10 +22,24 @@ from app.memory import Memory, db
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
 openai = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
-llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo")
+llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
+
+MAX_CONTEXT_LENGTH = 16385  # Define the maximum context length
+
+
+def truncate_context(context, max_length):
+    """
+    Truncate the context to ensure it does not exceed the maximum token length.
+    """
+    while len(context) > max_length:
+        if "previous_conversations" in context and context["previous_conversations"]:
+            context["previous_conversations"].pop(0)
+        else:
+            break
+    return context
 
 
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
@@ -106,6 +120,9 @@ def interface_answer():
                 } for memory in user_conversations
             ]
         }
+
+        # Truncate context if it exceeds the maximum length
+        conversation_context = truncate_context(conversation_context, MAX_CONTEXT_LENGTH)
 
         assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context, detected_lang)
         save_to_database(user_input, response)
