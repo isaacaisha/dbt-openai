@@ -22,7 +22,7 @@ from app.memory import Memory, db
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
 openai = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
-llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
+llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
