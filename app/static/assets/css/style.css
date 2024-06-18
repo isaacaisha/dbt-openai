@@ -404,13 +404,13 @@ textarea#generatedText {
 
 #start-button {
     color: #fff;
-    background-color: #1295FA;
+    background-color: #30ABB7;
     border: 0.1rem solid #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
 #start-button:hover {
-    color: #73DD7E;
+    color: #9A30F3;
 }
 
 #speechRecognitionButton {
