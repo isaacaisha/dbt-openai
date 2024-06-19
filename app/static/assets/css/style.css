@@ -1,9 +1,10 @@
  body {
-    color: #fff;
+    /*color: #fff;
     background-image: url('../images/space.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: center;*/
     padding: 1rem;
+    background-color: #161616 !important; /* #1a1c1d */
  }
 
 large-image {
@@ -16,7 +17,7 @@ large-image {
 }
 
 #content > div.container-fluid > div > div > h1, #content > div > div.container-fluid > div > div > h1{
-    background-color: #000;
+    background-color: #161616;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
     color: #9126E8;
@@ -520,7 +521,7 @@ hr.mb-3, body hr {
 }
 
 .copyright {
-    background-color: #000;
+    background-color: #161616;
     border: 0.1rem solid #1295FA;
     border-radius: 0.5rem;
     color: #9A30F3;

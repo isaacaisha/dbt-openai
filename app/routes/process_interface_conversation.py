@@ -51,81 +51,32 @@ def conversation_interface():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-# Function to find the most relevant conversation based on user query
-def find_most_relevant_conversation(user_query, embeddings):
-    query_embedding = openai.embed_query(user_query)
-    similarities = [1 - cosine(query_embedding, embedding) for embedding in embeddings]
-    most_similar_index = np.argmax(similarities)
-    return most_similar_index, similarities[most_similar_index]
+def generate_conversation_context(user_input, user_conversations):
+    # Create a list of JSON strings for each conversation
+    conversation_strings = [memory.conversations_summary for memory in user_conversations]
 
+    # Combine the last entry into a valid JSON array
+    qdocs = f"[{','.join(conversation_strings[-3:])}]"
 
-# Route to handle answering user input
-@interface_conversation_bp.route('/interface/answer', methods=['POST'])
-def interface_answer():
-    if current_user.is_authenticated:
-        user_input = request.form['prompt']
+    # Convert 'created_at' values to string
+    created_at_list = [str(memory.created_at) for memory in user_conversations]
 
-        # Detect the language of the user's message
-        detected_lang = detect(user_input)
+    # Include 'created_at' in the conversation context
+    conversation_context = {
+        "created_at": created_at_list[-3:],
+        "conversations": json.loads(qdocs),
+        "user_name": current_user.name,
+        "user_message": user_input,
+    }
 
-        # Limit to 3 most recent conversations
-        user_conversations = Memory.query.filter_by(
-            owner_id=current_user.id).order_by(Memory.created_at.desc()).limit(3).all()  
-        
-        # Generate embeddings from the stored binary data
-        embeddings = [
-            np.frombuffer(memory.embedding, dtype=float) for memory in user_conversations
-        ]
-
-        if not embeddings:
-            # Handle new users with no embeddings
-            assistant_reply, audio_file_path, response = handle_llm_response(user_input, {}, detected_lang)
-            save_to_database(user_input, response)
-
-            return jsonify({
-                "answer_text": assistant_reply,
-                "answer_audio_path": audio_file_path,
-                "detected_lang": detected_lang,
-            })
-
-        index, similarity = find_most_relevant_conversation(user_input, embeddings)
-        most_relevant_memory = user_conversations[index]
-
-        conversation_context = {
-            "user_name": current_user.name,
-            "user_message": user_input,
-            "most_relevant_conversation": {
-                "user_message": most_relevant_memory.user_message,
-                "llm_response": most_relevant_memory.llm_response,
-                "created_at": str(most_relevant_memory.created_at), 
-                "similarity": similarity
-            },
-            "previous_conversations": [
-                {
-                    "user_message": memory.user_message,
-                    "llm_response": memory.llm_response,
-                    "created_at": str(memory.created_at) 
-                } for memory in user_conversations
-            ]
-        }
-
-        assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context, detected_lang)
-        save_to_database(user_input, response)
-
-        return jsonify({
-            "answer_text": assistant_reply,
-            "answer_audio_path": audio_file_path,
-            "detected_lang": detected_lang,
-        })
-    else:
-        return jsonify({"error": "User not authenticated"}), 401
+    return conversation_context
 
 
 # Function to handle the response from the language model
 def handle_llm_response(user_input, conversation_context, detected_lang):
     # Trimming conversation history to fit within the token limits
     if conversation_context and 'previous_conversations' in conversation_context:
-        conversation_context['previous_conversations'] = conversation_context['previous_conversations'][-1:]  # Keep only the last message
+        conversation_context['previous_conversations'] = conversation_context['previous_conversations'][-3:]  # Keep only the 3 latest messages
 
     if not conversation_context:
         # Handle new user without previous context
@@ -155,6 +106,85 @@ def handle_llm_response(user_input, conversation_context, detected_lang):
 
     return assistant_reply, interface_audio_file_path, response
 
+
+# Function to find the most relevant conversation based on user query
+def find_most_relevant_conversation(user_query, embeddings):
+    query_embedding = openai.embed_query(user_query)
+    similarities = [1 - cosine(query_embedding, embedding) for embedding in embeddings]
+    most_similar_index = np.argmax(similarities)
+    return most_similar_index, similarities[most_similar_index]
+
+
+# Route to handle answering user input
+@interface_conversation_bp.route('/interface/answer', methods=['POST'])
+def interface_answer():
+    if current_user.is_authenticated:
+        user_input = request.form['prompt']
+
+        # Detect the language of the user's message
+        detected_lang = detect(user_input)
+
+        if current_user.email == 'medusadbt@gmail.com':
+            print("Using embedding method for medusadbt@gmail.com")
+            # Limit to 91 most recent conversations
+            user_conversations = Memory.query.filter_by(
+                owner_id=current_user.id).order_by(Memory.created_at.desc()).limit(91).all()
+            
+            # Generate embeddings from the stored binary data
+            embeddings = [
+                np.frombuffer(memory.embedding, dtype=float) for memory in user_conversations if memory.embedding is not None
+            ]
+
+            if not embeddings:
+                # Handle new users with no embeddings
+                assistant_reply, audio_file_path, response = handle_llm_response(user_input, {}, detected_lang)
+                save_to_database(user_input, response)
+
+                return jsonify({
+                    "answer_text": assistant_reply,
+                    "answer_audio_path": audio_file_path,
+                    "detected_lang": detected_lang,
+                })
+
+            index, similarity = find_most_relevant_conversation(user_input, embeddings)
+            most_relevant_memory = user_conversations[index]
+
+            conversation_context = {
+                "user_name": current_user.name,
+                "user_message": user_input,
+                "most_relevant_conversation": {
+                    "user_message": most_relevant_memory.user_message,
+                    "llm_response": most_relevant_memory.llm_response,
+                    "created_at": str(most_relevant_memory.created_at), 
+                    "similarity": similarity
+                },
+                "previous_conversations": [
+                    {
+                        "user_message": memory.user_message,
+                        "llm_response": memory.llm_response,
+                        "created_at": str(memory.created_at) 
+                    } for memory in user_conversations
+                ]
+            }
+
+        else:
+            print(f"User {current_user.email} is not using the embedding method")
+            # For all other users, use generate_conversation_context
+            user_conversations = Memory.query.filter_by(
+                owner_id=current_user.id).order_by(Memory.created_at.desc()).limit(3).all()
+            conversation_context = generate_conversation_context(user_input, user_conversations)
+
+        assistant_reply, audio_file_path, response = handle_llm_response(user_input, conversation_context, detected_lang)
+        save_to_database(user_input, response)
+
+        return jsonify({
+            "answer_text": assistant_reply,
+            "answer_audio_path": audio_file_path,
+            "detected_lang": detected_lang,
+        })
+    else:
+        return jsonify({"error": "User not authenticated"}), 401
+    
 
 # Route to serve interface audio file
 @interface_conversation_bp.route('/interface-audio')
