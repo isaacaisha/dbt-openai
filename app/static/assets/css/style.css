@@ -4,7 +4,7 @@
     background-size: cover;
     background-position: center;*/
     padding: 1rem;
-    background-color: #161616 !important; /* #1a1c1d */
+    background-color: #161616 !important;
  }
 
 large-image {
@@ -165,7 +165,8 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     top: 67%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-image: url('../images/space.jpg');
+    /* background-image: url('../images/space.jpg'); */
+    background-color: #161616 !important;
     padding: 19px;
     border: 1px solid #ccc;
     border-top-right-radius: 19%;
