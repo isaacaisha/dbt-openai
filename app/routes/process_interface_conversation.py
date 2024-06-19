@@ -22,7 +22,7 @@ from app.memory import Memory, db
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
 openai = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
-llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo")
+llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
@@ -70,7 +70,7 @@ def interface_answer():
 
         # Limit to 91 most recent conversations
         user_conversations = Memory.query.filter_by(
-            owner_id=current_user.id).order_by(Memory.created_at.desc()).limit(91).all()  
+            owner_id=current_user.id).order_by(Memory.created_at.desc()).limit(3).all()  
         
         # Generate embeddings from the stored binary data
         embeddings = [
@@ -125,7 +125,7 @@ def interface_answer():
 def handle_llm_response(user_input, conversation_context, detected_lang):
     # Trimming conversation history to fit within the token limits
     if conversation_context and 'previous_conversations' in conversation_context:
-        conversation_context['previous_conversations'] = conversation_context['previous_conversations'][-5:]  # Keep only the last 5 messages
+        conversation_context['previous_conversations'] = conversation_context['previous_conversations'][-1:]  # Keep only the last message
 
     if not conversation_context:
         # Handle new user without previous context
