@@ -68,7 +68,7 @@ def interface_answer():
         # Detect the language of the user's message
         detected_lang = detect(user_input)
 
-        # Limit to 91 most recent conversations
+        # Limit to 3 most recent conversations
         user_conversations = Memory.query.filter_by(
             owner_id=current_user.id).order_by(Memory.created_at.desc()).limit(3).all()  
         
@@ -141,7 +141,9 @@ def handle_llm_response(user_input, conversation_context, detected_lang):
             assistant_reply = response['choices'][0]['message']['content']
         else:
             assistant_reply = None
-
+            
+    # Remove '#' and '*' from the response
+    assistant_reply = assistant_reply.replace('#', '').replace('*', '')
 
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply, lang=detected_lang)
