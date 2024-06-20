@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, IntegerField, validators
+from wtforms import HiddenField, SubmitField, IntegerField, validators
 from wtforms.fields.simple import StringField, PasswordField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, InputRequired, NumberRange, EqualTo, ValidationError
 
@@ -61,5 +61,17 @@ class ConversationIdForm(FlaskForm):
 
 class DeleteForm(FlaskForm):
     conversation_id = IntegerField("Conversation ID:", validators=[InputRequired(), NumberRange(min=1)])
-    submit = SubmitField('SELECT ¡!¡')
     submit = SubmitField('DELETE ¡!¡')
+
+
+class ThemeChatForm(FlaskForm):
+    theme_name = StringField('Create a Theme or Login into Existing One:', [InputRequired(message="Please, first enter a Theme's Name.")])
+    username = StringField("UserName:", validators=[DataRequired()])
+    submit = SubmitField("Start Chatting ¡!¡")
+
+
+class ForumChatForm(FlaskForm):
+    username = HiddenField("UserName:", validators=[DataRequired()])
+    theme_id = HiddenField("Theme's ID:", validators=[DataRequired()])
+    message = TextAreaField('Enter a Text & start Chatting:', [InputRequired(message="Please, first enter a text.")])
+    submit = SubmitField("Send ¡!¡")

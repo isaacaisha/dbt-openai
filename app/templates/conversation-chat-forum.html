@@ -1,0 +1,131 @@
+{% extends 'header.html' %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
+{% include 'bootstrap/base.html' %}
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="py-1">
+            <h1 class="">Chatting Forum ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+<div class="container text-center">
+    <hr class="green mb-3">
+    <h3 class="conversations mb-3">THEME'S NAME:<br>¡!¡ {{theme_name}} ¡!¡</h3>
+    <hr class="green mb-5">
+
+    <div class="d-flex justify-content-center mb-5">
+        <button class="btn btn-outline-info submit scroll-down text-center"onclick="scrollDown()" id="scrollDownButton"
+            style="position:fixed">
+            ⇩
+        </button>
+    </div>
+
+    <div id="display" class="text-left">
+        <!-- Messages will be loaded here via AJAX -->
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            function loadMessages() {
+                $.ajax({
+                    type: 'GET',
+                    url: "{{ url_for('conversation_chat_forum.get_messages', theme_name=theme_name) }}",
+                    success: function (response) {
+                        $("#display").empty();
+                        response.messages.forEach(function (message) {
+                            var temp = "<div><b>" + message.user + "</b><p style='color: #faf;'>" + message.value + "</p><span class='time-left'>" + message.date + "</span></div><br><hr class='gold mb-5'>";
+                            $("#display").append(temp);
+                        });
+                    },
+                    error: function (response) {
+                        alert('An error occurred while loading messages.');
+                    }
+                });
+            }
+
+            setInterval(loadMessages, 1000); // Refresh messages every second
+
+            $('#chat-form').on('submit', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('conversation_chat_forum.chat_forum', theme_name=theme_name) }}",
+                    data: {
+                        username: $('input[name="username"]').val(),
+                        theme_id: $('input[name="theme_id"]').val(),
+                        message: $('textarea[name="message"]').val(),
+                        csrf_token: $('input[name="csrf_token"]').val(),
+                    },
+                    success: function (data) {
+                        // alert(data.message);
+                        $('textarea[name="message"]').val(''); // Clear the message input
+                        loadMessages(); // Refresh messages
+                    },
+                    error: function (response) {
+                        alert('An error occurred while sending your message.');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <div class="row" style="margin-top: -19px;">
+        <div class="col-lg-8 col-md-10 mx-auto mb-3">
+            <form id="chat-form" method="POST"
+                action="{{ url_for('conversation_chat_forum.chat_forum', theme_name=theme_name) }}">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-danger text-center">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <!-- Include CSRF token -->
+                {{ wtf.form_field(forum_chat_form.csrf_token) }}
+
+                <input type="hidden" id="username" name="username" value="{{ current_user.name }}">
+                <input type="hidden" id="theme_id" name="theme_id" value="{{ theme_details.id }}">
+                <div class="form-group"><span class="align-left">{{ wtf.form_field(forum_chat_form.message,
+                        autofocus=true) }}</span>
+                </div>
+
+                {{ wtf.form_field(forum_chat_form.submit, class="submit nav-link btn btn-success") }}
+            </form>
+        </div>
+    </div>
+
+    <hr class="gold mb-5">
+    <hr class="crimson mb-3">
+
+    <button type="button" class="btn btn-outline back-home mb-3">
+        <a href="{{ url_for('conversation_chat_forum.theme_chat_forum') }}" class="nav-link">
+            Back To Select Theme -¡!¡-</a>
+    </button>
+
+    <hr class="green mb-5">
+
+<script src="{{ url_for('static', filename='js/toggle-histories.js') }}"></script>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer %} {% endblock %}

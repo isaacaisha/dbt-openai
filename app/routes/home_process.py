@@ -47,7 +47,6 @@ def home_test():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-
 @home_conversation_bp.route('/home/answer', methods=['POST'])
 def home_answer():
     user_message = request.form['prompt']

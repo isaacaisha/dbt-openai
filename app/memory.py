@@ -42,4 +42,28 @@ class User(db.Model, UserMixin):
     # Flask-Login required methods
     def get_id(self):
         return str(self.id)
+
+
+class Theme(db.Model, UserMixin):
+    __tablename__ = 'themes'
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    theme_name = db.Column(db.String(73), nullable=False)
+
+    def __repr__(self):
+        return f"<Theme id={self.id}, theme_name='{self.theme_name}'>"
+
+
+class Message(db.Model, UserMixin):
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    value = db.Column(db.String(999991), nullable=False)
+    date = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
+    user = db.Column(db.String(999991), nullable=False)
+    theme = db.Column(db.String(999991), nullable=False)
+
+    def __repr__(self):
+        return f"<Message id={self.id}, user='{self.user}'>"
+
+    def get_id(self):
+        return str(self.id)    
     

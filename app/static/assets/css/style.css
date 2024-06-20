@@ -337,6 +337,11 @@ input, #userInput, #historiesContainerJson > pre {
     padding: 0.9rem;
 }
 
+.divider {
+    margin: 10px 0;
+    border-top: 1px solid #ccc;
+}
+
 #userInput::placeholder {
     /* Center the placeholder text horizontally */
     text-align: center;
@@ -385,13 +390,13 @@ textarea#generatedText {
     color: #9A30F3;
 }
 
-#generateButton, #playbackButton {
+#generateButton, #playbackButton, #theme_name {
     background-color: #062929;;
     border: 0.1rem solid #AEFAFC;
     color: #d08aee;
 }
 
-#generateButton:hover, #playbackButton:hover {
+#generateButton:hover, #playbackButton:hover, #message {
     color: #30ABB7;
 }
 

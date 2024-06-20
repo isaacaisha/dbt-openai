@@ -1,0 +1,71 @@
+{% extends 'header.html' %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon.ico') }}">
+{% include 'bootstrap/base.html' %}
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="py-1">
+            <h1 class="">Chat Forum theme's ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+<div class="container text-center">
+
+    <hr class="green mb-3">
+
+    <h3 class="conversations mb-3">Create or Retrieve a Theme</h3>
+
+    <hr class="green mb-5">
+    <hr class="gold">
+
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto mb-3">
+            <form id="post-form" method="POST" action="{{ url_for('conversation_chat_forum.theme_chat_forum') }}">
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-danger text-center">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Include CSRF token -->
+                {{ wtf.form_field(theme_chat_form.csrf_token) }}
+
+                <span class="align-left">{{ wtf.form_field(theme_chat_form.theme_name, autofocus=true) }}</span>
+                <span class="align-left">{{ wtf.form_field(theme_chat_form.username) }}</span>
+
+                {{ wtf.form_field(theme_chat_form.submit, class="submit nav-link btn btn-success") }}
+            </form>
+        </div>
+    </div>
+
+    <hr class="gold mb-5">
+    <hr class="crimson mb-3">
+
+    <button type="button" class="btn btn-outline back-home mb-3">
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="nav-link">Back Home -¡!¡-</a>
+    </button>
+
+    <hr class="crimson mb-5">
+</div>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer_ %} {% endblock %}
