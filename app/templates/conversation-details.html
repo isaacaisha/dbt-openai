@@ -29,10 +29,12 @@
     <h3 class="conversations">Conversation Details</h3>
     <hr class="green mb-5">
     <hr class="gold mb-3">
-    <span class="white"><strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}</span><br>
-    <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br>
+    <div class="align-left">
+    <span class="white"><strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}</span><br><br>
+    <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br><br>
     <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
     <span class="created"><strong>Created At:</strong> {{ formatted_created_at }}</span><br><br>
+    </div>
     <!-- Add a icon to indicate like -->
     <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
         <!-- Use "fa-2x" class to make the icon twice as large -->

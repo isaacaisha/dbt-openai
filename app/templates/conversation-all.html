@@ -61,19 +61,19 @@
         <form action="{{ url_for('llm_conversation.get_all_conversations') }}" method="GET">
             <div class="form-group align-left">
                 <label for="limit" class="form-label label_">
-                    Enter the <span class="gold">number</span> of conversations <span class="gold">you want to retrieve</span>:
+                    Enter the <span class="gold1">number</span> of conversations <span class="gold1">you want to retrieve</span>:
                 </label>
                 <div class="input-group">
                     <input type="number" id="limit" name="limit" min="1" max="9991" class="form-control form-control-sm mb-3">
                 </div>
                 <label for="offset" class="form-label label_">
-                    Enter the <span class="gold">number</span> of conversations <span class="gold">you want to skip</span>:
+                    Enter the <span class="gold1">number</span> of conversations <span class="gold1">you want to skip</span>:
                 </label>
                 <div class="input-group">
                     <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
                 </div>
                 <label for="search" class="form-label label_">
-                    Enter a <span class="gold">word</span> <span class="white">from {{ current_user.name }}</span> conversations <span class="gold">to retrieve it</span>:
+                    Enter a <span class="gold1">word</span> <span class="white">from {{ current_user.name }}</span> conversations <span class="gold1">to retrieve it</span>:
                 </label>
                 <div class="input-group">
                     <input type="string" id="search" name="search"  class="form-control form-control-sm mb-3">
@@ -88,13 +88,13 @@
      
         <div class="container conversations mb-3">
             {% if limit %}
-                <h4>Total of <span class="gold">{{ limit }}</span> Conversations</h4>
+                <h4>Total of <span class="gold1">{{ limit }}</span> Conversations</h4>
             {% endif %}
             {% if offset %}
-                <h4><span class="gold">{{ offset }}</span> Conversations Skipped</h4>
+                <h4><span class="gold1">{{ offset }}</span> Conversations Skipped</h4>
             {% endif %}
             {% if search %}
-                <h4>Search the word <span class="gold">{{ search }}</span> 
+                <h4>Search the word <span class="gold1">{{ search }}</span> 
                     <span class="white">from {{ current_user.name }} conversations</span> to retrieve it</h4>
             {% endif %}
         </div>

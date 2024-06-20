@@ -56,19 +56,19 @@
             <form action="{{ url_for('llm_conversation.show_story') }}" method="GET">
                 <div class="form-group align-left">
                     <label for="limit" class="form-label label_">
-                        Enter the <span class="gold">number</span> of conversations <span class="gold">you want to retrieve</span>:
+                        Enter the <span class="gold1">number</span> of conversations <span class="gold1">you want to retrieve</span>:
                     </label>
                     <div class="input-group">
                         <input type="number" id="limit" name="limit" min="1" max="9991" class="form-control form-control-sm mb-3">
                     </div>
-                    <label for="offset" class="form-label label_">Enter the <span class="gold">number</span> of
-                        conversations <span class="gold">you want to skip</span>:</label>
+                    <label for="offset" class="form-label label_">Enter the <span class="gold1">number</span> of
+                        conversations <span class="gold1">you want to skip</span>:</label>
                     <div class="input-group">
                         <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
                     </div>
-                    <label for="search" class="form-label label_">Enter a <span class="gold">word</span> 
+                    <label for="search" class="form-label label_">Enter a <span class="gold1">word</span> 
                         <span style="color:#fff;">from {{ current_user.name }}</span> conversations 
-                        <span class="gold">to retrieve it</span>:</label>
+                        <span class="gold1">to retrieve it</span>:</label>
                     <div class="input-group">
                         <input type="string" id="search" name="search" class="form-control form-control-sm mb-3">
                         <div class="text-center">
@@ -82,13 +82,13 @@
         
             <div class="container conversations-details mb-3">
                 {% if limit %}
-                    <h4 class="text-center">Total of <span class="gold">{{ limit }}</span> Conversations</h4>
+                    <h4 class="text-center">Total of <span class="gold1">{{ limit }}</span> Conversations</h4>
                 {% endif %}
                 {% if offset %}
-                    <h4 class="text-center"><span class="gold">{{ offset }}</span> Conversations Skipped</h4>
+                    <h4 class="text-center"><span class="gold1">{{ offset }}</span> Conversations Skipped</h4>
                 {% endif %}
                 {% if search %}
-                    <h4 class="text-center">Search the word <span class="gold">{{ search }}</span> 
+                    <h4 class="text-center">Search the word <span class="gold1">{{ search }}</span> 
                         <span class="white">from {{ current_user.name }} conversations</span> to retrieve it</h4>
                 {% endif %}
             </div>
@@ -97,7 +97,7 @@
                 <hr class="gold mb-3">
             
                 <h3 class="history-title">Memory Load</h3>
-                <textarea class="textarea-memory mb-3">
+                <textarea class="textarea-memory align-left mb-3">
                     {% for memory in memory_load %}
                     - Conversation nbr: {{ memory.id }}
                     {{ memory.user_name }}: {{ memory.user_message }}
@@ -118,7 +118,7 @@
                 <hr class="green mb-3">
             
                 <h3 class="history-title">Memory Buffer</h3>
-                <textarea class="textarea-memory text-center mb-3">{{ memory_buffer|safe }}</textarea>
+                <textarea class="textarea-memory mb-3">{{ memory_buffer|safe }}</textarea>
             
                 <hr class="green mb-5">
                 <hr class="gold mb-3">

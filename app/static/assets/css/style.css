@@ -93,17 +93,6 @@ large-image {
     color: #47FFAC;
 }
 
-.log-register-h3 {
-    background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
-    border: 0.19rem solid #9ED2C6;
-    border-top-left-radius: 37%;
-    border-bottom-right-radius: 37%;
-    color: #fff;
-    margin: 0.5rem;
-    padding: 0.9rem;
-    text-align: center;
-}
-
 .navbar.nav-home {
     margin-bottom: 0;
 }
@@ -200,16 +189,20 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     padding: 5px 10px;
 }
 
-.green {
-    color: darkgreen;
-}
-
-.SìįSí, .gold {
+.SìįSí, .gold1 {
     color: gold;
 }
 
+.green {
+    color: rgb(52, 97, 52);
+}
+
+.gold {
+    color: rgb(99, 85, 7);
+}
+
 .crimson {
-    color: crimson;
+    color: rgb(121, 14, 35);
 }
 
 .white {
@@ -321,42 +314,6 @@ input, #userInput, #historiesContainerJson > pre {
     width: 2.7rem;
 }
 
-button.language-btn {
-    background-color: #9A30F3;
-    border: 0.1rem solid #AEFAFC;
-    border-radius: 0.3rem;
-    color: #fff;
-    font-family: 'Merriweather', sans-serif;
-    font-size: 1rem;
-    text-decoration: None;
-}
-
-button.language-btn:hover {
-    color: yellow;
-}
-
-#langAr, .btn-story:hover {
-    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
-}
-
-#langEn {
-    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
-    transform: rotate(-45deg);
-}
-
-#langEs {
-    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
-    transform: rotate(45deg);
-}
-
-#langPt {
-    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
-}
-
-#langFr {
-    background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
-}
-
 #userInput, #generatedText, #final-result-content.form-control.result, .textarea-memory {
     border: 0.1rem solid #1295FA;
     border-radius: 0.9rem;
@@ -429,9 +386,9 @@ textarea#generatedText {
 }
 
 #generateButton, #playbackButton {
-    background-color: #AEFAFC;;
+    background-color: #062929;;
     border: 0.1rem solid #AEFAFC;
-    color: #8e2cb8;
+    color: #d08aee;
 }
 
 #generateButton:hover, #playbackButton:hover {
@@ -525,10 +482,10 @@ hr.mb-3, body hr {
     background-color: #161616;
     border: 0.1rem solid #1295FA;
     border-radius: 0.5rem;
-    color: #9A30F3;
+    color: #b55fd9;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 1rem;
-    padding: 0.3rem;
+    padding: 0.5rem;
 }
 
 #home-tab2 > a, #profile-tab2 {

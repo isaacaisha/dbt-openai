@@ -125,7 +125,7 @@ def show_story():
                 [f'{memory.user_name}: {memory.user_message}\n\n·SìįSí·Dbt·: {memory.llm_response}\n\n' + '-' * 19 for memory in memory_load]
             )
 
-            summary_conversations = '\n'.join([memory.conversations_summary.split('\n')[-1] for memory in memory_load])
+            summary_conversations = '\n\n'.join([memory.conversations_summary.split('\n')[-1] for memory in memory_load])
 
             return render_template('conversation-show-history.html',
                                    current_user=current_user, owner_id=owner_id,
