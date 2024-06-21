@@ -62,7 +62,10 @@ def theme_chat_forum():
     
     theme_chat_form = ThemeChatForm()
     if theme_chat_form.validate_on_submit():
+        # Get the theme name and remove extra spaces
         theme_name = theme_chat_form.theme_name.data
+        theme_name = ' '.join(theme_name.strip().split())
+        
         theme = Theme.query.filter_by(theme_name=theme_name).first()
         if not theme:
             theme = Theme(theme_name=theme_name)

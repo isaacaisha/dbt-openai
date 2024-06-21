@@ -3,7 +3,7 @@ from flask_login import current_user
 from datetime import datetime
 
 from app.app_forms import DatabaseForm, ConversationIdForm, DeleteForm
-from app.memory import Memory, User, Theme, Message, db
+from app.memory import Memory, User, Theme, Message, MemoryTest, db
 
 
 conversation_functionality_bp = Blueprint('conversation_function', __name__)
@@ -13,7 +13,8 @@ TABLE_MAPPING = {
     'Memory': Memory,
     'User': User,
     'Theme': Theme,
-    'Message': Message
+    'Message': Message,
+    'MemoryTest': MemoryTest,
 }
 
 

@@ -45,12 +45,12 @@
     <div id="historiesContainer" style="display: none;">
 
         {% for conversation in serialized_conversations %}
-            <textarea class="form-control align-left mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
-                "conversation_id": "{{ conversation.id }}"
+            <textarea class="form-control align-left mb-3" id="userInput" name="text_writing" style="color:#17a2b8;">
+                "Conversation ID": "{{ conversation.id }}"
                 "{{ conversation.user_name }}": "{{ conversation.user_message }}"
                 "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                "conversation_summary": "{{ conversation.conversations_summary }}"
-                "created_at": "{{ conversation.created_at }}"
+                "Conversation Summary": "{{ conversation.conversations_summary }}"
+                "Created At": "{{ conversation.created_at }}"
             </textarea>
         {% endfor %}
 
@@ -86,7 +86,7 @@
     <h6>Themes</h6>
     <ul>
         {% for theme in themes %}
-        <textarea id="themes">Theme ID: {{ theme.id }} - Name: {{ theme.theme_name }}</textarea>
+        <pre id="themes">Theme ID: {{ theme.id }} - Name: {{ theme.theme_name }}</pre>
         {% endfor %}
     </ul>
     </div>
@@ -103,8 +103,8 @@
     <h6>Messages</h6>
     <ul>
         {% for message in messages %}
-        <textarea id="messages">Message ID: {{ message.id }} - Value: {{ message.value }} - User: {{ message.user }} - Date: {{ message.date}}
-        </textarea><br><br>
+        <pre class="align-left" id="messages">-Message ID: {{ message.id }}<br>- User: {{ message.user }}<br>- Message: {{ message.value }}<br>- Date: {{ message.date}}
+        </pre>
         {% endfor %}
     </ul>
     </div>
@@ -119,10 +119,12 @@
 
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesTestContainer" style="display: none;">
+    <h6>MemoryTest</h6>
 
         {% for conversation in serialized_memory_tests %}
-            <textarea class="form-control align-left mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
-                "{{ conversation.user_message }}"
+            <textarea class="form-control align-left mb-3" id="userInput" name="text_writing" style="color:#17a2b8;">
+                "Conversation ID": "{{ conversation.id }}"
+                "User Message": "{{ conversation.user_message }}"
                 "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
                 "conversation_summary": "{{ conversation.conversations_summary }}"
                 "created_at": "{{ conversation.created_at }}"
