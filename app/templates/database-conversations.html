@@ -80,6 +80,39 @@
 
     <hr class="crimson mb-5">
 
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <button class="btn btn-outline-info submit mb-3" id="showThemesButton" onclick="toggleThemes()">
+        -¡!¡- Show Database Themes -¡!¡-
+    </button>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="themesContainer" class="mb-3" style="display: none;">
+    <h6>Themes</h6>
+    <ul>
+        {% for theme in themes %}
+        <textarea id="themes">Theme ID: {{ theme.id }} - Name: {{ theme.theme_name }}</textarea>
+        {% endfor %}
+    </ul>
+    </div>
+
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <button class="btn btn-outline-info submit mb-3" id="showMessagesButton" onclick="toggleMessages()">
+        -¡!¡- Show Database Messages -¡!¡-
+    </button>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="messagesContainer" class="mb-3" style="display: none;">
+    <h6>Messages</h6>
+    <ul>
+        {% for message in messages %}
+        <textarea id="messages">Message ID: {{ message.id }} - Value: {{ message.value }} - User: {{ message.user }} - Date: {{ message.date}}
+        </textarea><br><br>
+        {% endfor %}
+    </ul>
+    </div>
+
 </div>
 
 <script>
@@ -94,6 +127,19 @@
         var container = document.getElementById('historiesContainerJson');
         container.style.display = (container.style.display === 'none') ? 'block' : 'none';
     }
+
+    // Function to toggle histories container
+    function toggleThemes() {
+        var container = document.getElementById('themesContainer');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // Function to toggle histories JSON container
+    function toggleMessages() {
+        var container = document.getElementById('messagesContainer');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
 
     <!-- JavaScript for scrolling down -->
     function scrollDown() {

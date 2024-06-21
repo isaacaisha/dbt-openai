@@ -314,7 +314,9 @@ input, #userInput, #historiesContainerJson > pre {
     width: 2.7rem;
 }
 
-#userInput, #generatedText, #final-result-content.form-control.result, .textarea-memory {
+#userInput, #generatedText, 
+#final-result-content.form-control.result, .textarea-memory,
+#themes, #messages {
     border: 0.1rem solid #1295FA;
     border-radius: 0.9rem;
     font-family: 'Montserrat', sans-serif;
