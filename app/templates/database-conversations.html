@@ -38,7 +38,7 @@
 
     <!-- Add a button to trigger the display of serialized_histories -->
     <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
-        -¡!¡- Show Database Conversations -¡!¡-
+        -¡!¡- Show Database Memory -¡!¡-
     </button>
 
     <!-- Add a div to contain the serialized histories -->
@@ -61,7 +61,7 @@
 
     <!-- Add a button to trigger the display of serialized_histories -->
     <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
-        -¡!¡- Show Database Conversations json -¡!¡-
+        -¡!¡- Show Database Memory json -¡!¡-
     </button>
 
     <!-- Add a div to contain the serialized histories -->
@@ -125,7 +125,8 @@
                 {% endwith %}
                 
                 <!-- Include CSRF token -->
-                <span style="display: none;">{{ wtf.form_field(database_form.csrf_token) }}</span>
+                {{ database_form.csrf_token }}
+
                 <span class="align-left">{{ wtf.form_field(database_form.database_name, autofocus=true) }}</span>
                 <span class="align-left">{{ wtf.form_field(database_form.data_id) }}</span>
                 {{ wtf.form_field(database_form.submit, class="submit nav-link btn btn-danger") }}
