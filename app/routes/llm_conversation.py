@@ -2,7 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from datetime import datetime
 
-from app.memory import Memory, Theme, Message, db
+from app.memory import Memory, Theme, Message, MemoryTest, db
 from app.app_forms import DatabaseForm
 
 
@@ -215,6 +215,19 @@ def get_conversations_jsonify():
 
     database_form = DatabaseForm()
 
+    # Fetch MemoryTest data
+    memory_tests = MemoryTest.query.all()
+    
+    # Serialize MemoryTest data
+    serialized_memory_tests = [{
+        'id': memory.id,
+        'user_message': memory.user_message,
+        'llm_response': memory.llm_response,
+        'conversations_summary': memory.conversations_summary,
+        'created_at': memory.created_at.strftime("%Y-%m-%d %H:%M:%S")
+    } for memory in memory_tests]
+
     return render_template('database-conversations.html', date=datetime.now().strftime("%a %d %B %Y"),
                            current_user=current_user, serialized_conversations=serialized_conversations,
-                           themes=all_themes, messages=all_messages, database_form=database_form)
+                           themes=all_themes, messages=all_messages, database_form=database_form,
+                           serialized_memory_tests=serialized_memory_tests)

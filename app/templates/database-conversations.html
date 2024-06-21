@@ -109,6 +109,28 @@
     </ul>
     </div>
 
+    <hr class="crimson mb-5">
+    <hr class="green mb-3">
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <button class="btn btn-success submit mb-3" id="showHistoriesTestButton" onclick="toggleTestHistories()">
+        -¡!¡- Show Database MemoryTest -¡!¡-
+    </button>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesTestContainer" style="display: none;">
+
+        {% for conversation in serialized_memory_tests %}
+            <textarea class="form-control align-left mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
+                "{{ conversation.user_message }}"
+                "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+                "conversation_summary": "{{ conversation.conversations_summary }}"
+                "created_at": "{{ conversation.created_at }}"
+            </textarea>
+        {% endfor %}
+
+    </div>
+
     <hr class="green mb-5">
     <hr class="gold mb-3">
 
@@ -167,6 +189,12 @@
     // Function to toggle histories JSON container
     function toggleMessages() {
         var container = document.getElementById('messagesContainer');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // Function to toggle histories JSON container
+    function toggleTestHistories() {
+        var container = document.getElementById('historiesTestContainer');
         container.style.display = (container.style.display === 'none') ? 'block' : 'none';
     }
 
