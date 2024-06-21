@@ -61,6 +61,8 @@ def theme_chat_forum():
         return redirect(url_for('auth.login'))
     
     theme_chat_form = ThemeChatForm()
+    all_themes = Theme.query.all()
+
     if theme_chat_form.validate_on_submit():
         # Get the theme name and remove extra spaces
         theme_name = theme_chat_form.theme_name.data
@@ -73,7 +75,7 @@ def theme_chat_forum():
             db.session.commit()
         return redirect(url_for('conversation_chat_forum.chat_forum', theme_name=theme.theme_name))
     return render_template('conversation-theme-chat.html', current_user=current_user, theme_chat_form=theme_chat_form,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+                           all_themes=all_themes, date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @conversation_chat_forum_bp.route('/chat-forum/<theme_name>/', methods=['GET', 'POST'])
