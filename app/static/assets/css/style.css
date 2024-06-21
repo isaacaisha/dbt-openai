@@ -314,6 +314,25 @@ input, #userInput, #historiesContainerJson > pre {
     width: 2.7rem;
 }
 
+.message-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #333;
+}
+
+.message-header {
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+.message-body {
+    margin-top: 5px;
+    color: #333;
+}
+
 #userInput, #generatedText, 
 #final-result-content.form-control.result, .textarea-memory,
 #themes, #messages {

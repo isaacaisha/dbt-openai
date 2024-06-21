@@ -66,7 +66,6 @@ class DeleteForm(FlaskForm):
 
 class ThemeChatForm(FlaskForm):
     theme_name = StringField('Create a Theme or Login into Existing One:', [InputRequired(message="Please, first enter a Theme's Name.")])
-    username = StringField("UserName:", validators=[DataRequired()])
     submit = SubmitField("Start Chatting ¡!¡")
 
 

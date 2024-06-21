@@ -63,13 +63,12 @@ def theme_chat_forum():
     theme_chat_form = ThemeChatForm()
     if theme_chat_form.validate_on_submit():
         theme_name = theme_chat_form.theme_name.data
-        username = theme_chat_form.username.data
         theme = Theme.query.filter_by(theme_name=theme_name).first()
         if not theme:
             theme = Theme(theme_name=theme_name)
             db.session.add(theme)
             db.session.commit()
-        return redirect(url_for('conversation_chat_forum.chat_forum', theme_name=theme.theme_name, username=username))
+        return redirect(url_for('conversation_chat_forum.chat_forum', theme_name=theme.theme_name))
     return render_template('conversation-theme-chat.html', current_user=current_user, theme_chat_form=theme_chat_form,
                            date=datetime.now().strftime("%a %d %B %Y"))
 

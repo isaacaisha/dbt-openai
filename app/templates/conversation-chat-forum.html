@@ -31,7 +31,7 @@
     <hr class="green mb-5">
 
     <div class="d-flex justify-content-center mb-5">
-        <button class="btn btn-outline-info submit scroll-down text-center"onclick="scrollDown()" id="scrollDownButton"
+        <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton"
             style="position:fixed">
             ⇩
         </button>
@@ -50,7 +50,18 @@
                     success: function (response) {
                         $("#display").empty();
                         response.messages.forEach(function (message) {
-                            var temp = "<div><b>" + message.user + "</b><p style='color: #faf;'>" + message.value + "</p><span class='time-left'>" + message.date + "</span></div><br><hr class='gold mb-5'>";
+                            var temp = `
+                                <div class="message-container">
+                                    <div class="message-header">
+                                        <b>${message.user}</b>
+                                        <span class="time-left">${message.date}</span>
+                                    </div>
+                                    <div class="message-body" style="color: #faf;">
+                                        ${message.value}
+                                    </div>
+                                </div>
+                                <hr class='gold mb-3'>
+                            `;
                             $("#display").append(temp);
                         });
                     },
@@ -75,7 +86,6 @@
                         csrf_token: $('input[name="csrf_token"]').val(),
                     },
                     success: function (data) {
-                        // alert(data.message);
                         $('textarea[name="message"]').val(''); // Clear the message input
                         loadMessages(); // Refresh messages
                     },
@@ -104,8 +114,8 @@
 
                 <input type="hidden" id="username" name="username" value="{{ current_user.name }}">
                 <input type="hidden" id="theme_id" name="theme_id" value="{{ theme_details.id }}">
-                <div class="form-group"><span class="align-left">{{ wtf.form_field(forum_chat_form.message,
-                        autofocus=true) }}</span>
+                <div class="form-group">
+                    <span class="align-left">{{ wtf.form_field(forum_chat_form.message, autofocus=true) }}</span>
                 </div>
 
                 {{ wtf.form_field(forum_chat_form.submit, class="submit nav-link btn btn-success") }}
@@ -123,9 +133,9 @@
 
     <hr class="green mb-5">
 
-<script src="{{ url_for('static', filename='js/toggle-histories.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toggle-histories.js') }}"></script>
 
-{% endautoescape %}
-{% endblock %}
+    {% endautoescape %}
+    {% endblock %}
 
-{% block footer %} {% endblock %}
+    {% block footer %} {% endblock %}
