@@ -35,12 +35,6 @@
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto content mb-3">
 
-                {% for message in get_flashed_messages() %}
-                    <div class="alert alert-warning text-center">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-
                 <form method="POST" action="{{ url_for('auth.login') }}">
 
                     {% with messages = get_flashed_messages() %}
@@ -57,7 +51,7 @@
                     {{ wtf.form_field(login_form.email, autofocus=true) }}
                     {{ wtf.form_field(login_form.password) }}
                     {{ wtf.form_field(login_form.remember_me) }}
-                    <div class="mb-5 text-center">{{ wtf.form_field(login_form.submit, class="submit btn btn-success") }}</div>
+                    <div class="mb-4 text-center">{{ wtf.form_field(login_form.submit, class="submit btn btn-success") }}</div>
                 </form>
             </div>
         </div>
@@ -66,13 +60,13 @@
 
         <div class="text-center">
             <button type="button" class="btn btn-outline back-home mb-3">
-                <a href="{{ url_for('auth.reset_password') }}" class="nav-link"><span class="gold1">Reset Password -¡!¡-</span></a>
+                <a href="{{ url_for('auth.reset_password') }}" class="nav-link"><span class="gold1">-¡!¡- Reset Password -¡!¡-</span></a>
             </button>
 
             <hr class="gold mb-3"> 
             
             <button type="button" class="btn btn-outline back-home mb-3">
-                <a href="{{ url_for('auth.register') }}" class="">Back Register -¡!¡-</a>
+                <a href="{{ url_for('auth.register') }}" class="">-¡!¡- Back Register -¡!¡-</a>
             </button>
         </div>
 
@@ -82,5 +76,3 @@
 
 {% endautoescape %}
 {% endblock %}
-
-{% block footer_ %} {% endblock %}

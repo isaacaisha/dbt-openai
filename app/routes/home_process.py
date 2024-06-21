@@ -1,13 +1,19 @@
+import json
+import pytz
+
 from flask import Blueprint, render_template, request, send_file, jsonify
 from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
 from langchain_openai import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from langdetect import detect
 from datetime import datetime
 
+from sqlalchemy.exc import SQLAlchemyError
+
 from app.app_forms import TextAreaFormIndex
+from app.memory import MemoryTest, db
 
 
 home_conversation_bp = Blueprint('conversation_home', __name__)
@@ -15,6 +21,7 @@ home_conversation_bp = Blueprint('conversation_home', __name__)
 llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
+memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
 
 
 @home_conversation_bp.route("/", methods=["GET", "POST"])
@@ -73,6 +80,10 @@ def home_answer():
     tts.save(audio_file_path)
     print(f'LLM Response:\n{assistant_reply} 😝\n')
 
+    memory_summary.save_context({"input": f"{user_message}"}, {"output": f"{response}"})
+
+    save_to_test_database(user_message, response)
+
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
@@ -88,3 +99,45 @@ def home_audio():
         return send_file(audio_file_path, as_attachment=True)
     except FileNotFoundError:
         return "File not found", 404
+    
+
+# Function to save conversation to database
+def save_to_test_database(user_message, response):
+    conversations_summary = memory_summary.load_memory_variables({})
+    conversations_summary_str = json.dumps(conversations_summary)
+
+    timezone = pytz.timezone('Europe/Madrid')
+    created_at = datetime.now(timezone)
+
+    new_memory = MemoryTest(
+        user_message=user_message,
+        llm_response=response,
+        conversations_summary=conversations_summary_str,
+        created_at=created_at
+    )
+
+    print(f'user_message: {new_memory.user_message}\nllm_response: {new_memory.llm_response}\n'
+          f'conversations_summary: {new_memory.conversations_summary}\ncreated_at: {created_at}') 
+
+    try:
+        db.session.add(new_memory)
+        db.session.commit()
+        db.session.refresh(new_memory)
+
+        # Clear or reset the memory summary after saving
+        memory_summary.clear()
+
+        memory_buffer = memory.buffer_as_str
+        memory_load = memory.load_memory_variables({})
+
+    except SQLAlchemyError as err:
+        print(f"Error saving to database: {str(err)}")
+        db.session.rollback()
+        return jsonify({"error": "Failed to save to database"}), 500
+    finally:
+        db.session.close()
+
+    return jsonify({
+        "memory_buffer": memory_buffer,
+        "memory_load": memory_load,
+    })

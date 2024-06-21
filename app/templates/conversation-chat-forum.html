@@ -102,11 +102,11 @@
             <form id="chat-form" method="POST"
                 action="{{ url_for('conversation_chat_forum.chat_forum', theme_name=theme_name) }}">
                 {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-danger text-center">{{ message }}</div>
-                {% endfor %}
-                {% endif %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-danger text-center">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
                 {% endwith %}
 
                 <!-- Include CSRF token -->
@@ -128,7 +128,7 @@
 
     <button type="button" class="btn btn-outline back-home mb-3">
         <a href="{{ url_for('conversation_chat_forum.theme_chat_forum') }}" class="nav-link">
-            Back To Select Theme -¡!¡-</a>
+            -¡!¡- Back To Select Theme -¡!¡-</a>
     </button>
 
     <hr class="green mb-5">
@@ -137,5 +137,3 @@
 
     {% endautoescape %}
     {% endblock %}
-
-    {% block footer %} {% endblock %}

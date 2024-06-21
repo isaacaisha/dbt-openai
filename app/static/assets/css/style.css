@@ -98,14 +98,14 @@ large-image {
 }
 
 /* register-home & log-in-home index.html */
-#navbarSupportedContent > ul > li > a.register-home,
-#navbarSupportedContent > ul > li > a.log-in-home {
+.register-home,
+.log-in-home {
     background-color: #0d1515;
     border: 0.1rem solid #17a2b8;
     border-radius: 19rem;
     color: gold;
     font-size: 2.1rem;
-    padding: 1.3rem;
+    padding: 1rem;
     transform: rotate(7deg);
 
     /* Set a fixed width */
@@ -120,7 +120,7 @@ large-image {
     padding: 0.7rem;
 }
 
-#navbarSupportedContent > ul > li > a.log-in-home {
+.log-in-home {
     transform: rotate(-7deg);
 }
 
@@ -345,6 +345,10 @@ input, #userInput, #historiesContainerJson > pre {
     padding: 0.3rem;
     width: 100%;
 }
+
+ textarea#message {
+    height: 109px;
+ }
 
 /* crsf_token */
 #content>div.container.text-center>div.row>div>form>div>label{

@@ -1,5 +1,7 @@
 {% extends 'header.html' %}
 
+{% import "bootstrap/wtf.html" as wtf %}
+
 {% block title %} Welcome to {% endblock %}
 
 {% block head %}
@@ -24,6 +26,14 @@
 
 <div class="conversations content container">
 
+        <!--<div class="d-flex justify-content-end">-->
+        <div class="d-flex justify-content-center mb-5">
+            <button class="btn btn-outline-info submit scroll-down"
+                    onclick="scrollDown()" id="scrollDownButton" style="position:fixed">
+                ⇩
+            </button>
+        </div>
+
     <hr class="green mb-3">
 
     <!-- Add a button to trigger the display of serialized_histories -->
@@ -33,14 +43,6 @@
 
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesContainer" style="display: none;">
-
-        <!--<div class="d-flex justify-content-end">-->
-        <div class="d-flex justify-content-center mb-5">
-            <button class="btn btn-outline-info submit scroll-down"
-                    onclick="scrollDown()" id="scrollDownButton" style="position:fixed">
-                ⇩
-            </button>
-        </div>
 
         {% for conversation in serialized_conversations %}
             <textarea class="form-control align-left mb-5" id="userInput" name="text_writing" style="color:#17a2b8;">
@@ -106,11 +108,39 @@
         {% endfor %}
     </ul>
     </div>
-    <hr class="crimson mb-5">
+
+    <hr class="green mb-5">
+    <hr class="gold mb-3">
+
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto mb-3">
+            <form method="POST" action="{{ url_for('conversation_function.delete_data') }}">
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <h5 class="alert-warning">{{ message }}</h5>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Include CSRF token -->
+                <span style="display: none;">{{ wtf.form_field(database_form.csrf_token) }}</span>
+                <span class="align-left">{{ wtf.form_field(database_form.database_name, autofocus=true) }}</span>
+                <span class="align-left">{{ wtf.form_field(database_form.data_id) }}</span>
+                {{ wtf.form_field(database_form.submit, class="submit nav-link btn btn-danger") }}
+            </form>
+        </div>
+    </div>
+    
+    <hr class="gold mb-5">
+    <hr class="crimson mb-3">
 
     <button type="button" class="btn btn-outline back-home mb-3">
-        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="nav-link">Back Home -¡!¡-</a>
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="nav-link">-¡!¡- Back Home -¡!¡-</a>
     </button>
+
+    <hr class="crimson mb-5">
 
 </div>
 
@@ -151,5 +181,3 @@
 
 {% endautoescape %}
 {% endblock %}
-
-{% block footer_ %} {% endblock %}

@@ -3,6 +3,7 @@ from flask_login import current_user
 from datetime import datetime
 
 from app.memory import Memory, Theme, Message, db
+from app.app_forms import DatabaseForm
 
 
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
@@ -210,9 +211,10 @@ def get_conversations_jsonify():
     serialized_conversations = [serialize_conversation(conversation) for conversation in conversations]
 
     all_themes = Theme.query.all()
-
     all_messages = Message.query.all()
+
+    database_form = DatabaseForm()
 
     return render_template('database-conversations.html', date=datetime.now().strftime("%a %d %B %Y"),
                            current_user=current_user, serialized_conversations=serialized_conversations,
-                           themes=all_themes, messages=all_messages)
+                           themes=all_themes, messages=all_messages, database_form=database_form)

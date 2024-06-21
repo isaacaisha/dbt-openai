@@ -32,18 +32,18 @@
 
 <div class="container content text-center">
 
-    <hr class="green mb-3">
+    <!--<hr class="green mb-3">
     
-        <!-- Add a button to trigger the popup -->
+        <!- Add a button to trigger the popup ->
         <button id="showPopupButton" type="button" class="btn mb-3 submit">Show Instructions</button>
         
-        <!-- Popup Container -->
+        <!- Popup Container ->
         <div id="popupContainer" class="popup-container  conversations" style="display: none;">
-            <!-- Popup Content -->
+            <!- Popup Content ->
             <div class="popup-content">
-                <!-- Popup Content Here -->
+                <!- Popup Content Here ->
                 <p>Welcome to the<br><span class="SìįSí">-¡!¡·SìįSí·Dbt·¡!¡-</span><br>app</p>
-                <!-- Ordered List -->
+                <!- Ordered List ->
                 <ol class="align-left">
                     <li> 
                         <span class="mediumslateblue">Click On Start Writing</span><br>(to write a text) or<br>
@@ -63,7 +63,7 @@
                     </li>
                 </ol>
                 <span>Enjoy</span>
-                <!-- Close Button -->
+                <!- Close Button ->
                 <h6>Close Button</h6>
                 <button id="closePopupButton" type="button" class="btn btn-outline-info mb-3 submit">x</button>
             </div>
@@ -71,11 +71,14 @@
 
         <hr class="green mb-5">
 
-    </div>
+    </div>-->
 
     <div class="content">
 
         <div id="content-container" class="container">
+
+            <hr class="green mb-3">
+
             <form id="prompt-form" method="POST">
 
                 {{ home_form.csrf_token }}
@@ -83,7 +86,7 @@
                 <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
 
                 <div class="text-center">
-                    <hr class="gold mb-3">
+                    <!--<hr class="gold mb-3">
                     <div class="mb-3 alert error" id="error-message" style="display: none;"></div>
                     <div>
                         <button id="start-button" type="button" class="btn mb-3">
@@ -92,7 +95,7 @@
                     </div>
 
                     <hr class="gold mb-5" >
-                    <hr class="crimson mb-3">
+                    <hr class="crimson mb-3">-->
 
                     <!-- Add a button for speech recognition -->
                     <button id="speechRecognitionButton" type="button" class="btn mb-3">
@@ -100,7 +103,7 @@
                     </button>
                 </div>
 
-                <hr class="crimson mb-5">
+                <hr class="green mb-5">
 
                 <div id="textarea-container" style="display: none;" class=" align-left">
                     <label for="userInput" class="label_">
@@ -128,16 +131,16 @@
             </form>
 
             <hr class="gold mb-5">
+            <hr class="crimson mb-3">
 
             <div class="text-center">
-                <hr class="green mb-3">
                 <!--<label>:…·SìįSí·Dbt·…:</label>-->
                 <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
 
                 <!-- Add a button for speech synthesis playback -->
                 <div class="mb-3">
                     <button id="playbackButton" type="button" class="btn btn-outline">
-                        ¡!¡ PlayBack Audio ¡!¡
+                        -¡!¡- PlayBack Audio -¡!¡-
                     </button>
                     <audio id="response-audio" controls class="submit btn btn-outline-info" style="display:none;">
                         <source src="{{ url_for('conversation_home.home_audio') }}" type="audio/mp3">
@@ -146,7 +149,7 @@
                 </div>
             </div>
 
-            <hr class="green mb-5">
+            <hr class="crimson mb-5">
 
         </div>
 
@@ -155,8 +158,9 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
     <script src="{{ url_for('static', filename='js/home-speech-request.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
 
+    {% block footer %}{% endblock %}
+    
     {% endautoescape %}
     {% endblock %}
-
-    {% block footer %} {% endblock %}

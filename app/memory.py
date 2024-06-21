@@ -44,7 +44,7 @@ class User(db.Model, UserMixin):
         return str(self.id)
 
 
-class Theme(db.Model, UserMixin):
+class Theme(db.Model):
     __tablename__ = 'themes'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     theme_name = db.Column(db.String(73), nullable=False)
@@ -53,7 +53,7 @@ class Theme(db.Model, UserMixin):
         return f"<Theme id={self.id}, theme_name='{self.theme_name}'>"
 
 
-class Message(db.Model, UserMixin):
+class Message(db.Model):
     __tablename__ = 'messages'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     value = db.Column(db.String(999991), nullable=False)
@@ -65,5 +65,17 @@ class Message(db.Model, UserMixin):
         return f"<Message id={self.id}, user='{self.user}'>"
 
     def get_id(self):
-        return str(self.id)    
+        return str(self.id)
+
+
+class MemoryTest(db.Model):
+    __tablename__ = 'memories_test'
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_message = db.Column(db.Text, nullable=False)
+    llm_response = db.Column(db.Text, nullable=False)
+    conversations_summary = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
+
+    def __repr__(self):
+        return f"<Memory id={self.id}>"
     

@@ -35,16 +35,9 @@
 
         <!-- Navbar -->
         <nav class="navbar nav-home">
-            <div id="navbarSupportedContent" class="mb-1">
-                <ul class="navbar-nav" style="display: inline-block;">
-                    <li class="nav-item" style="display: inline-block;">
-                        <a class="nav-link register-home" href="{{ url_for('auth.register') }}">Register</a>
-                    </li>
-                    <li class="nav-item" style="display: inline-block;">
-                        <a class="nav-link active log-in-home" aria-current="page"
-                           href="{{ url_for('auth.login') }}">Login</a>
-                    </li>
-                </ul>
+            <div class="mb-1">
+                <button class="register-home"><a href="{{ url_for('auth.register') }}" class="gold1">Register</a></button>
+                <button class="active log-in-home" aria-current="page"><a href="{{ url_for('auth.login') }}" class="gold1">Login</a></button>
                 <!--<p class="gold" style="margin-bottom:0;">∞-To Use All Features-∞</p>-->
             </div>
         </nav>
@@ -59,12 +52,10 @@
                 effortlessly. Join us and experience the future of productivity today!
             </p>
 
-            <button class="description mb-5"><a href="/description" class="gold1">¡!¡ Desscription ¡!¡</a></button>
+            <button class="description mb-5"><a href="/description" class="gold1">-¡!¡- Desscription -¡!¡-</a></button>
     
             <hr class="green mb-5">
         </div>
 
 {% endautoescape %}
 {% endblock %}
-
-{% block footer %} {% endblock %}

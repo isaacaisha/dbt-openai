@@ -34,12 +34,17 @@
         <hr class="gold mb-3">
         <div class="mb-4">{{ form.confirm_password.label }} {{ form.confirm_password(class_="form-control form-control-lg") }}</div>
         <hr class="crimson mb-4">
-        <button type="button" class="btn btn-warning mb-4">{{ form.submit() }}</button>
+        <div class="mb-4 text-center">{{ wtf.form_field(form.submit, class="submit btn btn-danger") }}</div>
     </form>
+
     <hr class="green mb-5">
+
+    <div class="text-center">
+        <button type="button" class="btn btn-outline back-home mb-3">
+            <a href="{{ url_for('conversation_home.home') }}" class="">-¡!¡- Back Home -¡!¡-</a>
+        </button>
+    </div>
 </div>
 
 {% endautoescape %}
 {% endblock %}
-
-{% block footer_ %} {% endblock %}
