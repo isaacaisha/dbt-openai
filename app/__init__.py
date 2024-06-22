@@ -30,6 +30,8 @@ def create_app(config=None):
     app.config['SESSION_PERMANENT'] = True
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
+    app.config['UPLOAD_FOLDER'] = 'static/assets/images'
+
     login_manager = LoginManager()
 
     @login_manager.user_loader

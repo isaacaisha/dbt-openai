@@ -532,3 +532,35 @@ hr.mb-3, body hr {
 .text-center {
     color: #70f8fd;
 }
+
+#carouselExampleCaptions {
+    background-image: url('https://images.unsplash.com/photo-1470092306007-055b6797ca72?ixlib=rb-1.2.1&auto=format&fit=crop&w=668&q=80');
+    background-size: cover;
+    /* This will scale the image to cover the entire element */
+    /*background-position: center center; /* This centers the image both horizontally and vertically */
+    /*background-repeat: no-repeat; /* This prevents the image from repeating */
+    /* You can also set a fixed height if needed */
+    /*height: 400px; /* Adjust the height as per your design */
+    padding: 5rem;
+}
+
+span.carousel-control-prev-icon,
+span.carousel-control-next-icon {
+    background-color: green;
+    border: 0.1rem solid #9126E8;
+    border-radius: 0.5rem;
+}
+
+#carouselExampleCaptions>div.carousel-inner img {
+    border: 0.1rem solid #9126E8;
+    border-radius: 0.5rem;
+}
+
+#carouselExampleCaptions>div {
+    max-width: 73%;
+    /* Adjust the percentage as needed to control image size */
+    height: auto;
+    /* Maintain aspect ratio */
+    margin: 0.5rem auto;
+    /* Center the image horizontally */
+}

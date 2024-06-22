@@ -23,6 +23,12 @@ memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
 
+IMAGES =['siisi.jpg', 'mommy.jpg', 'corazones.jpeg', 'logo_ai.jpg', 'logo0.jpg',
+         'logo3.jpg', 'space.jpg', 'a.jpg', 'c.jpg', 'd.jpg', 'b.jpg', 'o.jpg',
+         'i.jpg', 'f.jpg', 's.jpg', 'o.jpg', 'k.jpg', 'p.jpg', 'n.jpg', 'i.jpg', 
+         'q.jpg', 'm.jpg', 'r.jpg', 'l.jpg', 'istock5.jpg',
+         ]
+
 
 @home_conversation_bp.route("/", methods=["GET", "POST"])
 def home():
@@ -34,6 +40,7 @@ def home_test():
     home_form = TextAreaFormIndex()
     user_input = None
     response = None
+    images = IMAGES
 
     if request.method == "POST" and home_form.validate_on_submit():
         # Retrieve form data using the correct key
@@ -48,7 +55,7 @@ def home_test():
     memory_buffer = memory.buffer_as_str
     memory_load = memory.load_memory_variables({})
 
-    return render_template('conversation-test.html', home_form=home_form,
+    return render_template('conversation-test.html', home_form=home_form, images=images,
                            current_user=current_user, user_input=user_input, response=response,
                            memory_buffer=memory_buffer, memory_load=memory_load,
                            date=datetime.now().strftime("%a %d %B %Y"))
@@ -115,9 +122,6 @@ def save_to_test_database(user_message, response):
         conversations_summary=conversations_summary_str,
         created_at=created_at
     )
-
-    print(f'user_message: {new_memory.user_message}\nllm_response: {new_memory.llm_response}\n'
-          f'conversations_summary: {new_memory.conversations_summary}\ncreated_at: {created_at}') 
 
     try:
         db.session.add(new_memory)

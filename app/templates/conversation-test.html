@@ -32,47 +32,6 @@
 
 <div class="container content text-center">
 
-    <!--<hr class="green mb-3">
-    
-        <!- Add a button to trigger the popup ->
-        <button id="showPopupButton" type="button" class="btn mb-3 submit">Show Instructions</button>
-        
-        <!- Popup Container ->
-        <div id="popupContainer" class="popup-container  conversations" style="display: none;">
-            <!- Popup Content ->
-            <div class="popup-content">
-                <!- Popup Content Here ->
-                <p>Welcome to the<br><span class="SìįSí">-¡!¡·SìįSí·Dbt·¡!¡-</span><br>app</p>
-                <!- Ordered List ->
-                <ol class="align-left">
-                    <li> 
-                        <span class="mediumslateblue">Click On Start Writing</span><br>(to write a text) or<br>
-                        <span class="mediumslateblue">Click on Speech Recognition</span><br>(to speech a text)
-                    </li>
-                    <li> 
-                        <span class="mediumslateblue">Click On Get The Response</span><br>
-                        (to get SìįSí answer)
-                    </li>
-                    <li> 
-                        <span class="mediumslateblue">Click On ·SìįSí·Dbt·SìįSí·</span><br>(to listen the playback)
-                    </li>
-                    <li class="text-center">
-                        <span class="mediumslateblue">🔥To Use All Features🔥</span><br>
-                        <a href="{{ url_for('auth.register') }}" class="underline">Register</a> & 
-                        <a href="{{ url_for('auth.login') }}" class="underline">Login</a>
-                    </li>
-                </ol>
-                <span>Enjoy</span>
-                <!- Close Button ->
-                <h6>Close Button</h6>
-                <button id="closePopupButton" type="button" class="btn btn-outline-info mb-3 submit">x</button>
-            </div>
-        </div>
-
-        <hr class="green mb-5">
-
-    </div>-->
-
     <div class="content">
 
         <div id="content-container" class="container">
@@ -86,17 +45,6 @@
                 <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
 
                 <div class="text-center">
-                    <!--<hr class="gold mb-3">
-                    <div class="mb-3 alert error" id="error-message" style="display: none;"></div>
-                    <div>
-                        <button id="start-button" type="button" class="btn mb-3">
-                            Start Writing ¡!¡
-                        </button>
-                    </div>
-
-                    <hr class="gold mb-5" >
-                    <hr class="crimson mb-3">-->
-
                     <!-- Add a button for speech recognition -->
                     <button id="speechRecognitionButton" type="button" class="btn mb-3">
                         Speech Recognition ¡!¡
@@ -134,7 +82,6 @@
             <hr class="crimson mb-3">
 
             <div class="text-center">
-                <!--<label>:…·SìįSí·Dbt·…:</label>-->
                 <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
 
                 <!-- Add a button for speech synthesis playback -->
@@ -150,8 +97,33 @@
             </div>
 
             <hr class="crimson mb-5">
+            <hr class="green mb-3">
 
+            <div id="carouselExampleCaptions" class="carousel slide carousel-dark mb-3" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in images %}
+                    <div class="carousel-item {{ 'active' if loop.index0 == 0 else '' }}">
+                        <img src="{{ url_for('static', filename='assets/images/' ~ image) }}" class="d-block w-100 carousel-img" alt="Image">
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+
+            </div>
+            
         </div>
+
+        <hr class="green">
 
     </div>
 
@@ -161,6 +133,7 @@
     <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
 
     {% block footer %}{% endblock %}
-    
-    {% endautoescape %}
-    {% endblock %}
+</div>
+
+{% endautoescape %}
+{% endblock %}
