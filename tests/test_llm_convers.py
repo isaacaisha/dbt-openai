@@ -38,7 +38,7 @@ def test_show_story(client):
     with client.application.test_request_context():
         response = client.get(url_for('llm_conversation.show_story'))
         assert response.status_code == 200
-        assert b'Recent Conversation' in response.data
+        assert b'Recents Conversation History' in response.data
 
 
 def test_update_like(client, user1, conversation_user1):
