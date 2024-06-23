@@ -260,6 +260,20 @@ textarea#userInput {
     overflow-y: auto;
 }
 
+#scrollDownButton {
+    border: 0.1rem solid;
+    border-radius: 2.3rem;
+    padding: 0.3rem;
+    width: 2.7rem;
+}
+
+.scroll-down {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 .align-left {
     text-align: left;
 }
@@ -305,13 +319,6 @@ input, #userInput, #historiesContainerJson > pre {
     border-radius: 2.3rem;
     padding: 0.3rem;
     width: 3.7rem;
-}
-
-#scrollDownButton {
-    border: 0.1rem solid;
-    border-radius: 2.3rem;
-    padding: 0.3rem;
-    width: 2.7rem;
 }
 
 .message-container {

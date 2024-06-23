@@ -3,6 +3,12 @@ function sendRequest(prompt) {
     // Show loading indicator
     showLoading();
 
+    // Disable the "Get The Response" button and "PlayBack" button
+    var generateButton = document.getElementById('generateButton');
+    var playbackButton = document.getElementById('playbackButton');
+    generateButton.disabled = true;
+    playbackButton.disabled = true;
+
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/interface/answer', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -10,6 +16,10 @@ function sendRequest(prompt) {
         if (xhr.readyState === 4) {
             // Hide loading indicator
             hideLoading();
+
+            // Re-enable the "Get The Response" button and "PlayBack" button
+            generateButton.disabled = false;
+            playbackButton.disabled = false;
 
             if (xhr.status === 200) {
                 var response = JSON.parse(xhr.responseText);
@@ -51,7 +61,7 @@ function sendRequest(prompt) {
                 audio.src = "data:audio/mp3;base64," + response.answer_audio;
 
                 // Auto-play the audio when it's ready
-                audio.oncanplay = function() {
+                audio.oncanplay = function () {
                     audio.play();
                 };
             }

@@ -3,6 +3,12 @@ function sendRequest(prompt) {
     // Show loading indicator
     showLoading();
 
+    // Disable the "Get The Response" button
+    var generateButton = document.getElementById('generateButton');
+    var playbackButton = document.getElementById('playbackButton');
+    generateButton.disabled = true;
+    playbackButton.disabled = true;
+
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/home/answer', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -10,6 +16,10 @@ function sendRequest(prompt) {
         if (xhr.readyState === 4) {
             // Hide loading indicator
             hideLoading();
+
+            // Re-enable the "Get The Response" button
+            generateButton.disabled = false;
+            playbackButton.disabled = false;
 
             if (xhr.status === 200) {
                 var response = JSON.parse(xhr.responseText);

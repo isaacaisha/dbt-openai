@@ -78,6 +78,9 @@ def home_answer():
     else:
         # If it's not a string, access the assistant's reply as you previously did
         assistant_reply = response.choices[0].message['content']
+            
+    # Remove '#' and '*' from the response
+    assistant_reply = assistant_reply.replace('#', '').replace('*', '')
 
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply, lang=detected_lang)

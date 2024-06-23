@@ -32,105 +32,100 @@
 
 <div class="container content text-center">
 
-    <div class="content">
+    <div id="content-container" class="container">
 
-        <div id="content-container" class="container">
+        <hr class="green mb-3">
 
-            <hr class="green mb-3">
+        <form id="prompt-form" method="POST">
 
-            <form id="prompt-form" method="POST">
+            {{ home_form.csrf_token }}
 
-                {{ home_form.csrf_token }}
-
-                <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
-
-                <div class="text-center">
-                    <!-- Add a button for speech recognition -->
-                    <button id="speechRecognitionButton" type="button" class="btn mb-3">
-                        Speech Recognition ¡!¡
-                    </button>
-                </div>
-
-                <hr class="green mb-5">
-
-                <div id="textarea-container" style="display: none;" class=" align-left">
-                    <label for="userInput" class="label_">
-                        Start Writing to Test:<br>(be Specific for a better result)
-                    </label>
-                    <textarea class="form-control mb-5" id="userInput" name="text_writing"
-                              placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
-                    <hr style="display: block; color:yellow">
-                </div>
-
-                <hr class="gold mb-3">
-
-                <div id="loading-indicator" style="display:none;" class="text-center mb-3">
-                    <p>Loading...</p>
-                    <img class="loading" src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g" alt="Loading">
-                </div>
-
-
-
-                <div class="text-center">
-                    <button id="generateButton" class="mb-3 btn generate-text" type="submit">
-                    Get The Response 🔥¡!¡<img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
-                </button>
-                </div>
-            </form>
-
-            <hr class="gold mb-5">
-            <hr class="crimson mb-3">
+            <div id="error-message" class="alert alert-danger text-center" style="display: none;"></div>
 
             <div class="text-center">
-                <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
-
-                <!-- Add a button for speech synthesis playback -->
-                <div class="mb-3">
-                    <button id="playbackButton" type="button" class="btn btn-outline">
-                        -¡!¡- PlayBack Audio -¡!¡-
-                    </button>
-                    <audio id="response-audio" controls class="submit btn btn-outline-info" style="display:none;">
-                        <source src="{{ url_for('conversation_home.home_audio') }}" type="audio/mp3">
-                        Your browser does not support the audio element.
-                    </audio>
-                </div>
+                <!-- Add a button for speech recognition -->
+                <button id="speechRecognitionButton" type="button" class="btn mb-3">
+                    Speech Recognition ¡!¡
+                </button>
             </div>
 
-            <hr class="crimson mb-5">
-            <hr class="green mb-3">
+            <hr class="green mb-5">
 
-            <div id="carouselExampleCaptions" class="carousel slide carousel-dark mb-3" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    {% for image in images %}
-                    <div class="carousel-item {{ 'active' if loop.index0 == 0 else '' }}">
-                        <img src="{{ url_for('static', filename='assets/images/' ~ image) }}" class="d-block w-100 carousel-img" alt="Image">
-                    </div>
-                    {% endfor %}
-                </div>
-
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"
-                        data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"
-                        data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-
+            <div id="textarea-container" style="display: none;" class=" align-left">
+                <label for="userInput" class="label_">
+                    Start Writing to Test:<br>(be Specific for a better result)
+                </label>
+                <textarea class="form-control mb-5" id="userInput" name="text_writing"
+                          placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
+                <hr style="display: block; color:yellow">
             </div>
-            
+
+            <hr class="gold mb-3">
+
+            <div id="loading-indicator" style="display:none;" class="text-center mb-3">
+                <p>Loading...</p>
+                <img class="loading" src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g" alt="Loading">
+            </div>
+
+
+
+            <div class="text-center">
+                <button id="generateButton" class="mb-3 btn generate-text" type="submit">
+                Get The Response 🔥¡!¡<img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
+            </button>
+            </div>
+        </form>
+
+        <hr class="gold mb-5">
+        <hr class="crimson mb-3">
+
+        <div class="text-center">
+            <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
+
+            <!-- Add a button for speech synthesis playback -->
+            <div class="mb-3">
+                <button id="playbackButton" type="button" class="btn btn-outline">
+                    -¡!¡- PlayBack Audio -¡!¡-
+                </button>
+                <audio id="response-audio" controls class="submit btn btn-outline-info" style="display:none;">
+                    <source src="{{ url_for('conversation_home.home_audio') }}" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
         </div>
 
-        <hr class="green mb-5">
+        <hr class="crimson mb-5">
+        <hr class="green mb-3">
 
-        <div class="mb-3">
-          <span class="copyright">
-          © DBT Copyright {{ date }}
-          </span>
-         </div> 
+        <div id="carouselExampleCaptions" class="carousel slide carousel-dark mb-3" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for image in images %}
+                <div class="carousel-item {{ 'active' if loop.index0 == 0 else '' }}">
+                    <img src="{{ url_for('static', filename='assets/images/' ~ image) }}" class="d-block w-100 carousel-img" alt="Image">
+                </div>
+                {% endfor %}
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"
+                    data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"
+                    data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+
+        </div>
+        
     </div>
+
+    <hr class="green mb-5">
+
+    <div class="mb-3">
+        <span class="copyright">© DBT Copyright {{ date }}</span>
+     </div> 
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
