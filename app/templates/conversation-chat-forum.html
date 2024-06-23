@@ -6,10 +6,18 @@
 
 {% block head %}
 {{ super() }}
-<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
-{% include 'bootstrap/base.html' %}
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
+   
+    {% include 'bootstrap/base.html' %}
+   
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    
+    <script src="{{ url_for('static', filename='js/chat-forum.js') }}"></script>
+   <script>
+        window.loadMessagesUrl = "{{ url_for('conversation_chat_forum.get_messages', theme_name=theme_name) }}";
+        window.chatFormUrl = "{{ url_for('conversation_chat_forum.chat_forum', theme_name=theme_name) }}";
+    </script>
 {% endblock %}
 
 {% block content1 %}
@@ -40,62 +48,6 @@
     <div id="display" class="text-left">
         <!-- Messages will be loaded here via AJAX -->
     </div>
-
-    <script>
-        $(document).ready(function () {
-            function loadMessages() {
-                $.ajax({
-                    type: 'GET',
-                    url: "{{ url_for('conversation_chat_forum.get_messages', theme_name=theme_name) }}",
-                    success: function (response) {
-                        $("#display").empty();
-                        response.messages.forEach(function (message) {
-                            var temp = `
-                                <div class="message-container">
-                                    <div class="message-header">
-                                        <b>${message.user}</b>
-                                        <span class="time-left">${message.date}</span>
-                                    </div>
-                                    <div class="message-body" style="color: #faf;">
-                                        ${message.value}
-                                    </div>
-                                </div>
-                                <hr class='gold mb-3'>
-                            `;
-                            $("#display").append(temp);
-                        });
-                    },
-                    error: function (response) {
-                        alert('An error occurred while loading messages.');
-                    }
-                });
-            }
-
-            setInterval(loadMessages, 1000); // Refresh messages every second
-
-            $('#chat-form').on('submit', function (e) {
-                e.preventDefault();
-
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url_for('conversation_chat_forum.chat_forum', theme_name=theme_name) }}",
-                    data: {
-                        username: $('input[name="username"]').val(),
-                        theme_id: $('input[name="theme_id"]').val(),
-                        message: $('textarea[name="message"]').val(),
-                        csrf_token: $('input[name="csrf_token"]').val(),
-                    },
-                    success: function (data) {
-                        $('textarea[name="message"]').val(''); // Clear the message input
-                        loadMessages(); // Refresh messages
-                    },
-                    error: function (response) {
-                        alert('An error occurred while sending your message.');
-                    }
-                });
-            });
-        });
-    </script>
 
     <div class="row" style="margin-top: -19px;">
         <div class="col-lg-8 col-md-10 mx-auto mb-3">
