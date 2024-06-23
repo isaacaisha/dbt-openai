@@ -156,7 +156,7 @@
         <!-- Add a div to contain the serialized histories -->
         <div id="historiesContainer" class="mb-3" style="display: none;">
         
-            <h4><span class="gold">{{ limit }}</span> Firtest Conversations</h4>
+            <h4><span class="gold1">{{ limit }}</span> Firtest Conversations</h4>
             {% for conversation in first_conversations %}
                 <textarea class="form-control align-left mb-5" id="userInput" name="text_writing">
                     "conversation_id": "{{ conversation.id }}"
@@ -167,7 +167,7 @@
                 </textarea>
             {% endfor %}
 
-            <h4><span class="gold">{{ limit }}</span> Latest Conversations</h4>
+            <h4><span class="gold1">{{ limit }}</span> Latest Conversations</h4>
             {% for conversation in last_conversations %}
                 <textarea class="form-control align-left mb-5" id="userInput" name="text_writing">
                     "conversation_id": "{{ conversation.id }}"
@@ -189,14 +189,14 @@
     
         <!-- Add a div to contain the serialized histories -->
         <div id="historiesContainerJson" class="mb-3" style="display: none;">
-            <h4><span class="gold">{{ limit }}</span> Firtest Conversations</h4>
+            <h4><span class="gold1">{{ limit }}</span> Firtest Conversations</h4>
             {% for conversation in first_conversations %}
             <pre class="align-left">
                     {{ conversation|tojson(indent=4)|safe }}
                 </pre>
             {% endfor %}
             
-            <h4><span class="gold">{{ limit }}</span> Latest Conversations</h4>
+            <h4><span class="gold1">{{ limit }}</span> Latest Conversations</h4>
             {% for conversation in last_conversations %}
             <pre class="align-left">
                     {{ conversation|tojson(indent=4)|safe }}

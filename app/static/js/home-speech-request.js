@@ -3,7 +3,7 @@ function sendRequest(prompt) {
     // Show loading indicator
     showLoading();
 
-    // Disable the "Get The Response" button
+    // Disable the "Get The Response" button and "PlayBack" button
     var generateButton = document.getElementById('generateButton');
     var playbackButton = document.getElementById('playbackButton');
     generateButton.disabled = true;
@@ -17,7 +17,7 @@ function sendRequest(prompt) {
             // Hide loading indicator
             hideLoading();
 
-            // Re-enable the "Get The Response" button
+            // Re-enable the "Get The Response" button and "PlayBack" button
             generateButton.disabled = false;
             playbackButton.disabled = false;
 
