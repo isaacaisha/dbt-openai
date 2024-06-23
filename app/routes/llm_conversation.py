@@ -2,7 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from datetime import datetime
 
-from app.memory import Memory, Theme, Message, MemoryTest, db
+from app.memory import User, Memory, Theme, Message, MemoryTest, db
 from app.app_forms import DatabaseForm
 
 
@@ -207,9 +207,11 @@ def get_conversations_jsonify():
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
+    
     conversations = get_conversations()
     serialized_conversations = [serialize_conversation(conversation) for conversation in conversations]
 
+    all_users = User.query.all()
     all_themes = Theme.query.all()
     all_messages = Message.query.all()
 
@@ -229,5 +231,5 @@ def get_conversations_jsonify():
 
     return render_template('database-conversations.html', date=datetime.now().strftime("%a %d %B %Y"),
                            current_user=current_user, serialized_conversations=serialized_conversations,
-                           themes=all_themes, messages=all_messages, database_form=database_form,
+                           users=all_users, themes=all_themes, messages=all_messages, database_form=database_form,
                            serialized_memory_tests=serialized_memory_tests)
