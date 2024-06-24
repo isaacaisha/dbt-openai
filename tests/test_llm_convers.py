@@ -23,7 +23,7 @@ def test_get_all_conversations_with_data(client, user1):
         # Access the get_all_conversations endpoint
         response = client.get(url_for('llm_conversation.get_all_conversations'))
         assert response.status_code == 200
-        assert b'Your Conversations' in response.data
+        assert b'All Your Conversations' in response.data
 
 
 def test_convers_head_tail(client):
