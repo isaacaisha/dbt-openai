@@ -98,9 +98,9 @@ large-image {
 }
 
 /* register-home & log-in-home index.html */
-.register-home,
-.log-in-home {
-    background-color: #0d1515;
+.register-home, .log-in-home {
+    /*background-color: #0d1515;*/
+    background-color: #171717;
     border: 0.1rem solid #17a2b8;
     border-radius: 19rem;
     color: gold;
@@ -113,8 +113,14 @@ large-image {
     box-sizing: border-box; /* Include padding and border in the element's total width */
 }
 
+a:hover {
+    color: #6ABFA6!important;
+    text-decoration: none !important;
+}
+
 .description  {
-    background-color: #0d1515;
+    /*background-color: #0d1515;*/
+    background-color: #171717;
     border: 0.1rem solid #17a2b8;
     border-radius: 19rem;
     padding: 0.7rem;
@@ -169,10 +175,10 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
 
 /* Style the Show Button */
 #showPopupButton {
-    background-color: #0d1515;
-    border: 0.1rem solid #17a2b8;
+    /*background-color: #0d1515;*/
+    border: 0.1rem solid #ccc;
     border-radius: 19%;
-    color: #17a2b8;
+    color: #8ec1c8;
     padding: 1px 5px;
 }
 
@@ -398,38 +404,27 @@ textarea#generatedText {
     padding: 0.1rem;
 }
 
-#start-button {
-    color: #fff;
-    background-color: #30ABB7;
-    border: 0.1rem solid #AEFAFC;
-    font-family: 'Lora', 'Times New Roman', serif;
-}
-
-#start-button:hover {
-    color: #9A30F3;
-}
-
-#speechRecognitionButton {
-    color: #fff;
-    background-color: #30ABB7;
+#start-button, #speechRecognitionButton {
+    color: #30ABB7;
+    /*background-color: #30ABB7;*/
     border: 0.1rem solid #AEFAFC;
     font-family: 'Cardo';
 }
 
-#speechRecognitionButton:hover {
-    background-color: 9A30F3;
+#start-button:hover, #speechRecognitionButton:hover {
     border: 0.1rem solid #73DD7E;
     color: #9A30F3;
 }
 
 #generateButton, #playbackButton, #theme_name {
-    background-color: #062929;;
+    /*background-color: #062929;*/
     border: 0.1rem solid #AEFAFC;
     color: #d08aee;
 }
 
 #generateButton:hover, #playbackButton:hover, #message {
-    color: #30ABB7;
+    border: 0.1rem solid #73DD7E;
+    color: #1295FA;
 }
 
 #final-result-content, #resultMemo > h3 {
@@ -457,6 +452,10 @@ textarea#writing_text.form-control {
 
 .back-home > a:hover {
     color: #fff;
+}
+
+button.btn.back-home.mb-3:hover {
+    border: none;
 }
 
 .btn.fastapi-docs {
@@ -517,7 +516,7 @@ hr.mb-3, body hr {
 
 .copyright {
     background-color: #161616;
-    border: 0.1rem solid #1295FA;
+    border: 0.1rem solid #ccc;
     border-radius: 0.5rem;
     color: #b55fd9;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
