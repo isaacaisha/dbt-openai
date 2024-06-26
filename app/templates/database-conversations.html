@@ -8,7 +8,6 @@
     {{ super() }}
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
     {% include 'bootstrap/base.html' %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
 {% block content1 %}
@@ -188,7 +187,7 @@
 
 </div>
 
-<script src="{{ url_for('static', filename='js/database.js') }}"></script>
+<script src="{{ url_for('static', filename='js/database.js') }}" defer></script>
 
 {% endautoescape %}
 {% endblock %}

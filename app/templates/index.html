@@ -8,7 +8,6 @@
     {{ super() }}
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
     {% include 'bootstrap/base.html' %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
 {% block content1 %}
@@ -16,9 +15,9 @@
             <div class="p-1 rounded-3 jumbotron">
                 <div class="container-fluid py-1">
                     <h1 class="">
-                        <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
+                        <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown">
                         ·SìįSí·Dbt· OpenAI
-                        <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
+                        <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown">
                     </h1>
                 </div>
             </div>
@@ -36,8 +35,14 @@
         <!-- Navbar -->
         <nav class="navbar nav-home">
             <div class="mb-1">
-                <button class="register-home"><a href="{{ url_for('auth.register') }}" class="gold1">Register</a></button>
-                <button class="active log-in-home" aria-current="page"><a href="{{ url_for('auth.login') }}" class="gold1">Login</a></button>
+                <button class="register-home" aria-label="Register">
+                    <a href="{{ url_for('auth.register') }}" class="gold1">Register</a>
+                </button>
+
+                <button class="active log-in-home" aria-current="page" aria-label="Login">
+                    <a href="{{ url_for('auth.login') }}" class="gold1">Login</a>
+                </button>
+
                 <!--<p class="gold" style="margin-bottom:0;">∞-To Use All Features-∞</p>-->
             </div>
         </nav>
@@ -45,17 +50,20 @@
         <hr class="green mb-5">
 
         <div class="mb-5">
-            <h4 class="mb-4">Welcome to <span class="text-primary">·SìįSí·Dbt·</span> <br> Your AI Companion <br>¡!¡</h4>
+            <h4 class="mb-4">Welcome to <span class="mediumslateblue">·SìįSí·Dbt·</span> <br> Your AI Companion <br>¡!¡</h4>
             <p class="white align-left mb-5">
                 <span class="fw-bold">·SìįSí·Dbt·</span> is your personal AI assistant, designed to simplify your life and boost your productivity. With powerful AI
                 technology at your fingertips, <span class="fw-bold">·SìįSí·Dbt·</span> helps you streamline tasks, answer questions, and stay organized
                 effortlessly. Join us and experience the future of productivity today!
             </p>
 
-            <button class="description mb-5"><a href="/description" class="gold1">-¡!¡- Desscription -¡!¡-</a></button>
+            <button class="description mb-5" aria-label="Description">
+                <a href="/description" class="gold1">-¡!¡- Desscription -¡!¡-</a>
+            </button>
     
             <hr class="green mb-5">
         </div>
+    </div>
 
 {% endautoescape %}
 {% endblock %}

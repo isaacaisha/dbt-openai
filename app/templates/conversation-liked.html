@@ -6,7 +6,6 @@
 {{ super() }}
 <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
 {% include 'bootstrap/base.html' %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
 {% block content1 %}
@@ -114,7 +113,7 @@
                 <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
                     <!-- Use "fa-2x" class to make the icon twice as large -->
                     <i class="fa fa-heart fa-2x mb-3"></i>
-                    <hr class="text-center" style="margin: 0 37%;">
+                    <hr class="text-center" style="margin: 0 45%;">
                 </div>
             </li>
         {% endfor %}
@@ -169,9 +168,8 @@
 
 </div>
 
-<script src="{{ url_for('static', filename='js/like-unlike-convers.js') }}"></script>
-
-<script src="{{ url_for('static', filename='js/toggle-histories.js') }}"></script>
+<script src="{{ url_for('static', filename='js/like-unlike-convers.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 
 {% endautoescape %}
 {% endblock %}

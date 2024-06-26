@@ -13,11 +13,10 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     
-    <script src="{{ url_for('static', filename='js/chat-forum.js') }}"></script>
-   <script>
-        window.loadMessagesUrl = "{{ url_for('conversation_chat_forum.get_messages', theme_name=theme_name) }}";
-        window.chatFormUrl = "{{ url_for('conversation_chat_forum.chat_forum', theme_name=theme_name) }}";
-    </script>
+    <script>
+         window.loadMessagesUrl = "{{ url_for('conversation_chat_forum.get_messages', theme_name=theme_name) }}";
+         window.chatFormUrl = "{{ url_for('conversation_chat_forum.chat_forum', theme_name=theme_name) }}";
+     </script>
 {% endblock %}
 
 {% block content1 %}
@@ -84,8 +83,9 @@
     </button>
 
     <hr class="crimson mb-5">
+    
+    <script src="{{ url_for('static', filename='js/chat-forum.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 
-    <script src="{{ url_for('static', filename='js/toggle-histories.js') }}"></script>
-
-    {% endautoescape %}
-    {% endblock %}
+{% endautoescape %}
+{% endblock %}

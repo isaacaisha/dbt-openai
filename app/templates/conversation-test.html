@@ -8,7 +8,6 @@
 {{ super() }}
 <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
 {% include 'bootstrap/base.html' %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
 {% block content1 %}
@@ -16,9 +15,9 @@
     <div class="p-1 rounded-3 jumbotron">
         <div class="container-fluid py-1">
             <h1 class="">
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown">
                 ·SìįSí·Dbt· OpenAI
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown">
             </h1>
         </div>
     </div>
@@ -135,10 +134,10 @@
         <span class="copyright">© DBT Copyright {{ date }}</span>
      </div> 
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
-    <script src="{{ url_for('static', filename='js/home-speech-request.js')}}"></script>
-    <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/rec-speech.js')}}" defer></script>
+    <script src="{{ url_for('static', filename='js/home-speech-request.js')}}" defer></script>
+    <script src="{{ url_for('static', filename='js/popup.js') }}" defer></script>
 
     {% block footer %}{% endblock %}
 </div>

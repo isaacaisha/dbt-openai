@@ -8,7 +8,6 @@
     {{ super() }}
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
     {% include 'bootstrap/base.html' %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
 {% block content1 %}
@@ -16,9 +15,9 @@
     <div class="p-1 rounded-3 jumbotron">
         <div class="container-fluid py-1">
             <h1 class="">
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown">
                 ·SìįSí·Dbt· OpenAI
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown">
             </h1>
         </div>
     </div>
@@ -101,7 +100,7 @@
 
                 <hr class="green mb-3">
                 <button id="generateButton" class="mb-3 btn generate-text" type="submit">
-                    Get The Response 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">-¡!¡-🔥
+                    Get The Response 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown">-¡!¡-🔥
                 </button>
             </form>
 
@@ -139,10 +138,10 @@
     document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
 </script>
 
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/rec-speech.js')}}"></script>
-<script src="{{ url_for('static', filename='js/interface-speech-request.js')}}"></script>
-<script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/rec-speech.js')}}" defer></script>
+<script src="{{ url_for('static', filename='js/interface-speech-request.js')}}" defer></script>
+<script src="{{ url_for('static', filename='js/popup.js') }}" defer></script>
 
 {% endautoescape %}
 {% endblock %}
