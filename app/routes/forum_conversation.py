@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, render_template, request, jsonify, redirect, url_for
-from flask_login import current_user, login_required
+from flask_login import current_user
 from datetime import datetime
 
 from langchain_openai import ChatOpenAI
@@ -15,43 +15,6 @@ conversation_chat_forum_bp = Blueprint('conversation_chat_forum', __name__)
 llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
-
-
-def generate_llm_response(user_message):
-    response = conversation.predict(input=user_message)
-    detected_lang = detect(user_message)
-
-    print(f"user_input: {user_message}")
-    print(f"response: {response}\n")
-
-    return response, detected_lang
-
-
-@conversation_chat_forum_bp.route('/chat/answer', methods=['POST'])
-def chat_answer():
-    user_message = request.form['prompt']
-    print(f'User Input:\n{user_message} 😎\n')
-
-    # Detect the language of the user's message
-    detected_lang = detect(user_message)
-
-    # Extend the conversation with the user's message
-    response = conversation.predict(input=user_message)
-
-    # Check if the response is a string, and if so, use it as the assistant's reply
-    if isinstance(response, str):
-        assistant_reply = response
-    else:
-        # If it's not a string, access the assistant's reply as you previously did
-        assistant_reply = response.choices[0].message['content']
-
-    print(f'LLM Response:\n{assistant_reply} 😝\n')
-
-    # Return the response as JSON, including both text and detected language
-    return jsonify({
-        "answer_text": assistant_reply,
-        "detected_lang": detected_lang,
-    })
 
 
 @conversation_chat_forum_bp.route('/chat-forum', methods=['GET', 'POST'])
@@ -98,13 +61,11 @@ def chat_forum(theme_name):
 
         # Generate and save LLM response
         llm_response, detected_lang = generate_llm_response(message_value)
-        llm_message = Message(value=llm_response, user='LLM', theme=theme_name, date=datetime.utcnow())
-        db.session.add(llm_message)
-        db.session.commit()
-
-        # You can perform additional actions based on detected_lang if needed
-        # For example, log the detected language
-        print(f"Detected language: {detected_lang}")
+        # Save LLM response if it was generated
+        if isinstance(llm_response, str):
+            llm_message = Message(value=llm_response, user='·SìįSí·Dbt·', theme=theme_name, date=datetime.utcnow())
+            db.session.add(llm_message)
+            db.session.commit()
 
         # Return success without additional message
         return jsonify({"success": True})
@@ -112,6 +73,45 @@ def chat_forum(theme_name):
     return render_template('conversation-chat-forum.html', forum_chat_form=forum_chat_form,
                            username=current_user.name, theme_name=theme_name, theme_details=theme,
                            date=datetime.now().strftime("%a %d %B %Y"))
+
+
+def generate_llm_response(user_message):
+    response = conversation.predict(
+        input="You are participating in a chat forum. Respond appropriately to user queries." + user_message
+        )
+    detected_lang = detect(user_message)
+
+    print(f"user_input: {user_message}")
+    print(f"response: {response}\n")
+
+    return response, detected_lang
+
+
+@conversation_chat_forum_bp.route('/chat/answer', methods=['POST'])
+def chat_answer():
+    user_message = request.form['prompt']
+    print(f'User Input:\n{user_message} 😎\n')
+
+    # Detect the language of the user's message
+    detected_lang = detect(user_message)
+
+    # Extend the conversation with the user's message
+    response = conversation.predict(input=user_message)
+
+    # Check if the response is a string, and if so, use it as the assistant's reply
+    if isinstance(response, str):
+        assistant_reply = response
+    else:
+        # If it's not a string, access the assistant's reply as you previously did
+        assistant_reply = response.choices[0].message['content']
+
+    print(f'·SìįSí·Dbt· Response:\n{assistant_reply} 😝\n')
+
+    # Return the response as JSON, including both text and detected language
+    return jsonify({
+        "answer_text": assistant_reply,
+        "detected_lang": detected_lang,
+    })
 
 
 @conversation_chat_forum_bp.route('/getMessages/<theme_name>/', methods=['GET'])

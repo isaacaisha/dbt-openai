@@ -1,196 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        {% block head %}
-            <meta charset="utf-8">
-            <meta name="geo.place-name" content="Spain">
-            <meta property="og:type" content="website">
-            <meta name="description"
-              content="Experience the power of AI with ·SìįSí·Dbt·, your personal assistant powered by ChatGPT. Enhance productivity, streamline tasks, and get personalized assistance.">
-            <meta property="og:title" content="·SìįSí·Dbt· - AI Personal Assistant">
-            <meta property="og:description"
-              content="·SìįSí·Dbt· - Your personal assistant powered by ChatGPT AI. Increase productivity, automate tasks, and receive personalized recommendations.">
-            <meta property="og:image" content="https://siisi-ai.online/static/assets/images/logo_ai.jpg">
-            <meta property="og:url" content="https://siisi-ai.online">
-            <meta name="twitter:card" content="summary_large_image">
-            <meta name="twitter:title" content="·SìįSí·Dbt· - AI Personal Assistant">
-            <meta name="twitter:description"
-              content="·SìįSí·Dbt· - Your personal assistant powered by ChatGPT AI. Increase productivity, automate tasks, and receive personalized recommendations.">
-            <meta name="twitter:image" content="https://siisi-ai.online/static/assets/images/logo3.jpg">
-            <meta name="keywords"
-              content="AI assistant, ChatGPT, productivity, automation, personalized recommendations, ·SìįSí·Dbt·">
-            <meta name="author" content="Developer">
-            <meta name="google-site-verification" content="bYBQsihs2g2t3_99rBWJO60qaXSCS7ay3kIz5urnBGs">
-            <meta name="robots" content="index, follow">
-            <meta name="googlebot" content="index, follow">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+  {% block head %}
+  <meta charset="utf-8">
+  <meta name="geo.place-name" content="Spain">
+  <meta property="og:type" content="website">
+  <meta name="description"
+    content="Experience the power of AI with ·SìįSí·Dbt·, your personal assistant powered by ChatGPT. Enhance productivity, streamline tasks, and get personalized assistance.">
+  <meta property="og:title" content="·SìįSí·Dbt· - AI Personal Assistant">
+  <meta property="og:description"
+    content="·SìįSí·Dbt· - Your personal assistant powered by ChatGPT AI. Increase productivity, automate tasks, and receive personalized recommendations.">
+  <meta property="og:image" content="https://siisi-ai.online/static/assets/images/logo_ai.jpg">
+  <meta property="og:url" content="https://siisi-ai.online">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="·SìįSí·Dbt· - AI Personal Assistant">
+  <meta name="twitter:description"
+    content="·SìįSí·Dbt· - Your personal assistant powered by ChatGPT AI. Increase productivity, automate tasks, and receive personalized recommendations.">
+  <meta name="twitter:image" content="https://siisi-ai.online/static/assets/images/logo3.jpg">
+  <meta name="keywords"
+    content="AI assistant, ChatGPT, productivity, automation, personalized recommendations, ·SìįSí·Dbt·">
+  <meta name="author" content="Developer">
+  <meta name="google-site-verification" content="bYBQsihs2g2t3_99rBWJO60qaXSCS7ay3kIz5urnBGs">
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-            <title>{% block title %}{% endblock %} 👌🏿·SìįSí·Dbt· App💪🏿</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
 
-            <!-- Custom fonts for this template -->
-            <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-            <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-            <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-            <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Montserrat&family=Sacramento&display=swap" rel="stylesheet">
+  <!-- Use a Font Awesome Kit - just one line of javascript -->
+  <script src="https://kit.fontawesome.com/79e7395fe9.js" crossorigin="anonymous"></script>
 
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-                  integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <!-- Custom fonts for this template -->
+  <link href="{{ url_for('static', filename='assets/css/style.css') }}" rel="stylesheet">
 
-            <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-            <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
-            <link href="{{ url_for('static', filename='assets/css/style.css') }}" rel="stylesheet">
+  {% block favicon %} {% endblock %}
 
-            {% block favicon %} {% endblock %}
+  <title>{% block title %}{% endblock %} 👌🏿·SìįSí·Dbt· App💪🏿</title>
 
-        {% endblock %}
-    </head>
+  {% endblock %}
+</head>
 
-    <body>
-        <div id="content">
-            <!-- Content-Title -->
-            {% block content1 %}{% endblock %}
+<body>
+  <div id="content">
+    <!-- Content-Title -->
+    {% block content1 %}{% endblock %}
 
-            <!-- Navbar -->
-            {% block navbar %}
-            <nav class="navbar navbar-expand-md navbar-dark">
+    <!-- Navbar -->
+    {% block navbar %}
+    <nav class="navbar navbar-expand-md navbar-dark">
 
-                <a class="navbar-brand col" href="https://rastas-dreads-blog.herokuapp.com/" target="_blank">SìįSí Dbt</a>
+      <a class="navbar-brand col" href="https://rastas-dreads-blog.herokuapp.com/" target="_blank">SìįSí Dbt</a>
 
-                <button class="navbar-toggler mx-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    Menu  <span class="navbar-toggler-icon"></span>
-                </button>
+      <button class="navbar-toggler mx-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        Menu <span class="navbar-toggler-icon"></span>
+      </button>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ml-auto">
-                        {% if not current_user.is_authenticated: %}
-                        <li class="nav-item">
-                            <a class="nav-link log-out" aria-current="page" href="{{ url_for('auth.logout') }}">
-                              <span style="font-size:1.9rem;">∞<br>∞ New session ∞<br></span>
-                              <button type="button" class="btn btn-secondary">
-                                <span class="gold" style="font-size:1.45rem;">Log Out</span><br>
-                              </button>
-                            </a>
-                        </li>
-                        {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{{ url_for('conversation_interface.conversation_interface') }}">Conversation Interface</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('conversation_chat_forum.theme_chat_forum') }}">Chat Forum</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('llm_conversation.get_all_conversations') }}">Conversations Details</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('llm_conversation.show_story') }}">Conversation History</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="{{ url_for('llm_conversation.convers_head_tail') }}">Conversation Heads & Tails</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="{{ url_for('llm_conversation.liked_conversations') }}">Conversations Liked -¡!¡-<i class="fa fa-heart"></i>-¡!¡-</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('conversation_function.select_conversation') }}">ID Conversation</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('conversation_function.delete_conversation') }}">Delete Conversation</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link log-out" href="{{ url_for('auth.logout') }}">Log Out</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          {% if not current_user.is_authenticated: %}
+          <li class="nav-item">
+            <a class="nav-link log-out" aria-current="page" href="{{ url_for('auth.logout') }}">
+              <span style="font-size:1.9rem;">∞<br>∞ New session ∞<br></span>
+              <button type="button" class="btn btn-secondary">
+                <span class="gold" style="font-size:1.45rem;">Log Out</span><br>
+              </button>
+            </a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link active"
+              href="{{ url_for('conversation_interface.conversation_interface') }}">Conversation
+              Interface</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('conversation_chat_forum.theme_chat_forum') }}">Chat
+              Forum</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('llm_conversation.get_all_conversations') }}">All Your Conversations</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('llm_conversation.show_story') }}">Conversation
+              History</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('llm_conversation.convers_head_tail') }}">Conversation Heads &
+              Tails</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('llm_conversation.liked_conversations') }}">Conversations Liked
+              -¡!¡-<i class="fa fa-heart"></i>-¡!¡-</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('conversation_function.select_conversation') }}">ID
+              Conversation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('conversation_function.delete_conversation') }}">Delete
+              Conversation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link log-out" href="{{ url_for('auth.logout') }}">Log Out</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
 
-            </nav>
-            {% endblock %}
+    </nav>
+    {% endblock %}
 
-            <!-- User Info -->
-            {% block userInfo %}
-            <div class="text-center mb-4">
-                {% if current_user.is_authenticated %}
-                  <div class="text-center">🚀</div>
-                  <span class="white">¡!¡ Welcome, {{ current_user.name }} ¡!¡</span>
-                {% endif %}
+    <!-- User Info -->
+    {% block userInfo %}
+    <div class="text-center mb-4">
+      {% if current_user.is_authenticated %}
+      <div class="text-center">🚀</div>
+      <span class="white">¡!¡ Welcome, {{ current_user.name }} ¡!¡</span>
+      {% endif %}
+    </div>
+    {% endblock %}
+
+    <!-- Content -->
+    {% block content %}{% endblock %}
+
+  </div>
+
+  <div>
+    <!-- Footer -->
+    {% block footer %}
+    <footer id="footer">
+      <div class="container text-center mb-3">
+        <button id="fastapi-docs" type="button" class="btn fastapi-docs">
+          <a href="https://www.siisi-api.online/docs" target="_blank" class="white">SìįSíFastAPI</a>
+        </button>
+
+        <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
+
+        <button id="fastapi-redoc" type="button" class="btn fastapi-redoc mb-3">
+          <a href="https://blog-fast-api-dfbb3cc5fdaf.herokuapp.com/docs" target="_blank" class="white">BlogFastAPI</a>
+        </button>
+      </div>
+
+      <div class="container container-margin">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <ul class="list-inline text-center">
+              <li class="list-inline-item">
+                <a href="https://dbt-ecommerce-ab576ee80871.herokuapp.com" target="_blank">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-twitter"></i>
+
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://rastas-dreads-blog.herokuapp.com" target="_blank">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/isaacaisha" target="_blank">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+            </ul>
+
+            <div class="mb-3">
+              <span class="copyright">
+                © DBT Copyright {{ date }}
+              </span>
             </div>
-            {% endblock %}
-
-            <!-- Content -->
-            {% block content %}{% endblock %}
-
+          </div>
         </div>
+      </div>
+      {% if current_user.id == 1: %}
+      <div class="mb-3 text-center">
+        <a href="{{ url_for('llm_conversation.get_conversations_jsonify') }}" class="nav-link white">
+          Click to Get MEM😎RY Database
+        </a>
+      </div>
+      {% endif %}
+    </footer>
+    {% endblock %}
 
-        <div>
-            <!-- Footer -->
-            {% block footer %}
-            <footer id="footer"> 
-              <div class="container text-center mb-3">
-                <button id="fastapi-docs" type="button" class="btn fastapi-docs">
-                  <a href="https://www.siisi-api.online/docs" target="_blank" class="white">SìįSíFastAPI</a>
-                </button>
-              
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">
-              
-                <button id="fastapi-redoc" type="button" class="btn fastapi-redoc mb-3">
-                  <a href="https://blog-fast-api-dfbb3cc5fdaf.herokuapp.com/docs" target="_blank" class="white">BlogFastAPI</a>
-                </button>
-              </div>
+    <script src="{{ url_for('static', filename='js/dbt-openai.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/active-state.js') }}"></script>
 
-              <div class="container container-margin">
-                <div class="row">
-                  <div class="col-lg-8 col-md-10 mx-auto">
-                    <ul class="list-inline text-center">
-                      <li class="list-inline-item">
-                        <a href="https://dbt-ecommerce-ab576ee80871.herokuapp.com" target="_blank">
-                          <span class="fa-stack fa-lg">
-                            <i class="fas fa-circle fa-stack-2x"></i>
-                            <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
-                          </span>
-                        </a>
-                      </li>
-                      <li class="list-inline-item">
-                        <a href="https://rastas-dreads-blog.herokuapp.com" target="_blank">
-                          <span class="fa-stack fa-lg">
-                            <i class="fas fa-circle fa-stack-2x"></i>
-                            <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
-                          </span>
-                        </a>
-                      </li>
-                      <li class="list-inline-item">
-                        <a  href="https://github.com/isaacaisha" target="_blank">
-                          <span class="fa-stack fa-lg">
-                            <i class="fas fa-circle fa-stack-2x"></i>
-                            <i class="fab fa-github fa-stack-1x fa-inverse"></i>
-                          </span>
-                        </a>
-                      </li>
-                    </ul>
+    <!-- If we use Bootstrap components that require Javascript add the following file -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@ 5.0.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous">
+      </script>
 
-                    <div class="mb-3">
-                      <span class="copyright">
-                      © DBT Copyright {{ date }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {% if current_user.id == 1: %}
-              <div class="mb-3 text-center">
-                  <a href="{{ url_for('llm_conversation.get_conversations_jsonify') }}" class="nav-link white">
-                      Click to Get MEM😎RY Database
-                  </a>
-              </div>
-              {% endif %}
-            </footer>
-            {% endblock %}
-
-            <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
-            <script src="{{ url_for('static', filename='js/dbt-openai.min.js') }}"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-            <script src="{{ url_for('static', filename='js/active-state.js') }}"></script>
-        </div>
-    </body>
+  </div>
+</body>
 
 </html>

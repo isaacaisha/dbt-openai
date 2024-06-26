@@ -1,22 +1,23 @@
- body {
+body {
     /*color: #fff;
     background-image: url('../images/space.jpg');
     background-size: cover;
     background-position: center;*/
     padding: 1rem;
     background-color: #171717 !important;
- }
+}
 
-large-image {
+.large-image {
     width: 100%;
-     max-width: 600px;
- }
+    max-width: 600px;
+}
 
-#content > div.container-fluid > div > div {
+#content>div.container-fluid>div>div {
     padding: 0.3rem;
 }
 
-#content > div.container-fluid > div > div > h1, #content > div > div.container-fluid > div > div > h1{
+#content>div.container-fluid>div>div>h1,
+#content>div>div.container-fluid>div>div>h1 {
     background-color: #161616;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
@@ -38,36 +39,34 @@ large-image {
 
 @keyframes color-change {
     25% {
-      background-color: #FC5378;
+        background-color: #FC5378;
     }
 
     50% {
-      background-color: #4044E6;
+        background-color: #4044E6;
     }
 
     100% {
-      background-color: #47FFAC;
+        background-color: #47FFAC;
     }
 }
 
-#content > div:nth-child(4) > nav > ul > li > a {
+#content>div:nth-child(4)>nav>ul>li>a {
     color: #20c997;
     text-align: center;
 }
 
-#content > nav {
+#content>nav {
     margin-bottom: 0rem;
 }
 
-/* SìįSí Dbt 🚀 navbar-brand */
-#content > nav > a {
+#content>nav>a {
     color: #9ED2C6;
 }
 
-/* Menu navbar-toggler-icon 🚀  */
-#content > nav > button {
+#content>nav>button {
     color: #9ED2C6;
-    border: 0.1rem solid  #9ED2C6;
+    border: 0.1rem solid #9ED2C6;
 }
 
 .navbar-toggler-icon {
@@ -83,13 +82,13 @@ large-image {
     font-size: 1.5rem;
 }
 
-#navbarSupportedContent > ul > li > a {
+#navbarSupportedContent>ul>li>a {
     color: #9ED2C6;
     font-family: 'Merriweather', sans-serif;
     text-align: center;
 }
 
-#navbarSupportedContent > ul > li > a:hover {
+#navbarSupportedContent>ul>li>a:hover {
     color: #47FFAC;
 }
 
@@ -97,9 +96,8 @@ large-image {
     margin-bottom: 0;
 }
 
-/* register-home & log-in-home index.html */
-.register-home, .log-in-home {
-    /*background-color: #0d1515;*/
+.register-home,
+.log-in-home {
     background-color: #171717;
     border: 0.1rem solid #17a2b8;
     border-radius: 19rem;
@@ -107,19 +105,16 @@ large-image {
     font-size: 2.1rem;
     padding: 1rem;
     transform: rotate(7deg);
-
-    /* Set a fixed width */
-    width: 145px; /* Adjust the width based on your design */
-    box-sizing: border-box; /* Include padding and border in the element's total width */
+    width: 145px;
+    box-sizing: border-box;
 }
 
 a:hover {
-    color: #6ABFA6!important;
+    color: #6ABFA6 !important;
     text-decoration: none !important;
 }
 
-.description  {
-    /*background-color: #0d1515;*/
+.description {
     background-color: #171717;
     border: 0.1rem solid #17a2b8;
     border-radius: 19rem;
@@ -142,52 +137,41 @@ a:hover {
     font-size: 2.71rem;
 }
 
-/* register title */
 .p-1.rounded-3.jumbotron {
     margin: 0;
 }
 
-/* register form field: Name */
-body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth-child(5) {
+body>div.content>div.container>div>div>div>div.mb-3>form>div:nth-child(5) {
     margin-bottom: 1.9rem !important;
 }
 
-/* Style the Popup Container */
 .popup-container {
-    /* display: none; */
-    /* Initially hide the container */
     position: fixed;
     top: 67%;
     left: 50%;
     transform: translate(-50%, -50%);
-    /* background-image: url('../images/space.jpg'); */
     background-color: #161616 !important;
     padding: 19px;
     border: 1px solid #ccc;
     border-top-right-radius: 19%;
     border-bottom-left-radius: 19%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    /* Ensure it's on top of other elements */
     z-index: 9999;
-    width: 73%; /* Adjust width as needed */
-    max-width: 559px; /* Set maximum width to prevent it from becoming too wide */
+    width: 73%;
+    max-width: 559px;
 }
 
-/* Style the Show Button */
 #showPopupButton {
-    /*background-color: #0d1515;*/
     border: 0.1rem solid #ccc;
     border-radius: 19%;
     color: #8ec1c8;
     padding: 1px 5px;
 }
 
-/* h6-close-btn */
 .h6-close-btn {
     color: #17a2b8;
 }
 
-/* Style the Close Button */
 #closePopupButton {
     background-color: #0d1515;
     border: 0.1rem solid #AEFAFC;
@@ -195,7 +179,8 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
     padding: 5px 10px;
 }
 
-.SìįSí, .gold1 {
+.SìįSí,
+.gold1 {
     color: gold;
 }
 
@@ -220,7 +205,7 @@ body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth
 }
 
 .convers-id {
-    color: #cdfcf5;;
+    color: #cdfcf5;
 }
 
 .llm-response {
@@ -262,7 +247,7 @@ textarea#userInput {
 }
 
 .scroll_conversations {
-    max-height: 500px; /* Set this to the maximum height you want */
+    max-height: 500px;
     overflow-y: auto;
 }
 
@@ -284,13 +269,13 @@ textarea#userInput {
     text-align: left;
 }
 
-/* Click to Go Back to Select Conversation */
-#content>div>div>a, #content>div.conversations.container>div>a {
+#content>div>div>a,
+#content>div.conversations.container>div>a {
     text-decoration: underline;
 }
 
-/* Click to Go Back to Select Conversation */
-#content>div>div>a:hover, #content>div.conversations.container>div>a:hover {
+#content>div>div>a:hover,
+#content>div.conversations.container>div>a:hover {
     color: #6ABFA6;
 }
 
@@ -299,17 +284,23 @@ label {
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
-/* textarea 🚀 */
-label, input, #userInput, #generatedText, textarea, #historiesContainerJson > pre {
+label,
+input,
+#userInput,
+#generatedText,
+textarea,
+#historiesContainerJson>pre {
     background-color: rgba(0, 0, 0, 0.175) !important;
 }
 
-/* textarea 🚀 */
-input, #userInput, #historiesContainerJson > pre {
+input,
+#userInput,
+#historiesContainerJson>pre {
     color: #9ED2C6 !important;
 }
 
-.crown, .micro {
+.crown,
+.micro {
     border: 0.1rem solid #AEFAFC;
     border-radius: 2.3rem;
     padding: 0.3rem;
@@ -346,9 +337,12 @@ input, #userInput, #historiesContainerJson > pre {
     color: #333;
 }
 
-#userInput, #generatedText, 
-#final-result-content.form-control.result, .textarea-memory,
-body>pre#themes, body>pre#messages {
+#userInput,
+#generatedText,
+#final-result-content.form-control.result,
+.textarea-memory,
+body>pre#themes,
+body>pre#messages {
     border: 0.1rem solid #1295FA;
     border-radius: 0.9rem;
     font-family: 'Montserrat', sans-serif;
@@ -359,17 +353,16 @@ body>pre#themes, body>pre#messages {
     width: 100%;
 }
 
- textarea#message {
+textarea#message {
     height: 109px;
- }
+}
 
-/* crsf_token */
-#content>div.container.text-center>div.row>div>form>div>label{
+#content>div.container.text-center>div.row>div>form>div>label {
     display: none;
 }
 
 .textarea-memory {
-    color: #4bedc7;;
+    color: #4bedc7;
     height: 199px;
     line-height: 1.9rem;
     padding: 0.9rem;
@@ -381,12 +374,9 @@ body>pre#themes, body>pre#messages {
 }
 
 #userInput::placeholder {
-    /* Center the placeholder text horizontally */
     text-align: center;
-
-    /* Optionally, you can style the placeholder text further */
     font-style: italic;
-    color: #999; /* Placeholder text color */
+    color: #999;
 }
 
 textarea#generatedText {
@@ -404,30 +394,35 @@ textarea#generatedText {
     padding: 0.1rem;
 }
 
-#start-button, #speechRecognitionButton {
+#start-button,
+#speechRecognitionButton {
     color: #30ABB7;
-    /*background-color: #30ABB7;*/
     border: 0.1rem solid #AEFAFC;
     font-family: 'Cardo';
 }
 
-#start-button:hover, #speechRecognitionButton:hover {
+#start-button:hover,
+#speechRecognitionButton:hover {
     border: 0.1rem solid #73DD7E;
     color: #9A30F3;
 }
 
-#generateButton, #playbackButton, #theme_name {
-    /*background-color: #062929;*/
+#generateButton,
+#playbackButton,
+#theme_name {
     border: 0.1rem solid #AEFAFC;
     color: #d08aee;
 }
 
-#generateButton:hover, #playbackButton:hover, #message {
+#generateButton:hover,
+#playbackButton:hover,
+#message {
     border: 0.1rem solid #73DD7E;
     color: #1295FA;
 }
 
-#final-result-content, #resultMemo > h3 {
+#final-result-content,
+#resultMemo>h3 {
     color: #1295FA;
 }
 
@@ -441,8 +436,7 @@ textarea#writing_text.form-control {
     font-size: 1.09rem;
 }
 
-/* btn back-home */
-.back-home > a {
+.back-home>a {
     border: 0.1rem solid #9A70F3;
     border-radius: 19%;
     color: #fff;
@@ -450,7 +444,7 @@ textarea#writing_text.form-control {
     padding: .7rem;
 }
 
-.back-home > a:hover {
+.back-home>a:hover {
     color: #fff;
 }
 
@@ -486,7 +480,8 @@ button.btn.back-home.mb-3:hover {
     white-space: pre-line;
 }
 
-hr.mb-3, body hr {
+hr.mb-3,
+body hr {
     border: 0.1rem solid;
     border-radius: 0.5rem;
     margin: 0 3rem;
@@ -496,6 +491,11 @@ hr.mb-3, body hr {
     margin-bottom: 1.09rem;
     margin-top: 1.09rem;
     text-align: center;
+}
+
+/* fa fa-heart for link: "Conversations Liked -¡!¡- ... -¡!¡- */
+#navbarSupportedContent>ul>li:nth-child(6)>a>i {
+    color: pink;
 }
 
 .fa-inverse {
@@ -511,7 +511,7 @@ hr.mb-3, body hr {
 }
 
 .fas {
-    color: transparent !important;
+    color: #fff !important;
 }
 
 .copyright {
@@ -524,16 +524,15 @@ hr.mb-3, body hr {
     padding: 0.5rem;
 }
 
-#home-tab2 > a, #profile-tab2 {
+#home-tab2>a,
+#profile-tab2 {
     font-size: 2.7rem;
 }
 
-/* navbare like icon btn */
 #navbarSupportedContent>ul>li:nth-child(5)>a>i {
     color: pink;
 }
 
-/* like icon btn */
 .like-button,
 .text-center {
     color: #70f8fd;
@@ -542,11 +541,6 @@ hr.mb-3, body hr {
 #carouselExampleCaptions {
     background-image: url('https://images.unsplash.com/photo-1470092306007-055b6797ca72?ixlib=rb-1.2.1&auto=format&fit=crop&w=668&q=80');
     background-size: cover;
-    /* This will scale the image to cover the entire element */
-    /*background-position: center center; /* This centers the image both horizontally and vertically */
-    /*background-repeat: no-repeat; /* This prevents the image from repeating */
-    /* You can also set a fixed height if needed */
-    /*height: 400px; /* Adjust the height as per your design */
     padding: 5rem;
 }
 
@@ -564,9 +558,6 @@ span.carousel-control-next-icon {
 
 #carouselExampleCaptions>div {
     max-width: 73%;
-    /* Adjust the percentage as needed to control image size */
     height: auto;
-    /* Maintain aspect ratio */
     margin: 0.5rem auto;
-    /* Center the image horizontally */
 }

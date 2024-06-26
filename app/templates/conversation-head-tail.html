@@ -108,7 +108,7 @@
                     <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
                 </span><br><br>
                 <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br><br>
-                <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
+                <!--<span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>-->
                 <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
                 <!-- Add a icon to indicate like -->
                 <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" 
@@ -132,7 +132,7 @@
                     <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
                 </span><br><br>
                 <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br><br>
-                <span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>
+                <!--<span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>-->
                 <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
                 <!-- Add a icon to indicate like -->
                 <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked
@@ -162,9 +162,9 @@
                     "conversation_id": "{{ conversation.id }}"
                     "{{ conversation.user_name }}": "{{ conversation.user_message }}"
                     "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                    "conversation_summary": "{{ conversation.conversations_summary }}"
                     "created_at": "{{ conversation.created_at }}"
                 </textarea>
+                <!--"conversation_summary": "{{ conversation.conversations_summary }}"-->
             {% endfor %}
 
             <h4><span class="gold1">{{ limit }}</span> Latest Conversations</h4>
@@ -173,9 +173,9 @@
                     "conversation_id": "{{ conversation.id }}"
                     "{{ conversation.user_name }}": "{{ conversation.user_message }}"
                     "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                    "conversation_summary": "{{ conversation.conversations_summary }}"
                     "created_at": "{{ conversation.created_at }}"
                 </textarea>
+                <!--"conversation_summary": "{{ conversation.conversations_summary }}"-->
             {% endfor %}
         </div>
     
