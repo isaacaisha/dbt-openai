@@ -1,0 +1,40 @@
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
+{% include 'bootstrap/base.html' %}
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="py-1">
+            <h1 class="">Extras Features ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+<div class="container text-center">
+
+    <hr class="green mb-3">
+    <div>
+        <button id=""  class="ai-generator-btn  mb-3">
+            <a href="{{ url_for('extras_features.blog_generator') }}">
+                AI Blog Generator
+            </a> 
+            🔥-¡!¡- <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown"> -¡!¡-🔥
+        </button>
+    </div>
+    <hr class="green mb-3">
+
+</div>
+
+{% endautoescape %}
+{% endblock %}

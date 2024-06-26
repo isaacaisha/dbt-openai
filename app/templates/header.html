@@ -113,10 +113,10 @@
             <a class="nav-link" href="{{ url_for('conversation_function.delete_conversation') }}">Delete Conversation</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">EXTRAS</a>
+            <a class="nav-link" href="{{ url_for('extras_features.extras_features_home') }}">Extras Features</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link log-out" href="{{ url_for('auth.logout') }}">Log Out</a>
+            <a class="nav-link log-out" href="{{ url_for('auth.logout') }}">Logout</a>
           </li>
           {% endif %}
         </ul>

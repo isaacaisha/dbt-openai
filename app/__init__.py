@@ -15,6 +15,7 @@ from app.memory import memory_bp, User
 
 from app.routes.auth import auth_bp
 from app.routes.convers_functions import conversation_functionality_bp
+from app.routes.extras_features import features_extras_bp
 from app.routes.forum_conversation import conversation_chat_forum_bp
 from app.routes.home_process import home_conversation_bp
 from app.routes.llm_conversation import llm_conversation_bp
@@ -77,6 +78,7 @@ def create_app(config=None):
     app.register_blueprint(app_form_bp, name='forms')
     app.register_blueprint(conversation_chat_forum_bp, name='conversation_chat_forum')
     app.register_blueprint(conversation_functionality_bp, name='conversation_function')
+    app.register_blueprint(features_extras_bp, name='extras_features')
     app.register_blueprint(database_bp, name='database')
     app.register_blueprint(home_conversation_bp, name='conversation_home')
     app.register_blueprint(interface_conversation_bp, name='conversation_interface')
