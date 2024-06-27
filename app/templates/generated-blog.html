@@ -59,49 +59,57 @@
 {% autoescape true %}
 
 <!-- Main content -->
-<div class="flex-grow container mt-4">
-    <div class="mx-auto text-light p-4 intro-section rounded shadow-lg" style="max-width: 600px;">
-        <!-- Introduction section -->
-        <div class="text-center mb-4 p-3 rounded">
-            <h2 class="h4 font-weight-bold">Welcome to the AI Blog Generator</h2>
-            <p class="lighter-text">
-                Generate high-quality blog articles from YouTube videos using artificial intelligence.
-                Simply enter the link to the YouTube video below and let the AI create the content for you ¡!¡
-            </p>
-        </div>
-
-        <!-- YouTube section -->
-        <div>
-            <h2 class="h5 font-weight-bold mb-3">Enter YouTube Video Link</h2>
-            <div class="input-group">
-                <input id="youtubelink" type="url" class="form-control mb-3" placeholder="Paste YouTube Link...">
-                <div class="input-group-append text-center">
-                    <button id="generateBlogButton" class="btn btn-secondary text-center">Generate</button>
+    <div class="container mt-5">
+        <div class="card bg-secondary text-light shadow-lg">
+            <div class="card-body">
+                <!-- Blog posts section -->
+                <section>
+                    <h2 class="text-xl mb-4 font-semibold text-info">Welcome to the AI Blog Generator</h2>
+                    <div class="list-group">
+                        <div class="list-group-item bg-dark text-light border-secondary rounded-lg">
+                            <h2 class="h4 font-weight-bold mb-2">AI Blog Generator</h2>
+                            <p class="text-center lighter-text">
+                                Generate high-quality blog articles from YouTube videos using artificial intelligence.
+                                Simply enter the link to the YouTube video below and let the AI create the content for you ¡!¡
+                            </p>
+                    
+                        <!-- YouTube section -->
+                        <div>
+                            <h2 class="h5 font-weight-bold mb-3">Enter YouTube Video Link</h2>
+                            <div class="input-group">
+                                <input id="youtubelink" type="url" class="form-control mb-3" placeholder="Paste YouTube Link...">
+                                <div class="input-group-append text-center">
+                                    <button id="generateBlogButton" class="btn btn-secondary text-info">Generate</button>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Section for loading circle -->
+                        <div id="loading-circle" class="load" style="display: none;"></div>
+                    
+                        <div id="loading-indicator" class="text-center" style="display:none;">
+                            <p>Loading...</p>
+                            <img class="loading"
+                                src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
+                                alt="Loading">
+                        </div>
+                    
+                        <!-- Generated Blog Display Section -->
+                        <section class="mt-4 mb-5">
+                            <h2 class="h5 font-weight-bold mb-3">Generated Blog Article</h2>
+                            <div id="blogContent" class="mt-2 lighter-text"></div>
+                        </section>
+                    </div>
                 </div>
-            </div>
+            </section>
         </div>
-
-        <!-- Section for loading circle -->
-        <div id="loading-circle" class="load" style="display: none;"></div>
-
-        <div id="loading-indicator" class="text-center" style="display:none;">
-            <p>Loading...</p>
-            <img class="loading"
-                src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
-                alt="Loading">
-        </div>
-
-        <!-- Generated Blog Display Section -->
-        <section class="mt-4 mb-5">
-            <h2 class="h5 font-weight-bold mb-3">Generated Blog Article</h2>
-            <div id="blogContent" class="mt-2 lighter-text"></div>
-        </section>
     </div>
 </div>
 
-<footer class="text-center p-3 mt-4 bg-secondary text-light mb-5">
+
+<footer class="text-center p-3 mt-4 bg-dark text-light mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}" target="_blank"
-        class="crimson">·SìįSí·Dbt·</a>
+        class="text-info">·SìįSí·Dbt·</a>
 </footer>
 
 {% endautoescape %}

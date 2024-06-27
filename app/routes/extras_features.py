@@ -9,7 +9,17 @@ features_extras_bp = Blueprint('extras_features', __name__)
 def extras_features_home():
     return render_template('extras-features.html', date=datetime.now().strftime("%a %d %B %Y"))
 
+
 @features_extras_bp.route("/blog-generator", methods=["GET", "POST"])
 def blog_generator():
     return render_template('generated-blog.html', date=datetime.now().strftime("%a %d %B %Y"))
 
+
+@features_extras_bp.route("/blog-posts", methods=["GET", "POST"])
+def blog_posts():
+    return render_template('blog-posts.html', date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@features_extras_bp.route("/blog-details", methods=["GET", "POST"])
+def blog_details():
+    return render_template('blog-details.html', date=datetime.now().strftime("%a %d %B %Y"))

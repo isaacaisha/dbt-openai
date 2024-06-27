@@ -574,9 +574,24 @@ span.carousel-control-next-icon {
     margin: 0.5rem auto;
 }
 
-#aiGeneratorBtn>a, #chatSystem>a {
+#aiGeneratorBtn>a, #chatSystem>a, #start-button,
+#interruptButton, #speechRecognitionButton {
     border: 0.1rem solid #9126E8;
     border-radius: 0.5rem;
     color: #00FFAB;
     padding: 1rem;
+}
+
+#interruptButton {
+    color: indianred;
+}
+
+#interruptButton:hover {
+    color: rgb(70, 183, 128);
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

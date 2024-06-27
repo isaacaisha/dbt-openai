@@ -84,5 +84,5 @@ document.getElementById('interruptButton').addEventListener('click', function ()
     typingInProgress = false; // Stop the text typing animation
     document.getElementById('loading-indicator').style.display = 'none';
     document.getElementById('interruptButton').style.display = 'none';
-    alert('Response generation interrupted');
+    // alert('Response generation interrupted');
 });
