@@ -18,6 +18,7 @@ body {
 
 #content>div.container-fluid>div>div>h1,
 #content>div>div.container-fluid>div>div>h1 {
+    background-color: #171717;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
     color: #9126E8;
@@ -32,7 +33,6 @@ body {
 
 /* jumbotron */
 #content>div.container-fluid>div>div {
-    background-color: #47FFAC;
     border: 0.1rem solid #AEFAFC;
     animation: color-change 10s linear infinite;
 }
@@ -98,6 +98,7 @@ body {
 
 .register-home,
 .log-in-home {
+    background-color: #171717;
     border: 0.1rem solid #17a2b8;
     border-radius: 19rem;
     color: gold;
@@ -114,6 +115,7 @@ a:hover {
 }
 
 .description {
+    background-color: #171717;
     border: 0.1rem solid #17a2b8;
     border-radius: 19rem;
     padding: 0.7rem;
@@ -148,6 +150,7 @@ body>div.content>div.container>div>div>div>div.mb-3>form>div:nth-child(5) {
     top: 67%;
     left: 50%;
     transform: translate(-50%, -50%);
+    background-color: #171717 !important;
     padding: 19px;
     border: 1px solid #ccc;
     border-top-right-radius: 19%;
@@ -170,6 +173,7 @@ body>div.content>div.container>div>div>div>div.mb-3>form>div:nth-child(5) {
 }
 
 #closePopupButton {
+    background-color: #171717;
     border: 0.1rem solid #AEFAFC;
     border-radius: 100%;
     padding: 5px 10px;
@@ -290,8 +294,8 @@ input,
 #generatedText,
 textarea,
 #historiesContainerJson>pre {
-    background-color: rgba(0, 0, 0, 0.175) !important;
-}*/
+    background-color: rgb(0, 0, 0, 0.181) !important;
+}
 
 input,
 #userInput,
@@ -501,7 +505,8 @@ body hr {
 }
 
 /* fa fa-heart for link: "Conversations Liked -¡!¡- ... -¡!¡- */
-#navbarSupportedContent>ul>li:nth-child(6)>a>i {
+#navbarSupportedContent>ul>li:nth-child(6)>a>i,
+#content>div.container-fluid>div>div>h1>i {
     color: pink;
 }
 
@@ -522,6 +527,7 @@ body hr {
 }
 
 .copyright {
+    background-color: #171717;
     border: 0.1rem solid #ccc;
     border-radius: 0.5rem;
     color: #b55fd9;

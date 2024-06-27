@@ -12,9 +12,9 @@
 
 {% block content1 %}
         <div class="container-fluid mb-5">
-            <div class="p-1 rounded-3 jumbotron bg-dark text-light">
+            <div class="p-1 rounded-3 jumbotron bg-dark">
                 <div class="container-fluid py-1">
-                    <h1 class="bg-dark">
+                    <h1 class="">
                         <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown img-fluid mx-auto" width="100" height="100">
                         ·SìįSí·Dbt· OpenAI
                         <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown img-fluid mx-auto" width="100" height="100">
@@ -35,11 +35,11 @@
         <!-- Navbar -->
         <nav class="navbar nav-home">
             <div class="mb-1">
-                <button class="register-home bg-dark text-light" aria-label="Register">
+                <button class="register-home" aria-label="Register">
                     <a href="{{ url_for('auth.register') }}" class="gold1">Register</a>
                 </button>
 
-                <button class="active log-in-home bg-dark text-light" aria-current="page" aria-label="Login">
+                <button class="active log-in-home" aria-current="page" aria-label="Login">
                     <a href="{{ url_for('auth.login') }}" class="gold1">Login</a>
                 </button>
 
@@ -57,7 +57,7 @@
                 effortlessly. Join us and experience the future of productivity today!
             </p>
 
-            <button class="description bg-dark text-light mb-5" aria-label="Description">
+            <button class="description mb-5" aria-label="Description">
                 <a href="/description" class="gold1">-¡!¡- Desscription -¡!¡-</a>
             </button>
     
