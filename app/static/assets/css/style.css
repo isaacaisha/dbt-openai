@@ -565,3 +565,10 @@ span.carousel-control-next-icon {
     height: auto;
     margin: 0.5rem auto;
 }
+
+#aiGeneratorBtn>a, #chatSystem>a {
+    border: 0.1rem solid #9126E8;
+    border-radius: 0.5rem;
+    color: #00FFAB;
+    padding: 1rem;
+}

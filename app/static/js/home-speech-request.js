@@ -9,7 +9,7 @@ function sendRequest(prompt) {
     generateButton.disabled = true;
     playbackButton.disabled = true;
 
-    var xhr = new XMLHttpRequest();
+    xhr = new XMLHttpRequest(); // Use the global xhr variable
     xhr.open('POST', '/home/answer', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onreadystatechange = function () {
@@ -44,6 +44,11 @@ function sendRequest(prompt) {
                     // Use the detected language from the response
                     speech.lang = response.detected_lang || 'es-ES';
 
+                    // Hide the interrupt button when speech ends
+                    speech.onend = function () {
+                        interruptButton.style.display = 'none';
+                    };
+
                     // Scroll as the speech is being spoken
                     speech.onboundary = function (event) {
                         if (event.name === 'word') {
@@ -64,6 +69,11 @@ function sendRequest(prompt) {
                 audio.oncanplay = function() {
                     audio.play();
                 };
+
+                // Ensure the stop button remains visible during speech synthesis
+                interruptButton.style.display = 'block';
+            } else {
+                interruptButton.style.display = 'none'; // Hide the interrupt button if request fails
             }
         }
     };
@@ -110,8 +120,10 @@ function smoothScrollToBottomWhileTyping(text) {
 
     var index = 0;
     var typingSpeed = 57; // Adjust this value to control typing speed
+    typingInProgress = true; // Set the typing flag to true
 
     function typeText() {
+        if (!typingInProgress) return; // Exit if typing is interrupted
         if (index < text.length) {
             textarea.value += text[index++];
             textarea.scrollTop = textarea.scrollHeight; // Scroll to bottom as text is typed

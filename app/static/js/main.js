@@ -18,6 +18,8 @@ function capitalizeSentences(textarea) {
 // Initialize variables to store text data and track typing timeout
 let userTextData = "";
 let typingTimeout;
+let typingInProgress = false; // Flag to indicate if typing is in progress
+let xhr; // XMLHttpRequest variable for interrupting
 
 // Function to handle the "Start" button click
 document.getElementById('start-button').addEventListener('click', function () {
@@ -62,10 +64,25 @@ document.getElementById('generateButton').addEventListener('click', function (ev
 
         // Hide the error message
         document.getElementById('error-message').style.display = 'none';
+
+        // Show the interrupt button
+        document.getElementById('interruptButton').style.display = 'block';
     }
 });
 
 // Listen for input in the textarea and store the text
 document.getElementById('userInput').addEventListener('input', function () {
     userTextData = document.getElementById('userInput').value;
+});
+
+// Event listener for the interrupt button
+document.getElementById('interruptButton').addEventListener('click', function () {
+    if (xhr) {
+        xhr.abort(); // Abort the current request
+    }
+    window.speechSynthesis.cancel(); // Stop any ongoing speech synthesis
+    typingInProgress = false; // Stop the text typing animation
+    document.getElementById('loading-indicator').style.display = 'none';
+    document.getElementById('interruptButton').style.display = 'none';
+    alert('Response generation interrupted');
 });
