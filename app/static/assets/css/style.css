@@ -31,7 +31,8 @@ body {
     text-decoration: underline;
 }
 
-.jumbotron {
+/* jumbotron */
+#content>div.container-fluid>div>div {
     background-color: #47FFAC;
     border: 0.1rem solid #AEFAFC;
     animation: color-change 10s linear infinite;
@@ -420,10 +421,11 @@ textarea#generatedText {
 
 #generateButton:hover,
 #playbackButton:hover,
-#message {
+#message, #generateBlogButton:hover {
     border: 0.1rem solid #73DD7E;
     color: #1295FA;
 }
+
 
 #final-result-content,
 #resultMemo>h3 {

@@ -1,142 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'header.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Blog Generator</title>
+{% import "bootstrap/wtf.html" as wtf %}
 
-    <!-- Include the Tailwind JS file -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Customize the Tailwind configuration (optional) -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        clifford: "#da373d",
-                        purple: "purple"
-                    },
-                },
-            },
-        }
-    </script>
+{% block title %} Welcome to {% endblock %}
 
-    <style>
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
-            }
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon.ico') }}">
+{% include 'bootstrap/base.html' %}
 
-            to {
-                transform: rotate(360deg);
-            }
+<style>
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
         }
 
-
-        @-webkit-keyframes rotate {
-            from {
-                -webkit-transform: rotate(0deg);
-            }
-
-            to {
-                -webkit-transform: rotate(360deg);
-            }
+        to {
+            transform: rotate(360deg);
         }
+    }
 
-        .load {
-            width: 100px;
-            height: 100px;
-            margin: 110px auto 0;
-            border: solid 10px #8822aa;
-            border-radius: 50%;
-            border-right-color: transparent;
-            border-bottom-color: transparent;
-            -webkit-transition: all 0.5s ease-in;
-            -webkit-animation-name: rotate;
-            -webkit-animation-duration: 1.0s;
-            -webkit-animation-iteration-count: infinite;
-            -webkit-animation-timing-function: linear;
+    .load {
+        width: 100px;
+        height: 100px;
+        margin: 110px auto 0;
+        border: solid 10px #8822aa;
+        border-radius: 50%;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        animation: rotate 1s linear infinite;
+    }
 
-            transition: all 0.5s ease-in;
-            animation-name: rotate;
-            animation-duration: 1.0s;
-            animation-iteration-count: infinite;
-            animation-timing-function: linear;
-        }
-    </style>
-</head>
+    .intro-section {
+        background-color: #343a40;
+        /* Lighter shade of gray for the introduction section */
+        color: #f8f9fa;
+        /* Light text color for contrast */
+    }
 
-<body class="flex flex-col min-h-screen bg-gray-100 font-sans antialised">
-    <!--<h1 class="text-3xl font-bold underline text-clifford">Hello world!</h1>
-    <div class="bg-blue-500 text-white p-4">Hello, world!</div>-->
+    .lighter-text {
+        color: #b0b0b0;
+        /* Lighter gray for the paragraph text */
+    }
+</style>
+{% endblock %}
 
-    <!-- Navbar -->
-    <nav class="bg-gray-600 p-4 text-white flex justify-between">
-        <div>
-            <h1 class="text-3xl font-bold text-clifford">AI Blog Generator</h1>
-        </div>
-        <div>
-            <a href="{{ url_for('extras_features.extras_features_home') }}"
-                class="text-white hover:underline">Logout</a>
-        </div>
-    </nav>
-
-    <br><br>
-
-    <!-- Main content -->
-    <div class="flex-grow container mx-auto mt-10 px-4 sm:px-0">
-        <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
-
-            <!-- Introduction section -->
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-semibold mb-4">Welcome to the AI Blog Generator</h2>
-                <p class="text-gray-700">
-                    Generate high-quality blog articles from YouTube videos using artificial intelligence.
-                    Simply enter the link to the YouTube video below
-                    and let the AI create the content for you ¡!¡
-                </p>
-            </div>
-
-            <!-- YouTube section -->
-            <div>
-                <h2 class="text-xl mb-4 font-semibold">Enter YouTube Video Link</h2>
-                <div class="flex space-x-2">
-                    <input id="youtubelink" type="url" placeholder="Paste YouTube Link..."
-                        class="flex-grow p-1 border border-clifford-400 rounded-l-md">
-
-                    <button id="generateBlogButton"
-                        class="bg-gray-400 text-clifford px-2 py-2 rounded-r-md hover:bg-gray-500 transition-colors">
-                        Generate
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Section for loading circle -->
-            <div id="loading-circle" class="load" style="display: none;"></div>
-
-
-            <div id="loading-indicator" style="display:none;" class="mb-3">
-                <p>Loading...</p>
-                <img class="loading" src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g" alt="Loading">
-            </div>
-
-            <!-- Generated Blog Display Section -->
-            <section class="mt-10 flex-grow">
-                <h2 class="text-xl mb-4 font-semibold">Generated Blog Article</h2>
-                <div id="blogContent" class="mt-2 text-gray-700 space-y-4"></div>
-            </section>
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron bg-dark text-light">
+        <div class="py-1">
+            <h1 class="">AI Blog Generator ¡!¡</h1>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <footer class="text-center p-4 text-black mt-6">
-        Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}" target="_blank"
-            class="text-clifford hover:underline">·SìįSí·Dbt·</a>
-    </footer>
+{% block content %}
+{% autoescape true %}
 
-    <script></script>
+<!-- Main content -->
+<div class="flex-grow container mt-4">
+    <div class="mx-auto text-light p-4 intro-section rounded shadow-lg" style="max-width: 600px;">
+        <!-- Introduction section -->
+        <div class="text-center mb-4 p-3 rounded">
+            <h2 class="h4 font-weight-bold">Welcome to the AI Blog Generator</h2>
+            <p class="lighter-text">
+                Generate high-quality blog articles from YouTube videos using artificial intelligence.
+                Simply enter the link to the YouTube video below and let the AI create the content for you ¡!¡
+            </p>
+        </div>
 
-</body>
+        <!-- YouTube section -->
+        <div>
+            <h2 class="h5 font-weight-bold mb-3">Enter YouTube Video Link</h2>
+            <div class="input-group">
+                <input id="youtubelink" type="url" class="form-control mb-3" placeholder="Paste YouTube Link...">
+                <div class="input-group-append text-center">
+                    <button id="generateBlogButton" class="btn btn-secondary text-center">Generate</button>
+                </div>
+            </div>
+        </div>
 
-</html>
+        <!-- Section for loading circle -->
+        <div id="loading-circle" class="load" style="display: none;"></div>
+
+        <div id="loading-indicator" class="text-center" style="display:none;">
+            <p>Loading...</p>
+            <img class="loading"
+                src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
+                alt="Loading">
+        </div>
+
+        <!-- Generated Blog Display Section -->
+        <section class="mt-4 mb-5">
+            <h2 class="h5 font-weight-bold mb-3">Generated Blog Article</h2>
+            <div id="blogContent" class="mt-2 lighter-text"></div>
+        </section>
+    </div>
+</div>
+
+<footer class="text-center p-3 mt-4 bg-secondary text-light mb-5">
+    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}" target="_blank"
+        class="crimson">·SìįSí·Dbt·</a>
+</footer>
+
+{% endautoescape %}
+{% endblock %}
