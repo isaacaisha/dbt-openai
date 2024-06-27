@@ -440,6 +440,12 @@ textarea#writing_text.form-control {
     font-size: 1.09rem;
 }
 
+#content>div.container.text-center>ul, 
+#content>div.container.conversations>ul:nth-child(9),
+#content>div.container.conversations>ul:nth-child(13) {
+    padding: 0;
+}
+
 .back-home>a {
     border: 0.1rem solid #9A70F3;
     border-radius: 19%;

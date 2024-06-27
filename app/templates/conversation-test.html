@@ -15,9 +15,9 @@
     <div class="p-1 rounded-3 jumbotron">
         <div class="container-fluid py-1">
             <h1 class="">
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown img-fluid mx-auto" width="100" height="100">
                 ·SìįSí·Dbt· OpenAI
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown img-fluid mx-auto" width="100" height="100">
             </h1>
         </div>
     </div>
@@ -113,7 +113,7 @@
             <div class="carousel-inner">
                 {% for image in images %}
                 <div class="carousel-item {{ 'active' if loop.index0 == 0 else '' }}">
-                    <img src="{{ url_for('static', filename='assets/images/' ~ image) }}" class="d-block w-100 carousel-img" alt="Image">
+                    <img src="{{ url_for('static', filename='assets/images/' ~ image) }}" class="d-block w-100 carousel-img" width="" height="" alt="Image">
                 </div>
                 {% endfor %}
             </div>
