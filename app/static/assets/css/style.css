@@ -298,7 +298,8 @@ input,
 #userInput,
 #generatedText,
 textarea,
-#historiesContainerJson>pre {
+#historiesContainerJson>pre,
+#showBlogPostsButton>pre {
     background-color: rgb(0, 0, 0, 0.181) !important;
 }
 
@@ -647,5 +648,5 @@ span.carousel-control-next-icon {
 }
 
 .lower-size {
-    font-size: .9rem;
+    font-size: 1.09rem;
 }

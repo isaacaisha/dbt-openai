@@ -1,5 +1,5 @@
 
-// Function to toggle histories container
+// Function to toggle users container
 function toggleUsers() {
     var container = document.getElementById('usersContainer');
     container.style.display = (container.style.display === 'none') ? 'block' : 'none';
@@ -16,21 +16,27 @@ function toggleHistoriesJson() {
     container.style.display = (container.style.display === 'none') ? 'block' : 'none';
 }
 
-// Function to toggle histories container
+// Function to toggle themes container
 function toggleThemes() {
     var container = document.getElementById('themesContainer');
     container.style.display = (container.style.display === 'none') ? 'block' : 'none';
 }
 
-// Function to toggle histories JSON container
+// Function to toggle messages container
 function toggleMessages() {
     var container = document.getElementById('messagesContainer');
     container.style.display = (container.style.display === 'none') ? 'block' : 'none';
 }
 
-// Function to toggle histories JSON container
+// Function to toggle test histories container
 function toggleTestHistories() {
     var container = document.getElementById('historiesTestContainer');
+    container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+}
+
+// Function to toggle blog posts container
+function toggleBlogsPosts() {
+    var container = document.getElementById('BlogPostsContainer');
     container.style.display = (container.style.display === 'none') ? 'block' : 'none';
 }
 

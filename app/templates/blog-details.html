@@ -28,9 +28,8 @@
                 <div class="list-group">
                     <div class="list-group-item bg-dark text-light border-secondary rounded-lg">
                         <h3 class="text-lg llm-response font-semibold">{{blog_article_detail.youtube_title}}</h3>
-                        <p class="text-info">
-                            {{blog_article_detail.generated_content}}
-                        </p>
+                        <p class="text-info">{{blog_article_detail.generated_content}}</p>
+                        <p class="created">{{ blog_article_detail.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
                         <hr class="my-4 border-secondary">
                         <h4 class="text-lg font-semibold">YouTube Title</h4>
                         <p class="llm-response">{{blog_article_detail.youtube_title}}</p>

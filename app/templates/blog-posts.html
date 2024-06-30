@@ -40,9 +40,8 @@
                                 <a href="{{ url_for('extras_features.blog_details', pk=article.id) }}">
                                     <div class="llm-response p-4 border border-secondary rounded-lg">
                                         <h3 class="text-lg font-semibold">{{ article.youtube_title }}</h3>
-                                        <p class="text-info">
-                                            {{ article.generated_content|truncate(91) }}
-                                        </p>
+                                        <p class="text-info">{{ article.generated_content|truncate(91) }}</p>
+                                        <p class="created">{{ article.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
                                     </div>
                                     <br>
                                 </a>

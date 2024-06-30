@@ -154,6 +154,25 @@
     <hr class="green mb-5">
     <hr class="gold mb-3">
 
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <button class="btn btn-info submit mb-3" id="showBlogPostsButton" onclick="toggleBlogsPosts()">
+        -¡!¡- Show Database Blog Posts -¡!¡-
+    </button>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="BlogPostsContainer" class="mb-3" style="display: none;">
+    <h6>Posts</h6>
+    <ul>
+        {% for post in all_blog_potos %}
+        <pre class="align-left" id="messages">-Blog Post ID: {{ post.id }}<br>- User: {{ post.user.name }}<br>-Blog Title's: {{ post.youtube_title }}<br>- Generated Content: {{ post.generated_content|truncate(91) }}<br>- Youtube Link: {{ post.youtube_link }}<br>- Date: {{ post.created_at}}
+        </pre>
+        {% endfor %}
+    </ul>
+    </div>
+
+    <hr class="gold mb-5">
+
+
     <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto mb-3">
             <form method="POST" action="{{ url_for('conversation_function.delete_data') }}">
