@@ -602,7 +602,50 @@ span.carousel-control-next-icon {
     align-items: center;
 }
 
-/* AI Blog Generator.... */
+/* AI BLOG GENERATOR SECTION */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.load {
+    width: 100px;
+    height: 100px;
+    margin: 9px auto 0;
+    border: solid 10px #8822aa;
+    border-radius: 50%;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    animation: rotate 1s linear infinite;
+}
+
+.container-custom {
+    max-width: 800px;
+}
+
+.btn-custom {
+    background-color: #343a40;
+    color: #17a2b8;
+}
+
+.footer {
+    background-color: #343a40;
+    color: #f8f9fa;
+}
+
+.footer a {
+    color: #17a2b8;
+}
+
+.footer a:hover {
+    color: #0d6efd;
+}
+
 .lower-size {
     font-size: .9rem;
 }

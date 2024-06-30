@@ -27,15 +27,15 @@
             <section>
                 <div class="list-group">
                     <div class="list-group-item bg-dark text-light border-secondary rounded-lg">
-                        <h3 class="text-lg font-semibold">{{blog_article_detail.youtube_title}}</h3>
+                        <h3 class="text-lg llm-response font-semibold">{{blog_article_detail.youtube_title}}</h3>
                         <p class="text-info">
                             {{blog_article_detail.generated_content}}
                         </p>
                         <hr class="my-4 border-secondary">
                         <h4 class="text-lg font-semibold">YouTube Title</h4>
-                        <p class="text-info">{{blog_article_detail.youtube_title}}</p>
+                        <p class="llm-response">{{blog_article_detail.youtube_title}}</p>
                         <h4 class="text-lg font-semibold mt-4">YouTube Link</h4>
-                        <a href="{{blog_article_detail.youtube_link}}" class="text-info hover:underline" style="max-width: 100%; word-wrap: break-word;">
+                        <a href="{{blog_article_detail.youtube_link}}" class="llm-response hover:underline" style="max-width: 100%; word-wrap: break-word;">
                             {{blog_article_detail.youtube_link}}
                         </a>
                     </div>
@@ -45,22 +45,22 @@
     </div>
 </div>
 
-<footer class="text-center p-4 mt-5 bg-dark text-light">
-    Powered by <a href="https://siisi-ai.online/" target="_blank" class="text-info hover:underline">·SìįSí·Dbt·</a>
-</footer>
-
 <div class="text-center mt-4">
-    <a href="{{ url_for('extras_features.blog_generator') }}" class="btn btn-primary mb-3">
+    <a href="{{ url_for('extras_features.generate_blog') }}" class="btn btn-primary mb-3">
         AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
             alt="Crown Icon" class="crown">-¡!¡-🔥
     </a>
 </div>
 
-<div class="text-center mt-4">
+<div class="text-center mt-4 mb-3">
     <a href="https://9vc-tenacious-davy.circumeo-apps.net/" target="_blank" class="btn btn-secondary mb-3">
         AI Chat System
     </a>
 </div>
+
+<footer class="footer text-center mx-5 p-3 mt-4 mb-5">
+    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
+</footer>
 
 {% endautoescape %}
 {% endblock %}

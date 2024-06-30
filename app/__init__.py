@@ -46,7 +46,6 @@ def create_app(config=None):
     except KeyError:
         raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
-    openai.api_key = openai_api_key
 
     secret_key = secrets.token_hex(19)
     app.secret_key = secret_key
@@ -71,7 +70,7 @@ def create_app(config=None):
     email_password = os.getenv('EMAIL_PASS')
     app.config['MAIL_PASSWORD'] = email_password
     app.config['MAIL_DEFAULT_SENDER'] = ('·SìįSí·Dbt·', 'your-email@example.com')
-    
+
     mail = Mail(app)
 
     app.register_blueprint(auth_bp, name='auth')

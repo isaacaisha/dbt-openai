@@ -3,14 +3,13 @@ from datetime import datetime
 import json
 import os
 import assemblyai as aai
-import openai
+from openai import OpenAI, OpenAIError
 from pytube import YouTube
 from flask_login import current_user, login_required
 from app.memory import BlogPost, User, db
 
-
 features_extras_bp = Blueprint('extras_features', __name__)
-
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 @features_extras_bp.route("/extras-features-home", methods=["GET"])
 def extras_features_home():
@@ -18,7 +17,6 @@ def extras_features_home():
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
     return render_template('extras-features.html', date=datetime.now().strftime("%a %d %B %Y"))
-
 
 @features_extras_bp.route("/blog/generator", methods=["GET", "POST"])
 def generate_blog():
@@ -45,45 +43,6 @@ def generate_blog():
 
     else:
         return jsonify({'error': 'Invalid request method 🤣'}), 405
-# def blog_generator():
-#     if request.method == "POST":
-#         if request.content_type != 'application/json':
-#             return jsonify({'error': 'Unsupported Media Type'}), 415
-# 
-#         data = request.get_json()
-#         youtube_link = data.get('link')
-# 
-#         if not youtube_link:
-#             return jsonify({'error': 'Invalid data sent 😭'}), 400
-# 
-#         title = youtube_title(youtube_link)
-#         transcription = get_transcription(youtube_link)
-# 
-#         if not transcription:
-#             return jsonify({'error': 'Failed to get transcript 😭'}), 500
-# 
-#         blog_content = generate_blog_from_transcription(transcription)
-# 
-#         if not blog_content:
-#             return jsonify({'error': 'Failed to generate blog article 😭'}), 500
-# 
-#         new_blog_article = BlogPost(
-#             user_id=current_user.id,
-#             youtube_title=title,
-#             youtube_link=youtube_link,
-#             generated_content=blog_content,
-#             created_at=datetime.utcnow()
-#         )
-# 
-#         db.session.add(new_blog_article)
-#         db.session.commit()
-# 
-#         return jsonify({'content': blog_content})
-#     elif request.method == "GET":
-#         return render_template('blog-generator.html', date=datetime.now().strftime("%a %d %B %Y"))
-#     else:
-#         return jsonify({'error': 'Invalid request method 🤣'}), 405
-
 
 @features_extras_bp.route("/blog-posts", methods=["GET"])
 def blog_posts():
@@ -94,7 +53,6 @@ def blog_posts():
     blog_articles = BlogPost.query.filter_by(user_id=current_user.id).all()
     blog_articles.reverse()
     return render_template('blog-posts.html', blog_articles=blog_articles, date=datetime.now().strftime("%a %d %B %Y"))
-
 
 @features_extras_bp.route("/blog-details/<int:pk>", methods=["GET"])
 def blog_details(pk):
@@ -142,32 +100,30 @@ def get_transcription(link):
     return transcription_text
 
 def generate_blog_from_transcription(transcription):
-    openai.api_key = os.getenv('OPENAI_API_KEY')
-
     prompt = f"Based on the following transcript from a YouTube video, " \
              f"write a comprehensive blog article. Write it based on the transcript, " \
              f"but don't make it look like a YouTube video. " \
              f"Make it look like a proper blog article:\n\n{transcription}\n\nArticle:"
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Replace with an appropriate model from OpenAI's current options
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": ""},
+                {"role": "system", "content": prompt}
             ],
             max_tokens=1000,
-            timeout=30  # Example: set timeout to 30 seconds
+            n=1,
+            stop=None,
+            temperature=0.7
         )
-        generated_content = response['choices'][0]['message']['content'].strip()
+        generated_content = response.choices[0].message.content.strip()
         return generated_content
-    except openai.OpenAIError as e:
+    except OpenAIError as e:
         print(f"OpenAI API Error: {e}")
         return None
     except Exception as e:
         print(f"Error generating blog content: {str(e)}")
         return None
-
 
 def process_youtube_video(user_id, youtube_link):
     user = db.session.query(User).get(user_id)  
@@ -186,7 +142,7 @@ def process_youtube_video(user_id, youtube_link):
         return None, 'Failed to generate blog article 😭'
 
     # Save blog article into database
-    new_blog_article = BlogPost.objects.create(
+    new_blog_article = BlogPost(
         user_id=current_user.id, 
         youtube_title=title,
         youtube_link=youtube_link,
@@ -196,5 +152,3 @@ def process_youtube_video(user_id, youtube_link):
     db.session.commit()
 
     return new_blog_article, None
-
-    
