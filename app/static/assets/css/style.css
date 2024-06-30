@@ -601,3 +601,8 @@ span.carousel-control-next-icon {
     justify-content: center;
     align-items: center;
 }
+
+/* AI Blog Generator.... */
+.lower-size {
+    font-size: .9rem;
+}
