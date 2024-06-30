@@ -1,6 +1,6 @@
 {% extends 'header.html' %}
 
-{% block title %} Welcome to {% endblock %}
+{% block title %} Welcome to AI Blog Posts {% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -29,29 +29,25 @@
 
     <!-- Main content -->
     <div class="container mt-5">
-        <div class="card bg-secondary text-light shadow-lg">
-            <div class="card-body">
+        <div class="bg-dark text-light shadow-lg">
+            <div class="">
                 <!-- Blog posts section -->
                 <section>
-                    <h2 class="text-xl mb-4 font-semibold text-info">All Blog Posts</h2>
                     <div class="list-group">
                         <div class="list-group-item bg-dark text-light border-secondary rounded-lg">
-                            <h3 class="text-lg font-semibold">Blog Post Title 1</h3>
-                            <p>
-                                This is the content of the blog post. Lorem Ipsum
-                                "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet,
-                                consectetur, adipisci velit..." "No hay nadie que ame el dolor mismo,
-                                que lo busque, lo encuentre y lo quiera, simplemente porque es el dolor."
-                            </p>
-                        </div>
-                        <div class="list-group-item bg-dark text-light border-secondary rounded-lg">
-                            <h3 class="text-lg font-semibold">Blog Post Title 2</h3>
-                            <p>
-                                This is the content of the blog post. Lorem Ipsum
-                                "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet,
-                                consectetur, adipisci velit..." "No hay nadie que ame el dolor mismo,
-                                que lo busque, lo encuentre y lo quiera, simplemente porque es el dolor."
-                            </p>
+
+                            {% for article in blog_articles %}
+                                <a href="{{ url_for('extras_features.blog_details', pk=article.id) }}">
+                                    <div class="border border-gray-400 bg-white p-4 rounded-lg">
+                                        <h3 class="text-lg font-semibold">{{ article.youtube_title }}</h3>
+                                        <p class="text-info">
+                                            {{ article.generated_content|truncate(73) }}
+                                        </p>
+                                    </div>
+                                    <br>
+                                </a>
+                            {% endfor %}
+
                         </div>
                     </div>
                 </section>
@@ -64,7 +60,7 @@
     </footer>
 
     <div class="text-center mt-4">
-        <a href="{{ url_for('extras_features.blog_generator') }}" class="btn btn-primary mb-3">
+        <a href="{{ url_for('extras_features.generate_blog') }}" class="btn btn-primary mb-3">
             AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
                 alt="Crown Icon" class="crown">-¡!¡-🔥
         </a>

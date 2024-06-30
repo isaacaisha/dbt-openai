@@ -208,6 +208,11 @@ body>div.content>div.container>div>div>div>div.mb-3>form>div:nth-child(5) {
     color: mediumslateblue;
 }
 
+.purple {
+    color: rgb(168 85 247 / var(--tw-text-opacity));
+    ;
+}
+
 .convers-id {
     color: #cdfcf5;
 }
@@ -413,14 +418,15 @@ textarea#generatedText {
 
 #generateButton,
 #playbackButton,
-#theme_name {
+#theme_name,
+#generateBlogButton:hover {
     border: 0.1rem solid #AEFAFC;
     color: #d08aee;
 }
 
 #generateButton:hover,
 #playbackButton:hover,
-#message, #generateBlogButton:hover {
+#message {
     border: 0.1rem solid #73DD7E;
     color: #1295FA;
 }

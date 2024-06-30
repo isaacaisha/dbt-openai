@@ -6,12 +6,6 @@
 {{ super() }}
 <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
 {% include 'bootstrap/base.html' %}
-<style>
-    .lighter-text {
-        color: #b0b0b0;
-        /* Lighter gray for the paragraph text */
-    }
-</style>
 {% endblock %}
 
 {% block content1 %}
@@ -28,24 +22,22 @@
 {% autoescape true %}
 <!-- Main content -->
 <div class="container mt-5">
-    <div class="card bg-secondary text-light shadow-lg">
-        <div class="card-body">
+    <div class="bg-secondary text-light shadow-lg">
+        <div class="">
             <section>
-                <h2 class="text-xl mb-4 font-semibold text-info">Blog Post Details</h2>
                 <div class="list-group">
                     <div class="list-group-item bg-dark text-light border-secondary rounded-lg">
-                        <h3 class="text-lg font-semibold">Blog Post Title</h3>
-                        <p class="lighter-text">
-                            This is the content of the blog post. Lorem Ipsum
-                            "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet,
-                            consectetur, adipisci velit..." "No hay nadie que ame el dolor mismo,
-                            que lo busque, lo encuentre y lo quiera, simplemente porque es el dolor."
+                        <h3 class="text-lg font-semibold">{{blog_article_detail.youtube_title}}</h3>
+                        <p class="text-info">
+                            {{blog_article_detail.generated_content}}
                         </p>
                         <hr class="my-4 border-secondary">
                         <h4 class="text-lg font-semibold">YouTube Title</h4>
-                        <p class="lighter-text">Title of the associated YouTube video</p>
+                        <p class="text-info">{{blog_article_detail.youtube_title}}</p>
                         <h4 class="text-lg font-semibold mt-4">YouTube Link</h4>
-                        <a href="#" class="text-info hover:underline">https://www.youtube.com</a>
+                        <a href="{{blog_article_detail.youtube_link}}" class="text-info hover:underline" style="max-width: 100%; word-wrap: break-word;">
+                            {{blog_article_detail.youtube_link}}
+                        </a>
                     </div>
                 </div>
             </section>
@@ -56,6 +48,19 @@
 <footer class="text-center p-4 mt-5 bg-dark text-light">
     Powered by <a href="https://siisi-ai.online/" target="_blank" class="text-info hover:underline">·SìįSí·Dbt·</a>
 </footer>
+
+<div class="text-center mt-4">
+    <a href="{{ url_for('extras_features.blog_generator') }}" class="btn btn-primary mb-3">
+        AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
+            alt="Crown Icon" class="crown">-¡!¡-🔥
+    </a>
+</div>
+
+<div class="text-center mt-4">
+    <a href="https://9vc-tenacious-davy.circumeo-apps.net/" target="_blank" class="btn btn-secondary mb-3">
+        AI Chat System
+    </a>
+</div>
 
 {% endautoescape %}
 {% endblock %}

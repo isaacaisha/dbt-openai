@@ -1,0 +1,168 @@
+{% extends 'header.html' %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %} Welcome to AI Blog Generator {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon.ico') }}">
+{% include 'bootstrap/base.html' %}
+
+<style>
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .load {
+        width: 100px;
+        height: 100px;
+        margin: 9px auto 0;
+        border: solid 10px #8822aa;
+        border-radius: 50%;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        animation: rotate 1s linear infinite;
+    }
+
+    .container-custom {
+        max-width: 800px;
+    }
+
+    .btn-custom {
+        background-color: #343a40;
+        color: #17a2b8;
+    }
+
+    .footer {
+        background-color: #343a40;
+        color: #f8f9fa;
+    }
+
+    .footer a {
+        color: #17a2b8;
+    }
+
+    .footer a:hover {
+        color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron bg-dark text-light text-center">
+        <div class="py-1">
+            <h1 class="">AI Blog Generator ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<!-- Navbar block -->
+<nav  class="navbar navbar-expand-md navbar-dark">
+    <div class="container">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+                <a href="{{ url_for('extras_features.blog_posts') }}" class="nav-link text-white hover:text-purple-300">Saved Posts</a>
+          </li>
+          <li class="nav-item">
+                <a href="{{ url_for('extras_features.extras_features_home') }}" class="nav-link text-white hover:text-purple-300">Logout</a>
+          </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-5 container-custom">
+    <div class="card text-light shadow-lg bg-dark border-secondary mb-5">
+        <div class="card-body">
+            <!-- Blog posts section -->
+            <section>
+                <h2 class="h4 font-weight-bold mb-3">AI Blog Generator</h2>
+                <p class="text-center mb-5">
+                    Generate high-quality blog articles from YouTube videos using artificial intelligence.
+                    Simply enter the link to the YouTube video below and let the AI create the content for you ¡!¡
+                </p>
+
+                <!-- YouTube section -->
+                <h2 class="h5 font-weight-bold mb-3">Enter YouTube Video Link</h2>
+                <div class="input-group mb-3">
+                    <input id="youtubeLink" type="url" class="form-control mb-5" placeholder="Paste YouTube Link...">
+                    <div class="input-group-append text-center">
+                        <button id="generateBlogButton" class="btn btn-custom border-secondary mb-5">Generate</button>
+                    </div>
+                </div>
+
+                <!-- Section for loading circle -->
+                <div id="loading-indicator" style="display:none;" class="text-center mb-1">
+                    <p class="">Loading...</p>
+                    <img class="loading" src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g" alt="Loading">
+                </div>
+            
+                <div id="loading-circle" class="load mb-3" style="display: none;"></div>
+
+                <!-- Generated Blog Display Section -->
+                <section class="mb-3">
+                    <h2 class="h5 font-weight-bold mb-3">Generated Blog Article</h2>
+                    <div id="blogContent" class="mt-2 lighter-text"></div>
+                </section>
+            </section>
+        </div>
+    </div>
+</div>
+
+<footer class="footer text-center p-3 mt-4 mb-5">
+    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}" target="_blank">·SìįSí·Dbt·</a>
+</footer>
+
+<script>
+        document.getElementById('generateBlogButton').addEventListener('click', async () => {
+
+
+            const youtubeLink = document.getElementById('youtubeLink').value;
+            const blogContent = document.getElementById('blogContent');
+            
+            if(youtubeLink) {
+                document.getElementById('loading-circle').style.display = 'block';
+                document.getElementById('loading-indicator').style.display = 'block';
+
+                blogContent.innerHTML = ''; // Clear previous content
+
+                const endpointUrl = '/blog/generator';
+                
+                try {
+                    const response = await fetch(endpointUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ link: youtubeLink })
+                    });
+
+                    const data = await response.json();
+
+                    blogContent.innerHTML = data.content;
+
+                } catch (error) {
+                    console.error("Error occurred:", error);
+                    alert("Something went wrong. Please try again later.");
+                    
+                }
+                document.getElementById('loading-circle').style.display = 'none';
+                document.getElementById('loading-indicator').style.display = 'none';
+            } else {
+                alert("Please enter a YouTube link.");
+            }
+        });
+</script>
+
+{% endblock %}

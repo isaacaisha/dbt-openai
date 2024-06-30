@@ -35,7 +35,7 @@
 
         <hr class="green mb-3">
 
-        <form id="prompt-form" method="POST" action="{{ url_for('conversation_home.home_answer') }}">
+        <form id="prompt-form" method="POST"> <!-- action="{{ url_for('conversation_home.home_answer') }}" -->
 
             {{ home_form.csrf_token }}
 
@@ -86,7 +86,7 @@
                     Stop ·SìįSí·Dbt· Response
                 </button>
             </div>
-            
+
         </form>
 
         <hr class="gold mb-5">

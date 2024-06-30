@@ -36,6 +36,9 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
 
+    # Define the relationship to the BlogPost model
+    blog_posts = relationship('BlogPost', back_populates='user', cascade='all, delete')
+
     def __repr__(self):
         return f"<User id={self.id}, email='{self.email}'>"
 
@@ -78,4 +81,20 @@ class MemoryTest(db.Model):
 
     def __repr__(self):
         return f"<Memory id={self.id}>"
+    
+
+class BlogPost(db.Model):
+    __tablename__ = 'blog_posts'
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    youtube_title = db.Column(db.String(255), nullable=False)
+    youtube_link = db.Column(db.String(255), nullable=False)
+    generated_content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
+
+    # Define the relationship to the User model
+    user = relationship('User', back_populates='blog_posts')
+
+    def __repr__(self):
+        return f"<BlogPost id={self.id}, title='{self.youtube_title}'>"
     
