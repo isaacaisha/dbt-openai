@@ -21,14 +21,14 @@
 {% block content %}
 {% autoescape true %}
 <!-- Main content -->
-<div class="container mt-5">
-    <div class="bg-secondary text-light shadow-lg">
+<div class="container footer mx-auto mt-10 p-2 sm:px-0">
+    <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body custom-input-group border border-secondary">
         <div class="">
             <section>
-                <div class="list-group">
-                    <div class="list-group-item bg-dark text-light border-secondary rounded-lg">
-                        <h3 class="text-lg llm-response font-semibold">{{blog_article_detail.youtube_title}}</h3>
-                        <p class="text-info">{{blog_article_detail.generated_content}}</p>
+                <div class="">
+                    <div class="p-4 main text-light border-secondary rounded-lg">
+                        <h3 class="text-lg font-semibold">{{blog_article_detail.youtube_title}}</h3>
+                        <p class="llm-response">{{blog_article_detail.generated_content}}</p>
                         <p class="created">{{ blog_article_detail.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
                         <hr class="my-4 border-secondary">
                         <h4 class="text-lg font-semibold">YouTube Title</h4>
@@ -60,6 +60,15 @@
 <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
+
+<style>
+    .custom-input-group:hover {
+        transform: scale(1.03);
+        /* Scale up by 5% on hover */
+        transition: transform 0.3s ease;
+        /* Smooth transition over 0.3 seconds */
+    }
+</style>
 
 {% endautoescape %}
 {% endblock %}

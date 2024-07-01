@@ -28,17 +28,17 @@
 {% autoescape true %}
 
     <!-- Main content -->
-    <div class="container mt-5">
-        <div class="bg-dark text-light">
+<div class="container footer mx-auto mt-10 p-2 sm:px-0">
+    <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body custom-input-group">
             <div class="">
                 <!-- Blog posts section -->
                 <section>
                     <div class="">
-                        <div class="bg-dark text-light rounded-lg">
+                        <div class=" text-light rounded-lg">
 
                             {% for article in blog_articles %}
                                 <a href="{{ url_for('extras_features.blog_details', pk=article.id) }}">
-                                    <div class="llm-response p-4 border border-secondary rounded-lg">
+                                    <div class="llm-response p-4 main border border-secondary rounded-lg">
                                         <h3 class="text-lg font-semibold">{{ article.youtube_title }}</h3>
                                         <p class="text-info">{{ article.generated_content|truncate(91) }}</p>
                                         <p class="created">{{ article.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
@@ -70,6 +70,15 @@
     <footer class="footer text-center p-3 mx-5 mt-4 mb-5">
         Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
     </footer>
+
+<style>
+    .custom-input-group:hover {
+        transform: scale(1.03);
+        /* Scale up by 5% on hover */
+        transition: transform 0.3s ease;
+        /* Smooth transition over 0.3 seconds */
+    }
+</style>
 
 {% endautoescape %}
 {% endblock %}

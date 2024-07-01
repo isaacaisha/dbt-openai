@@ -8,7 +8,13 @@
 {{ super() }}
 <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon.ico') }}">
 {% include 'bootstrap/base.html' %}
-
+<style>
+    /* Optional: Custom CSS styles */
+    .custom-input-group {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        /* Example shadow effect */
+    }
+</style>
 {% endblock %}
 
 {% block content1 %}
@@ -22,45 +28,46 @@
 {% endblock %}
 
 {% block content %}
+<div class="container footer mx-auto mt-10 p-2 sm:px-0">
+    <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body custom-input-group border border-secondary">
+        <!-- Blog posts section -->
+        <section>
+            <h3 class="center font-weight-bold mb-3">AI Blog Generator</h3>
+            <p class="text-center mb-5">
+                Generate high-quality blog articles from YouTube videos using artificial intelligence.
+                Simply enter the link to the YouTube video below and let the AI create the content for you ¡!¡
+            </p>
 
-<div class="container mt-5 container-custom">
-    <div class="card text-light shadow-lg bg-dark border-secondary mb-5">
-        <div class="card-body">
-            <!-- Blog posts section -->
-            <section>
-                <h2 class="h4 font-weight-bold mb-3">AI Blog Generator</h2>
-                <p class="text-center mb-5">
-                    Generate high-quality blog articles from YouTube videos using artificial intelligence.
-                    Simply enter the link to the YouTube video below and let the AI create the content for you ¡!¡
-                </p>
-
-                <!-- YouTube section -->
-                <h2 class="h5 font-weight-bold mb-3">Enter YouTube Video Link</h2>
-                <div class="input-group mb-3">
-                    <input id="youtubeLink" type="url" class="form-control mb-5" placeholder="Paste YouTube Link...">
-                    <div class="input-group-append text-center">
-                        <button id="generateBlogButton" class="btn btn-custom border-secondary mb-5">Generate</button>
-                    </div>
+            <!-- YouTube section -->
+            <h4 class="font-weight-bold mb-3">Enter YouTube Video Link</h4>
+            <div class="input-group mb-3">
+                <input id="youtubeLink" type="url" class="form-control form-control-lg mb-5"
+                    placeholder="Paste YouTube Link...">
+                <div class="input-group-append text-center">
+                    <button id="generateBlogButton" class="btn btn-custom border-secondary mb-5">Generate</button>
                 </div>
+            </div>
 
-                <!-- Section for loading circle -->
-                <div id="loading-indicator" style="display:none;" class="text-center mb-1">
-                    <p class="">Loading...</p>
-                    <img class="loading" src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g" alt="Loading">
-                </div>
-            
-                <div id="loading-circle" class="load mb-3" style="display: none;"></div>
+            <!-- Section for loading circle -->
+            <div id="loading-indicator" style="display:none;" class="text-center mb-1">
+                <p class="">Loading...</p>
+                <img class="loading"
+                    src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
+                    alt="Loading">
+            </div>
 
-                <!-- Generated Blog Display Section -->
-                <section class="mb-3">
-                    <h2 class="h5 font-weight-bold mb-3">Generated Blog Article</h2>
-                    <div id="blogContent" class="mt-2 lighter-text"></div>
-                    <h3 class="h5 font-weight-bold text-center">
-                      Then click here to see the result:<br>👇🏿<br><a href="/blog-posts" class="btn btn-custom border-secondary mt-1">Saved Posts</a>
-                    </h3>
-                </section>
+            <div id="loading-circle" class="load mb-3" style="display: none;"></div>
+
+            <!-- Generated Blog Display Section -->
+            <section class="mb-3">
+                <h4 class="font-weight-bold mb-3">Generated Blog Article</h4>
+                <div id="blogContent" class="mt-2 lighter-text"></div>
+                <h5 class="font-weight-bold text-center">
+                    Then click here to see the result:<br>👇🏿<br><a href="/blog-posts"
+                        class="btn btn-custom border-secondary mt-1">Saved Posts</a>
+                </h5>
             </section>
-        </div>
+        </section>
     </div>
 </div>
 
@@ -68,45 +75,52 @@
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
 
+<style>
+    .custom-input-group:hover {
+        transform: scale(1.03);
+        /* Scale up by 5% on hover */
+        transition: transform 0.3s ease;
+        /* Smooth transition over 0.3 seconds */
+    }
+</style>
+
 <script>
-        document.getElementById('generateBlogButton').addEventListener('click', async () => {
+    document.getElementById('generateBlogButton').addEventListener('click', async () => {
+        const youtubeLink = document.getElementById('youtubeLink').value;
+        const blogContent = document.getElementById('blogContent');
 
+        if (youtubeLink) {
+            document.getElementById('loading-circle').style.display = 'block';
+            document.getElementById('loading-indicator').style.display = 'block';
 
-            const youtubeLink = document.getElementById('youtubeLink').value;
-            const blogContent = document.getElementById('blogContent');
-            
-            if(youtubeLink) {
-                document.getElementById('loading-circle').style.display = 'block';
-                document.getElementById('loading-indicator').style.display = 'block';
+            blogContent.innerHTML = ''; // Clear previous content
 
-                blogContent.innerHTML = ''; // Clear previous content
+            const endpointUrl = '/blog/generator';
 
-                const endpointUrl = '/blog/generator';
-                
-                try {
-                    const response = await fetch(endpointUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ link: youtubeLink })
-                    });
+            try {
+                const response = await fetch(endpointUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ link: youtubeLink })
+                });
 
-                    const data = await response.json();
+                const data = await response.json();
 
-                    blogContent.innerHTML = data.content;
+                blogContent.innerHTML = data.content;
 
-                } catch (error) {
-                    console.error("Error occurred:", error);
-                    alert("Something went wrong. Please try again later.");
-                    
-                }
-                document.getElementById('loading-circle').style.display = 'none';
-                document.getElementById('loading-indicator').style.display = 'none';
-            } else {
-                alert("Please enter a YouTube link.");
+            } catch (error) {
+                console.error("Error occurred:", error);
+                alert("Something went wrong. Please try again later.");
+
             }
-        });
+            document.getElementById('loading-circle').style.display = 'none';
+            document.getElementById('loading-indicator').style.display = 'none';
+        } else {
+            alert("Please enter a YouTube link.");
+        }
+    });
 </script>
 
 {% endblock %}
