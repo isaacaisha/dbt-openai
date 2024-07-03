@@ -6,12 +6,12 @@ body {
     padding: 1rem;
     background-color: #171717 !important;
 }
-
+/*
 .large-image {
     width: 100%;
     max-width: 600px;
 }
-
+*/
 #content>div.container-fluid>div>div {
     padding: 0.3rem;
 }
@@ -65,6 +65,7 @@ body {
 }
 
 #content>nav>button {
+    background-color: rgb(0, 0, 0, 0.181) !important;
     color: #9ED2C6;
     border: 0.1rem solid #9ED2C6;
 }
@@ -109,6 +110,11 @@ body {
     box-sizing: border-box;
 }
 
+#submit.btn.btn-success,
+#submit.btn.btn-danger {
+    background-color: rgb(0, 0, 0, 0.181) !important;
+}
+
 a:hover {
     color: #6ABFA6 !important;
     text-decoration: none !important;
@@ -130,13 +136,13 @@ a:hover {
     font-family: 'Merriweather', sans-serif;
     font-size: 1rem;
 }
-
+/*
 .artificial-intelligence {
     color: #9A30F3;
     font-family: 'Cardo';
     font-size: 2.71rem;
 }
-
+*/
 .p-1.rounded-3.jumbotron {
     margin: 0;
 }
@@ -406,8 +412,9 @@ textarea#generatedText {
 
 #start-button,
 #speechRecognitionButton {
-    color: #30ABB7;
+    background-color: rgb(0, 0, 0, 0.181) !important;
     border: 0.1rem solid #AEFAFC;
+    color: #30ABB7;
     font-family: 'Cardo';
 }
 
@@ -421,6 +428,8 @@ textarea#generatedText {
 #playbackButton,
 #theme_name,
 #generateBlogButton:hover {
+    background-color: rgb(0, 0, 0, 0.181) !important;
+    /*background-color: #171717;*/
     border: 0.1rem solid #AEFAFC;
     color: #d08aee;
 }
@@ -431,7 +440,6 @@ textarea#generatedText {
     border: 0.1rem solid #73DD7E;
     color: #1295FA;
 }
-
 
 #final-result-content,
 #resultMemo>h3 {
@@ -581,8 +589,9 @@ span.carousel-control-next-icon {
     margin: 0.5rem auto;
 }
 
-#aiGeneratorBtn>a, #chatSystem>a, #start-button,
+#aiGeneratorBtn>a, #aiGeneratorBtn1>a, #chatSystem>a, #start-button,
 #interruptButton, #speechRecognitionButton {
+    background-color: rgb(0, 0, 0, 0.181) !important;
     border: 0.1rem solid #9126E8;
     border-radius: 0.5rem;
     color: #00FFAB;
