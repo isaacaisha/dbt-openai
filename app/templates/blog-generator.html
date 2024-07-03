@@ -9,10 +9,11 @@
 <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon.ico') }}">
 {% include 'bootstrap/base.html' %}
 <style>
-    /* Optional: Custom CSS styles */
-    .custom-input-group {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        /* Example shadow effect */
+    .custom-input-group:hover {
+        transform: scale(1.03);
+        /* Scale up by 5% on hover */
+        transition: transform 0.3s ease;
+        /* Smooth transition over 0.3 seconds */
     }
 </style>
 {% endblock %}
@@ -74,15 +75,6 @@
 <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
-
-<style>
-    .custom-input-group:hover {
-        transform: scale(1.03);
-        /* Scale up by 5% on hover */
-        transition: transform 0.3s ease;
-        /* Smooth transition over 0.3 seconds */
-    }
-</style>
 
 <script>
     document.getElementById('generateBlogButton').addEventListener('click', async () => {
