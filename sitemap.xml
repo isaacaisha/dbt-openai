@@ -25,49 +25,43 @@
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/conversation-all</loc>
+        <loc>https://siisi-ai.online/get-all-conversations</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/conversation-by-id</loc>
+        <loc>https://siisi-ai.online/select-conversation-id</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/conversation-delete</loc>
+        <loc>https://siisi-ai.online/chat-forum</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/conversation-details</loc>
+        <loc>https://siisi-ai.online/delete-conversation</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/conversation-forbidden</loc>
+        <loc>https://siisi-ai.online/conversation/1</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/conversation-head-tail</loc>
+        <loc>https://siisi-ai.online/convers-head-tail</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/conversation-liked</loc>
-        <lastmod>2024-06-06</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://siisi-ai.online/conversation-not-found</loc>
+        <loc>https://siisi-ai.online/liked-conversations</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -85,19 +79,43 @@
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/database-conversations</loc>
+        <loc>https://siisi-ai.online/chat-forum/Amor</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/index</loc>
+        <loc>https://siisi-ai.online/api/conversations-jsonify</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://siisi-ai.online/liked-conversations</loc>
+        <loc>https://siisi-ai.online/description</loc>
+        <lastmod>2024-06-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://siisi-ai.online/extras-features-home</loc>
+        <lastmod>2024-06-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://siisi-ai.online/blog/generator</loc>
+        <lastmod>2024-06-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://siisi-ai.online/blog-posts</loc>
+        <lastmod>2024-06-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://siisi-ai.online/blog-details/7</loc>
         <lastmod>2024-06-06</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
