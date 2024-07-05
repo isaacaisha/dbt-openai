@@ -1,3 +1,13 @@
 User-agent: *
-Allow: /
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /admin/
+
+User-agent: Googlebot
+Allow: /public/
+Disallow: /private/
+
+User-agent: Bingbot
+Disallow: /
+
 Sitemap: https://siisi-ai.online/sitemap.xml
