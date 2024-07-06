@@ -8,6 +8,7 @@ Allow: /public/
 Disallow: /private/
 
 User-agent: Bingbot
-Disallow: /
+Allow: /public/    # Allow Bingbot to crawl the public directory
+Disallow: /private/ # Ensure private directories are still disallowed for Bingbot
 
 Sitemap: https://siisi-ai.online/sitemap.xml
