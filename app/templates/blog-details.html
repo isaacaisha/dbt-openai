@@ -29,29 +29,28 @@
 {% block content %}
 {% autoescape true %}
 <!-- Main content -->
-<div class="container footer mx-auto mt-10 p-2 sm:px-0">
-    <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body custom-input-group border border-secondary">
-        <div class="">
-            <section>
-                <div class="">
-                    <div class="p-4 main text-light border-secondary rounded-lg">
-                        <h3 class="text-lg font-semibold">{{blog_article_detail.youtube_title}}</h3>
-                        <p class="llm-response">{{blog_article_detail.generated_content}}</p>
-                        <p class="created">{{ blog_article_detail.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                        <hr class="my-4 border-secondary">
-                        <h4 class="text-lg font-semibold">YouTube Title</h4>
-                        <p class="llm-response">{{blog_article_detail.youtube_title}}</p>
-                        <h4 class="text-lg font-semibold mt-4">YouTube Link</h4>
-                        <a href="{{blog_article_detail.youtube_link}}" class="llm-response hover:underline" style="max-width: 100%; word-wrap: break-word;">
-                            {{blog_article_detail.youtube_link}}
-                        </a>
-                    </div>
-                </div>
-            </section>
-        </div>
+<div class="container footer mx-auto mt-5 p-2 sm:px-0 custom-input-group mb-5">
+    <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
+        <section>
+            <div class="p-4 main text-light border-secondary rounded-lg">
+                <h3 class="text-lg font-semibold">{{blog_article_detail.youtube_title}}</h3>
+                <textarea class="blog_details p-4 llm-response">{{blog_article_detail.generated_content|safe}}</textarea>
+                <p class="created">{{ blog_article_detail.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <hr class="my-4 border-secondary">
+                <h4 class="text-lg font-semibold">YouTube Title</h4>
+                <p class="llm-response">{{blog_article_detail.youtube_title}}</p>
+                <h4 class="text-lg font-semibold mt-4">YouTube Link</h4>
+                <a href="{{blog_article_detail.youtube_link}}" class="llm-response hover:underline" style="max-width: 100%; word-wrap: break-word;">
+                    {{blog_article_detail.youtube_link}}
+                </a>
+            </div>
+        </section>
     </div>
 </div>
+{% endautoescape %}
+{% endblock %}
 
+{% block footer1 %}
 <div class="text-center mt-4">
     <a href="{{ url_for('extras_features.generate_blog') }}" class="btn btn-primary mb-3">
         AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
@@ -59,15 +58,24 @@
     </a>
 </div>
 
-<div class="text-center mt-4 mb-3">
-    <a href="https://9vc-tenacious-davy.circumeo-apps.net/" target="_blank" class="btn btn-secondary mb-3">
-        AI Chat System
-    </a>
-</div>
-
 <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
 
-{% endautoescape %}
+<script>
+    function adjustTextareaHeight(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var textareas = document.querySelectorAll('.blog_details');
+        textareas.forEach(function (textarea) {
+            adjustTextareaHeight(textarea);
+            textarea.addEventListener('input', function () {
+                adjustTextareaHeight(textarea);
+            });
+        });
+    });
+</script>
 {% endblock %}

@@ -10,7 +10,7 @@
 {% include 'bootstrap/base.html' %}
 <style>
     .custom-input-group:hover {
-        transform: scale(1.03);
+        transform: scale(1.05);
         /* Scale up by 5% on hover */
         transition: transform 0.3s ease;
         /* Smooth transition over 0.3 seconds */
@@ -29,8 +29,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="container footer mx-auto mt-10 p-2 sm:px-0 mb-5">
-    <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body custom-input-group border border-secondary">
+<div class="container footer mx-auto mt-10 p-2 sm:px-0 custom-input-group mb-5">
+    <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
         <!-- Blog posts section -->
         <section>
             <h3 class="center font-weight-bold mb-3">AI Blog Generator</h3>
@@ -71,10 +71,14 @@
         </section>
     </div>
 </div>
+{% endblock %}
+
+{% block footer1 %}
 
 <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
+
 
 <script>
     document.getElementById('generateBlogButton').addEventListener('click', async () => {

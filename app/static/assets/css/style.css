@@ -639,6 +639,15 @@ span.carousel-control-next-icon {
     max-width: 800px;
 }
 
+.blog_details {
+    border: 0.1rem solid #343a40;
+    border-radius: 0.9rem;
+    font-family: 'Montserrat', sans-serif;
+    padding: 0.3rem;
+    width: 100%;
+    box-sizing: border-box; 
+}
+
 .btn-custom {
     background-color: #343a40;
     color: #17a2b8;
