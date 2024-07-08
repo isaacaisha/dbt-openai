@@ -6,6 +6,11 @@
     {{ super() }}
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
     {% include 'bootstrap/base.html' %}
+    <style>
+        .readonly {
+            background-color: #f0f0f0; /* Optional: Change background color to indicate readonly */
+        }
+    </style>
 {% endblock %}
 
 {% block content1 %}
@@ -96,7 +101,7 @@
                 <hr class="gold mb-3">
             
                 <h3 class="history-title">Memory Load</h3>
-                <textarea class="textarea-memory align-left mb-3">
+                <textarea class="textarea_details textarea-memory align-left mb-3" readonly>
                     {% for memory in memory_load %}
                     - Conversation nbr: {{ memory.id }}
                     {{ memory.user_name }}: {{ memory.user_message }}
@@ -111,13 +116,13 @@
                 <hr class="crimson mb-3">
             
                 <h3 class="history-title">Summary</h3>
-                <textarea class="textarea-memory mb-3" style="color:#AEFAFC;">{{ summary_conversations|safe }}</textarea>
+                <textarea class="textarea_details textarea-memory mb-3" style="color:#AEFAFC;" readonly>{{ summary_conversations|safe }}</textarea>
             
                 <hr class="crimson mb-5">
                 <hr class="green mb-3">
             
                 <h3 class="history-title">Memory Buffer</h3>
-                <textarea class="textarea-memory mb-3">{{ memory_buffer|safe }}</textarea>
+                <textarea class="textarea_details textarea-memory mb-3" readonly>{{ memory_buffer|safe }}</textarea>
             
                 <hr class="green mb-5">
                 <hr class="gold mb-3">
@@ -130,7 +135,7 @@
                 <!-- Add a div to contain the serialized histories -->
                 <div id="historiesContainer" class="mb-3" style="display: none;">
                     {% for conversation in serialized_memory_load %}
-                    <textarea class="form-control mb-3" id="userInput" name="text_writing">
+                    <textarea class="form-control mb-3" id="userInput" name="text_writing" readonly>
                         "conversation_id": "{{ conversation.id }}"
                         "{{ conversation.user_name }}": "{{ conversation.user_message }}"
                         "·SìįSí·Dbt·": "{{ conversation.llm_response }}"

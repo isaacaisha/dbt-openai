@@ -29,12 +29,13 @@
 {% block content %}
 {% autoescape true %}
 <!-- Main content -->
-<div class="container footer mx-auto mt-5 p-2 sm:px-0 custom-input-group mb-5">
+<br>
+<div class="container footer mx-auto p-2 sm:px-0 custom-input-group mb-5">
     <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
         <section>
             <div class="p-4 main text-light border-secondary rounded-lg">
                 <h3 class="text-lg font-semibold">{{blog_article_detail.youtube_title}}</h3>
-                <textarea class="blog_details p-4 llm-response">{{blog_article_detail.generated_content|safe}}</textarea>
+                <textarea class="textarea_details blog_details p-4 llm-response" readonly>{{blog_article_detail.generated_content|safe}}</textarea>
                 <p class="created">{{ blog_article_detail.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
                 <hr class="my-4 border-secondary">
                 <h4 class="text-lg font-semibold">YouTube Title</h4>
@@ -47,11 +48,12 @@
         </section>
     </div>
 </div>
+<br>
 {% endautoescape %}
 {% endblock %}
 
 {% block footer1 %}
-<div class="text-center mt-4">
+<div class="text-center">
     <a href="{{ url_for('extras_features.generate_blog') }}" class="btn btn-primary mb-3">
         AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
             alt="Crown Icon" class="crown">-¡!¡-🔥
@@ -62,20 +64,4 @@
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
 
-<script>
-    function adjustTextareaHeight(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = (textarea.scrollHeight) + 'px';
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        var textareas = document.querySelectorAll('.blog_details');
-        textareas.forEach(function (textarea) {
-            adjustTextareaHeight(textarea);
-            textarea.addEventListener('input', function () {
-                adjustTextareaHeight(textarea);
-            });
-        });
-    });
-</script>
 {% endblock %}

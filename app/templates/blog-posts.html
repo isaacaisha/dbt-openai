@@ -28,8 +28,9 @@
 
 {% block content %}
 {% autoescape true %}
-
-    <!-- Main content --><div class="container footer mx-auto mt-5 p-2 sm:px-0 custom-input-group mb-5">
+    <br>
+    <!-- Main content -->
+    <div class="container footer mx-auto p-2 sm:px-0 custom-input-group mb-5">
         <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
             <div class="">
                 <!-- Blog posts section -->
@@ -52,12 +53,12 @@
             </div>
         </div>
     </div>
-
+    <br>
 {% endautoescape %}
 {% endblock %}
 
 {% block footer1 %}
-<div class="text-center mt-4">
+<div class="text-center">
     <a href="{{ url_for('extras_features.generate_blog') }}" class="btn btn-primary mb-3">
         AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
             alt="Crown Icon" class="crown">-¡!¡-🔥
