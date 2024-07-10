@@ -40,14 +40,21 @@ cloudinary.config(
 # print(auto_crop_url)
 
 
-# Function to take a screenshot of a URL
+# Function to take a screenshot of a URL /Users/lesanebyby/Desktop/chromedriver-mac-arm64
 def take_screenshot(url):
     try:
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        browser = webdriver.Chrome(options=options)
+        # Dev use 👇🏿
+        # browser = webdriver.Chrome(options=options)
+       	
+        # Path to chromedriver executable
+        chrome_driver_path = '/usr/bin/chromedriver'
+        
+        # Create WebDriver instance with the path to chromedriver
+        browser = webdriver.Chrome(service=webdriver.chrome.service.Service(chrome_driver_path), options=options)
 
         browser.get(url)
 
@@ -99,7 +106,7 @@ def get_review(screenshot_url):
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "Authorization": os.getenv('CLOUDINARY_AUTHORIZATION')
+            "Authorization": os.getenv('VOICEFLOW_AUTHORIZATION')
         }
 
         response = requests.post(url, json=payload, headers=headers)

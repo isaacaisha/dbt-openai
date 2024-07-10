@@ -72,7 +72,7 @@
 
 <!-- Review Section -->
 <h3 class="text-lg font-bold">Portfolio Feedback:</h3>
-<textarea class="textarea_details textarea-memory mb-3" style="color:#AEFAFC;" readonly>{{website_review}}</textarea>
+<textarea class="textarea_details textarea-memory mb-3" style="color:#AEFAFC;" readonly>{{website_review}}<br>Date: {{website_review.created_at}}</textarea>
 <!-- Audio Player for TTS -->
 {% if tts_url %}
 <h3 class="text-lg font-bold">Voice Feedback:</h3>
@@ -81,7 +81,7 @@
     Your browser does not support the audio element.
 </audio>
 {% endif %}
-<!-- Review Section -->
+<!-- Screenshot Section -->
 <h3 class="text-lg font-bold">Screenshot:</h3>
 <div class="mb-5">
     <img src="{{ website_screenshot }}" alt="Website Screenshot" class="img-fluid">
@@ -116,5 +116,23 @@
 {% endif %}
 
 <script src="{{ url_for('static', filename='js/portfolio-review.js') }}" defer></script>
+
+{% endblock %}
+
+{% block footer1 %}
+<hr class="crimson mb-3">
+
+<div class="text-center">
+    <button type="button" class="btn back-home mb-3">
+        <a href="{{ url_for('extras_features.extras_features_home') }}" class="nav-link">
+            -¡!¡- Back To Extras Features -¡!¡-</a>
+    </button>
+</div>
+
+<hr class="crimson mb-5">
+
+<footer class="footer text-center mx-5 p-3 mt-4 mb-5">
+    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
+</footer>
 
 {% endblock %}

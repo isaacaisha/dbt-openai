@@ -40,6 +40,12 @@ function toggleBlogsPosts() {
     container.style.display = (container.style.display === 'none') ? 'block' : 'none';
 }
 
+// Function to toggle Portfolio reviews container
+function togglePortfolioReviews() {
+    var container = document.getElementById('PortfolioReviewsContainer');
+    container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+}
+
 
 // JavaScript for scrolling down
 function scrollDown() {
