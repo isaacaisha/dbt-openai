@@ -42,120 +42,162 @@ cloudinary.config(
 
 # Function to take a screenshot of a URL
 def take_screenshot(url):
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    browser = webdriver.Chrome(options=options)
+    try:
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        browser = webdriver.Chrome(options=options)
 
-    browser.get(url)
+        browser.get(url)
 
-    total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
+        total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
+        browser.set_window_size(1200, total_height)
 
-    browser.set_window_size(1200, total_height)
+        screenshot = browser.get_screenshot_as_png()
+        browser.quit()
 
-    screenshot = browser.get_screenshot_as_png()
-    
-    browser.quit()
+        sanitized_url = url.replace('http://', '').replace('https://', '').replace('/', '_').replace(':', '_')
 
-    sanitized_url = url.replace('http//', '').replace('https//', '').replace('/', '_').replace(':', '_')
+        # Upload screenshot to Cloudinary
+        upload_response = cloudinary.uploader.upload(
+            screenshot,
+            folder="screenshots",
+            public_id=f"{sanitized_url}.png",
+            resource_type='image'
+        )
 
-    upload_response = cloudinary.uploader.upload(
-        screenshot,
-        folder="screenshots",
-        public_id=f"{sanitized_url}.png",
-        resource_type='image'
-    )
+        return upload_response['url']
 
-    # print(f'upload_response:\n{upload_response}')
-    return upload_response['url']
+    except Exception as e:
+        print(f"Error taking screenshot: {str(e)}")
+        return None
 
 
 # Function to get review text using Voiceflow API
 def get_review(screenshot_url):
-    url = "https://general-runtime.voiceflow.com/state/user/testuser/interact?logs=off"
+    try:
+        url = "https://general-runtime.voiceflow.com/state/user/testuser/interact?logs=off"
 
-    payload = {
-        "action": {
-            "type": "intent",
-            "payload": {
-                "query": screenshot_url,
-                "intent": {"name": "review_intent"},
-                "entities": []
-            }
-        },
-        "config": {
-            "tts": True, # Enable TTS
-            "stripSSML": False,
-            "stopAll": True,
-            "excludeTypes": ["block", "debug", "flow"]
-        },
-        "state": { "variables": { "x_var": 1 } }
-    }
-    headers = {
-        "accept": "application/json",
-        "content-type": "application/json",
-        "Authorization": os.getenv('CLOUDINARY_AUTHORIZATION')
-    }
+        payload = {
+            "action": {
+                "type": "intent",
+                "payload": {
+                    "query": screenshot_url,
+                    "intent": {"name": "review_intent"},
+                    "entities": []
+                }
+            },
+            "config": {
+                "tts": True,  # Enable TTS
+                "stripSSML": False,
+                "stopAll": True,
+                "excludeTypes": ["block", "debug", "flow"]
+            },
+            "state": {"variables": {"x_var": 1}}
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": os.getenv('CLOUDINARY_AUTHORIZATION')
+        }
 
-    response = requests.post(url, json=payload, headers=headers)
-    data = response.json()
+        response = requests.post(url, json=payload, headers=headers)
+        data = response.json()
 
-    review_text = ""
-    tts_url = ""
+        review_text = ""
+        tts_url = ""
 
-    for item in data:
-        if item['type'] == 'speak' and 'payload' in item:
-            if 'message' in item['payload']:
-                review_text = item['payload']['message']
-            if 'src' in item['payload']:
-                tts_url = item['payload']['src']
-            break
+        for item in data:
+            if item['type'] == 'speak' and 'payload' in item:
+                if 'message' in item['payload']:
+                    review_text = item['payload']['message']
+                if 'src' in item['payload']:
+                    tts_url = item['payload']['src']
+                break
 
-    # print(f'review_text:\n{review_text}')
-    print(f'tts_url: {tts_url}')  # Debug: Print TTS URL
-    return review_text, tts_url
+        return review_text, tts_url
+
+    except Exception as e:
+        print(f"Error getting review: {str(e)}")
+        return None, None
 
 
 # Endpoint to submit URL for review
 @review_portfolio_bp.route('/submit-url', methods=['GET', 'POST'])
 def submit_url():
     domain = request.args.get('domain')
+
     if domain:
         website_screenshot = take_screenshot(domain)
-        website_review, tts_url = get_review(website_screenshot)
 
-        new_review_object = PortfolioReview(
-            site_url=domain,
-            site_image_url=website_screenshot,
-            feedback=website_review,
-            user_id=current_user.id
-        )
+        if website_screenshot:
+            website_review, tts_url = get_review(website_screenshot)
 
-        db.session.add(new_review_object)
-        db.session.commit()
+            new_review_object = PortfolioReview(
+                site_url=domain,
+                site_image_url=website_screenshot,
+                feedback=website_review,
+                user_id=current_user.id
+            )
 
-        review_id = new_review_object.id
+            db.session.add(new_review_object)
+            db.session.commit()
 
-        response_data = {
-            'website_screenshot': website_screenshot,
-            'website_review': website_review,
-            'tts_url': tts_url,
-            'review_id': review_id,
-        }
+            review_id = new_review_object.id
 
-        flash('Portfolio review submitted successfully 👌🏿')
-        return render_template("index-portfolio.html", 
-                               current_user=current_user, 
-                               portfolio_form=PortfolioReviewForm(),
-                               website_review=website_review, 
-                               website_screenshot=website_screenshot,
-                               tts_url=tts_url,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-    
+            response_data = {
+                'website_screenshot': website_screenshot,
+                'website_review': website_review,
+                'tts_url': tts_url,
+                'review_id': review_id,
+            }
+
+            flash('Portfolio review submitted successfully 👌🏿')
+            return render_template("index-portfolio.html",
+                                   current_user=current_user,
+                                   portfolio_form=PortfolioReviewForm(),
+                                   website_review=website_review,
+                                   website_screenshot=website_screenshot,
+                                   tts_url=tts_url,
+                                   date=datetime.now().strftime("%a %d %B %Y"))
+
+        else:
+            flash('Failed to capture screenshot. Please try again.')
+            return redirect(url_for('portfolio_review.index_portfolio'))
+
     flash('Invalid domain URL.')
     return jsonify({'error': 'Invalid domain URL'})
 
+
+# Main page route
+@review_portfolio_bp.route('/index-portfolio', methods=['GET', 'POST'])
+def index_portfolio():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+    
+    portfolio_form = PortfolioReviewForm()
+
+    if portfolio_form.validate_on_submit():
+        domain = portfolio_form.domain.data
+        return redirect(url_for('portfolio_review.submit_url', domain=domain))
+
+    return render_template("index-portfolio.html", current_user=current_user, portfolio_form=portfolio_form,
+                            date=datetime.now().strftime("%a %d %B %Y"))
+
+
+# Error handling example
+@review_portfolio_bp.errorhandler(Exception)
+def handle_error(error):
+    # Log the error
+    current_app.logger.error(f"An error occurred: {str(error)}")
+
+    # Flash a generic error message
+    flash('An unexpected error occurred. Please try again later.')
+    
+    # Redirect to the main page or appropriate error page
+    return redirect(url_for('portfolio_review.index_portfolio'))
 
 # Endpoint to submit feedback
 @review_portfolio_bp.route('/feedback', methods=['POST'])
@@ -174,22 +216,6 @@ def feedback():
             return jsonify({'status': 'error', 'message': 'Review not found'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
-
-
-# Main page route
-@review_portfolio_bp.route('/index-portfolio', methods=['GET', 'POST'])
-def index_portfolio():
-    if not current_user.is_authenticated:
-        flash('😂Please login to access this page.🤣')
-        return redirect(url_for('auth.login'))
-    
-    portfolio_form = PortfolioReviewForm()
-    if portfolio_form.validate_on_submit():
-        domain = portfolio_form.domain.data
-        return redirect(url_for('portfolio_review.submit_url', domain=domain))
-
-    return render_template("index-portfolio.html", current_user=current_user, portfolio_form=portfolio_form,
-                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
 @review_portfolio_bp.route('/update-like/<int:conversation_id>', methods=['POST'])
