@@ -1,3 +1,5 @@
+# memory.py
+
 from flask import Blueprint
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
@@ -16,8 +18,8 @@ class Memory(db.Model):
     llm_response = db.Column(db.Text, nullable=False)
     conversations_summary = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
-    liked = db.Column(db.Integer, default=0) # Optional liked column
-    embedding = db.Column(db.LargeBinary, nullable=True)  # Add this line for embedding
+    liked = db.Column(db.Integer, default=0)
+    embedding = db.Column(db.LargeBinary, nullable=True)
 
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
@@ -38,6 +40,9 @@ class User(db.Model, UserMixin):
 
     # Define the relationship to the BlogPost model
     blog_posts = relationship('BlogPost', back_populates='user', cascade='all, delete')
+
+    # Define the relationship to the PortfolioReview model
+    portfolio_reviews = relationship('PortfolioReview', back_populates='user', cascade='all, delete')
 
     def __repr__(self):
         return f"<User id={self.id}, email='{self.email}'>"
@@ -97,4 +102,22 @@ class BlogPost(db.Model):
 
     def __repr__(self):
         return f"<BlogPost id={self.id}, title='{self.youtube_title}'>"
+    
+
+class PortfolioReview(db.Model):
+    __tablename__ = 'portfolio_reviews'
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    site_url = db.Column(db.String(9991), nullable=False)
+    site_image_url = db.Column(db.Text, nullable=False)
+    feedback = db.Column(db.Text, default=None, nullable=False)
+    liked = db.Column(db.Integer, default=0)
+    user_rating = db.Column(db.String(5))
+    created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
+    
+    # Define the relationship to the User model
+    user = relationship('User', back_populates='portfolio_reviews')
+
+    def __repr__(self):
+        return f"<PortfolioReview id={self.id}, title='{self.site_url}'>"
     

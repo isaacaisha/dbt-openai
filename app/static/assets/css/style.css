@@ -614,6 +614,7 @@ span.carousel-control-next-icon {
 }
 
 /* AI BLOG GENERATOR SECTION */
+
 @keyframes rotate {
     from {
         transform: rotate(0deg);
@@ -673,4 +674,47 @@ span.carousel-control-next-icon {
 
 .lower-size {
     font-size: 1.09rem;
+}
+
+/* PORTFOLIO-REVIEW SECTION */
+
+.loader {
+    display: none;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #4f46e5;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.icon-circle {
+    background-color: white;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+svg {
+    width: 60px;
+    height: 60px;
 }

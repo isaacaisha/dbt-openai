@@ -62,7 +62,7 @@
         <hr class="crimson mb-5">
 
         <div id="content-container">
-            <form id="prompt-form" method="POST" action=""> <!-- {{ url_for('conversation_interface.interface_answer') }} -->
+            <form id="prompt-form" method="POST" action="{{ url_for('conversation_interface.interface_answer') }}"> <!--  -->
 
                 {{ writing_text_form.csrf_token }}
 

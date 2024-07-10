@@ -1,0 +1,120 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
+{% include 'bootstrap/base.html' %}
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron bg-dark text-light">
+        <div class="container-fluid py-1">
+            <h1 class="">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown img-fluid mx-auto" width="100" height="100">
+                ·SìįSí·Dbt· OpenAI
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon" class="crown img-fluid mx-auto" width="100" height="100">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton">
+        ⇩
+    </button>
+</div>
+
+<div style="position:fixed">
+    <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
+        You can access your liked conversations from the menu.
+    </div>
+</div>
+
+<hr class="green mb-3">
+<h3 class="conversations mb-3">AI Portfolio Review</h3>
+<hr class="green mb-5">
+<hr class="gold mb-3">
+
+<div class="row text-center">
+    <div class="col-lg-8 col-md-10 mx-auto mb-3">
+        <form id="reviewForm" method="POST" action="{{ url_for('portfolio_review.index_portfolio') }}">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-success text-center">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            {{ portfolio_form.csrf_token }}
+            <span class="align-left">{{ wtf.form_field(portfolio_form.domain, autofocus=true) }}</span>
+            {{ wtf.form_field(portfolio_form.submit, class="submit nav-link btn btn-success") }}
+        </form>
+    </div>
+</div>
+
+<hr class="gold mb-5">
+
+<div class="loader" id="loader"></div>
+
+{% if website_review %}
+<div class="like-button text-center mb-5" data-conversation-id="{{ website_review.id }}" {% if website_review.liked %}style="color: pink;" {% endif %}>
+    <i class="fa fa-heart fa-2x mb-3"></i>
+    <hr class="text-center" style="margin: 0 45%;">
+</div>
+
+<div id="likeMessage" class="hidden mt-6 mb-5">Liked!</div>
+
+<!-- Review Section -->
+<h3 class="text-lg font-bold">Portfolio Feedback:</h3>
+<textarea class="textarea_details textarea-memory mb-3" style="color:#AEFAFC;" readonly>{{website_review}}</textarea>
+<!-- Audio Player for TTS -->
+{% if tts_url %}
+<h3 class="text-lg font-bold">Voice Feedback:</h3>
+<audio controls>
+    <source src="{{ tts_url }}" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+{% endif %}
+<!-- Review Section -->
+<h3 class="text-lg font-bold">Screenshot:</h3>
+<div class="mb-5">
+    <img src="{{ website_screenshot }}" alt="Website Screenshot" class="img-fluid">
+</div>
+
+<!-- Rating Section -->
+<div id="rating_section" class="flex flex-col items-center mt-10">
+    <hr class="green mb-3">
+    <h3 class="text-lg font-bold mb-4">Rate The Feedback:</h3>
+    <div class="flex justify-center items-center space-x-8">
+        <div class="flex flex-col items-center justify-center">
+            <div onclick="rateFeedback('great')" class="icon-circle cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path
+                        d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2H464c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48H294.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V320 272 247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z" />
+                </svg>
+            </div>
+            <span class="text-center mt-2">Great</span>
+        </div>
+        <div class="flex flex-col items-center justify-center">
+            <div onclick="rateFeedback('poor')" class="icon-circle cursor-pointer">
+                <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path
+                        d="M313.4 479.1c26-5.2 42.9-30.5 37.7-56.5l-2.3-11.4c-5.3-26.7-15.1-52.1-28.8-75.2H464c26.5 0 48-21.5 48-48c0-18.5-10.5-34.6-25.9-42.6C497 236.6 504 223.1 504 208c0-23.4-16.8-42.9-38.9-47.1c4.4-7.3 6.9-15.8 6.9-24.9c0-21.3-13.9-39.4-33.1-45.6c.7-3.3 1.1-6.8 1.1-10.4c0-26.5-21.5-48-48-48H294.5c-19 0-37.5 5.6-53.3 16.1l-38.5 25.7C176 91.6 160 121.6 160 153.7V192v48v24.9c0 29.2 13.3 56.7 36 75l7.4 5.9c26.5 21.2 44.6 51 51.2 84.2l2.3 11.4c5.2 26-30.5 42.9-56.5 37.7zM32 320H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V352c0-17.7 14.3-32 32-32z" />
+                </svg>
+            </div>
+            <span class="text-center mt-2">Poor</span>
+        </div>
+    </div>
+    <hr class="gold mt-4 mb-5">
+</div>
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/portfolio-review.js') }}" defer></script>
+
+{% endblock %}

@@ -4,13 +4,8 @@
 
 {% block head %}
     {{ super() }}
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
+        <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
     {% include 'bootstrap/base.html' %}
-    <style>
-        .readonly {
-            background-color: #f0f0f0; /* Optional: Change background color to indicate readonly */
-        }
-    </style>
 {% endblock %}
 
 {% block content1 %}

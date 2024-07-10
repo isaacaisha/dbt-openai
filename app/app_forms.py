@@ -1,7 +1,9 @@
+# app_forms.py
+
 from flask import Blueprint
 from flask_wtf import FlaskForm
 from wtforms import HiddenField, SubmitField, IntegerField, validators
-from wtforms.fields.simple import StringField, PasswordField, BooleanField, TextAreaField
+from wtforms.fields.simple import StringField, PasswordField, BooleanField, TextAreaField, URLField
 from wtforms.validators import DataRequired, InputRequired, NumberRange, EqualTo, ValidationError
 
 app_form_bp = Blueprint('forms', __name__)
@@ -73,10 +75,15 @@ class ForumChatForm(FlaskForm):
     username = HiddenField("UserName:", validators=[DataRequired()])
     theme_id = HiddenField("Theme's ID:", validators=[DataRequired()])
     message = TextAreaField('Enter a Text & start Chatting:', [InputRequired(message="Please, first enter a text.")])
-    submit = SubmitField("-¡!¡- Send -¡!¡-")
+    submit = SubmitField("-¡!¡- SEND -¡!¡-")
+
+
+class PortfolioReviewForm(FlaskForm):
+    domain = URLField("Enter the domain URL:", validators=[InputRequired(message="Please enter a valid URL.")])
+    submit = SubmitField('-¡!¡- SUBMIT -¡!¡-')
 
 
 class DatabaseForm(FlaskForm):
     database_name = StringField("Database's Name:", validators=[InputRequired()])
     data_id = IntegerField("Data ID:", validators=[InputRequired(), NumberRange(min=1)])
-    submit = SubmitField('-¡!¡- Delete -¡!¡-')
+    submit = SubmitField('-¡!¡- DELETE -¡!¡-')
