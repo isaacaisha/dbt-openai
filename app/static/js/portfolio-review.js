@@ -1,6 +1,3 @@
-// portfolio-review.js
-
-var review_id = "";
 // Function to handle form submission
 document.getElementById('reviewForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Prevent the default form submission
@@ -64,14 +61,14 @@ document.getElementById('reviewForm').addEventListener('submit', function (event
             // Display the result or perform any other actions based on the response
             if (data.website_review) {
                 document.getElementById('reviewResult').innerHTML = `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="md:col-span-1">
-                            <h3 class="text-lg white font-bold">Portfolio Feedback:</h3>
-                            <textarea readonly class="textarea_details textarea-memory w-full p-2 border border-gray-300" style="min-height: 991px;">${data.website_review}</textarea>
-                        </div>
-                    </div>    
-                    `;
-            
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-1">
+                        <h3 class="text-lg white font-bold">Portfolio Feedback:</h3>
+                        <textarea readonly class="textarea_details textarea-memory w-full p-2 border border-gray-300" style="min-height: 991px;">${data.website_review}</textarea>
+                    </div>
+                </div>    
+                `;
+
                 var audioSource = document.getElementById('audioSource');
                 audioSource.src = data.tts_url;
                 var audioElement = document.getElementById('audioElement');
@@ -84,14 +81,15 @@ document.getElementById('reviewForm').addEventListener('submit', function (event
             }
             if (data.website_screenshot) {
                 document.getElementById('screenshotResult').innerHTML = `
-                    <h3 class="text-lg font-bold">Website Screenshot:</h3>
-                    <img src="${data.website_screenshot}" alt="Website Screenshot" class="mt-2" style="width: 100%; height: auto;" />
-                    `;
+                <h3 class="text-lg font-bold">Website Screenshot:</h3>
+                <img src="${data.website_screenshot}" alt="Website Screenshot" class="mt-2" style="width: 100%; height: auto;" />
+                `;
                 document.getElementById('screenshotResult').classList.remove('hidden');
             }
         })
         .catch(error => {
             console.error('There has been a problem with your fetch operation:', error);
+
             // Hide the loader and enable the buttons if needed
             document.getElementById('loader').style.display = 'none';
             allButtons.forEach(function (button) {
@@ -106,6 +104,13 @@ document.getElementById('reviewForm').addEventListener('submit', function (event
                 iconLink.style.pointerEvents = 'auto';
                 iconLink.style.opacity = '1';
             });
+
+            // Handle specific error conditions
+            if (error.message.includes('Unexpected token')) {
+                alert('There was an error processing your request. Please try again later.');
+            } else {
+                alert('There was a problem with your request. Please try again later.');
+            }
         });
 });
 
@@ -116,9 +121,14 @@ function rateFeedback(review_id, rating) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ review_id: id, rating: user_rating }),
+        body: JSON.stringify({ review_id: review_id, rating: rating }),
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.status === 'success') {
                 // Update UI to reflect the new rating
@@ -134,6 +144,7 @@ function rateFeedback(review_id, rating) {
         })
         .catch(error => {
             console.error('There has been a problem with your fetch operation:', error);
+            alert('There was a problem with your request. Please try again later.');
         });
 }
 
@@ -146,7 +157,12 @@ function toggleLike(reviewId, liked) {
         },
         body: JSON.stringify({ liked: liked }),
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 alert('Updated like successfully!');
@@ -162,6 +178,7 @@ function toggleLike(reviewId, liked) {
         })
         .catch(error => {
             console.error('There has been a problem with your fetch operation:', error);
+            alert('There was a problem with your request. Please try again later.');
         });
 }
 

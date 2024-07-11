@@ -18,13 +18,14 @@ from app.memory import PortfolioReview, User, db
 review_portfolio_bp = Blueprint('portfolio_review', __name__, template_folder='templates', static_folder='static')
 
 
-# # Configuration for Cloudinary     
-# cloudinary.config( 
-#     cloud_name = "dobg0vu5e", 
-#     api_key = os.getenv('CLOUDINARY_API_KEY'), 
-#     api_secret = os.getenv('CLOUDINARY_API_SECRET'),
-#     secure=True
-# )
+# Configuration for Cloudinary     
+cloudinary.config( 
+    cloud_name = "dobg0vu5e", 
+    api_key = os.getenv('CLOUDINARY_API_KEY'), 
+    api_secret = os.getenv('CLOUDINARY_API_SECRET'),
+    secure=True
+)
+
 # 
 # # Upload an image
 # upload_result = cloudinary.uploader.upload("https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg",
@@ -65,14 +66,6 @@ def take_screenshot(url):
         browser.quit()
 
         sanitized_url = url.replace('http://', '').replace('https://', '').replace('/', '_').replace(':', '_')
-
-        # Configuration for Cloudinary     
-        cloudinary.config( 
-            cloud_name = "dobg0vu5e", 
-            api_key = os.getenv('CLOUDINARY_API_KEY'), 
-            api_secret = os.getenv('CLOUDINARY_API_SECRET'),
-            secure=True
-        )
         
         # Upload screenshot to Cloudinary
         upload_response = cloudinary.uploader.upload(
