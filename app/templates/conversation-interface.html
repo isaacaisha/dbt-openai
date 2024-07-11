@@ -115,7 +115,7 @@
             <!--<label>:…·SìįSí·Dbt·…:</label>-->
             <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
 
-            {% if answer %}
+            {% if assistant_reply %}
                 <!-- Display the text response -->
                 <div id="response-text" class="white mb-3">{{ answer|safe }}<br> 💪🏿😇👌🏿</div>
             {% endif %}
@@ -127,7 +127,7 @@
                 </button>
             </div>
 
-            {% if answer %}
+            {% if assistant_reply %}
                 <!-- Play the audio response -->
                 <audio id="response-audio" controls class="submit btn btn-outline-info">
                     <source src="{{ url_for('conversation_interface.interface_serve_audio') }}" type="audio/mp3">

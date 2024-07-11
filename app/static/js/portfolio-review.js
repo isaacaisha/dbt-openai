@@ -1,13 +1,17 @@
 // portfolio-review.js
 
+var review_id = "";
+// Function to handle form submission
 document.getElementById('reviewForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
     // Show the loader
     document.getElementById('loader').style.display = 'block';
 
     // Disable all buttons except navigation buttons
     var allButtons = document.querySelectorAll('button');
     allButtons.forEach(function (button) {
-        if (!button.classList.contains('nav-link')) {
+        if (!button.classList.contains('navbar-toggler')) {
             button.disabled = true;
         }
     });
@@ -19,60 +23,147 @@ document.getElementById('reviewForm').addEventListener('submit', function (event
     }
 
     // Disable links inside icon spans
-    var iconLinks = document.querySelectorAll('a span.fa-stack');
+    var iconLinks = document.querySelectorAll('li > a, a');
     iconLinks.forEach(function (iconLink) {
         iconLink.style.pointerEvents = 'none';
         iconLink.style.opacity = '0.5';
     });
+
+    // Collect form data
+    var formData = new FormData(event.target);
+
+    // Use Fetch API to submit the form data
+    fetch(event.target.action, {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Hide the loader
+            document.getElementById('loader').style.display = 'none';
+
+            // Enable buttons and links
+            allButtons.forEach(function (button) {
+                if (!button.classList.contains('navbar-toggler')) {
+                    button.disabled = false;
+                }
+            });
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
+            iconLinks.forEach(function (iconLink) {
+                iconLink.style.pointerEvents = 'auto';
+                iconLink.style.opacity = '1';
+            });
+
+            // Display the result or perform any other actions based on the response
+            if (data.website_review) {
+                document.getElementById('reviewResult').innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-1">
+                            <h3 class="text-lg white font-bold">Portfolio Feedback:</h3>
+                            <textarea readonly class="textarea_details textarea-memory w-full p-2 border border-gray-300" style="min-height: 991px;">${data.website_review}</textarea>
+                        </div>
+                    </div>    
+                    `;
+            
+                var audioSource = document.getElementById('audioSource');
+                audioSource.src = data.tts_url;
+                var audioElement = document.getElementById('audioElement');
+                audioElement.load(); // Reload the audio element to apply the new source
+
+                document.getElementById('updateLike').classList.remove('hidden');
+                document.getElementById('reviewResult').classList.remove('hidden');
+                document.getElementById('rating_section').classList.remove('hidden');
+                document.getElementById('audioFeedback').classList.remove('hidden');
+            }
+            if (data.website_screenshot) {
+                document.getElementById('screenshotResult').innerHTML = `
+                    <h3 class="text-lg font-bold">Website Screenshot:</h3>
+                    <img src="${data.website_screenshot}" alt="Website Screenshot" class="mt-2" style="width: 100%; height: auto;" />
+                    `;
+                document.getElementById('screenshotResult').classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+            // Hide the loader and enable the buttons if needed
+            document.getElementById('loader').style.display = 'none';
+            allButtons.forEach(function (button) {
+                if (!button.classList.contains('navbar-toggler')) {
+                    button.disabled = false;
+                }
+            });
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
+            iconLinks.forEach(function (iconLink) {
+                iconLink.style.pointerEvents = 'auto';
+                iconLink.style.opacity = '1';
+            });
+        });
 });
 
-function rateFeedback(rating) {
-    const conversationId = document.querySelector('.like-button').dataset.conversationId;
-
-    fetch('/feedback', {
+// Function to handle rate feedback
+function rateFeedback(review_id, rating) {
+    fetch(`/feedback`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ conversation_id: conversationId, type: rating })
+        body: JSON.stringify({ review_id: id, rating: user_rating }),
     })
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
+                // Update UI to reflect the new rating
                 alert('Feedback submitted successfully!');
-                // Optionally, update UI or perform any additional actions
+                var ratingElement = document.querySelector(`.rating[data-review-id="${review_id}"]`);
+                if (ratingElement) {
+                    ratingElement.innerText = `Rating: ${rating}`;
+                }
             } else {
+                console.error('Failed to submit rating');
                 alert('Failed to submit feedback. Please try again.');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while submitting feedback.');
+            console.error('There has been a problem with your fetch operation:', error);
         });
 }
 
-document.querySelector('.like-button').addEventListener('click', function () {
-    const conversationId = this.dataset.conversationId;
-
-    fetch('/update_like/${conversationId}', {
+// Function to toggle like status
+function toggleLike(reviewId, liked) {
+    fetch(`/like/${reviewId}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ liked: true })
+        body: JSON.stringify({ liked: liked }),
     })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                this.style.color = 'pink';
-                document.getElementById("likeMessage").style.display = "block";
-                setTimeout(function () {
-                    document.getElementById("likeMessage").style.display = "none";
-                }, 2000);
+                alert('Updated like successfully!');
+                // Update UI to reflect the new like status
+                var likeButton = document.querySelector(`.icon-circle[data-review-id="${reviewId}"]`);
+                if (likeButton) {
+                    likeButton.classList.toggle('liked', liked);
+                }
+            } else {
+                console.error('Failed to toggle like status');
+                alert('Failed to toggle like status. Please try again.');
             }
         })
-        .catch(error => console.error('Error:', error));
-});
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+}
 
 function scrollDown() {
     window.scrollTo({

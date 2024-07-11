@@ -7,6 +7,7 @@ import cloudinary.uploader
 import requests
 # from cloudinary.utils import cloudinary_url
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from flask import Blueprint, current_app, jsonify, render_template, redirect, url_for, flash, request
 from flask_login import current_user
 from datetime import datetime
@@ -18,14 +19,14 @@ from app.memory import PortfolioReview, User, db
 review_portfolio_bp = Blueprint('portfolio_review', __name__, template_folder='templates', static_folder='static')
 
 
-# Configuration for Cloudinary     
-cloudinary.config( 
-    cloud_name = "dobg0vu5e", 
-    api_key = os.getenv('CLOUDINARY_API_KEY'), 
-    api_secret = os.getenv('CLOUDINARY_API_SECRET'),
-    secure=True
-)
-
+# # Configuration for Cloudinary     
+# cloudinary.config( 
+#     cloud_name = "dobg0vu5e", 
+#     api_key = os.getenv('CLOUDINARY_API_KEY'), 
+#     api_secret = os.getenv('CLOUDINARY_API_SECRET'),
+#     secure=True
+# )
+# 
 # # Upload an image
 # upload_result = cloudinary.uploader.upload("https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg",
 #                                            public_id="shoes")
@@ -40,7 +41,7 @@ cloudinary.config(
 # print(auto_crop_url)
 
 
-# Function to take a screenshot of a URL /Users/lesanebyby/Desktop/chromedriver-mac-arm64
+# Function chromedriver to take a screenshot
 def take_screenshot(url):
     try:
         options = webdriver.ChromeOptions()
@@ -48,14 +49,20 @@ def take_screenshot(url):
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         # Dev use 👇🏿
-        # browser = webdriver.Chrome(options=options)
+        #browser = webdriver.Chrome(options=options)
        	
+        # Increase timeout for page loads and scripts
+        options.add_argument("--timeout=19000") 
+
         # Path to chromedriver executable
         chrome_driver_path = '/usr/bin/chromedriver'
         
-        # Create WebDriver instance with the path to chromedriver
-        browser = webdriver.Chrome(service=webdriver.chrome.service.Service(chrome_driver_path), options=options)
-
+        # Create a ChromeDriver service object
+        service = Service(chrome_driver_path)
+        
+        # Create WebDriver instance with the service and options
+        browser = webdriver.Chrome(service=service, options=options)
+        
         browser.get(url)
 
         total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
@@ -65,6 +72,14 @@ def take_screenshot(url):
         browser.quit()
 
         sanitized_url = url.replace('http://', '').replace('https://', '').replace('/', '_').replace(':', '_')
+
+        # Configuration for Cloudinary     
+        cloudinary.config( 
+            cloud_name = "dobg0vu5e", 
+            api_key = os.getenv('CLOUDINARY_API_KEY'), 
+            api_secret = os.getenv('CLOUDINARY_API_SECRET'),
+            secure=True
+        )
 
         # Upload screenshot to Cloudinary
         upload_response = cloudinary.uploader.upload(
@@ -110,6 +125,7 @@ def get_review(screenshot_url):
         }
 
         response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()  # Ensure we raise an error for bad responses
         data = response.json()
 
         review_text = ""
@@ -123,11 +139,40 @@ def get_review(screenshot_url):
                     tts_url = item['payload']['src']
                 break
 
+        # print(f'review_text:\n{data}')
         return review_text, tts_url
 
     except Exception as e:
         print(f"Error getting review: {str(e)}")
         return None, None
+
+
+# Main page route
+@review_portfolio_bp.route('/index-portfolio', methods=['GET', 'POST'])
+def index_portfolio():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+    
+    portfolio_form = PortfolioReviewForm()
+
+    website_review = None
+    website_screenshot = None
+    review_id = None
+    tts_url = None
+
+    if portfolio_form.validate_on_submit():
+        domain = portfolio_form.domain.data
+        return redirect(url_for('portfolio_review.submit_url', domain=domain))
+
+    return render_template("index-portfolio.html", 
+                           current_user=current_user, 
+                           portfolio_form=portfolio_form,
+                           website_review=website_review,
+                           website_screenshot=website_screenshot,
+                           review_id=review_id,
+                           tts_url=tts_url,
+                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 # Endpoint to submit URL for review
@@ -160,14 +205,7 @@ def submit_url():
                 'review_id': review_id,
             }
 
-            flash('Portfolio review submitted successfully 👌🏿')
-            return render_template("index-portfolio.html",
-                                   current_user=current_user,
-                                   portfolio_form=PortfolioReviewForm(),
-                                   website_review=website_review,
-                                   website_screenshot=website_screenshot,
-                                   tts_url=tts_url,
-                                   date=datetime.now().strftime("%a %d %B %Y"))
+            return jsonify(response_data)
 
         else:
             flash('Failed to capture screenshot. Please try again.')
@@ -176,35 +214,6 @@ def submit_url():
     flash('Invalid domain URL.')
     return jsonify({'error': 'Invalid domain URL'})
 
-
-# Main page route
-@review_portfolio_bp.route('/index-portfolio', methods=['GET', 'POST'])
-def index_portfolio():
-    if not current_user.is_authenticated:
-        flash('😂Please login to access this page.🤣')
-        return redirect(url_for('auth.login'))
-    
-    portfolio_form = PortfolioReviewForm()
-
-    if portfolio_form.validate_on_submit():
-        domain = portfolio_form.domain.data
-        return redirect(url_for('portfolio_review.submit_url', domain=domain))
-
-    return render_template("index-portfolio.html", current_user=current_user, portfolio_form=portfolio_form,
-                            date=datetime.now().strftime("%a %d %B %Y"))
-
-
-# Error handling example
-@review_portfolio_bp.errorhandler(Exception)
-def handle_error(error):
-    # Log the error
-    current_app.logger.error(f"An error occurred: {str(error)}")
-
-    # Flash a generic error message
-    flash('An unexpected error occurred. Please try again later.')
-    
-    # Redirect to the main page or appropriate error page
-    return redirect(url_for('portfolio_review.index_portfolio'))
 
 # Endpoint to submit feedback
 @review_portfolio_bp.route('/feedback', methods=['POST'])
@@ -225,22 +234,20 @@ def feedback():
         return jsonify({'status': 'error', 'message': str(e)})
 
 
-@review_portfolio_bp.route('/update-like/<int:conversation_id>', methods=['POST'])
-def update_like(conversation_id):
-    # Get the liked status from the request data
-    liked = request.json.get('liked')
+# Endpoint to submit like
+@review_portfolio_bp.route('/like/<int:review_id>', methods=['POST'])
+def update_like(review_id):
+    data = request.get_json()
+    liked = data.get('liked', False)
 
-    # Find the corresponding Memory object in the database using db.session.get()
-    conversation = db.session.get(PortfolioReviewForm, conversation_id)
-
-    # Update the liked status of the conversation
-    conversation.liked = liked
-
-    # Add the updated conversation object to the session
-    db.session.add(conversation)
-
-    # Commit the changes to the database
-    db.session.commit()
-
-    # Return a success response
-    return 'Liked status updated successfully', 200
+    try:
+        review = PortfolioReview.query.get(review_id)
+        if review:
+            review.liked = 1 if liked else 0
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Like status updated successfully'})
+        else:
+            return jsonify({'success': False, 'message': 'Review not found'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+    

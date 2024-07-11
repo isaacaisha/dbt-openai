@@ -557,6 +557,7 @@ body hr {
     font-size: 2.7rem;
 }
 
+/* Navbar heart */
 #navbarSupportedContent>ul>li:nth-child(5)>a>i {
     color: pink;
 }
@@ -565,6 +566,8 @@ body hr {
 .text-center {
     color: #70f8fd;
 }
+
+/* CAROUSEL SECTION */
 
 #carouselExampleCaptions {
     background-image: url('https://images.unsplash.com/photo-1470092306007-055b6797ca72?ixlib=rb-1.2.1&auto=format&fit=crop&w=668&q=80');
