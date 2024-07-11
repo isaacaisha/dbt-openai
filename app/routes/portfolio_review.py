@@ -7,7 +7,6 @@ import cloudinary.uploader
 import requests
 # from cloudinary.utils import cloudinary_url
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from flask import Blueprint, current_app, jsonify, render_template, redirect, url_for, flash, request
 from flask_login import current_user
 from datetime import datetime
@@ -49,20 +48,14 @@ def take_screenshot(url):
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         # Dev use 👇🏿
-        #browser = webdriver.Chrome(options=options)
+        browser = webdriver.Chrome(options=options)
        	
-        # Increase timeout for page loads and scripts
-        options.add_argument("--timeout=19000") 
-
         # Path to chromedriver executable
-        chrome_driver_path = '/usr/bin/chromedriver'
-        
-        # Create a ChromeDriver service object
-        service = Service(chrome_driver_path)
-        
-        # Create WebDriver instance with the service and options
-        browser = webdriver.Chrome(service=service, options=options)
-        
+        # chrome_driver_path = '/usr/bin/chromedriver'
+        # 
+        # # Create WebDriver instance with the path to chromedriver
+        # browser = webdriver.Chrome(service=webdriver.chrome.service.Service(chrome_driver_path), options=options)
+
         browser.get(url)
 
         total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
@@ -80,7 +73,7 @@ def take_screenshot(url):
             api_secret = os.getenv('CLOUDINARY_API_SECRET'),
             secure=True
         )
-
+        
         # Upload screenshot to Cloudinary
         upload_response = cloudinary.uploader.upload(
             screenshot,
