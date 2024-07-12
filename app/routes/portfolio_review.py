@@ -17,7 +17,6 @@ from app.memory import PortfolioReview, User, db
 
 review_portfolio_bp = Blueprint('portfolio_review', __name__, template_folder='templates', static_folder='static')
 
-
 # Configuration for Cloudinary     
 cloudinary.config( 
     cloud_name = "dobg0vu5e", 
@@ -26,7 +25,6 @@ cloudinary.config(
     secure=True
 )
 
-# 
 # # Upload an image
 # upload_result = cloudinary.uploader.upload("https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg",
 #                                            public_id="shoes")

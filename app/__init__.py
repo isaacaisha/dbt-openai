@@ -11,6 +11,8 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_cors import CORS
+
 from app.database import db, init_app, database_bp
 from app.app_forms import app_form_bp
 # Import all models
@@ -31,6 +33,7 @@ load_dotenv(find_dotenv())
 def create_app(config=None):
     app = Flask(__name__, template_folder='templates', static_folder='static')
     Bootstrap(app)
+    CORS(app)  # Enable CORS for all origins
 
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_PERMANENT'] = True
