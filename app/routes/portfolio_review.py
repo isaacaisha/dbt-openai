@@ -7,6 +7,8 @@ import cloudinary.uploader
 import requests
 # from cloudinary.utils import cloudinary_url
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+
 from flask import Blueprint, current_app, jsonify, render_template, redirect, url_for, flash, request
 from flask_login import current_user
 from datetime import datetime
@@ -29,11 +31,11 @@ cloudinary.config(
 # upload_result = cloudinary.uploader.upload("https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg",
 #                                            public_id="shoes")
 # print(upload_result["secure_url"])
-# 
+#
 # # Optimize delivery by resizing and applying auto-format and auto-quality
 # optimize_url, _ = cloudinary_url("shoes", fetch_format="auto", quality="auto")
 # print(optimize_url)
-# 
+#
 # # Transform the image: auto-crop to square aspect_ratio
 # auto_crop_url, _ = cloudinary_url("shoes", width=100, height=100, crop="auto", gravity="auto")
 # print(auto_crop_url)
@@ -46,14 +48,21 @@ def take_screenshot(url):
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        # Dev use 👇🏿
-        browser = webdriver.Chrome(options=options)
-       	
-        # Path to chromedriver executable
-        # chrome_driver_path = '/usr/bin/chromedriver'
-        # 
-        # # Create WebDriver instance with the path to chromedriver
-        # browser = webdriver.Chrome(service=webdriver.chrome.service.Service(chrome_driver_path), options=options)
+        options.add_argument("--remote-debugging-port=9222")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
+
+        # # Dev use 👇🏿
+        # browser = webdriver.Chrome(options=options)
+
+        # Specify the path to chromedriver
+        chrome_driver_path = '/usr/local/bin/chromedriver'
+
+        # Create a ChromeService with the specified ChromeDriver path
+        chrome_service = ChromeService(chrome_driver_path)
+
+        # Pass the Service object to the webdriver.Chrome constructor
+        browser = webdriver.Chrome(service=chrome_service, options=options)
 
         browser.get(url)
 
@@ -64,7 +73,7 @@ def take_screenshot(url):
         browser.quit()
 
         sanitized_url = url.replace('http://', '').replace('https://', '').replace('/', '_').replace(':', '_')
-        
+
         # Upload screenshot to Cloudinary
         upload_response = cloudinary.uploader.upload(
             screenshot,

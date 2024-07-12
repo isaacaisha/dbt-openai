@@ -4,6 +4,20 @@ FROM python:3.12.0
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
+# Install Chrome and Chromedriver dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    curl \
+    chromium \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Chromedriver
+RUN CHROMEDRIVER_VERSION=`curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE` && \
+    curl -sS -o /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip && \
+    unzip /tmp/chromedriver_linux64.zip -d /usr/local/bin && \
+    rm /tmp/chromedriver_linux64.zip
+
 # Copy the requirements file into the container at /usr/src/app
 COPY requirements.txt ./
 
