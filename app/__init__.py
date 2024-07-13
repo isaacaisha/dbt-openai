@@ -22,7 +22,7 @@ from app.routes.extras_features import features_extras_bp
 from app.routes.forum_conversation import conversation_chat_forum_bp
 from app.routes.home_process import home_conversation_bp
 from app.routes.llm_conversation import llm_conversation_bp
-from app.routes.portfolio_review import review_portfolio_bp
+from app.routes.website_review import review_website_bp
 from app.routes.process_interface_conversation import interface_conversation_bp
 
 
@@ -87,7 +87,7 @@ def create_app(config=None):
     app.register_blueprint(interface_conversation_bp, name='conversation_interface')
     app.register_blueprint(llm_conversation_bp, name='llm_conversation')
     app.register_blueprint(memory_bp, name='memory')
-    app.register_blueprint(review_portfolio_bp, name='portfolio_review')
+    app.register_blueprint(review_website_bp, name='website_review')
 
 
     @app.route('/robots.txt')
