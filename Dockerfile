@@ -1,4 +1,4 @@
-# Dockerfile
+# DOCKERFILE
 
 # Use an official Python runtime as a parent image
 FROM python:3.12.0
@@ -6,7 +6,7 @@ FROM python:3.12.0
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Install Chrome and Chromedriver dependencies
+# Install necessary dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -15,20 +15,32 @@ RUN apt-get update && apt-get install -y \
     libxss1 \
     libappindicator1 \
     fonts-liberation \
-    xdg-utils
+    xdg-utils \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatspi2.0-0 \
+    libgtk-3-0 \
+    libgtk-4-1 \
+    libu2f-udev \
+    libvulkan1 \
+    libxkbcommon0
 
-# Download and install specific version of Chromium
-RUN wget https://example.com/path/to/chrome-linux64.zip && \
-    unzip chrome-linux64.zip -d /usr/src/app/chrome && \
-    mv /usr/src/app/chrome/chrome-linux64 /usr/src/app/chrome/chromium && \
-    ln -s /usr/src/app/chrome/chromium/chrome /usr/bin/chromium && \
-    rm chrome-linux64.zip
+# Download and install specific version of Chromium (adjust version as needed)
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    dpkg -i google-chrome-stable_current_amd64.deb && \
+    apt-get install -y -f && \
+    rm google-chrome-stable_current_amd64.deb
 
-# Download and install specific version of Chromedriver
-RUN wget https://example.com/path/to/chromedriver-linux64.zip && \
-    unzip chromedriver-linux64.zip -d /usr/src/app/chromedriver && \
-    mv /usr/src/app/chromedriver/chromedriver-linux64/chromedriver /usr/local/bin && \
-    rm chromedriver-linux64.zip
+# Download and install specific version of Chromedriver (adjust version as needed)
+RUN wget https://chromedriver.storage.googleapis.com/93.0.4577.63/chromedriver_linux64.zip && \
+    unzip chromedriver_linux64.zip -d /usr/src/app && \
+    rm chromedriver_linux64.zip && \
+    chmod +x /usr/src/app/chromedriver
+
+# Debug step: List contents of installation directories
+RUN ls -l /usr/src/app && \
+    ls -l /usr/src/app/chromedriver && \
+    ls -l /usr/bin/google-chrome
 
 # Copy the requirements file into the container at /usr/src/app
 COPY requirements.txt ./
@@ -41,8 +53,8 @@ COPY . .
 
 # Define environment variables
 ENV PORT=8000
-ENV CHROME_BINARY_PATH="/usr/src/app/chrome/chromium/chrome"
-ENV CHROMEDRIVER_PATH="/usr/local/bin/chromedriver"
+ENV CHROME_BINARY_PATH="/usr/bin/google-chrome"
+ENV CHROMEDRIVER_PATH="/usr/src/app/chromedriver"
 
 # Expose the specified port
 EXPOSE 8000
