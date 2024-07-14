@@ -99,25 +99,19 @@
         {% endif %}
     </div>
 
-    <ul class="align-left">
-        {% for conversation_ in liked_conversations %}
-            <li>
-                <span class="convers-id"><strong>Conversation ID:</strong> {{ conversation_.id }}</span><br>
-                <span class="white">
-                    <strong>{{ conversation_.user_name }}:</strong> {{ conversation_.user_message|safe }}
-                </span><br><br>
-                <span class="llm-response"><strong>·SìįSí·Dbt·:</strong> {{ conversation_.llm_response|safe }}</span><br><br>
-                <!--<span class="summary"><strong>Summary:</strong> {{ conversation_.conversations_summary|safe }}</span><br>-->
-                <span class="created"><strong>Created At:</strong> {{ conversation_.created_at }}</span><br><br>
-                <!-- Add a icon to indicate like -->
-                <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
-                    <!-- Use "fa-2x" class to make the icon twice as large -->
-                    <i class="fa fa-heart fa-2x mb-3"></i>
-                    <hr class="text-center" style="margin: 0 45%;">
-                </div>
-            </li>
-        {% endfor %}
-    </ul>
+    {% for conversation_ in liked_conversations %}
+        <textarea class="textarea_details textarea-memory align-left mb-2">
+                                    Conversation ID: {{ conversation_.id }}
+                                    {{ conversation_.user_name }}:{{ conversation_.user_message|safe }}
+
+                                    ·SìįSí·Dbt·: {{ conversation_.llm_response }}
+                                    Created At: {{ conversation_.created_at }}
+                                </textarea>
+        <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
+            <i class="fa fa-heart fa-2x mb-2"></i>
+            <hr class="text-center" style="margin: 0 45%;">
+        </div>
+    {% endfor %}
 
     <hr class="green mb-3">
 

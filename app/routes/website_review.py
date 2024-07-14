@@ -1,6 +1,5 @@
 # PORTFOLIO_REVIEW.PY
 
-import json
 import os
 import asyncio
 import cloudinary
@@ -17,6 +16,18 @@ from datetime import datetime
 from app.app_forms import PortfolioReviewForm
 from app.memory import PortfolioReview, User, db
 
+import urllib.parse
+
+# Function to sanitize the URL to a valid public ID
+def sanitize_url_for_public_id(url):
+    # Encode the URL to handle special characters
+    encoded_url = urllib.parse.quote(url, safe='')
+    # Replace any remaining unsafe characters
+    sanitized_url = encoded_url.replace('%', '_').replace('.', '_').replace('/', '_').replace(':', '_').replace('-', '_')
+    # Cloudinary allows only alphanumeric characters, underscores, and hyphens in public IDs
+    # So we ensure that all other characters are replaced with underscores
+    sanitized_url = ''.join(e if e.isalnum() or e in ['_', '-'] else '_' for e in sanitized_url)
+    return sanitized_url[:120]
 
 load_dotenv(find_dotenv())
 
@@ -33,7 +44,6 @@ cloudinary.config(
     api_secret = os.getenv('CLOUDINARY_API_SECRET'),
     secure=True
 )
-
 
 # Function to take a screenshot
 async def take_screenshot(url):
@@ -57,6 +67,7 @@ async def take_screenshot(url):
             # Initialize ChromeDriver in the thread
             browser = webdriver.Chrome(service=chrome_service, options=options)
 
+            print(f"Starting browser for URL: {url}")
             browser.get(url)
 
             total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
@@ -65,7 +76,7 @@ async def take_screenshot(url):
             screenshot = browser.get_screenshot_as_png()
             browser.quit()
 
-            sanitized_url = url.replace('http://', '').replace('https://', '').replace('/', '_').replace(':', '_')
+            sanitized_url = sanitize_url_for_public_id(url)
 
             # Upload screenshot to Cloudinary
             upload_response = cloudinary.uploader.upload(
@@ -82,7 +93,6 @@ async def take_screenshot(url):
             return None
 
     return await asyncio.to_thread(_screenshot_worker, url)
-
 
 # Function to get review text using Voiceflow API
 def get_review(screenshot_url):
@@ -112,9 +122,11 @@ def get_review(screenshot_url):
             "Authorization": os.getenv('VOICEFLOW_AUTHORIZATION')
         }
 
+        print(f"Sending request to Voiceflow with screenshot URL: {screenshot_url}")
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()  # Ensure we raise an error for bad responses
         data = response.json()
+        print(f"Response from Voiceflow: {data}")
 
         review_text = ""
         tts_url = ""
@@ -127,13 +139,11 @@ def get_review(screenshot_url):
                     tts_url = item['payload']['src']
                 break
 
-        # print(f'review_text:\n{data}')
         return review_text, tts_url
 
     except Exception as e:
         print(f"Error getting review: {str(e)}")
         return None, None
-
 
 # Main page route
 @review_website_bp.route('/website-review', methods=['GET', 'POST'])
@@ -161,7 +171,6 @@ def review_website():
                            review_id=review_id,
                            tts_url=tts_url,
                            date=datetime.now().strftime("%a %d %B %Y"))
-
 
 # Endpoint to submit URL for review
 @review_website_bp.route('/submit-url', methods=['GET', 'POST'])
@@ -202,7 +211,6 @@ async def submit_url():
     flash('Invalid domain URL.')
     return jsonify({'error': 'Invalid domain URL'})
 
-
 # Endpoint to submit feedback
 @review_website_bp.route('/feedback', methods=['POST'])
 def feedback():
@@ -220,7 +228,6 @@ def feedback():
             return jsonify({'status': 'error', 'message': 'Review not found'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
-
 
 # Endpoint to submit like
 @review_website_bp.route('/like/<int:review_id>', methods=['POST'])
