@@ -96,16 +96,19 @@
                 <hr class="gold mb-3">
             
                 <h3 class="history-title">Memory Load</h3>
-                <textarea class="textarea_details textarea-memory align-left mb-3" readonly>
-                    {% for memory in memory_load %}
-                    - Conversation nbr: {{ memory.id }}
-                    {{ memory.user_name }}: {{ memory.user_message }}
+<textarea class="textarea_details textarea-memory align-left mb-3" readonly>
+{% for memory in memory_load %}
+- Conversation nbr: {{ memory.id }}
 
-                    ·SìįSí·Dbt·: {{ memory.llm_response }}
+- {{ memory.user_name }}: {{ memory.user_message }}
 
-                        ---------------------
-                    {% endfor %}
-                </textarea>
+·SìįSí·Dbt·: {{ memory.llm_response }}
+
+- Created At: {{ memory.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+
+    ---------------------
+{% endfor %}
+</textarea>
             
                 <hr class="gold mb-5">
                 <hr class="crimson mb-3">

@@ -28,13 +28,15 @@
     <h3 class="conversations">Conversation Details</h3>
     <hr class="green mb-5">
     <hr class="gold mb-3">
-    <textarea class="textarea_details textarea-memory align-left mb-2">
-                                Conversation ID: {{ conversation_.id }}
-                                {{ conversation_.user_name }}:{{ conversation_.user_message|safe }}
-                
-                                ·SìįSí·Dbt·: {{ conversation_.llm_response }}
-                                Created At: {{ conversation_.created_at }}
-                            </textarea>
+<textarea class="textarea_details textarea-memory align-left mb-2">
+- Conversation ID: {{ conversation_.id }}
+
+- {{ conversation_.user_name }}: {{ conversation_.user_message|safe }}
+
+·SìįSí·Dbt·: {{ conversation_.llm_response }}
+
+- Created At: {{ conversation_.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+</textarea>
     <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked
         %}style="color: pink;" {% endif %}>
         <i class="fa fa-heart fa-2x mb-2"></i>

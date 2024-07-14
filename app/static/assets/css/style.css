@@ -374,6 +374,11 @@ textarea#message {
     height: 109px;
 }
 
+#content>div.container.text-center>textarea, 
+#content>div.container.conversations>textarea {
+    color: #70f8fd !important;
+}
+
 #content>div.container.text-center>div.row>div>form>div>label {
     display: none;
 }
