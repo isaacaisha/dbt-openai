@@ -8,12 +8,18 @@ services:
     volumes:
       - .:/usr/src/app # :ro -> extra security (for read-only)
     command: uvicorn main:asgi_app --host 0.0.0.0 --port 8000 --reload
-  #   env_file:
-  #     - ./.env
+    env_file:
+      - ./.env
     # To use pgAdmin
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ASSEMBLYAI_API_KEY=${ASSEMBLYAI_API_KEY} 
+      - ASSEMBLYAI_API_KEY=${ASSEMBLYAI_API_KEY}
+      - CHROME_BINARY_PATH=${CHROME_BINARY_PATH}
+      - CHROMEDRIVER_PATH=${CHROMEDRIVER_PATH}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - GOOGLE_CLOUD_API_KEY=${GOOGLE_CLOUD_API_KEY}
+      - VOICEFLOW_AUTHORIZATION=${VOICEFLOW_AUTHORIZATION}
       - DATABASE_URL=postgresql://postgres:Toure7Medina@localhost:5432/siisi_ai
       - DB_HOST=postgres
       - DB_PORT=5432

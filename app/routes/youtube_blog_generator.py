@@ -1,9 +1,6 @@
-# YOUTUBE_BLOG_GENERATOR.PY
-
 import os
 import yt_dlp
 import assemblyai as aai
-
 from dotenv import load_dotenv, find_dotenv
 from flask import Blueprint, flash, render_template, request, jsonify, redirect, url_for
 from datetime import datetime
@@ -14,9 +11,6 @@ from langchain.chains import ConversationChain
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langdetect import detect
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
 
 load_dotenv(find_dotenv())
 
@@ -115,10 +109,8 @@ def download_audio(link):
                 os.rename(audio_file, new_file)
             return new_file, None
     except yt_dlp.utils.RegexNotFoundError:
-        logging.error("RegexNotFoundError: Unable to extract metadata from the video")
         return None, "Unable to extract metadata from the video"
     except Exception as e:
-        logging.error(f"Error downloading audio: {str(e)}")
         return None, f"Error downloading audio: {str(e)}"
 
 def process_youtube_video(user_id, youtube_link):
@@ -163,9 +155,6 @@ def cleanup_files(file_paths):
     for file_path in file_paths:
         if os.path.exists(file_path):
             os.remove(file_path)
-            logging.debug(f"Deleted file: {file_path}")
-        else:
-            logging.warning(f"File {file_path} not found during cleanup")
 
 def get_transcription(audio_file):
     aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
@@ -174,7 +163,6 @@ def get_transcription(audio_file):
         transcript = transcriber.transcribe(audio_file)
         transcription_text = transcript.text
     except Exception as e:
-        logging.error(f"AssemblyAI Client Error: {str(e)}")
         transcription_text = None
     return transcription_text
 
@@ -198,5 +186,4 @@ def generate_blog_from_transcription(transcription):
         generated_content = response.choices[0].message.content.strip()
         return generated_content
     except Exception as e:
-        logging.error(f"Error generating blog content: {str(e)}")
         return None

@@ -1,5 +1,3 @@
-# DOCKERFILE
-
 # Use an official Python runtime as a parent image
 FROM python:3.12.0
 
@@ -26,21 +24,22 @@ RUN apt-get update && apt-get install -y \
     libxkbcommon0 \
     ffmpeg
 
-# Download and install specific version of Chromium (adjust version as needed)
+# Download and install specific version of Google Chrome
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
     dpkg -i google-chrome-stable_current_amd64.deb && \
     apt-get install -y -f && \
     rm google-chrome-stable_current_amd64.deb
 
-# Download and install specific version of Chromedriver (adjust version as needed)
-RUN wget https://chromedriver.storage.googleapis.com/93.0.4577.63/chromedriver_linux64.zip && \
-    unzip chromedriver_linux64.zip -d /usr/src/app && \
+# Download and install compatible version of Chromedriver
+# Using ChromeDriver version 96.0.4664.45
+RUN wget https://chromedriver.storage.googleapis.com/96.0.4664.45/chromedriver_linux64.zip && \
+    unzip chromedriver_linux64.zip -d /usr/local/bin/ && \
     rm chromedriver_linux64.zip && \
-    chmod +x /usr/src/app/chromedriver
+    chmod +x /usr/local/bin/chromedriver
 
 # Debug step: List contents of installation directories
 RUN ls -l /usr/src/app && \
-    ls -l /usr/src/app/chromedriver && \
+    ls -l /usr/local/bin/chromedriver && \
     ls -l /usr/bin/google-chrome
 
 # Copy the requirements file into the container at /usr/src/app
