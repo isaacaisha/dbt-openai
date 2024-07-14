@@ -1,7 +1,7 @@
 // portfolio-review.js
 
 // Function to handle form submission
-document.getElementById('reviewForm').addEventListener('submit', function (event) {
+document.getElementById('reviewForm').addEventListener('submit', async function (event) {
     event.preventDefault(); // Prevent the default form submission
 
     // Show the loader
@@ -32,17 +32,22 @@ document.getElementById('reviewForm').addEventListener('submit', function (event
     var formData = new FormData(event.target);
 
     // Use Fetch API to submit the form data
-    fetch(event.target.action, {
-        method: 'POST',
-        body: formData,
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
+    try {
+        const response = await fetch(event.target.action, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            console.log('Response status:', response.status);
+            const text = await response.text();
+            throw new Error(text);
+        }
+
+        if (response.headers.get('content-type')?.includes('application/json')) {
+            const data = await response.json();
+            console.log('Data received:', data);
+
             // Hide the loader
             document.getElementById('loader').style.display = 'none';
 
@@ -88,32 +93,34 @@ document.getElementById('reviewForm').addEventListener('submit', function (event
                 `;
                 document.getElementById('screenshotResult').classList.remove('hidden');
             }
-        })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
+        } else {
+            throw new Error('Unexpected response type');
+        }
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
 
-            // Hide the loader and enable the buttons if needed
-            document.getElementById('loader').style.display = 'none';
-            allButtons.forEach(function (button) {
-                if (!button.classList.contains('navbar-toggler')) {
-                    button.disabled = false;
-                }
-            });
-            if (submitButton) {
-                submitButton.disabled = false;
-            }
-            iconLinks.forEach(function (iconLink) {
-                iconLink.style.pointerEvents = 'auto';
-                iconLink.style.opacity = '1';
-            });
-
-            // Handle specific error conditions
-            if (error.message.includes('Unexpected token')) {
-                alert('There was an error processing your request. Please try again later.');
-            } else {
-                alert('There was a problem with your request. Please try again later.');
+        // Hide the loader and enable the buttons if needed
+        document.getElementById('loader').style.display = 'none';
+        allButtons.forEach(function (button) {
+            if (!button.classList.contains('navbar-toggler')) {
+                button.disabled = false;
             }
         });
+        if (submitButton) {
+            submitButton.disabled = false;
+        }
+        iconLinks.forEach(function (iconLink) {
+            iconLink.style.pointerEvents = 'auto';
+            iconLink.style.opacity = '1';
+        });
+
+        // Handle specific error conditions
+        if (error.message.includes('Unexpected token')) {
+            alert('There was an error processing your request. Please try again later.');
+        } else {
+            alert('There was a problem with your request. Please try again later.');
+        }
+    }
 });
 
 // Function to handle rate feedback

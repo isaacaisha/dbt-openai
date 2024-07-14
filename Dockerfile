@@ -23,7 +23,8 @@ RUN apt-get update && apt-get install -y \
     libgtk-4-1 \
     libu2f-udev \
     libvulkan1 \
-    libxkbcommon0
+    libxkbcommon0 \
+    ffmpeg
 
 # Download and install specific version of Chromium (adjust version as needed)
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
@@ -54,7 +55,7 @@ COPY . .
 # Define environment variables
 ENV PORT=8000
 ENV CHROME_BINARY_PATH="/usr/bin/google-chrome"
-ENV CHROMEDRIVER_PATH="/usr/src/app/chromedriver"
+ENV CHROMEDRIVER_PATH="/usr/local/bin/chromedriver"
 
 # Expose the specified port
 EXPOSE 8000

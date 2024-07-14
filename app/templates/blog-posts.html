@@ -38,7 +38,7 @@
                         <div class="text-light rounded-lg">
 
                             {% for article in blog_articles %}
-                                <a href="{{ url_for('extras_features.blog_details', pk=article.id) }}">
+                                <a href="{{ url_for('yt_blog_generator.blog_details', pk=article.id) }}">
                                     <div class="llm-response p-4 border border-secondary rounded-lg">
                                         <h3 class="text-lg font-semibold">{{ article.youtube_title }}</h3>
                                         <p class="text-info">{{ article.generated_content|truncate(91) }}</p>
@@ -59,7 +59,7 @@
 
 {% block footer1 %}
 <div class="text-center">
-    <a href="{{ url_for('extras_features.generate_blog') }}" class="btn btn-primary mb-3">
+    <a href="{{ url_for('yt_blog_generator.generate_blog') }}" class="btn btn-primary mb-3">
         AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
             alt="Crown Icon" class="crown">-¡!¡-🔥
     </a>

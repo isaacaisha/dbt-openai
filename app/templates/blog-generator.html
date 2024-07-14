@@ -104,17 +104,26 @@
                     body: JSON.stringify({ link: youtubeLink })
                 });
 
+                if (!response.ok) {
+                    // Show error message to the user
+                    throw new Error(`Error: ${response.status} ${response.statusText}`);
+                }
+
                 const data = await response.json();
 
-                blogContent.innerHTML = data.content;
+                if (data.error) {
+                    blogContent.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                } else {
+                    blogContent.innerHTML = data.content;
+                }
 
             } catch (error) {
                 console.error("Error occurred:", error);
-                alert("Something went wrong. Please try again later.");
-
+                blogContent.innerHTML = `<div class="alert alert-danger">Something went wrong. Please try again later.</div>`;
+            } finally {
+                document.getElementById('loading-circle').style.display = 'none';
+                document.getElementById('loading-indicator').style.display = 'none';
             }
-            document.getElementById('loading-circle').style.display = 'none';
-            document.getElementById('loading-indicator').style.display = 'none';
         } else {
             alert("Please enter a YouTube link.");
         }

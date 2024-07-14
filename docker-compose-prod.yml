@@ -8,6 +8,7 @@ services:
     # To use pgAdmin
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ASSEMBLYAI_API_KEY=${ASSEMBLYAI_API_KEY} 
       - DATABASE_URL=${DATABASE_URL}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}

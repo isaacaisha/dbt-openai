@@ -13,6 +13,7 @@ services:
     # To use pgAdmin
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ASSEMBLYAI_API_KEY=${ASSEMBLYAI_API_KEY} 
       - DATABASE_URL=postgresql://postgres:Toure7Medina@localhost:5432/siisi_ai
       - DB_HOST=postgres
       - DB_PORT=5432

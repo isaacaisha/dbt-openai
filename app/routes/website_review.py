@@ -21,7 +21,7 @@ from app.memory import PortfolioReview, User, db
 load_dotenv(find_dotenv())
 
 # Fetch paths from environment variables
-CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', '/usr/src/app/chrome/chromium/chrome')
+CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', '/usr/bin/google-chrome')
 CHROME_DRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', '/usr/local/bin/chromedriver')
 
 review_website_bp = Blueprint('website_review', __name__, template_folder='templates', static_folder='static')

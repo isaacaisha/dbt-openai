@@ -18,7 +18,7 @@ from app.memory import memory_bp, Memory, User, Theme, Message, MemoryTest, Blog
 
 from app.routes.auth import auth_bp
 from app.routes.convers_functions import conversation_functionality_bp
-from app.routes.extras_features import features_extras_bp
+from app.routes.youtube_blog_generator import generator_yt_blog_bp
 from app.routes.forum_conversation import conversation_chat_forum_bp
 from app.routes.home_process import home_conversation_bp
 from app.routes.llm_conversation import llm_conversation_bp
@@ -82,7 +82,7 @@ def create_app(config=None):
     app.register_blueprint(conversation_chat_forum_bp, name='conversation_chat_forum')
     app.register_blueprint(conversation_functionality_bp, name='conversation_function')
     app.register_blueprint(database_bp, name='database')
-    app.register_blueprint(features_extras_bp, name='extras_features')
+    app.register_blueprint(generator_yt_blog_bp, name='yt_blog_generator')
     app.register_blueprint(home_conversation_bp, name='conversation_home')
     app.register_blueprint(interface_conversation_bp, name='conversation_interface')
     app.register_blueprint(llm_conversation_bp, name='llm_conversation')
