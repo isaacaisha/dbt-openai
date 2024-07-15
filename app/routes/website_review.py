@@ -136,34 +136,11 @@ def get_review(screenshot_url):
                     tts_url = item['payload']['src']
                 break
 
-        if not tts_url:
-            print("TTS URL not found in the response")
-
         return review_text, tts_url
 
-    except requests.exceptions.RequestException as e:
-        print(f"HTTP error: {e}")
-    except ValueError as e:
-        print(f"JSON decode error: {e}")
     except Exception as e:
-        print(f"Unexpected error: {e}")
-
-    return None, None
-
-# Example usage
-screenshot_url = "http://res.cloudinary.com/dobg0vu5e/image/upload/v1720978039/screenshots/https_3A_2F_2Fnicepage_com_2Ftemplates_2Fpreview_2Fmobile_app_development_company_2578756_3Fdevice_3Ddesktop.png.png"
-review_text, tts_url = get_review(screenshot_url)
-
-if review_text:
-    print("Review Text:", review_text)
-else:
-    print("Failed to get review text")
-
-if tts_url:
-    print("TTS URL:", tts_url)
-else:
-    print("Failed to get TTS URL")
-
+        print(f"Error getting review: {str(e)}")
+        return None, None
 
 # Main page route
 @review_website_bp.route('/website-review', methods=['GET', 'POST'])
@@ -252,9 +229,16 @@ def feedback():
 # Endpoint to submit like
 @review_website_bp.route('/like/<int:review_id>', methods=['POST'])
 def update_like(review_id):
-    review = WebsiteReview.query.get(review_id)
-    if review:
-        review.liked = not review.liked  # Toggle the like status
-        db.session.commit()
-        return jsonify({'liked': review.liked}), 200
-    return jsonify({'error': 'Review not found'}), 404
+    data = request.get_json()
+    liked = data.get('liked', False)
+
+    try:
+        review = WebsiteReview.query.get(review_id)
+        if review:
+            review.liked = 1 if liked else 0
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Like status updated successfully'})
+        else:
+            return jsonify({'success': False, 'message': 'Review not found'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})

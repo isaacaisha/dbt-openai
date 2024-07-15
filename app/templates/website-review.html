@@ -64,7 +64,7 @@
     <div class="loader" id="loader"></div>
     
     <!-- Like Section -->
-    <div id="updateLike" class="like-button text-center mb-5 " data-reviewId="{{ review_id }}">
+    <div id="updateLike" class="like-button text-center mb-5 hidden" data-reviewId="{{ review_id }}">
         <i id="likeIcon{{ review_id }}" class="fa fa-heart fa-2x mb-3 {% if liked %}liked{% endif %}" onclick="toggleLike('{{ review_id }}')"></i>
         <hr class="text-center" style="margin: 0 45%;">
     </div>
@@ -74,7 +74,7 @@
     <div id="reviewResult" class="mb-3 mt-6 hidden" style="color:#AEFAFC;"></div>
     
     <!-- Audio Player for TTS -->
-    <div id="audioFeedback" class=" audio-feedback">
+    <div id="audioFeedback" class="audio-feedback hidden">
         <h3 class="text-lg font-bold">Voice Feedback:</h3>
         <audio controls id="audioElement">
             <source id="audioSource" src="{{ tts_url }}" type="audio/mpeg">
@@ -89,7 +89,7 @@
     </div>
 
     <!-- Rating Section -->
-    <div id="rating_section" class="flex flex-col items-center mt-10 ">
+    <div id="rating_section" class="flex flex-col items-center mt-10 hidden">
         <hr class="green mb-3">
         <h3 class="text-lg font-bold mb-4">Rate The Feedback:</h3>
         <div class="flex justify-center items-center space-x-8">
