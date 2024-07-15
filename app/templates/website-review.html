@@ -52,9 +52,9 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                {{ portfolio_form.csrf_token }}
-                <span class="align-left">{{ wtf.form_field(portfolio_form.domain, autofocus=true) }}</span>
-                {{ wtf.form_field(portfolio_form.submit, class="submit nav-link btn btn-success") }}
+                {{ review_form.csrf_token }}
+                <span class="align-left">{{ wtf.form_field(review_form.domain, autofocus=true) }}</span>
+                {{ wtf.form_field(review_form.submit, class="submit nav-link btn btn-success") }}
             </form>
         </div>
     </div>
@@ -64,8 +64,8 @@
     <div class="loader" id="loader"></div>
     
     <!-- Like Section -->
-    <div id="updateLike" class="like-button text-center mb-5 hidden" data-reviewId="{{ review_id }}">
-        <i class="fa fa-heart fa-2x mb-3 {% if website_review.liked %}liked{% endif %}" onclick="toggleLike('{{ review_id }}', '{{ website_review.liked }}')"></i>
+    <div id="updateLike" class="like-button text-center mb-5 " data-reviewId="{{ review_id }}">
+        <i id="likeIcon{{ review_id }}" class="fa fa-heart fa-2x mb-3 {% if liked %}liked{% endif %}" onclick="toggleLike('{{ review_id }}')"></i>
         <hr class="text-center" style="margin: 0 45%;">
     </div>
     <div id="likeMessage" class="mt-6 mb-5 hidden">Liked!</div>
@@ -74,7 +74,7 @@
     <div id="reviewResult" class="mb-3 mt-6 hidden" style="color:#AEFAFC;"></div>
     
     <!-- Audio Player for TTS -->
-    <div id="audioFeedback" class="hidden audio-feedback">
+    <div id="audioFeedback" class=" audio-feedback">
         <h3 class="text-lg font-bold">Voice Feedback:</h3>
         <audio controls id="audioElement">
             <source id="audioSource" src="{{ tts_url }}" type="audio/mpeg">
@@ -89,12 +89,12 @@
     </div>
 
     <!-- Rating Section -->
-    <div id="rating_section" class="flex flex-col items-center mt-10 hidden">
+    <div id="rating_section" class="flex flex-col items-center mt-10 ">
         <hr class="green mb-3">
         <h3 class="text-lg font-bold mb-4">Rate The Feedback:</h3>
         <div class="flex justify-center items-center space-x-8">
             <div class="flex flex-col items-center justify-center">
-                <div onclick="rateFeedback('great', '{{review_id}}')" class="icon-circle cursor-pointer">
+                <div onclick="rateFeedback('{{ review_id }}', 'great')" class="icon-circle cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                         <path
                             d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2H464c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48H294.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V320 272 247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z" />
@@ -103,7 +103,7 @@
                 <span class="text-center mt-2">Great</span>
             </div>
             <div class="flex flex-col items-center justify-center">
-                <div onclick="rateFeedback('poor', '{{ review_id }}')" class="icon-circle cursor-pointer">
+                <div onclick="rateFeedback('{{ review_id }}', 'poor')" class="icon-circle cursor-pointer">
                     <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                         <path
                             d="M313.4 479.1c26-5.2 42.9-30.5 37.7-56.5l-2.3-11.4c-5.3-26.7-15.1-52.1-28.8-75.2H464c26.5 0 48-21.5 48-48c0-18.5-10.5-34.6-25.9-42.6C497 236.6 504 223.1 504 208c0-23.4-16.8-42.9-38.9-47.1c4.4-7.3 6.9-15.8 6.9-24.9c0-21.3-13.9-39.4-33.1-45.6c.7-3.3 1.1-6.8 1.1-10.4c0-26.5-21.5-48-48-48H294.5c-19 0-37.5 5.6-53.3 16.1l-38.5 25.7C176 91.6 160 121.6 160 153.7V192v48v24.9c0 29.2 13.3 56.7 36 75l7.4 5.9c26.5 21.2 44.6 51 51.2 84.2l2.3 11.4c5.2 26-30.5 42.9-56.5 37.7zM32 320H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V352c0-17.7 14.3-32 32-32z" />

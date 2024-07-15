@@ -130,18 +130,22 @@
                     Show Conversations
                 </button>
 
-                <!-- Add a div to contain the serialized histories -->
-                <div id="historiesContainer" class="mb-3" style="display: none;">
-                    {% for conversation in serialized_memory_load %}
-                    <textarea class="form-control mb-3" id="userInput" name="text_writing" readonly>
-                        "conversation_id": "{{ conversation.id }}"
-                        "{{ conversation.user_name }}": "{{ conversation.user_message }}"
-                        "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                        "conversation_summary": "{{ conversation.conversations_summary }}"
-                        "created_at": "{{ conversation.created_at }}"
-                    </textarea>
-                    {% endfor %}
-                </div>
+<!-- Add a div to contain the serialized histories -->
+<div id="historiesContainer" class="mb-3" style="display: none;">
+{% for conversation in serialized_memory_load %}
+<textarea class="form-control mb-3" id="userInput" name="text_writing" readonly>
+"conversation_id": "{{ conversation.id }}"
+
+"{{ conversation.user_name }}": "{{ conversation.user_message }}"
+
+"·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+
+"conversation_summary": "{{ conversation.conversations_summary }}"
+
+"created_at": "{{ conversation.created_at }}"
+</textarea>
+{% endfor %}
+</div>
 
                 <hr class="gold mb-5">
                 <hr class="crimson mb-3">

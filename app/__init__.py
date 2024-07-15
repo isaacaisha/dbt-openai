@@ -14,7 +14,7 @@ from flask_migrate import Migrate
 from app.database import db, init_app, database_bp
 from app.app_forms import app_form_bp
 # Import all models
-from app.memory import memory_bp, Memory, User, Theme, Message, MemoryTest, BlogPost, PortfolioReview
+from app.memory import memory_bp, Memory, User, Theme, Message, MemoryTest, BlogPost, WebsiteReview
 
 from app.routes.auth import auth_bp
 from app.routes.convers_functions import conversation_functionality_bp

@@ -99,7 +99,7 @@
         </div>
 
 {% for conversation_ in conversations %}
-<textarea class="textarea_details textarea-memory align-left mb-2">
+<textarea class="textarea_details textarea-memory align-left mb-2" readonly>
 - Conversation ID: {{ conversation_.id }}
 
 - {{ conversation_.user_name }}: {{ conversation_.user_message|safe }}
@@ -123,17 +123,21 @@
         </button>
 
         <!-- Add a div to contain the serialized histories -->
-        <div id="historiesContainer" class="align-left mb-3" style="display: none;">
-            {% for conversation in conversations %}
-                <textarea class="form-control mb-3" id="userInput" name="text_writing">
-                    "conversation_id": "{{ conversation.id }}"
-                    "{{ conversation.user_name }}": "{{ conversation.user_message }}"
-                    "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                    "conversation_summary": "{{ conversation.conversations_summary }}"
-                    "created_at": "{{ conversation.created_at }}"
-                </textarea>
-            {% endfor %}
-        </div>
+<div id="historiesContainer" class="align-left mb-3" style="display: none;">
+{% for conversation in conversations %}
+<textarea class="form-control mb-3" id="userInput" name="text_writing" readonly>
+"conversation_id": "{{ conversation.id }}"
+
+"{{ conversation.user_name }}": "{{ conversation.user_message }}"
+
+"·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+
+"conversation_summary": "{{ conversation.conversations_summary }}"
+
+"created_at": "{{ conversation.created_at }}"
+</textarea>
+{% endfor %}
+</div>
 
         <hr class="green mb-5">
         <hr class="gold mb-3">

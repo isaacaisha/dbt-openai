@@ -78,7 +78,7 @@ class ForumChatForm(FlaskForm):
     submit = SubmitField("-¡!¡- SEND -¡!¡-")
 
 
-class PortfolioReviewForm(FlaskForm):
+class WebsiteReviewForm(FlaskForm):
     domain = URLField("Enter the domain URL:", validators=[InputRequired(message="Please enter a valid URL.")])
     submit = SubmitField('-¡!¡- SUBMIT -¡!¡-')
 

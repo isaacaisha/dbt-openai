@@ -100,10 +100,10 @@
         </div>
     
 {% for conversation_ in first_conversations %}
-<textarea class="textarea_details textarea-memory align-left mb-2">
+<textarea class="textarea_details textarea-memory align-left mb-2" readonly>
 - Conversation ID: {{ conversation_.id }}
 
-- {{ conversation_.user_name }}:{{ conversation_.user_message|safe }}
+- {{ conversation_.user_name }}: {{ conversation_.user_message|safe }}
 
 ·SìįSí·Dbt·: {{ conversation_.llm_response }}
 
@@ -121,10 +121,10 @@
     
         <h4><span class="gold1">{{ limit }}</span> Latest Conversations</h4>
 {% for conversation_ in last_conversations %}
-<textarea class="textarea_details textarea-memory align-left mb-2">
+<textarea class="textarea_details textarea-memory align-left mb-2" readonly>
 - Conversation ID: {{ conversation_.id }}
 
-- {{ conversation_.user_name }}: {{ conversation_.user_message|safe }}
+- {{ conversation_.user_name }}: {{ conversation_.user_message }}
 
 ·SìįSí·Dbt·: {{ conversation_.llm_response }}
 
@@ -147,26 +147,32 @@
         <div id="historiesContainer" class="mb-3" style="display: none;">
         
             <h4><span class="gold1">{{ limit }}</span> Firtest Conversations</h4>
-            {% for conversation in first_conversations %}
-                <textarea class="form-control align-left mb-5" id="userInput" name="text_writing">
-                    "conversation_id": "{{ conversation.id }}"
-                    "{{ conversation.user_name }}": "{{ conversation.user_message }}"
-                    "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                    "created_at": "{{ conversation.created_at }}"
-                </textarea>
-                <!--"conversation_summary": "{{ conversation.conversations_summary }}"-->
-            {% endfor %}
+{% for conversation in first_conversations %}
+<textarea class="form-control align-left mb-5" id="userInput" name="text_writing" readonly>
+"conversation_id": "{{ conversation.id }}"
+
+"{{ conversation.user_name }}": "{{ conversation.user_message }}"
+
+"·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+
+"created_at": "{{ conversation.created_at }}"
+</textarea>
+<!--"conversation_summary": "{{ conversation.conversations_summary }}"-->
+{% endfor %}
 
             <h4><span class="gold1">{{ limit }}</span> Latest Conversations</h4>
-            {% for conversation in last_conversations %}
-                <textarea class="form-control align-left mb-5" id="userInput" name="text_writing">
-                    "conversation_id": "{{ conversation.id }}"
-                    "{{ conversation.user_name }}": "{{ conversation.user_message }}"
-                    "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                    "created_at": "{{ conversation.created_at }}"
-                </textarea>
-                <!--"conversation_summary": "{{ conversation.conversations_summary }}"-->
-            {% endfor %}
+{% for conversation in last_conversations %}
+<textarea class="form-control align-left mb-5" id="userInput" name="text_writing" readonly>
+"conversation_id": "{{ conversation.id }}"
+
+"{{ conversation.user_name }}": "{{ conversation.user_message }}"
+
+"·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+
+"created_at": "{{ conversation.created_at }}"
+</textarea>
+<!--"conversation_summary": "{{ conversation.conversations_summary }}"-->
+{% endfor %}
         </div>
     
         <hr class="green mb-5">

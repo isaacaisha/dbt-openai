@@ -121,7 +121,7 @@ function rateFeedback(review_id, rating) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ review_id: review_id, rating: rating }),
+        body: JSON.stringify({ id: review_id, user_rating: rating }),
     })
         .then(response => {
             if (!response.ok) {
@@ -132,10 +132,6 @@ function rateFeedback(review_id, rating) {
         .then(data => {
             if (data.status === 'success') {
                 alert('Feedback submitted successfully!');
-                var ratingElement = document.querySelector(`.rating[data-review-id="${review_id}"]`);
-                if (ratingElement) {
-                    ratingElement.innerText = `Rating: ${rating}`;
-                }
             } else {
                 alert('Failed to submit feedback. Please try again.');
             }
@@ -145,42 +141,45 @@ function rateFeedback(review_id, rating) {
             alert('There was a problem with your request. Please try again later.');
         });
 }
+        // .then(data => {
+        //     if (data.status === 'success') {
+        //         alert('Feedback submitted successfully!');
+        //         var ratingElement = document.querySelector(`.rating[data-review-id="${review_id}"]`);
+        //         if (ratingElement) {
+        //             ratingElement.innerText = `Rating: ${rating}`;
+        //         }
+        //     } else {
+        //         alert('Failed to submit feedback. Please try again.');
+        //     }
+        // })
+        // .catch(error => {
+        //     console.error('There has been a problem with your fetch operation:', error);
+        //     alert('There was a problem with your request. Please try again later.');
+        // });
+// }
 
 // Function to toggle like status
-function toggleLike(reviewId, liked) {
+function toggleLike(reviewId) {
     fetch(`/like/${reviewId}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ liked: liked }),
+            'Content-Type': 'application/json'
+        }
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                alert('Updated like successfully!');
-                var likeButton = document.querySelector(`.icon-circle[data-review-id="${reviewId}"]`);
-                if (likeButton) {
-                    likeButton.classList.toggle('liked', liked);
-                }
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            const likeIcon = document.querySelector(`#likeIcon${reviewId}`);
+            if (data.liked) {
+                likeIcon.classList.add('liked');
             } else {
-                alert('Failed to toggle like status. Please try again.');
+                likeIcon.classList.remove('liked');
             }
         })
         .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-            alert('There was a problem with your request. Please try again later.');
+            console.error('Error:', error);
         });
-}
-
-function scrollDown() {
-    window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'smooth'
-    });
 }

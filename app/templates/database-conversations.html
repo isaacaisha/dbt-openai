@@ -45,7 +45,7 @@
     <h6>Users</h6>
     <ul>
         {% for user in users %}
-        <pre class="align-left" id="messages">-User ID: {{ user.id }}<br>- Username: {{ user.name }}<br>- User email: {{ user.email }}<br>- Date: {{ user.created_at}}
+        <pre class="align-left" id="messages">- User ID: {{ user.id }}<br>- Username: {{ user.name }}<br>- User email: {{ user.email }}<br>- Date: {{ user.created_at}}
         </pre>
         {% endfor %}
     </ul>
@@ -62,15 +62,19 @@
     <!-- Add a div to contain the serialized histories -->
     <div id="historiesContainer" style="display: none;">
 
-        {% for conversation in serialized_conversations %}
-            <textarea class="form-control align-left mb-3" id="userInput" name="text_writing" style="color:#17a2b8;">
-                "Conversation ID": "{{ conversation.id }}"
-                "{{ conversation.user_name }}": "{{ conversation.user_message }}"
-                "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                "Conversation Summary": "{{ conversation.conversations_summary }}"
-                "Created At": "{{ conversation.created_at }}"
-            </textarea>
-        {% endfor %}
+{% for conversation in serialized_conversations %}
+<textarea class="form-control align-left mb-3" id="userInput" name="text_writing" style="color:#17a2b8;" readonly>
+"Conversation ID": "{{ conversation.id }}"
+
+"{{ conversation.user_name }}": "{{ conversation.user_message }}"
+
+"·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+
+"Conversation Summary": "{{ conversation.conversations_summary }}"
+
+"Created At": "{{ conversation.created_at }}"
+</textarea>
+{% endfor %}
 
     </div>
 
@@ -104,7 +108,7 @@
     <h6>Themes</h6>
     <ul>
         {% for theme in themes %}
-        <pre id="themes">Theme ID: {{ theme.id }} - Name: {{ theme.theme_name }}</pre>
+        <pre id="themes">Theme ID: {{ theme.id }}  -  Name: {{ theme.theme_name }}</pre>
         {% endfor %}
     </ul>
     </div>
@@ -121,7 +125,7 @@
     <h6>Messages</h6>
     <ul>
         {% for message in messages %}
-        <pre class="align-left" id="messages">-Theme Name's: {{ message.theme }}<br>-Message ID: {{ message.id }}<br>- User: {{ message.user }}<br>- Message: {{ message.value }}<br>- Date: {{ message.date}}
+        <pre class="align-left" id="messages">- Theme Name's: {{ message.theme }}<br>- Message ID: {{ message.id }}<br>- User: {{ message.user }}<br>- Message: {{ message.value }}<br>- Date: {{ message.date.strftime('%Y-%m-%d %H:%M:%S')}}
         </pre>
         {% endfor %}
     </ul>
@@ -139,15 +143,19 @@
     <div id="historiesTestContainer" style="display: none;">
     <h6>MemoryTest</h6>
 
-        {% for conversation in serialized_memory_tests %}
-            <textarea class="form-control align-left mb-3" id="userInput" name="text_writing" style="color:#17a2b8;">
-                "Conversation ID": "{{ conversation.id }}"
-                "User Message": "{{ conversation.user_message }}"
-                "·SìįSí·Dbt·": "{{ conversation.llm_response }}"
-                "conversation_summary": "{{ conversation.conversations_summary }}"
-                "created_at": "{{ conversation.created_at }}"
-            </textarea>
-        {% endfor %}
+{% for conversation in serialized_memory_tests %}
+<textarea class="form-control align-left mb-3" id="userInput" name="text_writing" style="color:#17a2b8;" readonly>
+"Conversation ID": "{{ conversation.id }}"
+
+"User Message": "{{ conversation.user_message }}"
+
+"·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+
+"conversation_summary": "{{ conversation.conversations_summary }}"
+
+"created_at": "{{ conversation.created_at }}"
+</textarea>
+{% endfor %}
 
     </div>
 
@@ -164,7 +172,7 @@
     <h6>Posts</h6>
     <ul>
         {% for post in all_blog_potos %}
-        <pre class="align-left" id="messages">-Blog Post ID: {{ post.id }}<br>- User: {{ post.user.name }}<br>-Blog Title's: {{ post.youtube_title }}<br>- Generated Content: {{ post.generated_content|truncate(91) }}<br>- Youtube Link: {{ post.youtube_link }}<br>- Date: {{ post.created_at}}
+        <pre class="align-left" id="messages">- Blog Post ID: {{ post.id }}<br>- User: {{ post.user.name }}<br>- Blog Title's: {{ post.youtube_title }}<br>- Generated Content: {{ post.generated_content|truncate(91) }}<br>- Youtube Link: {{ post.youtube_link }}<br>- Date: {{ post.created_at.strftime('%Y-%m-%d %H:%M:%S')}}
         </pre>
         {% endfor %}
     </ul>
@@ -183,7 +191,7 @@
     <h6>Reviews</h6>
     <ul>
         {% for review in all_portfolio_reviews %}
-        <pre class="align-left" id="messages">-Review ID: {{ review.id }}<br>- User: {{ review.user.name }}<br>-User ID: {{ review.user_id }}<br>- Feedback Content: {{ review.feedback|truncate(91) }}<br>- Site URL: {{ review.site_url }}<br>- Likes: {{ review.liked}}<br>- User's Rating: {{ review.user_rating}}<br>- Date: {{ review.created_at}}
+        <pre class="align-left" id="messages">- Review ID: {{ review.id }}<br>- User: {{ review.user.name }}<br>- User ID: {{ review.user_id }}<br>- Feedback Content: {{ review.feedback|truncate(91) }}<br>- Site URL: {{ review.site_url }}<br>- Likes: {{ review.liked}}<br>- User's Rating: {{ review.user_rating}}<br>- Date: {{ review.created_at.strftime('%Y-%m-%d %H:%M:%S')}}
         </pre>
         {% endfor %}
     </ul>

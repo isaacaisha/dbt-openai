@@ -42,7 +42,7 @@ class User(db.Model, UserMixin):
     blog_posts = relationship('BlogPost', back_populates='user', cascade='all, delete')
 
     # Define the relationship to the PortfolioReview model
-    portfolio_reviews = relationship('PortfolioReview', back_populates='user', cascade='all, delete')
+    website_reviews = relationship('WebsiteReview', back_populates='user', cascade='all, delete')
 
     def __repr__(self):
         return f"<User id={self.id}, email='{self.email}'>"
@@ -104,8 +104,8 @@ class BlogPost(db.Model):
         return f"<BlogPost id={self.id}, title='{self.youtube_title}'>"
     
 
-class PortfolioReview(db.Model):
-    __tablename__ = 'portfolio_reviews'
+class WebsiteReview(db.Model):
+    __tablename__ = 'website_reviews'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     site_url = db.Column(db.String(9991), nullable=False)
@@ -116,8 +116,8 @@ class PortfolioReview(db.Model):
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
     
     # Define the relationship to the User model
-    user = relationship('User', back_populates='portfolio_reviews')
+    user = relationship('User', back_populates='website_reviews')
 
     def __repr__(self):
-        return f"<PortfolioReview id={self.id}, title='{self.site_url}'>"
+        return f"<WebsiteReview id={self.id}, title='{self.site_url}'>"
     

@@ -1,6 +1,7 @@
 # PORTFOLIO_REVIEW.PY
 
 import os
+import urllib.parse
 import asyncio
 import cloudinary
 import cloudinary.uploader
@@ -13,10 +14,25 @@ from flask import Blueprint, current_app, jsonify, render_template, redirect, ur
 from flask_login import current_user
 from datetime import datetime
 
-from app.app_forms import PortfolioReviewForm
-from app.memory import PortfolioReview, User, db
+from app.app_forms import WebsiteReviewForm
+from app.memory import WebsiteReview, User, db
 
-import urllib.parse
+
+load_dotenv(find_dotenv())
+
+review_website_bp = Blueprint('website_review', __name__, template_folder='templates', static_folder='static')
+
+# Fetch paths from environment variables
+CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', '/usr/bin/google-chrome')
+CHROME_DRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', '/usr/local/bin/chromedriver')
+
+# Configuration for Cloudinary     
+cloudinary.config( 
+    cloud_name = "dobg0vu5e", 
+    api_key = os.getenv('CLOUDINARY_API_KEY'), 
+    api_secret = os.getenv('CLOUDINARY_API_SECRET'),
+    secure=True
+)
 
 # Function to sanitize the URL to a valid public ID
 def sanitize_url_for_public_id(url):
@@ -28,22 +44,6 @@ def sanitize_url_for_public_id(url):
     # So we ensure that all other characters are replaced with underscores
     sanitized_url = ''.join(e if e.isalnum() or e in ['_', '-'] else '_' for e in sanitized_url)
     return sanitized_url[:120]
-
-load_dotenv(find_dotenv())
-
-# Fetch paths from environment variables
-CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', '/usr/bin/google-chrome')
-CHROME_DRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', '/usr/local/bin/chromedriver')
-
-review_website_bp = Blueprint('website_review', __name__, template_folder='templates', static_folder='static')
-
-# Configuration for Cloudinary     
-cloudinary.config( 
-    cloud_name = "dobg0vu5e", 
-    api_key = os.getenv('CLOUDINARY_API_KEY'), 
-    api_secret = os.getenv('CLOUDINARY_API_SECRET'),
-    secure=True
-)
 
 # Function to take a screenshot
 async def take_screenshot(url):
@@ -61,13 +61,10 @@ async def take_screenshot(url):
 
             # Create a ChromeDriverService instance
             chrome_service = ChromeService(executable_path=CHROME_DRIVER_PATH)
-            # Logging for debugging
-            print(f"Binary location set to: {options.binary_location}")
 
             # Initialize ChromeDriver in the thread
             browser = webdriver.Chrome(service=chrome_service, options=options)
 
-            print(f"Starting browser for URL: {url}")
             browser.get(url)
 
             total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
@@ -139,11 +136,34 @@ def get_review(screenshot_url):
                     tts_url = item['payload']['src']
                 break
 
+        if not tts_url:
+            print("TTS URL not found in the response")
+
         return review_text, tts_url
 
+    except requests.exceptions.RequestException as e:
+        print(f"HTTP error: {e}")
+    except ValueError as e:
+        print(f"JSON decode error: {e}")
     except Exception as e:
-        print(f"Error getting review: {str(e)}")
-        return None, None
+        print(f"Unexpected error: {e}")
+
+    return None, None
+
+# Example usage
+screenshot_url = "http://res.cloudinary.com/dobg0vu5e/image/upload/v1720978039/screenshots/https_3A_2F_2Fnicepage_com_2Ftemplates_2Fpreview_2Fmobile_app_development_company_2578756_3Fdevice_3Ddesktop.png.png"
+review_text, tts_url = get_review(screenshot_url)
+
+if review_text:
+    print("Review Text:", review_text)
+else:
+    print("Failed to get review text")
+
+if tts_url:
+    print("TTS URL:", tts_url)
+else:
+    print("Failed to get TTS URL")
+
 
 # Main page route
 @review_website_bp.route('/website-review', methods=['GET', 'POST'])
@@ -152,20 +172,20 @@ def review_website():
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
     
-    portfolio_form = PortfolioReviewForm()
+    review_form = WebsiteReviewForm()
 
     website_review = None
     website_screenshot = None
     review_id = None
     tts_url = None
 
-    if portfolio_form.validate_on_submit():
-        domain = portfolio_form.domain.data
+    if review_form.validate_on_submit():
+        domain = review_form.domain.data
         return redirect(url_for('website_review.submit_url', domain=domain))
 
     return render_template("website-review.html", 
                            current_user=current_user, 
-                           portfolio_form=portfolio_form,
+                           review_form=review_form,
                            website_review=website_review,
                            website_screenshot=website_screenshot,
                            review_id=review_id,
@@ -183,7 +203,7 @@ async def submit_url():
         if website_screenshot:
             website_review, tts_url = get_review(website_screenshot)
 
-            new_review_object = PortfolioReview(
+            new_review_object = WebsiteReview(
                 site_url=domain,
                 site_image_url=website_screenshot,
                 feedback=website_review,
@@ -219,7 +239,7 @@ def feedback():
     rating_type = data.get('user_rating')
 
     try:
-        review = PortfolioReview.query.get(review_id)
+        review = WebsiteReview.query.get(review_id)
         if review:
             review.user_rating = rating_type
             db.session.commit()
@@ -232,16 +252,9 @@ def feedback():
 # Endpoint to submit like
 @review_website_bp.route('/like/<int:review_id>', methods=['POST'])
 def update_like(review_id):
-    data = request.get_json()
-    liked = data.get('liked', False)
-
-    try:
-        review = PortfolioReview.query.get(review_id)
-        if review:
-            review.liked = 1 if liked else 0
-            db.session.commit()
-            return jsonify({'success': True, 'message': 'Like status updated successfully'})
-        else:
-            return jsonify({'success': False, 'message': 'Review not found'})
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)})
+    review = WebsiteReview.query.get(review_id)
+    if review:
+        review.liked = not review.liked  # Toggle the like status
+        db.session.commit()
+        return jsonify({'liked': review.liked}), 200
+    return jsonify({'error': 'Review not found'}), 404
