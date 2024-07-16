@@ -183,7 +183,7 @@
 
     <!-- Add a button to trigger the display of serialized_histories -->
     <button class="btn btn-danger submit mb-3" id="showPortfolioReviewButton" onclick="togglePortfolioReviews()">
-        -¡!¡- Show Database Website Reviews -¡!¡-
+        -¡!¡- Show Database Porfolio Reviews -¡!¡-
     </button>
 
     <!-- Add a div to contain the serialized histories -->
@@ -191,16 +191,8 @@
     <h6>Reviews</h6>
     <ul>
         {% for review in all_website_reviews %}
-            <pre class="align-left" id="messages">
-              - Review ID: {{ review.id }}
-              - User: {{ review.user.name }}
-              - User ID: {{ review.user_id }}
-              - Feedback Content: {{ review.feedback|default('No feedback provided')|truncate(91) }}
-              - Site URL: {{ review.site_url|truncate(91) }}
-              - Likes: {{ review.liked }}
-              - User's Rating: {{ review.user_rating }}
-              - Date: {{ review.created_at }}
-            </pre>
+        <pre class="align-left" id="messages">- Review ID: {{ review.id }}<br>- User: {{ review.user.name }}<br>- User ID: {{ review.user_id }}<br>- Feedback Content: {{ review.feedback|truncate(91) }}<br>- Site URL: {{ review.site_url }}<br>- Likes: {{ review.liked}}<br>- User's Rating: {{ review.user_rating}}<br>- Date: {{ review.created_at.strftime('%Y-%m-%d %H:%M:%S')}}
+        </pre>
         {% endfor %}
     </ul>
     </div>
