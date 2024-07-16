@@ -35,7 +35,8 @@ document.getElementById('reviewForm').addEventListener('submit', async function 
             // Hide the loader
             document.getElementById('loader').style.display = 'none';
 
-            // Enable buttons and links
+            // Enable submitButton buttons and links
+            submitButton.disabled = false;
             disableAllButtons(false);
 
             // Display the result or perform any other actions based on the response
@@ -78,7 +79,7 @@ function displayReviewResult(data) {
         document.getElementById('reviewResult').innerHTML = `
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-1">
-                    <h3 class="text-lg white font-bold">Portfolio Feedback:</h3>
+                    <h3 class="text-lg white font-bold">Website Feedback:</h3>
                     <textarea readonly class="textarea_details textarea-memory w-full p-2 border border-gray-300" style="min-height: 991px;">${data.website_review}</textarea>
                 </div>
             </div>
@@ -182,4 +183,12 @@ function toggleLike(reviewId) {
         .catch(error => {
             console.error('Error:', error);
         });
+}
+
+//JavaScript for scrolling down 
+function scrollDown() {
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+    });
 }
