@@ -224,7 +224,7 @@ def get_conversations_jsonify():
     all_blog_potos = BlogPost.query.all()
 
     # Fetch PortfolioReview data
-    all_portfolio_reviews = WebsiteReview.query.all()
+    all_website_reviews = WebsiteReview.query.all()
     
     # Serialize MemoryTest data
     serialized_memory_tests = [{
@@ -239,4 +239,4 @@ def get_conversations_jsonify():
                            current_user=current_user, serialized_conversations=serialized_conversations,
                            users=all_users, themes=all_themes, messages=all_messages, database_form=database_form,
                            serialized_memory_tests=serialized_memory_tests, all_blog_potos=all_blog_potos,
-                           all_portfolio_reviews=all_portfolio_reviews)
+                           all_website_reviews=all_website_reviews)
