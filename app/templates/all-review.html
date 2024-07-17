@@ -52,12 +52,6 @@
     </div>
     {% endif %}
     {% else %}
-    <div class="d-flex justify-content-center mb-5">
-        <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton"
-            style="position:fixed">
-            ⇩
-        </button>
-    </div>
     <br>
     <div style="position:fixed">
         <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
@@ -123,10 +117,10 @@
                 <section>
                     <div class="text-light rounded-lg">
     
-                        {% for review in reviews %}
+                        {% for review in reviews|reverse %}
                         <a href="{{ url_for('website_review.review_details', pk=review.id) }}">
                             <div class="llm-response p-4 border border-secondary rounded-lg">
-                                <h3 class="text-lg font-semibold">{{ review.site_url|truncate(37)|safe }}</h3>
+                                <h3 class="text-lg font-semibold">{{ review.site_url|truncate(19)|safe }}</h3>
                                 <p class="text-info">·SìįSí·Dbt·'s Review Detail:<br>- Feedback Content: {{ review.feedback|default('No feedback provided')|truncate(91) }}<br>
 </p>
                                 <p class="created">{{ review.created_at }}</p>
