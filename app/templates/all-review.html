@@ -1,0 +1,208 @@
+{% extends 'header.html' %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
+{% include 'bootstrap/base.html' %}
+<style>
+    .custom-input-group:hover {
+        transform: scale(1.009);
+        /* Scale up by 5% on hover */
+        transition: transform 0.3s ease;
+        /* Smooth transition over 0.3 seconds */
+    }
+</style>
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron bg-dark text-light">
+        <div class="py-1">
+            <h1 class="">All Your Reviews ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+<div class="container text-center">
+
+    <hr class="green mb-3">
+    <h3 class="conversations mb-3">Reviews Datas</h3>
+    <hr class="green mb-3">
+
+    {% if search_message %}
+    <div class="alert alert-danger">{{ search_message }}</div>
+
+    <div class="mb-5">
+        <a href="javascript:history.back();" class="white">
+            Click to Go Back
+        </a>
+    </div>
+    {% endif %}
+
+    {% if not reviews %}
+    {% if error_message %}
+    <div class="alert alert-info mb-5">
+        {{ error_message }}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="d-flex justify-content-center mb-5">
+        <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton"
+            style="position:fixed">
+            ⇩
+        </button>
+    </div>
+    <br>
+    <div style="position:fixed">
+        <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
+            You can access your liked conversations from the menu.
+        </div>
+    </div>
+
+    <form action="{{ url_for('website_review.get_all_reviews') }}" method="GET">
+        <div class="form-group align-left">
+            <label for="limit" class="form-label label_">
+                Enter the <span class="gold1">number</span> of reviews <span class="gold1">you want to
+                    retrieve</span>:
+            </label>
+            <div class="input-group">
+                <input type="number" id="limit" name="limit" min="1" max="9991"
+                    class="form-control form-control-sm mb-3">
+            </div>
+            <label for="offset" class="form-label label_">
+                Enter the <span class="gold1">number</span> of reviews <span class="gold1">you want to
+                    skip</span>:
+            </label>
+            <div class="input-group">
+                <input type="number" id="offset" name="offset" min="1" class="form-control form-control-sm mb-3">
+            </div>
+            <label for="search" class="form-label label_">
+                Enter a <span class="gold1">word</span> <span class="white">from {{ current_user.name }}</span>
+                reviews <span class="gold1">to retrieve them</span>:
+            </label>
+            <div class="input-group">
+                <input type="string" id="search" name="search" class="form-control form-control-sm mb-3">
+            </div>
+            <div class="text-center">
+                <button class="btn btn-outline-info mb-3" type="submit" onclick="setFormAction('get_all_conversations')"
+                    style="border: .1rem solid;">
+                    Look for
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="container conversations mb-3">
+        {% if limit %}
+        <h4>Total of <span class="gold1">{{ limit }}</span> Reviews</h4>
+        {% endif %}
+        {% if offset %}
+        <h4><span class="gold1">{{ offset }}</span> Reviews Skipped</h4>
+        {% endif %}
+        {% if search %}
+        <h4>Search the word <span class="gold1">{{ search }}</span>
+            <span class="white">from {{ current_user.name }} Reviews</span> to retrieve it
+        </h4>
+        {% endif %}
+    </div>
+
+    <hr class="crimson mb-3">
+    
+    <!-- Main content -->
+    <br>
+    <div class="container footer mx-auto p-2 sm:px-0 custom-input-group mb-3">
+        <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
+            <div class="">
+                <!-- Blog posts section -->
+                <section>
+                    <div class="text-light rounded-lg">
+    
+                        {% for review in reviews %}
+                        <a href="{{ url_for('website_review.review_details', pk=review.id) }}">
+                            <div class="llm-response p-4 border border-secondary rounded-lg">
+                                <h3 class="text-lg font-semibold">{{ review.site_url|truncate(37)|safe }}</h3>
+                                <p class="text-info">·SìįSí·Dbt·'s Review Detail:<br>- Feedback Content: {{ review.feedback|default('No feedback provided')|truncate(91) }}<br>
+</p>
+                                <p class="created">{{ review.created_at }}</p>
+                            </div>
+                            <br>
+                        </a>
+                        {% endfor %}
+    
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <hr class="crimson mb-5">
+    <hr class="green mb-3">
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
+        Show Reviews
+    </button>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesContainer" class="align-left mb-3" style="display: none;">
+{% for review in reviews %}
+<textarea class="form-control mb-3" id="userInput" name="text_writing" readonly>
+- Review ID: {{ review.id }}
+
+- Site URL: {{ review.site_url|safe }}
+
+·SìįSí·Dbt·: {{ review.feedback }}
+
+- Created At: {{ review.created_at }}
+</textarea>
+{% endfor %}
+
+    </div>
+
+    <hr class="green mb-5">
+    <hr class="gold mb-3">
+
+    <!-- Add a button to trigger the display of serialized_histories -->
+    <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
+        Show Conversations json
+    </button>
+
+    <!-- Add a div to contain the serialized histories -->
+    <div id="historiesContainerJson" class="align-left mb-3" style="display: none;">
+        {% for review in reviews %}
+        <pre>
+                    {{ review|tojson(indent=4)|safe }}
+                </pre>
+        {% endfor %}
+    </div>
+
+    <hr class="gold mb-5">
+    {% endif %}
+
+</div>
+
+<script src="{{ url_for('static', filename='js/like-unlike-convers.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer1 %}
+<div class="text-center">
+    <a href="{{ url_for('website_review.review_website') }}" class="btn btn-primary mb-5">
+        AI Website Review Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
+            alt="Crown Icon" class="crown">-¡!¡-🔥
+    </a>
+</div>
+
+<footer class="footer text-center mx-5 p-3 mt-4 mb-5">
+    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
+</footer>
+{% endblock %}

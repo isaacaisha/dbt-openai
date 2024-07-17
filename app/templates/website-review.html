@@ -115,12 +115,21 @@
         <hr class="gold mt-4 mb-5">
     </div>
 
+    <hr class="crimson mb-3">
+
+    <h5 class="font-weight-bold text-center">
+        Then click here to see the result:<br>👇🏿<br><a href="/get-all-reviews"
+            class="btn btn-custom border-secondary mt-1">Saved Reviews</a>
+    </h5>
+
+    <hr class="crimson mb-5">
+
     <script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
 
 {% endblock %}
 
 {% block footer1 %}
-    <hr class="crimson mb-3">
+    <hr class="green mb-3">
 
     <div class="text-center">
         <button type="button" class="btn back-home mb-3">
@@ -129,7 +138,7 @@
         </button>
     </div>
 
-    <hr class="crimson mb-5">
+    <hr class="green mb-5">
 
     <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
         Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>

@@ -61,9 +61,7 @@ document.getElementById('reviewForm').addEventListener('submit', async function 
 function disableAllButtons(disable) {
     var allButtons = document.querySelectorAll('button');
     allButtons.forEach(function (button) {
-        if (!button.classList.contains('navbar-toggler')) {
-            button.disabled = disable;
-        }
+        button.disabled = disable;
     });
 
     var iconLinks = document.querySelectorAll('li > a, a');

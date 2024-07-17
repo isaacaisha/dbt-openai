@@ -34,6 +34,7 @@ cloudinary.config(
     secure=True
 )
 
+
 # Function to sanitize the URL to a valid public ID
 def sanitize_url_for_public_id(url):
     # Encode the URL to handle special characters
@@ -44,6 +45,7 @@ def sanitize_url_for_public_id(url):
     # So we ensure that all other characters are replaced with underscores
     sanitized_url = ''.join(e if e.isalnum() or e in ['_', '-'] else '_' for e in sanitized_url)
     return sanitized_url[:120]
+
 
 # Function to take a screenshot
 async def take_screenshot(url):
@@ -90,6 +92,7 @@ async def take_screenshot(url):
             return None
 
     return await asyncio.to_thread(_screenshot_worker, url)
+
 
 # Function to get review text using Voiceflow API
 def get_review(screenshot_url):
@@ -141,6 +144,7 @@ def get_review(screenshot_url):
     except Exception as e:
         print(f"Error getting review: {str(e)}")
         return None, None
+    
 
 # Main page route
 @review_website_bp.route('/website-review', methods=['GET', 'POST'])
@@ -168,6 +172,7 @@ def review_website():
                            review_id=review_id,
                            tts_url=tts_url,
                            date=datetime.now().strftime("%a %d %B %Y"))
+
 
 # Endpoint to submit URL for review
 @review_website_bp.route('/submit-url', methods=['GET', 'POST'])
@@ -208,6 +213,83 @@ async def submit_url():
     flash('Invalid domain URL.')
     return jsonify({'error': 'Invalid domain URL'})
 
+
+def get_reviews(user_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
+    query = WebsiteReview.query
+    if user_id is not None:
+        query = query.filter_by(user_id=user_id)
+    if search is not None:
+        query = query.filter(WebsiteReview.feedback.ilike(f"%{search.strip()}%"))
+    if liked_value is not None:
+        query = query.filter(WebsiteReview.liked == liked_value)
+    if order_by_desc:
+        query = query.order_by(WebsiteReview.id.desc())
+    if limit is not None:
+        query = query.limit(limit)
+    if offset is not None:
+        query = query.offset(offset)
+    return query.all()
+
+
+def serialize_review(review):
+    return {
+        "id": review.id,
+        "user_id": review.user_id,
+        "user_name": review.user.name,
+        "site_url": review.site_url,
+        "site_image_url": review.site_image_url,
+        "feedback": review.feedback,
+        "created_at": review.created_at.strftime("%a %d %B %Y %H:%M:%S"),
+        "liked": review.liked,
+    }
+    
+
+@review_website_bp.route("/get-all-reviews")
+def get_all_reviews():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+
+    user_id = current_user.id
+
+    total_reviews = WebsiteReview.query.filter_by(user_id=user_id).count()
+    limit = request.args.get('limit', default=total_reviews, type=int)
+    offset = request.args.get('offset', default=None, type=int)
+    search = request.args.get('search', default=None, type=str)
+
+    reviews = get_reviews(user_id=user_id, limit=limit, offset=offset, search=search)
+    serialized_reviews = [serialize_review(review) for review in reviews]
+
+    # Check if any conversations were found for the search term
+    if not serialized_reviews:
+        search_message = f"No review found for search term: '{search}'"
+        return render_template('all-review.html',
+                               current_user=current_user, user_id=user_id,
+                               limit=limit, offset=offset, search=search,
+                               search_message=search_message,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+
+    return render_template('all-review.html',
+                           current_user=current_user, owner_id=user_id,
+                           limit=limit, offset=offset, search=search,
+                           reviews=serialized_reviews,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@review_website_bp.route("/review-details/<int:pk>", methods=["GET"])
+def review_details(pk):
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+
+    review_detail = WebsiteReview.query.get_or_404(pk)
+    if current_user.id == review_detail.user_id:
+        return render_template('review-details.html', review_detail=review_detail,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        return redirect(url_for('website_review.review_posts'))
+    
+
 # Endpoint to submit feedback
 @review_website_bp.route('/feedback', methods=['POST'])
 def feedback():
@@ -225,6 +307,7 @@ def feedback():
             return jsonify({'status': 'error', 'message': 'Review not found'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
+    
 
 # Endpoint to submit like
 @review_website_bp.route('/like/<int:review_id>', methods=['POST'])

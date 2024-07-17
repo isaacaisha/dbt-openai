@@ -110,13 +110,13 @@ class WebsiteReview(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     site_url = db.Column(db.String(9991), nullable=False)
     site_image_url = db.Column(db.Text, nullable=False)
-    feedback = db.Column(db.Text, default=None)
+    feedback = db.Column(db.Text, default='', nullable=True)
     liked = db.Column(db.Integer, default=0)
     user_rating = db.Column(db.String(5))
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
     
     # Define the relationship to the User model
-    user = relationship('User', back_populates='website_reviews')
+    user = relationship('User', back_populates='website_reviews', foreign_keys=[user_id])
 
     def __repr__(self):
         return f"<WebsiteReview id={self.id}, title='{self.site_url}'>"
