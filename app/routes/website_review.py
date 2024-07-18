@@ -268,7 +268,9 @@ def get_reviews(user_id=None, limit=None, offset=None, search=None, order_by_des
     if user_id is not None:
         query = query.filter_by(user_id=user_id)
     if search is not None:
-        query = query.filter(WebsiteReview.feedback.ilike(f"%{search.strip()}%"))
+        # Ensure that the search is flexible enough for partial URL matches
+        search_term = f"%{search.strip()}%"
+        query = query.filter(WebsiteReview.site_url.ilike(search_term))
     if liked_value is not None:
         query = query.filter(WebsiteReview.liked == liked_value)
     if order_by_desc:
@@ -306,7 +308,7 @@ def get_all_reviews():
     offset = request.args.get('offset', default=None, type=int)
     search = request.args.get('search', default=None, type=str)
 
-    reviews = get_reviews(user_id=user_id, limit=limit, offset=offset, search=search)
+    reviews = get_reviews(user_id=user_id, limit=limit, offset=offset, search=search, order_by_desc=True)
     serialized_reviews = [serialize_review(review) for review in reviews]
 
     # Check if any conversations were found for the search term
@@ -351,14 +353,43 @@ def liked_reviews():
 
     user_id = current_user.id
 
+    total_reviews = WebsiteReview.query.filter_by(user_id=user_id).count()
+    limit = request.args.get('limit', default=total_reviews, type=int)
+    offset = request.args.get('offset', default=None, type=int)
+    search = request.args.get('search', default=None, type=str)
+
     # Fetch liked reviews
-    reviews = get_reviews(user_id=user_id, liked_value=1, order_by_desc=True)
+    reviews = get_reviews(user_id=user_id, liked_value=1, search=search, order_by_desc=True)
     serialized_reviews = [serialize_review(review) for review in reviews]
 
     if not serialized_reviews:
-        message = "No liked reviews found."
-        return render_template('liked-reviews.html', current_user=current_user, reviews=serialized_reviews, message=message,
+        search_message = f"No liked review found for search term: '{search}'"
+        return render_template('liked-reviews.html',
+                               current_user=current_user, user_id=user_id,
+                               limit=limit, offset=offset, search=search,
+                               search_message=search_message,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
-    return render_template('liked-reviews.html', current_user=current_user, reviews=serialized_reviews,
+    return render_template('liked-reviews.html',
+                           current_user=current_user, owner_id=user_id,
+                           limit=limit, offset=offset, search=search,
+                           reviews=serialized_reviews,
                            date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@review_website_bp.route("/liked-reviews-details/<int:pk>", methods=["GET"])
+def liked_reviews_details(pk):
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+    
+    # Fetch the latest review ID
+    review = WebsiteReview.query.filter_by(user_id=current_user.id).order_by(WebsiteReview.id.desc()).first()
+    review_id = review.id if review else 1
+
+    liked_review_detail = WebsiteReview.query.get_or_404(pk)
+    if current_user.id == liked_review_detail.user_id:
+        return render_template('liked-reviews-details.html', liked_review_detail=liked_review_detail, review_id=review_id,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        return redirect(url_for('website_review.review_posts'))

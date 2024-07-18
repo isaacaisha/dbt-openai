@@ -228,6 +228,23 @@ body>div.content>div.container>div>div>div>div.mb-3>form>div:nth-child(5) {
     color: #70f8fd;
 }
 
+
+.user-message {
+    color: #4285F4;
+    /* A shade of blue */
+}
+
+.conversation_id, .created-at {
+    color: #cefcfc;
+}
+
+.like-button {
+    cursor: pointer;
+}
+.like-button {
+    color: #70f8fd;
+}
+
 .summary {
     color: #AEFAFC;
 }
@@ -527,7 +544,8 @@ body hr {
 
 /* fa fa-heart for link: "Conversations Liked -¡!¡- ... -¡!¡- */
 #navbarSupportedContent>ul>li:nth-child(6)>a>i,
-#content>div.container-fluid>div>div>h1>i {
+#content>div.container-fluid>div>div>h1>i,
+#navbarSupportedContent>ul>li:nth-child(7)>a>i {
     color: pink;
 }
 
@@ -560,16 +578,6 @@ body hr {
 #home-tab2>a,
 #profile-tab2 {
     font-size: 2.7rem;
-}
-
-/* Navbar heart */
-#navbarSupportedContent>ul>li:nth-child(5)>a>i {
-    color: pink;
-}
-
-.like-button,
-.text-center {
-    color: #70f8fd;
 }
 
 /* CAROUSEL SECTION */

@@ -99,15 +99,12 @@
         </div>
 
 {% for conversation_ in conversations %}
-<textarea class="textarea_details textarea-memory align-left mb-2" readonly>
-- Conversation ID: {{ conversation_.id }}
-
-- {{ conversation_.user_name }}: {{ conversation_.user_message|safe }}
-
-·SìįSí·Dbt·: {{ conversation_.llm_response }}
-
-- Created At: {{ conversation_.created_at }}
-</textarea>
+<pre class="textarea_details textarea-memory  main align-left mb-2">
+<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation_.id }}</span><br>
+<span class="user-message">- {{ conversation_.user_name }}</span>: <span class="user-message">{{ conversation_.user_message|safe }}</span><br>
+<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation_.llm_response }}</span><br>
+<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation_.created_at }}</span>
+</pre>
 <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked
     %}style="color: pink;" {% endif %}>
     <i class="fa fa-heart fa-2x mb-2"></i>
@@ -125,7 +122,7 @@
         <!-- Add a div to contain the serialized histories -->
 <div id="historiesContainer" class="align-left mb-3" style="display: none;">
 {% for conversation in conversations %}
-<textarea class="form-control mb-3" id="userInput" name="text_writing" readonly>
+<textarea class="mb-3" id="userInput" readonly>
 "conversation_id": "{{ conversation.id }}"
 
 "{{ conversation.user_name }}": "{{ conversation.user_message }}"

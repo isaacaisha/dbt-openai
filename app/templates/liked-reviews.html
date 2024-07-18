@@ -6,6 +6,12 @@
 {{ super() }}
 <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon1.ico') }}">
 {% include 'bootstrap/base.html' %}
+<style>
+    .custom-input-group:hover {
+        transform: scale(1.03);
+        transition: transform 0.3s ease;
+    }
+</style>
 {% endblock %}
 
 {% block content1 %}
@@ -38,9 +44,9 @@
     {% endif %}
 
     {% if not reviews %}
-    {% if error_message %}
+    {% if message %}
     <div class="alert alert-info mb-5">
-        {{ error_message }}
+        {{ message }}
     </div>
     {% endif %}
     {% else %}
@@ -52,7 +58,7 @@
     </div>
     <br>
 
-    <form action="{{ url_for('llm_conversation.liked_conversations') }}" method="GET">
+    <form action="{{ url_for('website_review.liked_reviews') }}" method="GET">
         <div class="form-group align-left">
             <label for="limit" class="form-label label_">
                 Enter the <span class="gold1">number</span> of reviews <span class="gold1">you want to retrieve:</span>:
@@ -94,17 +100,36 @@
         {% endif %}
     </div>
 
-{% for review in reviews %}
-<textarea class="textarea_details textarea-memory align-left mb-5" readonly>
-- Review URL: {{ review.site_url }}
-
-·SìįSí·Dbt· Feedback: {{ review.feedback }}
-
-- Created At: {{ review.created_at }}
-
-</textarea>
-{% endfor %}
-    
+    <!-- Main content -->
+    <hr class="crimson mb-3">
+    <br>
+    <div class="container footer mx-auto p-2 sm:px-0 custom-input-group mb-3">
+        <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
+            <div class="">
+                <!-- Blog posts section -->
+                <section>
+                    <div class="text-light rounded-lg">
+                        {% for review in reviews %}
+                        <a href="{{ url_for('website_review.liked_reviews_details', pk=review.id) }}">
+                            <div class="llm-response p-4 border border-secondary rounded-lg">
+                                <h3 class="text-lg font-semibold">
+                                    {%- set domain = review.site_url.split('/')[2] -%}
+                                    {{ domain }}
+                                </h3>
+                                <p class="text-info">·SìįSí·Dbt·'s Review Detail:<br>- Feedback Content: {{ review.feedback|replace('<voice>',
+                                        '')|replace('</voice>', '')|truncate(91) }}</p>
+                                <p class="created">{{ review.created_at }}</p>
+                            </div>
+                            <br>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr class="crimson mb-5">
 {% endif %}
 
 </div>

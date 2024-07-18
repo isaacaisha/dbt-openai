@@ -36,7 +36,7 @@
     <hr class="green mb-3">
 
     {% if search_message %}
-    <div class="alert alert-danger">{{ search_message }}</div>
+    <div class="alert alert-info">{{ search_message }}</div>
 
     <div class="mb-5">
         <a href="javascript:history.back();" class="white">
@@ -122,11 +122,14 @@
                 <section>
                     <div class="text-light rounded-lg">
     
-                        {% for review in reviews|reverse %}
+                        {% for review in reviews %}
                         <a href="{{ url_for('website_review.review_details', pk=review.id) }}">
                             <div class="llm-response p-4 border border-secondary rounded-lg">
-                                <h3 class="text-lg font-semibold">{{ review.site_url|truncate(19)|safe }}</h3>
-                                <p class="text-info">·SìįSí·Dbt·'s Review Detail:<br>- Feedback Content: {{ review.feedback|default('No feedback provided')|truncate(91) }}</p>
+                                <h3 class="text-lg font-semibold">
+                                    {%- set domain = review.site_url.split('/')[2] -%}
+                                    {{ domain }}
+                                </h3>
+                                <p class="text-info">·SìįSí·Dbt·'s Review Detail:<br>- Feedback Content: {{ review.feedback|replace('<voice>', '')|replace('</voice>', '')|truncate(91) }}</p>
                                 <p class="created">{{ review.created_at }}</p>
                             </div>
                             <br>

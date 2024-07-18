@@ -18,7 +18,7 @@
 <div class="container-fluid">
     <div class="p-1 rounded-3 jumbotron bg-dark text-light">
         <div class="py-1">
-            <h1 class="">Website Review Details ¡!¡</h1>
+            <h1 class="">Liked Website Review Details ¡!¡</h1>
         </div>
     </div>
 </div>
@@ -39,31 +39,33 @@
         <section>
             <div class="p-4 main text-light border-secondary rounded-lg">
                 <h3 class="text-lg font-semibold">
-                    {%- set domain = review_detail.site_url.split('/')[2] -%}
+                    {%- set domain = liked_review_detail.site_url.split('/')[2] -%}
                     {{ domain }}
                 </h3>
                 <textarea class="textarea_details blog_details p-4 llm-response"
-                    readonly>{{ review_detail.feedback|replace('<voice>', '')|replace('</voice>', '') }}</textarea>
-                <p class="created mb-2">{{ review_detail.created_at.strftime("%a %d %B %Y %H:%M:%S") }}</p>
+                    readonly>{{ liked_review_detail.feedback|replace('<voice>', '')|replace('</voice>', '') }}</textarea>
+                <p class="created mb-2">{{ liked_review_detail.created_at.strftime("%a %d %B %Y %H:%M:%S") }}</p>
                 <hr class="my-4 mb-4 border-secondary">
                 <h4 class="text-lg font-semibold">Website Link</h4>
-                <a href="{{review_detail.site_url}}" class="llm-response hover:underline"
+                <a href="{{liked_review_detail.site_url}}" class="llm-response hover:underline"
                     style="max-width: 100%; word-wrap: break-word;">
-                    {{ review_detail.site_url|truncate(37)|safe }}
+                    {{ liked_review_detail.site_url|truncate(37)|safe }}
                 </a>
             </div>
             <!-- Like Section -->
-            <div id="updateLike" class="like-button text-center mb-5" data-review_id="{{ review_detail.id }}">
-                <p class="h6">Review ID: {{ review_detail.id }}</p>
-                <i id="likeIcon{{ review_detail.id }}"
-                    class="fa fa-heart fa-2x mb-3 {% if review_detail.liked %}liked{% endif %}"
-                    onclick="toggleLike('{{ review_detail.id }}')"></i>
+            <div id="updateLike" class="like-button text-center mb-5" data-review_id="{{ liked_review_detail.id }}">
+                <p class="h6">Review ID: {{ liked_review_detail.id }}</p>
+                <i id="likeIcon{{ liked_review_detail.id }}"
+                    class="fa fa-heart fa-2x mb-3 {% if liked_review_detail.liked %}liked{% endif %}"
+                    onclick="toggleLike('{{ liked_review_detail.id }}')"></i>
                 <hr class="text-center" style="margin: 0 45%;">
             </div>
-            <div id="likeMessage{{ review_detail.id }}" class="text-center mt-6 mb-5 hidden" style="color:blanchedalmond;">
+            <div id="likeMessage{{ liked_review_detail.id }}" class="text-center mt-6 mb-5 hidden"
+                style="color:blanchedalmond;">
                 Liked!<br>You can access your liked Reviews from the menu.
             </div>
-            <div id="unlikeMessage{{ review_detail.id }}" class="text-center mt-6 mb-5 hidden" style="color:blanchedalmond;">Unliked!</div>
+            <div id="unlikeMessage{{ liked_review_detail.id }}" class="text-center mt-6 mb-5 hidden"
+                style="color:blanchedalmond;">Unliked!</div>
 
 
         </section>
@@ -78,7 +80,7 @@
 
 {% block footer1 %}
 <div class="text-center">
-    <a href="{{ url_for('website_review.get_all_reviews') }}" class="btn btn-primary mb-5">
+    <a href="{{ url_for('website_review.liked_reviews') }}" class="btn btn-primary mb-5">
         Back to Generated Review 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
             alt="Crown Icon" class="crown">-¡!¡-🔥
     </a>

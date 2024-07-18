@@ -100,17 +100,13 @@
         </div>
     
 {% for conversation_ in first_conversations %}
-<textarea class="textarea_details textarea-memory align-left mb-2" readonly>
-- Conversation ID: {{ conversation_.id }}
-
-- {{ conversation_.user_name }}: {{ conversation_.user_message|safe }}
-
-·SìįSí·Dbt·: {{ conversation_.llm_response }}
-
-- Created At: {{ conversation_.created_at }}
-</textarea>
-<div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked
-    %}style="color: pink;" {% endif %}>
+<pre class="main align-left mb-2">
+<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation_.id }}</span><br>
+<span class="user-message">- {{ conversation_.user_name }}</span>: <span class="user-message">{{ conversation_.user_message|safe }}</span><br>
+<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation_.llm_response }}</span><br>
+<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation_.created_at }}</span>
+</pre>
+<div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
     <i class="fa fa-heart fa-2x mb-2"></i>
     <hr class="text-center" style="margin: 0 45%;">
 </div>
@@ -120,17 +116,14 @@
         <hr class="mb-5" style="color:rgb(64, 64, 172);">
     
         <h4><span class="gold1">{{ limit }}</span> Latest Conversations</h4>
-{% for conversation_ in last_conversations %}
-<textarea class="textarea_details textarea-memory align-left mb-2" readonly>
-- Conversation ID: {{ conversation_.id }}
-
-- {{ conversation_.user_name }}: {{ conversation_.user_message }}
-
-·SìįSí·Dbt·: {{ conversation_.llm_response }}
-
-- Created At: {{ conversation_.created_at }}
-</textarea>
-<div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked %}style="color: pink;" {% endif %}>
+{% for conversation in last_conversations %}
+<pre class="main align-left mb-2">
+<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation.id }}</span><br>
+<span class="user-message">- {{ conversation.user_name }}</span>: <span class="user-message">{{ conversation.user_message|safe }}</span><br>
+<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation.llm_response }}</span><br>
+<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation.created_at }}</span>
+</pre>
+<div class="like-button text-center mb-5" data-conversation-id="{{ conversation.id }}" {% if conversation.liked %}style="color: pink;" {% endif %}>
     <i class="fa fa-heart fa-2x mb-2"></i>
     <hr class="text-center" style="margin: 0 45%;">
 </div>

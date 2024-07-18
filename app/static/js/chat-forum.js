@@ -7,12 +7,12 @@ $(document).ready(function () {
                 $("#display").empty();
                 response.messages.forEach(function (message) {
                     var temp = `
-                        <div class="message-container">
+                        <div class="message-container main">
                             <div class="message-header">
-                                <b>${message.user}</b>
-                                <span class="time-left">${message.date}</span>
+                                <b class="user-message">${message.user}</b>
+                                <span class="tcreated-at">${message.date}</span>
                             </div>
-                            <div class="message-body" style="color: #faf;">
+                            <div class="llm-response">
                                 ${message.value}
                             </div>
                         </div>
