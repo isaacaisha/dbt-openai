@@ -1,5 +1,22 @@
+// Function to get the CSRF token from cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 // Function to send a POST request to the server
 function sendRequest(prompt) {
+    const csrfToken = getCookie('csrf_token');
     // Show loading indicator
     showLoading();
 
@@ -12,6 +29,7 @@ function sendRequest(prompt) {
     xhr = new XMLHttpRequest(); // Use the global xhr variable
     xhr.open('POST', '/interface/answer', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('X-CSRFToken', csrfToken);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             // Hide loading indicator

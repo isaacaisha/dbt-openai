@@ -1,6 +1,7 @@
 # WEBSITE_REVIEW.PY
 
 import os
+import re
 import urllib.parse
 import asyncio
 import cloudinary
@@ -138,7 +139,14 @@ def get_review(screenshot_url):
                 if 'src' in item['payload']:
                     tts_url = item['payload']['src']
                 break
-
+              
+        # Clean up review text by removing ## and ** characters
+        review_text = re.sub(r'## |##| \*\*|\*\*', '', review_text)
+        # Remove <voice name="en-GB-standard-A"> and </voice> tags along with any content between them
+        review_text = re.sub(r'<voice\s+name="en-GB-standard-A">.*?</voice>', '', review_text, flags=re.IGNORECASE)
+        # Remove any remaining standalone <voice name="en-GB-standard-A"> and </voice> tags
+        review_text = re.sub(r'<voice\s+name="en-GB-standard-A">', '', review_text, flags=re.IGNORECASE)
+        review_text = re.sub(r'</voice>', '', review_text, flags=re.IGNORECASE)
         return review_text, tts_url
 
     except Exception as e:
@@ -161,6 +169,7 @@ async def submit_url():
                 site_url=domain,
                 site_image_url=website_screenshot,
                 feedback=website_review,
+                tts_url=tts_url,
                 user_id=current_user.id
             )
 
@@ -220,7 +229,7 @@ def review_website():
 
 
 # Endpoint to update rating
-@review_website_bp.route('/rate-feedback/', methods=['POST'])
+@review_website_bp.route('/rate-feedback', methods=['POST'])
 def rate_feedback():
     data = request.get_json()
     review_id = data.get('id')
@@ -332,6 +341,7 @@ def review_details(pk):
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
+    tts_url = None
     
     # Fetch the latest review ID
     review = WebsiteReview.query.filter_by(user_id=current_user.id).order_by(WebsiteReview.id.desc()).first()
@@ -340,7 +350,7 @@ def review_details(pk):
     review_detail = WebsiteReview.query.get_or_404(pk)
     if current_user.id == review_detail.user_id:
         return render_template('review-details.html', review_detail=review_detail, review_id=review_id,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               tts_url=tts_url, date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return redirect(url_for('website_review.review_posts'))
     
@@ -382,6 +392,7 @@ def liked_reviews_details(pk):
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
+    tts_url = None
     
     # Fetch the latest review ID
     review = WebsiteReview.query.filter_by(user_id=current_user.id).order_by(WebsiteReview.id.desc()).first()
@@ -390,6 +401,6 @@ def liked_reviews_details(pk):
     liked_review_detail = WebsiteReview.query.get_or_404(pk)
     if current_user.id == liked_review_detail.user_id:
         return render_template('liked-reviews-details.html', liked_review_detail=liked_review_detail, review_id=review_id,
-                               date=datetime.now().strftime("%a %d %B %Y"))
+                               tts_url=tts_url, date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return redirect(url_for('website_review.review_posts'))

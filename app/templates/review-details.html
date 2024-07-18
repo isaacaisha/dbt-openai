@@ -8,7 +8,7 @@
 {% include 'bootstrap/base.html' %}
 <style>
     .custom-input-group:hover {
-        transform: scale(1.03);
+        transform: scale(1.02);
         transition: transform 0.3s ease;
     }
 </style>
@@ -51,21 +51,33 @@
                     style="max-width: 100%; word-wrap: break-word;">
                     {{ review_detail.site_url|truncate(37)|safe }}
                 </a>
-            </div>
-            <!-- Like Section -->
-            <div id="updateLike" class="like-button text-center mb-5" data-review_id="{{ review_detail.id }}">
-                <p class="h6">Review ID: {{ review_detail.id }}</p>
-                <i id="likeIcon{{ review_detail.id }}"
-                    class="fa fa-heart fa-2x mb-3 {% if review_detail.liked %}liked{% endif %}"
-                    onclick="toggleLike('{{ review_detail.id }}')"></i>
-                <hr class="text-center" style="margin: 0 45%;">
-            </div>
-            <div id="likeMessage{{ review_detail.id }}" class="text-center mt-6 mb-5 hidden" style="color:blanchedalmond;">
-                Liked!<br>You can access your liked Reviews from the menu.
-            </div>
-            <div id="unlikeMessage{{ review_detail.id }}" class="text-center mt-6 mb-5 hidden" style="color:blanchedalmond;">Unliked!</div>
 
-
+                <hr class="my-4 mb-3 border-secondary">
+                <!-- Audio Player for TTS -->
+                <div id="audioFeedback" class="audio-feedback mb-4">
+                    <h3 class="text-lg font-bold">Voice Feedback:</h3>
+                    <audio controls id="audioElement">
+                        <source id="audioSource" src="{{ review_detail.tts_url }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <hr class="my-4 mb-4 border-secondary">
+                <!-- Like Section -->
+                <div id="updateLike" class="like-button text-center mb-5" data-review_id="{{ review_detail.id }}">
+                    <p class="h6">Review ID: {{ review_detail.id }}</p>
+                    <i id="likeIcon{{ review_detail.id }}"
+                        class="fa fa-heart fa-2x mb-3 {% if review_detail.liked %}liked{% endif %}"
+                        onclick="toggleLike('{{ review_detail.id }}')"></i>
+                    <hr class="text-center" style="margin: 0 45%;">
+                </div>
+                <div id="likeMessage{{ review_detail.id }}" class="text-center mt-6 mb-5 hidden"
+                    style="color:blanchedalmond;">
+                    Liked!<br>You can access your liked Reviews from the menu.
+                </div>
+                <div id="unlikeMessage{{ review_detail.id }}" class="text-center mt-6 mb-5 hidden"
+                    style="color:blanchedalmond;">Unliked!</div>
+                </div>
+            </div>
         </section>
     </div>
 </div>

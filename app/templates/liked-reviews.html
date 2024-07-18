@@ -34,7 +34,7 @@
     <hr class="green mb-5">
 
     {% if search_message %}
-    <div class="alert alert-danger">{{ search_message }}</div>
+    <div class="alert alert-info">{{ search_message }}</div>
 
     <div class="mb-5">
         <a href="javascript:history.back();" class="white">
@@ -43,13 +43,7 @@
     </div>
     {% endif %}
 
-    {% if not reviews %}
-    {% if message %}
-    <div class="alert alert-info mb-5">
-        {{ message }}
-    </div>
-    {% endif %}
-    {% else %}
+    {% if reviews %}
     <div class="d-flex justify-content-center mb-5">
         <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton"
             style="position:fixed">

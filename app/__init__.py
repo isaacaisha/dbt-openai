@@ -2,7 +2,6 @@
 
 import os
 import secrets
-import openai
 
 from datetime import timedelta
 from dotenv import load_dotenv, find_dotenv
@@ -11,10 +10,10 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
+
 from app.database import db, init_app, database_bp
 from app.app_forms import app_form_bp
-# Import all models
-from app.memory import memory_bp, Memory, User, Theme, Message, MemoryTest, BlogPost, WebsiteReview
+from app.memory import memory_bp, User
 
 from app.routes.auth import auth_bp
 from app.routes.convers_functions import conversation_functionality_bp
@@ -27,6 +26,7 @@ from app.routes.process_interface_conversation import interface_conversation_bp
 
 
 load_dotenv(find_dotenv())
+
 
 def create_app(config=None):
     app = Flask(__name__, template_folder='templates', static_folder='static')
@@ -66,7 +66,6 @@ def create_app(config=None):
     with app.app_context():
         db.create_all()
 
-
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
@@ -89,11 +88,9 @@ def create_app(config=None):
     app.register_blueprint(memory_bp, name='memory')
     app.register_blueprint(review_website_bp, name='website_review')
 
-
     @app.route('/robots.txt')
     def robots_txt():
         return send_from_directory(app.static_folder, 'robots.txt')
-
 
     @app.route('/sitemap.xml')
     def sitemap():
