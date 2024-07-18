@@ -9,9 +9,7 @@
 <style>
     .custom-input-group:hover {
         transform: scale(1.03);
-        /* Scale up by 5% on hover */
         transition: transform 0.3s ease;
-        /* Smooth transition over 0.3 seconds */
     }
 </style>
 {% endblock %}
@@ -28,6 +26,11 @@
 
 {% block content %}
 {% autoescape true %}
+<div class="d-flex justify-content-center">
+    <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton">
+        ⇩
+    </button>
+</div>
 <br>
 <!-- Main content -->
 <br>
@@ -36,24 +39,37 @@
         <section>
             <div class="p-4 main text-light border-secondary rounded-lg">
                 <h3 class="text-lg font-semibold">{{ review_detail.site_url|truncate(27)|safe }}</h3>
-                <textarea class="textarea_details blog_details p-4 llm-response" readonly>{{ review_detail.feedback|safe }}</textarea>
+                <textarea class="textarea_details blog_details p-4 llm-response"
+                    readonly>{{ review_detail.feedback|safe }}</textarea>
                 <p class="created mb-2">{{ review_detail.created_at.strftime("%a %d %B %Y %H:%M:%S") }}</p>
                 <hr class="my-4 mb-4 border-secondary">
                 <h4 class="text-lg font-semibold">Website Link</h4>
-                <a href="{{review_detail.site_url}}" class="llm-response hover:underline" style="max-width: 100%; word-wrap: break-word;">
+                <a href="{{review_detail.site_url}}" class="llm-response hover:underline"
+                    style="max-width: 100%; word-wrap: break-word;">
                     {{ review_detail.site_url|truncate(37)|safe }}
                 </a>
             </div>
             <!-- Like Section -->
-            <div id="updateLike" class="like-button text-center mb-5" data-reviewId="{{ review_id }}">
-                <i id="likeIcon{{ review_id }}" class="fa fa-heart fa-2x mb-3 {% if liked %}liked{% endif %}" onclick="toggleLike('{{ review_id }}')"></i>
+            <div id="updateLike" class="like-button text-center mb-5" data-review_id="{{ review_detail.id }}">
+                <p class="h6">Review ID: {{ review_detail.id }}</p>
+                <i id="likeIcon{{ review_detail.id }}"
+                    class="fa fa-heart fa-2x mb-3 {% if review_detail.liked %}liked{% endif %}"
+                    onclick="toggleLike('{{ review_detail.id }}')"></i>
                 <hr class="text-center" style="margin: 0 45%;">
             </div>
-            <div id="likeMessage" class="mt-6 mb-5 hidden">Liked!</div>
+            <div id="likeMessage{{ review_detail.id }}" class="text-center mt-6 mb-5 hidden" style="color:blanchedalmond;">
+                Liked!<br>You can access your liked Reviews from the menu.
+            </div>
+            <div id="unlikeMessage{{ review_detail.id }}" class="text-center mt-6 mb-5 hidden" style="color:blanchedalmond;">Unliked!</div>
+
+
         </section>
     </div>
 </div>
 <br>
+
+<script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
+
 {% endautoescape %}
 {% endblock %}
 

@@ -52,6 +52,11 @@
     </div>
     {% endif %}
     {% else %}
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton">
+            ⇩
+        </button>
+    </div>
     <br>
     <div style="position:fixed">
         <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
@@ -121,8 +126,7 @@
                         <a href="{{ url_for('website_review.review_details', pk=review.id) }}">
                             <div class="llm-response p-4 border border-secondary rounded-lg">
                                 <h3 class="text-lg font-semibold">{{ review.site_url|truncate(19)|safe }}</h3>
-                                <p class="text-info">·SìįSí·Dbt·'s Review Detail:<br>- Feedback Content: {{ review.feedback|default('No feedback provided')|truncate(91) }}<br>
-</p>
+                                <p class="text-info">·SìįSí·Dbt·'s Review Detail:<br>- Feedback Content: {{ review.feedback|default('No feedback provided')|truncate(91) }}</p>
                                 <p class="created">{{ review.created_at }}</p>
                             </div>
                             <br>
@@ -137,14 +141,14 @@
     <br>
 
     <hr class="crimson mb-5">
-    <hr class="green mb-3">
+    <!-- <hr class="green mb-3">
 
-    <!-- Add a button to trigger the display of serialized_histories -->
+    <!- Add a button to trigger the display of serialized_histories ->
     <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
         Show Reviews
     </button>
 
-    <!-- Add a div to contain the serialized histories -->
+    <!- Add a div to contain the serialized histories ->
     <div id="historiesContainer" class="align-left mb-3" style="display: none;">
 {% for review in reviews %}
 <textarea class="form-control mb-3" id="userInput" name="text_writing" readonly>
@@ -163,12 +167,12 @@
     <hr class="green mb-5">
     <hr class="gold mb-3">
 
-    <!-- Add a button to trigger the display of serialized_histories -->
+    <!- Add a button to trigger the display of serialized_histories ->
     <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
         Show Conversations json
     </button>
 
-    <!-- Add a div to contain the serialized histories -->
+    <!- Add a div to contain the serialized histories ->
     <div id="historiesContainerJson" class="align-left mb-3" style="display: none;">
         {% for review in reviews %}
         <pre>
@@ -177,12 +181,11 @@
         {% endfor %}
     </div>
 
-    <hr class="gold mb-5">
+    <hr class="gold mb-5">-->
     {% endif %}
 
 </div>
 
-<script src="{{ url_for('static', filename='js/like-unlike-convers.js') }}" defer></script>
 <script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 
 {% endautoescape %}

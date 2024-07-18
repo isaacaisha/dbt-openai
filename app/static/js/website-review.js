@@ -1,4 +1,4 @@
-// portfolio-review.js
+// WEBSITE-REVIEW.JS
 
 // Function to handle form submission
 document.getElementById('reviewForm').addEventListener('submit', async function (event) {
@@ -10,7 +10,7 @@ document.getElementById('reviewForm').addEventListener('submit', async function 
     // Disable the submit button
     const submitButton = document.querySelector('#reviewForm input[type="submit"]');
     submitButton.disabled = true;
-    
+
     // Disable all buttons except navigation buttons
     disableAllButtons(true);
 
@@ -114,68 +114,88 @@ function handleError(error) {
 }
 
 // Function to handle rate feedback
-function rateFeedback(review_id, rating) {
-    fetch(`/feedback`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: review_id, user_rating: rating }),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.status === 'success') {
-                alert('Feedback submitted successfully!');
-            } else {
-                alert('Failed to submit feedback. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-            alert('There was a problem with your request. Please try again later.');
+async function rateFeedback(id, user_rating) {
+    console.log("rateFeedback called with review_id:", id, "and user_rating:", user_rating);
+
+    if (!id) {
+        console.error("No id provided");
+        alert('Review ID is missing.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/rate-feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id, user_rating }),
         });
+
+        const data = await response.json();
+        console.log("Response from server:", data);
+
+        const feedbackMessage = document.getElementById("feedbackMessage");
+
+        if (response.ok) {
+            feedbackMessage.textContent = 'Thanks for Your Feedback!';
+            feedbackMessage.classList.remove('hidden');
+        } else {
+            feedbackMessage.textContent = 'Failed to rate feedback.';
+            feedbackMessage.classList.remove('hidden');
+        }
+
+        // Hide the message after 2 seconds
+        setTimeout(() => {
+            feedbackMessage.classList.add('hidden');
+        }, 2000);
+
+    } catch (error) {
+        console.error('Error:', error);
+        feedbackMessage.textContent = 'Error rating feedback.';
+        feedbackMessage.classList.remove('hidden');
+
+        // Hide the message after 2 seconds
+        setTimeout(() => {
+            feedbackMessage.classList.add('hidden');
+        }, 2000);
+    }
 }
-        // .then(data => {
-        //     if (data.status === 'success') {
-        //         alert('Feedback submitted successfully!');
-        //         var ratingElement = document.querySelector(`.rating[data-review-id="${review_id}"]`);
-        //         if (ratingElement) {
-        //             ratingElement.innerText = `Rating: ${rating}`;
-        //         }
-        //     } else {
-        //         alert('Failed to submit feedback. Please try again.');
-        //     }
-        // })
-        // .catch(error => {
-        //     console.error('There has been a problem with your fetch operation:', error);
-        //     alert('There was a problem with your request. Please try again later.');
-        // });
-// }
 
 // Function to toggle like status
-function toggleLike(reviewId) {
-    fetch(`/like/${reviewId}`, {
+function toggleLike(review_id) {
+    const likeIcon = document.querySelector(`#likeIcon${review_id}`);
+    const likeMessage = document.querySelector(`#likeMessage${review_id}`);
+    const unlikeMessage = document.querySelector(`#unlikeMessage${review_id}`);
+
+    fetch(`/like/${review_id}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ liked: !likeIcon.classList.contains('liked') }) // Toggle liked status
     })
         .then(response => response.json())
         .then(data => {
-            if (data.error) {
-                console.error(data.error);
-                return;
-            }
-            const likeIcon = document.querySelector(`#likeIcon${reviewId}`);
-            if (data.liked) {
-                likeIcon.classList.add('liked');
+            if (data.success) {
+                if (data.liked) {
+                    likeIcon.classList.add('liked');
+                    likeIcon.style.color = 'pink';
+                    likeMessage.classList.remove('hidden');
+                    unlikeMessage.classList.add('hidden');
+                } else {
+                    likeIcon.classList.remove('liked');
+                    likeIcon.style.color = '';
+                    likeMessage.classList.add('hidden');
+                    unlikeMessage.classList.remove('hidden');
+                }
+                setTimeout(() => {
+                    likeMessage.classList.add('hidden');
+                    unlikeMessage.classList.add('hidden');
+                }, 2000); // Hide the message after 2 seconds
+                console.log('Like status updated successfully');
             } else {
-                likeIcon.classList.remove('liked');
+                console.error(data.message);
             }
         })
         .catch(error => {
@@ -189,4 +209,20 @@ function scrollDown() {
         top: document.body.scrollHeight,
         behavior: 'smooth'
     });
+}
+
+// Function to get the CSRF token from cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }

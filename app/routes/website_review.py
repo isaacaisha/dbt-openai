@@ -144,34 +144,6 @@ def get_review(screenshot_url):
     except Exception as e:
         print(f"Error getting review: {str(e)}")
         return None, None
-    
-
-# Main page route
-@review_website_bp.route('/website-review', methods=['GET', 'POST'])
-def review_website():
-    if not current_user.is_authenticated:
-        flash('😂Please login to access this page.🤣')
-        return redirect(url_for('auth.login'))
-    
-    review_form = WebsiteReviewForm()
-
-    website_review = None
-    website_screenshot = None
-    review_id = None
-    tts_url = None
-
-    if review_form.validate_on_submit():
-        domain = review_form.domain.data
-        return redirect(url_for('website_review.submit_url', domain=domain))
-
-    return render_template("website-review.html", 
-                           current_user=current_user, 
-                           review_form=review_form,
-                           website_review=website_review,
-                           website_screenshot=website_screenshot,
-                           review_id=review_id,
-                           tts_url=tts_url,
-                           date=datetime.now().strftime("%a %d %B %Y"))
 
 
 # Endpoint to submit URL for review
@@ -196,6 +168,7 @@ async def submit_url():
             db.session.commit()
 
             review_id = new_review_object.id
+            print(f"New review created with ID: {review_id}") 
 
             response_data = {
                 'website_screenshot': website_screenshot,
@@ -212,6 +185,82 @@ async def submit_url():
 
     flash('Invalid domain URL.')
     return jsonify({'error': 'Invalid domain URL'})
+    
+
+# Main page route
+@review_website_bp.route('/website-review', methods=['GET', 'POST'])
+def review_website():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+    
+    review_form = WebsiteReviewForm()
+
+    website_review = None
+    website_screenshot = None
+    review_id = None
+    tts_url = None
+
+    if review_form.validate_on_submit():
+        domain = review_form.domain.data
+        return redirect(url_for('website_review.submit_url', domain=domain))
+    
+    # Fetch the latest review ID
+    review = WebsiteReview.query.filter_by(user_id=current_user.id).order_by(WebsiteReview.id.desc()).first()
+    review_id = review.id + 1 if review else 1
+
+    return render_template("website-review.html", 
+                           current_user=current_user, 
+                           review_form=review_form,
+                           website_review=website_review,
+                           website_screenshot=website_screenshot,
+                           review_id=review_id,
+                           tts_url=tts_url,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+# Endpoint to update rating
+@review_website_bp.route('/rate-feedback/', methods=['POST'])
+def rate_feedback():
+    data = request.get_json()
+    review_id = data.get('id')
+    user_rating = data.get('user_rating')
+
+    print(f"Received rate feedback request: review_id={review_id}, rating={user_rating}")
+
+    # Validate review_id
+    if not review_id:
+        print("Invalid review_id received")
+        return jsonify({'error': 'Invalid review ID'}), 400
+
+    # Your logic to update the feedback rating
+    review = WebsiteReview.query.get(review_id)
+    if review:
+        review.user_rating = user_rating
+        db.session.commit()
+        print(f"Feedback updated successfully for review_id={review_id}")
+        return jsonify({'message': 'Feedback rated successfully'}), 200
+    else:
+        print(f"Review not found for review_id={review_id}")
+        return jsonify({'error': 'Review not found'}), 404
+
+
+# Endpoint to update like
+@review_website_bp.route('/like/<int:review_id>', methods=['POST'])
+def update_like(review_id):
+    data = request.get_json()
+    liked = data.get('liked', False)
+
+    try:
+        review = WebsiteReview.query.get(review_id)
+        if review:
+            review.liked = 1 if liked else 0
+            db.session.commit()
+            return jsonify({'success': True, 'liked': review.liked}), 200
+        else:
+            return jsonify({'success': False, 'message': 'Review not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 
 def get_reviews(user_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
@@ -281,47 +330,35 @@ def review_details(pk):
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
+    
+    # Fetch the latest review ID
+    review = WebsiteReview.query.filter_by(user_id=current_user.id).order_by(WebsiteReview.id.desc()).first()
+    review_id = review.id if review else 1
 
     review_detail = WebsiteReview.query.get_or_404(pk)
     if current_user.id == review_detail.user_id:
-        return render_template('review-details.html', review_detail=review_detail,
+        return render_template('review-details.html', review_detail=review_detail, review_id=review_id,
                                date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return redirect(url_for('website_review.review_posts'))
     
 
-# Endpoint to submit feedback
-@review_website_bp.route('/feedback', methods=['POST'])
-def feedback():
-    data = request.get_json()
-    review_id = data.get('id')
-    rating_type = data.get('user_rating')
+@review_website_bp.route("/liked-reviews")
+def liked_reviews():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
 
-    try:
-        review = WebsiteReview.query.get(review_id)
-        if review:
-            review.user_rating = rating_type
-            db.session.commit()
-            return jsonify({'status': 'success', 'message': 'Feedback submitted successfully'})
-        else:
-            return jsonify({'status': 'error', 'message': 'Review not found'})
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)})
-    
+    user_id = current_user.id
 
-# Endpoint to submit like
-@review_website_bp.route('/like/<int:review_id>', methods=['POST'])
-def update_like(review_id):
-    data = request.get_json()
-    liked = data.get('liked', False)
+    # Fetch liked reviews
+    reviews = get_reviews(user_id=user_id, liked_value=1, order_by_desc=True)
+    serialized_reviews = [serialize_review(review) for review in reviews]
 
-    try:
-        review = WebsiteReview.query.get(review_id)
-        if review:
-            review.liked = 1 if liked else 0
-            db.session.commit()
-            return jsonify({'success': True, 'message': 'Like status updated successfully'})
-        else:
-            return jsonify({'success': False, 'message': 'Review not found'})
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)})
+    if not serialized_reviews:
+        message = "No liked reviews found."
+        return render_template('liked-reviews.html', current_user=current_user, reviews=serialized_reviews, message=message,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+
+    return render_template('liked-reviews.html', current_user=current_user, reviews=serialized_reviews,
+                           date=datetime.now().strftime("%a %d %B %Y"))

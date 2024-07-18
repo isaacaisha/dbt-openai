@@ -106,13 +106,13 @@ class BlogPost(db.Model):
 
 class WebsiteReview(db.Model):
     __tablename__ = 'website_reviews'
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     site_url = db.Column(db.String(9991), nullable=False)
     site_image_url = db.Column(db.Text, nullable=False)
     feedback = db.Column(db.Text, default='', nullable=True)
     liked = db.Column(db.Integer, default=0)
-    user_rating = db.Column(db.String(5))
+    user_rating = db.Column(db.String(10), nullable=True) 
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
     
     # Define the relationship to the User model
