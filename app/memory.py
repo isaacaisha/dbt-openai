@@ -1,7 +1,7 @@
 # memory.py
 
 from flask import Blueprint
-from sqlalchemy import func
+from sqlalchemy import LargeBinary, func
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 from app.database import db
@@ -16,6 +16,7 @@ class Memory(db.Model):
     user_name = db.Column(db.String(73), nullable=False)
     user_message = db.Column(db.Text, nullable=False)
     llm_response = db.Column(db.Text, nullable=False)
+    audio_datas = db.Column(LargeBinary) 
     conversations_summary = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
     liked = db.Column(db.Integer, default=0)
@@ -27,8 +28,10 @@ class Memory(db.Model):
     owner = relationship('User', foreign_keys=[owner_id])
 
     def __repr__(self):
-        return f"<Memory id={self.id}>"
-
+        return (f"<Memory id={self.id}, user_name='{self.user_name}', user_message='{self.user_message}', "
+                f"llm_response='{self.llm_response}', audio_url='{self.audio_url}', "
+                f"embedding='{self.embedding}', conversations_summary='{self.conversations_summary}', "
+                f"created_at='{self.created_at}', liked='{self.liked}'>")
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'

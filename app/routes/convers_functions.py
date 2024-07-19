@@ -65,7 +65,7 @@ def get_conversation(conversation_id):
         # Format created_at timestamp
         formatted_created_at = conversation_.created_at.strftime("%a %d %B %Y %H:%M:%S")
         return render_template('conversation-details.html', current_user=current_user,
-                               conversation_=conversation_, formatted_created_at=formatted_created_at,
+                               conversation=conversation_, formatted_created_at=formatted_created_at,
                                conversation_id=conversation_id, date=datetime.now().strftime("%a %d %B %Y"))
 
 

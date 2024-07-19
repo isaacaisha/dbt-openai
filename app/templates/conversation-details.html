@@ -27,28 +27,30 @@
     <hr class="green mb-3">
     <h3 class="conversations">Conversation Details</h3>
     <hr class="green mb-5">
-    <hr class="gold mb-3">
+    <hr class="gold mb-4">
     
-<pre class="textarea_details textarea-memory  main align-left mb-2">
-<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation_.id }}</span><br>
-<span class="user-message">- {{ conversation_.user_name }}</span>: <span class="user-message">{{ conversation_.user_message|safe }}</span><br>
-<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation_.llm_response }}</span><br>
-<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation_.created_at }}</span>
-</pre>
-    <div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked
-        %}style="color: pink;" {% endif %}>
-        <i class="fa fa-heart fa-2x mb-2"></i>
-        <hr class="text-center" style="margin: 0 45%;">
-        <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
-            You can access your liked conversations from the menu.
-        </div>
-    </div>
+<pre class="main align-left mb-4">
+<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation.id }}</span><br>
+<span class="user-message">- {{ conversation.user_name }}</span>: <span class="user-message">{{ conversation.user_message|safe }}</span><br>
+<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation.llm_response }}</span><br>
+<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation.created_at }}</span>
 
-    <div class="mb-3">
-        <a href="{{ url_for('conversation_function.select_conversation') }}" class="nav-link white">
-            Click to Go Back to Conversation Selection
-        </a>
-    </div>
+<div class="row justify-content-center">
+<div class="col-auto">
+<audio id="response-audio-{{ conversation.id }}" controls class="submit btn btn-outline-info m-0" style="width: 250px;">
+<source
+src="{{ url_for('conversation_interface.serve_audio_from_db', conversation_id=conversation.id) }}"
+type="audio/mp3">
+Your browser does not support the audio element.
+</audio>
+</div>
+</div>
+<div class="like-button text-center" data-conversation-id="{{ conversation.id }}" {% if conversation.liked
+    %}style="color: pink;" {% endif %}>
+<i class="fa fa-heart fa-2x"></i>
+    <hr class="green" style="margin: 0 45%;">
+</div>
+</pre>
 
     <hr class="gold mb-5">
     <hr class="crimson mb-3">

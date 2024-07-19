@@ -96,14 +96,22 @@
             <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
 
             <!-- Add a button for speech synthesis playback -->
-            <div class="mb-3">
-                <button id="playbackButton" type="button" class="btn btn-outline">
+            <div class="">
+                <button id="playbackButton" type="button" class="btn btn-outline mb-3 hidden">
                     -¡!¡- PlayBack Audio -¡!¡-
                 </button>
-                <audio id="response-audio" controls class="submit btn btn-outline-info" style="display:none;">
-                    <source src="{{ url_for('conversation_home.home_audio') }}" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
+            </div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <button class="main text-center mb-3 p-0">
+                            <audio id="response-audio" controls class="submit btn btn-outline-info m-0" style="display: none;">
+                                <source src="" type="audio/mp3">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 

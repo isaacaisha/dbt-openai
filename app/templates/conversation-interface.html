@@ -127,13 +127,16 @@
                 </button>
             </div>
 
-            {% if assistant_reply %}
-                <!-- Play the audio response -->
-                <audio id="response-audio" controls class="submit btn btn-outline-info">
-                    <source src="{{ url_for('conversation_interface.interface_serve_audio') }}" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
-            {% endif %}
+            <!--<div class="container mb-3">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <audio id="response-audio" controls class="submit btn btn-outline-info m-0" style="width: 250px; display: none;">
+                            <source src="{{ url_for('conversation_interface.serve_audio', filename='interface_temp_audio.mp3') }}" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            </div>-->
 
             <hr class="green mb-5">
 

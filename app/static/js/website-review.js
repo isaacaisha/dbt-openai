@@ -88,12 +88,13 @@ function displayReviewResult(data) {
             audioSource.src = data.tts_url;
             var audioElement = document.getElementById('audioElement');
             audioElement.load();
+
+            document.getElementById('audioFeedback').classList.remove('hidden');
         }
 
         document.getElementById('updateLike').classList.remove('hidden');
         document.getElementById('reviewResult').classList.remove('hidden');
         document.getElementById('rating_section').classList.remove('hidden');
-        document.getElementById('audioFeedback').classList.remove('hidden');
     }
 }
 

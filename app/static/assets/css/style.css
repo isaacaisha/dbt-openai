@@ -449,6 +449,7 @@ textarea#generatedText {
 
 #generateButton,
 #playbackButton,
+#response-audio,
 #theme_name,
 #generateBlogButton:hover {
     background-color: rgb(0, 0, 0, 0.181) !important;

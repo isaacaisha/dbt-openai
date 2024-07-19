@@ -1,7 +1,8 @@
 import json
+import os
 import pytz
 
-from flask import Blueprint, render_template, request, send_file, jsonify
+from flask import Blueprint, render_template, request, send_file, jsonify, send_from_directory, url_for
 from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
@@ -28,6 +29,9 @@ IMAGES =['siisi.jpg', 'mommy.jpg', 'corazones.jpeg', 'logo_ai.jpg', 'logo0.jpg',
          'i.jpg', 'f.jpg', 's.jpg', 'o.jpg', 'k.jpg', 'p.jpg', 'n.jpg', 'i.jpg', 
          'q.jpg', 'm.jpg', 'r.jpg', 'l.jpg', 'istock5.jpg',
          ]
+
+STATIC_FOLDER_PATH = '/Users/lesanebyby/PycharmProjects/DBT OpenAI Speech/static'
+AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
 
 
 @home_conversation_bp.route("/", methods=["GET", "POST"])
@@ -86,7 +90,7 @@ def home_answer():
     tts = gTTS(assistant_reply, lang=detected_lang)
 
     # Create a temporary audio file
-    audio_file_path = 'temp_audio.mp3'
+    audio_file_path = os.path.join(AUDIO_FOLDER_PATH, 'home_temp_audio.mp3')
     tts.save(audio_file_path)
     print(f'LLM Response:\n{assistant_reply} 😝\n')
 
@@ -94,22 +98,20 @@ def home_answer():
 
     save_to_test_database(user_message, response)
 
+    audio_url = url_for('conversation_home.serve_audio', filename='home_temp_audio.mp3')
+    
     # Return the response as JSON, including both text and the path to the audio file
     return jsonify({
         "answer_text": assistant_reply,
-        "answer_audio_path": audio_file_path,
+        "answer_audio_path": audio_url,
         "detected_lang": detected_lang,
     })
 
 
-@home_conversation_bp.route('/home-audio')
-def home_audio():
-    audio_file_path = 'temp_audio.mp3'
-    try:
-        return send_file(audio_file_path, as_attachment=True)
-    except FileNotFoundError:
-        return "File not found", 404
-    
+@home_conversation_bp.route('/media/<filename>')
+def serve_audio(filename):
+    return send_from_directory(AUDIO_FOLDER_PATH, filename)
+
 
 # Function to save conversation to database
 def save_to_test_database(user_message, response):

@@ -123,7 +123,9 @@ def show_story():
         if memory_load:
             memory_buffer = f'- {current_user.name}(owner_id:{owner_id}):\n\n'
             memory_buffer += '\n\n'.join(
-                [f'- {memory.user_name}: {memory.user_message}\n\n·SìįSí·Dbt·: {memory.llm_response}\n\n- Created at: { memory.created_at.strftime('%Y-%m-%d %H:%M:%S') }\n\n' + '-' * 19 for memory in memory_load]
+                [f'- Conversation ID: {memory.id}\n\n- {memory.user_name}: {memory.user_message}\n\n'
+                 f'·SìįSí·Dbt·: {memory.llm_response}\n\n- Created at: { memory.created_at.strftime('%Y-%m-%d %H:%M:%S') }\n\n'
+                 f'' + '-' * 19 for memory in memory_load]
             )
 
             summary_conversations = '\n\n'.join([memory.conversations_summary.split('\n')[-1] for memory in memory_load])

@@ -1,3 +1,5 @@
+//INTERFACE-SPEECH-REQUEST.JS
+
 // Function to get the CSRF token from cookies
 function getCookie(name) {
     let cookieValue = null;
@@ -20,11 +22,17 @@ function sendRequest(prompt) {
     // Show loading indicator
     showLoading();
 
-    // Disable the "Get The Response" button and "PlayBack" button
+    // Disable buttons
+    var speechRecognitionButton = document.getElementById('speechRecognitionButton');
     var generateButton = document.getElementById('generateButton');
     var playbackButton = document.getElementById('playbackButton');
+    speechRecognitionButton.disabled = true;
     generateButton.disabled = true;
     playbackButton.disabled = true;
+
+    // Disable all buttons except navigation buttons
+    disableAllButtons(true);
+    interruptButton.disabled = false;
 
     xhr = new XMLHttpRequest(); // Use the global xhr variable
     xhr.open('POST', '/interface/answer', true);
@@ -35,9 +43,11 @@ function sendRequest(prompt) {
             // Hide loading indicator
             hideLoading();
 
-            // Re-enable the "Get The Response" button and "PlayBack" button
+            // Re-enable buttons
+            speechRecognitionButton.disabled = false;
             generateButton.disabled = false;
             playbackButton.disabled = false;
+            disableAllButtons(false);
 
             if (xhr.status === 200) {
                 var response = JSON.parse(xhr.responseText);
@@ -81,12 +91,8 @@ function sendRequest(prompt) {
 
                 // Set the audio source and play
                 var audio = document.getElementById('response-audio');
-                audio.src = "data:audio/mp3;base64," + response.answer_audio;
-
-                // Auto-play the audio when it's ready
-                audio.oncanplay = function () {
-                    audio.play();
-                };
+                audio.src = response.answer_audio_path;
+                audio.style.display = 'block';
 
                 // Ensure the stop button remains visible during speech synthesis
                 interruptButton.style.display = 'block';
@@ -96,6 +102,20 @@ function sendRequest(prompt) {
         }
     };
     xhr.send('prompt=' + encodeURIComponent(prompt));
+}
+
+// Function to disable/enable all buttons and links
+function disableAllButtons(disable) {
+    var allButtons = document.querySelectorAll('button');
+    allButtons.forEach(function (button) {
+        button.disabled = disable;
+    });
+
+    var iconLinks = document.querySelectorAll('li > a, a');
+    iconLinks.forEach(function (iconLink) {
+        iconLink.style.pointerEvents = disable ? 'none' : 'auto';
+        iconLink.style.opacity = disable ? '0.5' : '1';
+    });
 }
 
 // Function to show the loading indicator
@@ -173,14 +193,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         window.speechSynthesis.speak(speech);
     });
-
+    
     // Add an event listener to the audio element for playback
-    document.getElementById('response-audio').onloadedmetadata = function () {
-        this.play();
-    };
-
-    // Add an event listener to the playback button for audio
-    document.getElementById('playAudioButton').addEventListener('click', function () {
+    document.getElementById('response-audio').addEventListener('click', function () {
         var audio = document.getElementById('response-audio');
         audio.play();
     });

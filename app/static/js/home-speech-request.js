@@ -21,8 +21,10 @@ function sendRequest(prompt) {
     showLoading();
 
     // Disable the "Get The Response" button and "PlayBack" button
+    var speechRecognitionButton = document.getElementById('speechRecognitionButton');
     var generateButton = document.getElementById('generateButton');
     var playbackButton = document.getElementById('playbackButton');
+    speechRecognitionButton.disabled = true;
     generateButton.disabled = true;
     playbackButton.disabled = true;
 
@@ -36,6 +38,7 @@ function sendRequest(prompt) {
             hideLoading();
 
             // Re-enable the "Get The Response" button and "PlayBack" button
+            speechRecognitionButton.disabled = false;
             generateButton.disabled = false;
             playbackButton.disabled = false;
 
@@ -81,12 +84,15 @@ function sendRequest(prompt) {
 
                 // Set the audio source and play
                 var audio = document.getElementById('response-audio');
-                audio.src = "data:audio/mp3;base64," + response.answer_audio;
+                //audio.src = "data:audio/mp3;base64," + response.answer_audio;
+                audio.src = response.answer_audio_path;
+                audio.style.display = 'block';
+                playbackButton.classList.remove('hidden');
 
-                // Auto-play the audio when it's ready
-                audio.oncanplay = function() {
-                    audio.play();
-                };
+                // // Auto-play the audio when it's ready
+                // audio.oncanplay = function() {
+                //     audio.play();
+                // };
 
                 // Ensure the stop button remains visible during speech synthesis
                 interruptButton.style.display = 'block';
@@ -175,12 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Add an event listener to the audio element for playback
-    document.getElementById('response-audio').onloadedmetadata = function () {
-        this.play();
-    };
-
-    // Add an event listener to the playback button for audio
-    document.getElementById('playAudioButton').addEventListener('click', function () {
+    document.getElementById('response-audio').addEventListener('click', function () {
         var audio = document.getElementById('response-audio');
         audio.play();
     });
