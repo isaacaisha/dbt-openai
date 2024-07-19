@@ -23,84 +23,93 @@ function sendRequest(prompt) {
     showLoading();
 
     // Disable buttons
-    var speechRecognitionButton = document.getElementById('speechRecognitionButton');
-    var generateButton = document.getElementById('generateButton');
-    var playbackButton = document.getElementById('playbackButton');
-    speechRecognitionButton.disabled = true;
-    generateButton.disabled = true;
-    playbackButton.disabled = true;
+    const buttons = ['speechRecognitionButton', 'generateButton', 'start-button'];
+    buttons.forEach(id => document.getElementById(id).disabled = true);
 
     // Disable all buttons except navigation buttons
     disableAllButtons(true);
     interruptButton.disabled = false;
 
-    xhr = new XMLHttpRequest(); // Use the global xhr variable
+    const xhr = new XMLHttpRequest(); // Use local variable
     xhr.open('POST', '/interface/answer', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('X-CSRFToken', csrfToken);
+
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             // Hide loading indicator
             hideLoading();
 
             // Re-enable buttons
-            speechRecognitionButton.disabled = false;
-            generateButton.disabled = false;
-            playbackButton.disabled = false;
+            buttons.forEach(id => document.getElementById(id).disabled = false);
             disableAllButtons(false);
 
             if (xhr.status === 200) {
-                var response = JSON.parse(xhr.responseText);
+                const response = JSON.parse(xhr.responseText);
 
                 // Display the text response in the textarea
-                var textarea = document.getElementById('generatedText');
+                const textarea = document.getElementById('generatedText');
                 textarea.value = response.answer_text;
 
                 // Store the detected language as a data attribute
                 textarea.dataset.detectedLang = response.detected_lang || 'es-ES';
+                textarea.style.display = response.answer_text ? 'block' : 'none';
 
                 // Toggle visibility of the textarea based on response
-                if (response.answer_text) {
-                    textarea.style.display = 'block';
+                if (response.answer_text)
 
                     // Scroll to the bottom of the container while text is being added
                     smoothScrollToBottomWhileTyping(response.answer_text);
 
                     // Use the SpeechSynthesis API to read the response aloud
-                    var speech = new SpeechSynthesisUtterance(response.answer_text);
+                    const speech = new SpeechSynthesisUtterance(response.answer_text);
 
                     // Use the detected language from the response
                     speech.lang = response.detected_lang || 'es-ES';
 
                     // Hide the interrupt button when speech ends
-                    speech.onend = function () {
-                        interruptButton.style.display = 'none';
-                    };
+                    speech.onend = () => interruptButton.style.display = 'none';
 
                     // Scroll as the speech is being spoken
                     speech.onboundary = function (event) {
-                        if (event.name === 'word') {
-                            smoothScrollToBottom();
-                        }
+                        speech.onboundary = event => {
+                            if (event.name === 'word') {
+                                smoothScrollToBottom();
+                            }
                     };
-
                     window.speechSynthesis.speak(speech);
-                } else {
-                    textarea.style.display = 'none';
-                }
+                } 
 
                 // Set the audio source and play
-                var audio = document.getElementById('response-audio');
-                audio.src = response.answer_audio_path;
+                const audio = document.getElementById('response-audio');
+                const playback = document.getElementById('playbackButton');
+                //audio.src = response.answer_audio_path;
+                audio.src = '/media/interface_temp_audio.mp3';
                 audio.style.display = 'block';
+                playback.style.display = 'block';
+
+                // Auto-play the audio when it's ready
+                audio.oncanplay = function() {
+                    audio.play();
+                };
+
 
                 // Ensure the stop button remains visible during speech synthesis
                 interruptButton.style.display = 'block';
             } else {
-                interruptButton.style.display = 'none'; // Hide the interrupt button if request fails
+                    interruptButton.style.display = 'none'; // Hide the interrupt button if request fails
+                    console.error('Request failed:', xhr.status, xhr.statusText); 
             }
         }
     };
+
+    xhr.onerror = function () {
+        hideLoading();
+        buttons.forEach(id => document.getElementById(id).disabled = false);
+        disableAllButtons(false);
+        console.error('Network error'); // Handle network errors
+    };
+
     xhr.send('prompt=' + encodeURIComponent(prompt));
 }
 

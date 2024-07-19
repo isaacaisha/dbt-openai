@@ -31,8 +31,16 @@ memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
 
-STATIC_FOLDER_PATH = '/Users/lesanebyby/PycharmProjects/DBT OpenAI Speech/static'
+#  STATIC_FOLDER_PATH = '/Users/lesanebyby/PycharmProjects/DBT OpenAI Speech/static'
+#  AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
+
+# Define base directory relative to the current file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_FOLDER_PATH = os.path.join(BASE_DIR, 'static')
 AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
+
+# Ensure the directory exists
+os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
 
 
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
