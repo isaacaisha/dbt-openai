@@ -1,71 +1,72 @@
-// WEBSITE-REVIEW.JS
+document.addEventListener('DOMContentLoaded', function () {
+    // Function to handle form submission
+    const reviewForm = document.getElementById('reviewForm');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent the default form submission
 
-// Function to handle form submission
-document.getElementById('reviewForm').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Prevent the default form submission
+            // Show the loader
+            document.getElementById('loader').style.display = 'block';
 
-    // Show the loader
-    document.getElementById('loader').style.display = 'block';
+            // Disable the submit button
+            const submitButton = document.querySelector('#reviewForm input[type="submit"]');
+            submitButton.disabled = true;
 
-    // Disable the submit button
-    const submitButton = document.querySelector('#reviewForm input[type="submit"]');
-    submitButton.disabled = true;
+            // Disable all buttons
+            disableAllButtons(true);
 
-    // Disable all buttons except navigation buttons
-    disableAllButtons(true);
+            // Collect form data
+            const formData = new FormData(event.target);
 
-    // Collect form data
-    var formData = new FormData(event.target);
+            // Use Fetch API to submit the form data
+            try {
+                const response = await fetch(event.target.action, {
+                    method: 'POST',
+                    body: formData,
+                });
 
-    // Use Fetch API to submit the form data
-    try {
-        const response = await fetch(event.target.action, {
-            method: 'POST',
-            body: formData,
-        });
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
 
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
+                if (response.headers.get('content-type')?.includes('application/json')) {
+                    const data = await response.json();
+                    console.log('Data received:', data);
 
-        if (response.headers.get('content-type')?.includes('application/json')) {
-            const data = await response.json();
-            console.log('Data received:', data);
+                    // Hide the loader
+                    document.getElementById('loader').style.display = 'none';
 
-            // Hide the loader
-            document.getElementById('loader').style.display = 'none';
+                    // Enable submit button and links
+                    submitButton.disabled = false;
+                    disableAllButtons(false);
 
-            // Enable submitButton buttons and links
-            submitButton.disabled = false;
-            disableAllButtons(false);
+                    // Display the result or perform any other actions based on the response
+                    displayReviewResult(data);
 
-            // Display the result or perform any other actions based on the response
-            displayReviewResult(data);
-
-            if (data.website_screenshot) {
-                document.getElementById('screenshotResult').innerHTML = `
-                    <h3 class="text-lg font-bold">Website Screenshot:</h3>
-                    <img src="${data.website_screenshot}" alt="Website Screenshot" class="mt-2" style="width: 100%; height: auto;" />
-                `;
-                document.getElementById('screenshotResult').classList.remove('hidden');
+                    if (data.website_screenshot) {
+                        document.getElementById('screenshotResult').innerHTML = `
+                            <h3 class="text-lg font-bold">Website Screenshot:</h3>
+                            <img src="${data.website_screenshot}" alt="Website Screenshot" class="mt-2" style="width: 100%; height: auto;" />
+                        `;
+                        document.getElementById('screenshotResult').classList.remove('hidden');
+                    }
+                } else {
+                    throw new Error('Unexpected response type');
+                }
+            } catch (error) {
+                handleError(error);
             }
-        } else {
-            throw new Error('Unexpected response type');
-        }
-    } catch (error) {
-        handleError(error);
+        });
     }
 });
 
 // Function to disable/enable all buttons and links
 function disableAllButtons(disable) {
-    var allButtons = document.querySelectorAll('button');
-    allButtons.forEach(function (button) {
-        button.disabled = disable;
-    });
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(button => button.disabled = disable);
 
-    var iconLinks = document.querySelectorAll('li > a, a');
-    iconLinks.forEach(function (iconLink) {
+    const iconLinks = document.querySelectorAll('li > a, a');
+    iconLinks.forEach(iconLink => {
         iconLink.style.pointerEvents = disable ? 'none' : 'auto';
         iconLink.style.opacity = disable ? '0.5' : '1';
     });
@@ -84,9 +85,9 @@ function displayReviewResult(data) {
         `;
 
         if (data.tts_url) {
-            var audioSource = document.getElementById('audioSource');
+            const audioSource = document.getElementById('audioSource');
             audioSource.src = data.tts_url;
-            var audioElement = document.getElementById('audioElement');
+            const audioElement = document.getElementById('audioElement');
             audioElement.load();
 
             document.getElementById('audioFeedback').classList.remove('hidden');
@@ -153,6 +154,7 @@ async function rateFeedback(id, user_rating) {
 
     } catch (error) {
         console.error('Error:', error);
+        const feedbackMessage = document.getElementById("feedbackMessage");
         feedbackMessage.textContent = 'Error rating feedback.';
         feedbackMessage.classList.remove('hidden');
 
@@ -204,7 +206,7 @@ function toggleLike(review_id) {
         });
 }
 
-//JavaScript for scrolling down 
+// Function to scroll down the page
 function scrollDown() {
     window.scrollTo({
         top: document.body.scrollHeight,

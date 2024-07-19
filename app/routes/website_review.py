@@ -7,9 +7,11 @@ import asyncio
 import cloudinary
 import cloudinary.uploader
 import requests
+
 from dotenv import load_dotenv, find_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.support.ui import WebDriverWait
 
 from flask import Blueprint, current_app, jsonify, render_template, redirect, url_for, flash, request
 from flask_login import current_user
@@ -68,7 +70,15 @@ async def take_screenshot(url):
             # Initialize ChromeDriver in the thread
             browser = webdriver.Chrome(service=chrome_service, options=options)
 
+            # Set timeouts
+            browser.set_page_load_timeout(30)  # Increase page load timeout
+            browser.set_script_timeout(30)     # Increase script timeout
+
             browser.get(url)
+
+            # Use explicit wait for the page to load
+            wait = WebDriverWait(browser, 30)
+            wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
 
             total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
             browser.set_window_size(1200, total_height)

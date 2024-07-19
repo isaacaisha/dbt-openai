@@ -630,7 +630,7 @@ span.carousel-control-next-icon {
     align-items: center;
 }
 
-/* AI BLOG GENERATOR SECTION */
+/* YOUTUBE BLOG GENERATOR SECTION */
 
 @keyframes rotate {
     from {
@@ -663,7 +663,37 @@ span.carousel-control-next-icon {
     font-family: 'Montserrat', sans-serif;
     padding: 0.3rem;
     width: 100%;
-    box-sizing: border-box; 
+    box-sizing: border-box;
+}
+
+.custom-input-group:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
+}
+
+/* Styles for the screenshot section */
+#screenshotResult {
+    text-align: center;
+    /* Center-aligns the content within the div */
+}
+
+#screenshotImage {
+    max-width: 100%;
+    /* Ensures the image doesn't overflow the container */
+    max-height: 600px;
+    /* Sets a maximum height to keep the image within a reasonable size */
+    height: auto;
+    /* Maintains the aspect ratio */
+    display: inline-block;
+    /* Makes the image behave like a block element while remaining inline */
+}
+
+/* Ensure the image scales properly on smaller screens */
+@media (max-width: 768px) {
+    #screenshotImage {
+        max-height: 400px;
+        /* Adjust the max height for smaller screens */
+    }
 }
 
 .btn-custom {
@@ -693,7 +723,7 @@ span.carousel-control-next-icon {
     font-size: 1.09rem;
 }
 
-/* PORTFOLIO-REVIEW SECTION */
+/* WEBSITE-REVIEW SECTION */
 
 .loader {
     display: none;
