@@ -23,7 +23,7 @@ function sendRequest(prompt) {
     showLoading();
 
     // Disable buttons
-    const buttons = ['speechRecognitionButton', 'generateButton', 'start-button'];
+    const buttons = ['speechRecognitionButton', 'generateButton', 'playbackButton', 'start-button'];
     buttons.forEach(id => document.getElementById(id).disabled = true);
 
     // Disable all buttons except navigation buttons
@@ -86,7 +86,6 @@ function sendRequest(prompt) {
                 //audio.src = response.answer_audio_path;
                 audio.src = '/media/interface_temp_audio.mp3';
                 audio.style.display = 'block';
-                playback.style.display = 'block';
 
                 // Auto-play the audio when it's ready
                 audio.oncanplay = function() {
