@@ -99,28 +99,54 @@
             {% endif %}
         </div>
     {% for conversation in first_conversations %}
-<pre class="main align-left mb-5">
-<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation.id }}</span><br>
-<span class="user-message">- {{ conversation.user_name }}</span>: <span class="user-message">{{ conversation.user_message|safe }}</span><br>
-<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation.llm_response }}</span><br>
-<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation.created_at }}</span>
-
-<div class="row justify-content-center">
-<div class="col-auto">
-<audio id="response-audio-{{ conversation.id }}" controls class="submit btn btn-outline-info m-0" style="width: 250px;">
-<source
-src="{{ url_for('conversation_interface.serve_audio_from_db', conversation_id=conversation.id) }}"
-type="audio/mp3">
-Your browser does not support the audio element.
-</audio>
-</div>
-</div>
-<div class="like-button text-center" data-conversation-id="{{ conversation.id }}" {% if conversation.liked
-    %}style="color: pink;" {% endif %}>
-<i class="fa fa-heart fa-2x"></i>
-    <hr class="green" style="margin: 0 45%;">
-</div>
-</pre>
+    <div class="container-fluid main mb-4 p-3 border align-left rounded shadow-sm">
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between">
+                    <div class="conversation_id">
+                        <strong>Conversation ID:</strong> {{ conversation.id }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2 align-left">
+            <div class="col-md-12">
+                <div class="user-message">
+                    <strong>{{ conversation.user_name }}:</strong>
+                    <p class="mb-0">{{ conversation.user_message|safe }}</p>
+                </div>
+                <div>
+                    <div class="llm-response" style="white-space: pre-wrap;">
+<strong>·SìįSí·Dbt·:</strong>
+{{ conversation.llm_response | safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="created-at mb-3">
+            <strong>Created At:</strong> {{ conversation.created_at }}
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-12 text-center">
+                <audio id="response-audio-{{ conversation.id }}" controls class="w-100"
+                    style="max-width: 271px; height: 37px;">
+                    <source
+                        src="{{ url_for('conversation_interface.serve_audio_from_db', conversation_id=conversation.id) }}"
+                        type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked
+                    %}style="color: pink;" {% endif %}>
+                    <i class="fa fa-heart fa-2x"></i>
+                    <hr class="green" style="margin: 0 45%;">
+                </div>
+            </div>
+        </div>
+    </div>
     {% endfor %}
 
 
@@ -130,28 +156,54 @@ Your browser does not support the audio element.
     
     <h4><span class="gold1">{{ limit }}</span> Latest Conversations</h4>
     {% for conversation in last_conversations %}
-<pre class="main align-left mb-5">
-<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation.id }}</span><br>
-<span class="user-message">- {{ conversation.user_name }}</span>: <span class="user-message">{{ conversation.user_message|safe }}</span><br>
-<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation.llm_response }}</span><br>
-<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation.created_at }}</span>
-
-<div class="row justify-content-center">
-<div class="col-auto">
-<audio id="response-audio-{{ conversation.id }}" controls class="submit btn btn-outline-info m-0" style="width: 250px;">
-<source
-src="{{ url_for('conversation_interface.serve_audio_from_db', conversation_id=conversation.id) }}"
-type="audio/mp3">
-Your browser does not support the audio element.
-</audio>
-</div>
-</div>
-<div class="like-button text-center" data-conversation-id="{{ conversation.id }}" {% if conversation.liked
-    %}style="color: pink;" {% endif %}>
-<i class="fa fa-heart fa-2x"></i>
-    <hr class="green" style="margin: 0 45%;">
-</div>
-</pre>
+    <div class="container-fluid main mb-4 p-3 border align-left rounded shadow-sm">
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between">
+                    <div class="conversation_id">
+                        <strong>Conversation ID:</strong> {{ conversation.id }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2 align-left">
+            <div class="col-md-12">
+                <div class="user-message">
+                    <strong>{{ conversation.user_name }}:</strong>
+                    <p class="mb-0">{{ conversation.user_message|safe }}</p>
+                </div>
+                <div>
+                    <div class="llm-response" style="white-space: pre-wrap;">
+<strong>·SìįSí·Dbt·:</strong>
+{{ conversation.llm_response | safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="created-at mb-3">
+            <strong>Created At:</strong> {{ conversation.created_at }}
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-12 text-center">
+                <audio id="response-audio-{{ conversation.id }}" controls class="w-100"
+                    style="max-width: 271px; height: 37px;">
+                    <source
+                        src="{{ url_for('conversation_interface.serve_audio_from_db', conversation_id=conversation.id) }}"
+                        type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked
+                    %}style="color: pink;" {% endif %}>
+                    <i class="fa fa-heart fa-2x"></i>
+                    <hr class="green" style="margin: 0 45%;">
+                </div>
+            </div>
+        </div>
+    </div>
     {% endfor %}
 
     <hr class="green mb-3">
