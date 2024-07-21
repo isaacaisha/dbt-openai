@@ -30,17 +30,14 @@ function sendRequest(prompt) {
     disableAllButtons(true);
     interruptButton.disabled = false;
 
-    const xhr = new XMLHttpRequest(); // Use local variable
+    const xhr = new XMLHttpRequest();
     xhr.open('POST', '/interface/answer', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('X-CSRFToken', csrfToken);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-            // Hide loading indicator
             hideLoading();
-
-            // Re-enable buttons
             buttons.forEach(id => document.getElementById(id).disabled = false);
             disableAllButtons(false);
 
@@ -55,49 +52,33 @@ function sendRequest(prompt) {
                 textarea.dataset.detectedLang = response.detected_lang || 'es-ES';
                 textarea.style.display = response.answer_text ? 'block' : 'none';
 
-                // Toggle visibility of the textarea based on response
-                if (response.answer_text)
+                // Display the audio and playback button
+                document.getElementById('response-audio').style.display = 'block';
+                document.getElementById('playbackButtonContainer').style.display = 'block';
 
-                    // Scroll to the bottom of the container while text is being added
+                if (response.answer_text) {
                     smoothScrollToBottomWhileTyping(response.answer_text);
 
                     // Use the SpeechSynthesis API to read the response aloud
                     const speech = new SpeechSynthesisUtterance(response.answer_text);
-
-                    // Use the detected language from the response
                     speech.lang = response.detected_lang || 'es-ES';
-
-                    // Hide the interrupt button when speech ends
                     speech.onend = () => interruptButton.style.display = 'none';
-
-                    // Scroll as the speech is being spoken
-                    speech.onboundary = function (event) {
-                        speech.onboundary = event => {
-                            if (event.name === 'word') {
-                                smoothScrollToBottom();
-                            }
+                    speech.onboundary = event => {
+                        if (event.name === 'word') {
+                            smoothScrollToBottom();
+                        }
                     };
                     window.speechSynthesis.speak(speech);
-                } 
+                }
 
-                // Set the audio source and play
-                const audio = document.getElementById('response-audio');
-                const playback = document.getElementById('playbackButton');
-                //audio.src = response.answer_audio_path;
-                audio.src = '/media/interface_temp_audio.mp3';
-                audio.style.display = 'block';
-
-                // Auto-play the audio when it's ready
-                audio.oncanplay = function() {
-                    audio.play();
-                };
-
+                // Update the audio source
+                updateAudioSource();
 
                 // Ensure the stop button remains visible during speech synthesis
                 interruptButton.style.display = 'block';
             } else {
-                    interruptButton.style.display = 'none'; // Hide the interrupt button if request fails
-                    console.error('Request failed:', xhr.status, xhr.statusText); 
+                interruptButton.style.display = 'none'; // Hide the interrupt button if request fails
+                console.error('Request failed:', xhr.status, xhr.statusText);
             }
         }
     };
@@ -110,6 +91,30 @@ function sendRequest(prompt) {
     };
 
     xhr.send('prompt=' + encodeURIComponent(prompt));
+}
+
+// Function to update the audio source
+function updateAudioSource() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/latest-audio-url', true);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.audio_url) {
+                const audio = document.getElementById('response-audio');
+                const source = audio.querySelector('source');
+                source.src = response.audio_url;
+
+                // Load and play the new audio
+                audio.load();
+                // Optionally, you can automatically play the audio here
+                //audio.play();
+            }
+        }
+    };
+
+    xhr.send();
 }
 
 // Function to disable/enable all buttons and links
@@ -184,6 +189,10 @@ function smoothScrollToBottomWhileTyping(text) {
 
 // Add an event listener to the form for submitting
 document.addEventListener('DOMContentLoaded', function () {
+    const playbackButton = document.getElementById('playbackButton');
+    const audio = document.getElementById('response-audio');
+
+    // Add an event listener to the form for submitting
     document.getElementById('prompt-form').addEventListener('submit', function (e) {
         e.preventDefault();
         var prompt = document.getElementById('userInput').value; // Get text from the textarea
@@ -191,20 +200,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Add an event listener to the playback button
-    document.getElementById('playbackButton').addEventListener('click', function () {
-        // Use the SpeechSynthesis API to read the response aloud
-        var speech = new SpeechSynthesisUtterance(document.getElementById('generatedText').value);
-
-        // Use the detected language from the response
-        var detectedLang = document.getElementById('generatedText').dataset.detectedLang;
-        speech.lang = detectedLang || 'es-ES'; // Use detected language
-
-        window.speechSynthesis.speak(speech);
+    playbackButton.addEventListener('click', function () {
+        if (audio.paused) {
+            // Play audio if it is paused
+            audio.play();
+            playbackButton.textContent = '-¡!¡- Pause Audio -¡!¡-'; // Update button text to "Pause"
+        } else {
+            // Pause audio if it is playing
+            audio.pause();
+            playbackButton.textContent = '-¡!¡- PlayBack Audio -¡!¡-'; // Update button text to "Play"
+        }
     });
-    
-    // Add an event listener to the audio element for playback
-    document.getElementById('response-audio').addEventListener('click', function () {
-        var audio = document.getElementById('response-audio');
-        audio.play();
+
+    // Add an event listener to the audio element to reset button text when audio ends
+    audio.addEventListener('ended', function () {
+        playbackButton.textContent = '-¡!¡- PlayBack Audio -¡!¡-'; // Reset button text to "Play"
     });
 });

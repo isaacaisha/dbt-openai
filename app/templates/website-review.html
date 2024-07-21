@@ -74,8 +74,8 @@
     <!-- Audio Player for TTS -->
     <div id="audioFeedback" class="audio-feedback hidden">
         <h3 class="text-lg font-bold">Voice Feedback:</h3>
-        <audio controls id="audioElement">
-            <source id="audioSource" src="{{ tts_url }}" type="audio/mpeg">
+        <audio controls id="audioElement"><source id="audioSource" src="{{ url_for('website_review.get_review_tts_url', review_id=review_id) }}"
+            type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
     </div>
@@ -124,7 +124,7 @@
     <hr class="crimson mb-3">
 
     <h5 class="font-weight-bold text-center text-info">
-        Then click here to see the result:<br>👇🏿<br><a href="/get-all-reviews"
+        Then click here to see all results:<br>👇🏿<br><a href="/get-all-reviews"
             class="btn btn-custom border-secondary mt-1">Saved Reviews</a>
     </h5>
 

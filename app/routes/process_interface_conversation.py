@@ -31,9 +31,6 @@ memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=3)
 
-#  STATIC_FOLDER_PATH = '/Users/lesanebyby/PycharmProjects/DBT OpenAI Speech/static'
-#  AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
-
 # Define base directory relative to the current file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_FOLDER_PATH = os.path.join(BASE_DIR, 'static')
@@ -57,7 +54,11 @@ def conversation_interface():
     if request.method == "POST" and writing_text_form.validate_on_submit():
         user_input = request.form['writing_text']
         answer = conversation.predict(input=user_input)
-        latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).first()
+        # Fetch latest conversations
+        latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
+    else:
+        # Fetch latest conversations
+        latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
 
     memory_buffer = memory.buffer_as_str
     memory_load = memory.load_memory_variables({})
@@ -66,6 +67,31 @@ def conversation_interface():
                            user_input=user_input, answer=answer, current_user=current_user,
                            memory_buffer=memory_buffer, memory_load=memory_load,
                            latest_conversation=latest_conversation, date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@interface_conversation_bp.route('/audio/<int:conversation_id>')
+def serve_audio_from_db(conversation_id):
+    memory = Memory.query.get(conversation_id)
+    if memory and memory.audio_datas:
+        audio_data = io.BytesIO(memory.audio_datas)
+        return send_file(audio_data, mimetype='audio/mp3', as_attachment=False, download_name=f"audio_{conversation_id}.mp3")
+    else:
+        return "Audio not found", 404
+
+
+@interface_conversation_bp.route("/latest-audio-url", methods=["GET"])
+def latest_audio_url():
+    if not current_user.is_authenticated:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Fetch the latest conversation
+    latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).first()
+    
+    if latest_conversation:
+        audio_url = url_for('conversation_interface.serve_audio_from_db', conversation_id=latest_conversation.id)
+        return jsonify({"audio_url": audio_url})
+    else:
+        return jsonify({"error": "No audio found"}), 404
 
 
 def generate_conversation_context(user_input, user_conversations):
@@ -204,33 +230,6 @@ def interface_answer():
         })
     else:
         return jsonify({"error": "User not authenticated"}), 401
-    
-
-# Route to serve interface audio file
-@interface_conversation_bp.route('/media/<filename>')
-def serve_audio(filename):
-    # Try to serve from the filesystem first
-    try:
-        return send_from_directory(AUDIO_FOLDER_PATH, filename)
-    except FileNotFoundError:
-        # If file is not found, check if it's an ID in the database
-        if filename.isdigit():
-            conversation_id = int(filename)
-            conversation = Memory.query.get_or_404(conversation_id)
-            if conversation.audio_datas:
-                audio_data = io.BytesIO(conversation.audio_datas)
-                return send_file(audio_data, mimetype='audio/mp3', as_attachment=True, download_name=f'conversation_{conversation_id}.mp3')
-        os.abort(404)
-
-
-@interface_conversation_bp.route('/audio/<int:conversation_id>')
-def serve_audio_from_db(conversation_id):
-    memory = Memory.query.get(conversation_id)
-    if memory and memory.audio_datas:
-        audio_data = io.BytesIO(memory.audio_datas)
-        return send_file(audio_data, mimetype='audio/mp3', as_attachment=False, download_name=f"audio_{conversation_id}.mp3")
-    else:
-        return "Audio not found", 404
 
 
 # Function to save conversation to database

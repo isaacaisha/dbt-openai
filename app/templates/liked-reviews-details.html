@@ -38,7 +38,7 @@
     <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
         <section class="mb-5">
             <div class="p-4 main text-light border-secondary rounded-lg">
-                <h3 class="text-lg font-semibold">
+                <h3 class="text-lg font-semibold no-overflow">
                     {%- set domain = liked_review_detail.site_url.split('/')[2] -%}
                     {{ domain }}
                 </h3>
@@ -62,7 +62,8 @@
                 <div id="audioFeedback" class="audio-feedback mb-4">
                     <h3 class="text-lg font-bold">Voice Feedback:</h3>
                     <audio controls id="audioElement">
-                        <source id="audioSource" src="{{ liked_review_detail.tts_url }}" type="audio/mpeg">
+                        <source id="audioSource" src="{{ url_for('website_review.get_review_tts_url', review_id=liked_review_detail.id) }}"
+                            type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>
                 </div>
@@ -86,6 +87,40 @@
     </div>
 </div>
 <br>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const reviewId = '{{ liked_review_detail.id }}';  // Ensure review_id is correctly passed from Flask template
+        fetchTtsUrl(reviewId);
+    });
+
+    async function fetchTtsUrl(reviewId) {
+        try {
+            const response = await fetch(`/review/${reviewId}/tts-url`);
+            const data = await response.json();
+
+            if (data.tts_url) {
+                const audioSource = document.getElementById('audioSource');
+                if (audioSource) {
+                    audioSource.src = data.tts_url;
+                }
+                const audioElement = document.getElementById('audioElement');
+                if (audioElement) {
+                    audioElement.load();
+                    // audioElement.play();
+                }
+                const audioFeedback = document.getElementById('audioFeedback');
+                if (audioFeedback) {
+                    audioFeedback.classList.remove('hidden');
+                }
+            } else {
+                console.error('No TTS URL found in response');
+            }
+        } catch (error) {
+            console.error('Error fetching TTS URL:', error);
+        }
+    }
+</script>
 
 <script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
 

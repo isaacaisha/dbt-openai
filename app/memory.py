@@ -29,9 +29,10 @@ class Memory(db.Model):
 
     def __repr__(self):
         return (f"<Memory id={self.id}, user_name='{self.user_name}', user_message='{self.user_message}', "
-                f"llm_response='{self.llm_response}', audio_url='{self.audio_url}', "
+                f"llm_response='{self.llm_response}', audio_datas='{self.audio_datas}', "
                 f"embedding='{self.embedding}', conversations_summary='{self.conversations_summary}', "
                 f"created_at='{self.created_at}', liked='{self.liked}'>")
+
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'

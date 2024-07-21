@@ -112,11 +112,22 @@
             </form>
 
             <hr class="green mb-3">
-            <!--<label>:…·SìįSí·Dbt·…:</label>-->
-            <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
 
-            <!-- Add a button for speech synthesis playback -->
-            <div class="container mb-3">
+            <!-- Textarea for llm_response -->
+            <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
+            
+            <!-- Audio element for playback -->
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <audio id="response-audio" controls class="submit btn btn-outline-info mb-3" style="display: none; width: 145px; height: 31px;">
+                        <source src="" type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+            
+            <!-- Playback button -->
+            <div class="mb-3" style="display: none;" id="playbackButtonContainer">
                 <div class="row justify-content-center">
                     <div class="col-auto">
                         <button id="playbackButton" type="button" class="btn btn-outline">
@@ -126,25 +137,11 @@
                 </div>
             </div>
 
-            <div class="container mb-3">
-                <div class="row justify-content-center">
-                    <div class="col-auto">
-                        <audio id="response-audio" controls class="submit btn btn-outline-info m-0" style="width: 250px; display: none;">
-                            <source src="{{ url_for('conversation_interface.serve_audio', filename='interface_temp_audio.mp3') }}" type="audio/mp3">
-                            Your browser does not support the audio element.
-                        </audio>
-                    </div>
-                </div>
-            </div>
-
             <hr class="green mb-5">
 
         </div>
     </div>
 {% endif %}
-<script>
-    document.getElementById('timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
-</script>
 
 <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 <script src="{{ url_for('static', filename='js/rec-speech.js')}}" defer></script>

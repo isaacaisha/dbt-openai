@@ -38,6 +38,38 @@ cloudinary.config(
 )
 
 
+def get_reviews(user_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
+    query = WebsiteReview.query
+    if user_id is not None:
+        query = query.filter_by(user_id=user_id)
+    if search is not None:
+        # Ensure that the search is flexible enough for partial URL matches
+        search_term = f"%{search.strip()}%"
+        query = query.filter(WebsiteReview.site_url.ilike(search_term))
+    if liked_value is not None:
+        query = query.filter(WebsiteReview.liked == liked_value)
+    if order_by_desc:
+        query = query.order_by(WebsiteReview.id.desc())
+    if limit is not None:
+        query = query.limit(limit)
+    if offset is not None:
+        query = query.offset(offset)
+    return query.all()
+
+
+def serialize_review(review):
+    return {
+        "id": review.id,
+        "user_id": review.user_id,
+        "user_name": review.user.name,
+        "site_url": review.site_url,
+        "site_image_url": review.site_image_url,
+        "feedback": review.feedback,
+        "created_at": review.created_at.strftime("%a %d %B %Y %H:%M:%S"),
+        "liked": review.liked,
+    }
+
+
 # Function to sanitize the URL to a valid public ID
 def sanitize_url_for_public_id(url):
     # Encode the URL to handle special characters
@@ -236,6 +268,109 @@ def review_website():
                            review_id=review_id,
                            tts_url=tts_url,
                            date=datetime.now().strftime("%a %d %B %Y"))
+    
+
+@review_website_bp.route("/get-all-reviews")
+def get_all_reviews():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+
+    user_id = current_user.id
+
+    total_reviews = WebsiteReview.query.filter_by(user_id=user_id).count()
+    limit = request.args.get('limit', default=total_reviews, type=int)
+    offset = request.args.get('offset', default=None, type=int)
+    search = request.args.get('search', default=None, type=str)
+
+    reviews = get_reviews(user_id=user_id, limit=limit, offset=offset, search=search, order_by_desc=True)
+    serialized_reviews = [serialize_review(review) for review in reviews]
+
+    # Check if any conversations were found for the search term
+    if not serialized_reviews:
+        search_message = f"No review found for search term: '{search}'"
+        return render_template('all-review.html',
+                               current_user=current_user, user_id=user_id,
+                               limit=limit, offset=offset, search=search,
+                               search_message=search_message,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+
+    return render_template('all-review.html',
+                           current_user=current_user, owner_id=user_id,
+                           limit=limit, offset=offset, search=search,
+                           reviews=serialized_reviews,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@review_website_bp.route("/review-details/<int:pk>", methods=["GET"])
+def review_details(pk):
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+    tts_url = None
+
+    review_detail = WebsiteReview.query.get_or_404(pk)
+    if current_user.id == review_detail.user_id:
+        return render_template('review-details.html', review_detail=review_detail,
+                               tts_url=tts_url, date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        return redirect(url_for('website_review.review_posts'))
+    
+
+@review_website_bp.route("/liked-reviews")
+def liked_reviews():
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+
+    user_id = current_user.id
+
+    total_reviews = WebsiteReview.query.filter_by(user_id=user_id).count()
+    limit = request.args.get('limit', default=total_reviews, type=int)
+    offset = request.args.get('offset', default=None, type=int)
+    search = request.args.get('search', default=None, type=str)
+
+    # Fetch liked reviews
+    reviews = get_reviews(user_id=user_id, liked_value=1, search=search, order_by_desc=True)
+    serialized_reviews = [serialize_review(review) for review in reviews]
+
+    if not serialized_reviews:
+        search_message = f"No liked review found for search term: '{search}'"
+        return render_template('liked-reviews.html',
+                               current_user=current_user, user_id=user_id,
+                               limit=limit, offset=offset, search=search,
+                               search_message=search_message,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+
+    return render_template('liked-reviews.html',
+                           current_user=current_user, owner_id=user_id,
+                           limit=limit, offset=offset, search=search,
+                           reviews=serialized_reviews,
+                           date=datetime.now().strftime("%a %d %B %Y"))
+
+
+@review_website_bp.route("/liked-reviews-details/<int:pk>", methods=["GET"])
+def liked_reviews_details(pk):
+    if not current_user.is_authenticated:
+        flash('😂Please login to access this page.🤣')
+        return redirect(url_for('auth.login'))
+    tts_url = None
+
+    liked_review_detail = WebsiteReview.query.get_or_404(pk)
+    if current_user.id == liked_review_detail.user_id:
+        return render_template('liked-reviews-details.html', liked_review_detail=liked_review_detail,
+                               tts_url=tts_url, date=datetime.now().strftime("%a %d %B %Y"))
+    else:
+        return redirect(url_for('website_review.review_posts'))
+
+
+@review_website_bp.route('/review/<int:review_id>/tts-url', methods=['GET'])
+def get_review_tts_url(review_id):
+    review = WebsiteReview.query.get(review_id)
+    if review:
+        return jsonify({"tts_url": review.tts_url})
+    else:
+        return jsonify({"error": "Audio not found"}), 404
 
 
 # Endpoint to update rating
@@ -280,137 +415,4 @@ def update_like(review_id):
             return jsonify({'success': False, 'message': 'Review not found'}), 404
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
-
-
-def get_reviews(user_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
-    query = WebsiteReview.query
-    if user_id is not None:
-        query = query.filter_by(user_id=user_id)
-    if search is not None:
-        # Ensure that the search is flexible enough for partial URL matches
-        search_term = f"%{search.strip()}%"
-        query = query.filter(WebsiteReview.site_url.ilike(search_term))
-    if liked_value is not None:
-        query = query.filter(WebsiteReview.liked == liked_value)
-    if order_by_desc:
-        query = query.order_by(WebsiteReview.id.desc())
-    if limit is not None:
-        query = query.limit(limit)
-    if offset is not None:
-        query = query.offset(offset)
-    return query.all()
-
-
-def serialize_review(review):
-    return {
-        "id": review.id,
-        "user_id": review.user_id,
-        "user_name": review.user.name,
-        "site_url": review.site_url,
-        "site_image_url": review.site_image_url,
-        "feedback": review.feedback,
-        "created_at": review.created_at.strftime("%a %d %B %Y %H:%M:%S"),
-        "liked": review.liked,
-    }
     
-
-@review_website_bp.route("/get-all-reviews")
-def get_all_reviews():
-    if not current_user.is_authenticated:
-        flash('😂Please login to access this page.🤣')
-        return redirect(url_for('auth.login'))
-
-    user_id = current_user.id
-
-    total_reviews = WebsiteReview.query.filter_by(user_id=user_id).count()
-    limit = request.args.get('limit', default=total_reviews, type=int)
-    offset = request.args.get('offset', default=None, type=int)
-    search = request.args.get('search', default=None, type=str)
-
-    reviews = get_reviews(user_id=user_id, limit=limit, offset=offset, search=search, order_by_desc=True)
-    serialized_reviews = [serialize_review(review) for review in reviews]
-
-    # Check if any conversations were found for the search term
-    if not serialized_reviews:
-        search_message = f"No review found for search term: '{search}'"
-        return render_template('all-review.html',
-                               current_user=current_user, user_id=user_id,
-                               limit=limit, offset=offset, search=search,
-                               search_message=search_message,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    return render_template('all-review.html',
-                           current_user=current_user, owner_id=user_id,
-                           limit=limit, offset=offset, search=search,
-                           reviews=serialized_reviews,
-                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@review_website_bp.route("/review-details/<int:pk>", methods=["GET"])
-def review_details(pk):
-    if not current_user.is_authenticated:
-        flash('😂Please login to access this page.🤣')
-        return redirect(url_for('auth.login'))
-    tts_url = None
-    
-    # Fetch the latest review ID
-    review = WebsiteReview.query.filter_by(user_id=current_user.id).order_by(WebsiteReview.id.desc()).first()
-    review_id = review.id if review else 1
-
-    review_detail = WebsiteReview.query.get_or_404(pk)
-    if current_user.id == review_detail.user_id:
-        return render_template('review-details.html', review_detail=review_detail, review_id=review_id,
-                               tts_url=tts_url, date=datetime.now().strftime("%a %d %B %Y"))
-    else:
-        return redirect(url_for('website_review.review_posts'))
-    
-
-@review_website_bp.route("/liked-reviews")
-def liked_reviews():
-    if not current_user.is_authenticated:
-        flash('😂Please login to access this page.🤣')
-        return redirect(url_for('auth.login'))
-
-    user_id = current_user.id
-
-    total_reviews = WebsiteReview.query.filter_by(user_id=user_id).count()
-    limit = request.args.get('limit', default=total_reviews, type=int)
-    offset = request.args.get('offset', default=None, type=int)
-    search = request.args.get('search', default=None, type=str)
-
-    # Fetch liked reviews
-    reviews = get_reviews(user_id=user_id, liked_value=1, search=search, order_by_desc=True)
-    serialized_reviews = [serialize_review(review) for review in reviews]
-
-    if not serialized_reviews:
-        search_message = f"No liked review found for search term: '{search}'"
-        return render_template('liked-reviews.html',
-                               current_user=current_user, user_id=user_id,
-                               limit=limit, offset=offset, search=search,
-                               search_message=search_message,
-                               date=datetime.now().strftime("%a %d %B %Y"))
-
-    return render_template('liked-reviews.html',
-                           current_user=current_user, owner_id=user_id,
-                           limit=limit, offset=offset, search=search,
-                           reviews=serialized_reviews,
-                           date=datetime.now().strftime("%a %d %B %Y"))
-
-
-@review_website_bp.route("/liked-reviews-details/<int:pk>", methods=["GET"])
-def liked_reviews_details(pk):
-    if not current_user.is_authenticated:
-        flash('😂Please login to access this page.🤣')
-        return redirect(url_for('auth.login'))
-    tts_url = None
-    
-    # Fetch the latest review ID
-    review = WebsiteReview.query.filter_by(user_id=current_user.id).order_by(WebsiteReview.id.desc()).first()
-    review_id = review.id if review else 1
-
-    liked_review_detail = WebsiteReview.query.get_or_404(pk)
-    if current_user.id == liked_review_detail.user_id:
-        return render_template('liked-reviews-details.html', liked_review_detail=liked_review_detail, review_id=review_id,
-                               tts_url=tts_url, date=datetime.now().strftime("%a %d %B %Y"))
-    else:
-        return redirect(url_for('website_review.review_posts'))

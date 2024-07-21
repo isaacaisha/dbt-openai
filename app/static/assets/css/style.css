@@ -228,6 +228,13 @@ body>div.content>div.container>div>div>div>div.mb-3>form>div:nth-child(5) {
     color: #70f8fd;
 }
 
+.llm-response h3, .no-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    /* Ensure the text does not exceed container width */
+}
 
 .user-message {
     color: #4285F4;
