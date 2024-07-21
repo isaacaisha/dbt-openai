@@ -25,6 +25,14 @@ load_dotenv(find_dotenv())
 
 review_website_bp = Blueprint('website_review', __name__, template_folder='templates', static_folder='static')
 
+# Define base directory relative to the current file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_FOLDER_PATH = os.path.join(BASE_DIR, 'static')
+AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
+
+# Ensure the directory exists
+os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
+
 # Fetch paths from environment variables
 CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', '/usr/bin/google-chrome')
 CHROME_DRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', '/usr/local/bin/chromedriver')
@@ -103,18 +111,26 @@ async def take_screenshot(url):
             browser = webdriver.Chrome(service=chrome_service, options=options)
 
             # Set timeouts
-            browser.set_page_load_timeout(30)  # Increase page load timeout
-            browser.set_script_timeout(30)     # Increase script timeout
+            browser.set_page_load_timeout(60)  # Increase page load timeout
+            browser.set_script_timeout(60)     # Increase script timeout
 
             browser.get(url)
 
             # Use explicit wait for the page to load
-            wait = WebDriverWait(browser, 30)
+            wait = WebDriverWait(browser, 60)
             wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
 
-            total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
-            browser.set_window_size(1200, total_height)
+            #total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
+            #browser.set_window_size(1200, total_height)
 
+            # Scroll the page gradually to ensure all parts are rendered
+            total_height = browser.execute_script("return document.body.scrollHeight")
+            viewport_height = 1080
+            for i in range(0, total_height, viewport_height):
+                browser.execute_script(f"window.scrollTo(0, {i});")
+                wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
+
+            # Take the screenshot after scrolling
             screenshot = browser.get_screenshot_as_png()
             browser.quit()
 

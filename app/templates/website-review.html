@@ -72,10 +72,18 @@
     <div id="reviewResult" class="mb-3 mt-6 hidden" style="color:#AEFAFC;"></div>
     
     <!-- Audio Player for TTS -->
+    <!--<div id="audioFeedback" class="audio-feedback hidden">
+        <h3 class="text-lg font-bold">Voice Feedback:</h3>
+        <audio controls id="audioElement">
+            <source id="audioSource" src="{{ url_for('website_review.get_review_tts_url', review_id=review_id) }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>-->
+    <!-- Audio Player for TTS -->
     <div id="audioFeedback" class="audio-feedback hidden">
         <h3 class="text-lg font-bold">Voice Feedback:</h3>
-        <audio controls id="audioElement"><source id="audioSource" src="{{ url_for('website_review.get_review_tts_url', review_id=review_id) }}"
-            type="audio/mpeg">
+        <audio controls id="audioElement">
+            <source id="audioSource" src="" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
     </div>
