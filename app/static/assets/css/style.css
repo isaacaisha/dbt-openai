@@ -97,6 +97,26 @@ body {
     margin-bottom: 0;
 }
 
+body {
+  overflow-x: hidden; /* Prevent horizontal overflow */
+}*/
+
+.container {
+  padding: 0 15px; /* Add padding to container */
+}
+
+.navbar-nav .nav-link {
+  font-size: 1.3rem; /* Adjust font size if needed */
+}
+
+.navbar-brand {
+  white-space: nowrap; /* Prevent brand name from wrapping */
+}
+
+.navbar-toggler {
+  margin-right: auto; /* Center align the navbar toggler */
+}
+
 .register-home,
 .log-in-home {
     background-color: #171717;

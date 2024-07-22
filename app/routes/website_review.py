@@ -19,6 +19,10 @@ from datetime import datetime
 
 from app.app_forms import WebsiteReviewForm
 from app.memory import WebsiteReview, User, db
+import logging
+
+# Get the logger instance
+logger = logging.getLogger(__name__)
 
 
 load_dotenv(find_dotenv())
@@ -181,11 +185,11 @@ def get_review(screenshot_url):
             "Authorization": os.getenv('VOICEFLOW_AUTHORIZATION')
         }
 
-        print(f"Sending request to Voiceflow with screenshot URL: {screenshot_url}")
+        logger.debug(f"Sending request to Voiceflow with screenshot URL: {screenshot_url}")
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()  # Ensure we raise an error for bad responses
         data = response.json()
-        print(f"Response from Voiceflow: {data}")
+        # logger.debug(f"Response from Voiceflow: {data}")
 
         review_text = ""
         tts_url = ""
@@ -205,6 +209,10 @@ def get_review(screenshot_url):
         # Remove any remaining standalone <voice name="en-GB-standard-A"> and </voice> tags
         review_text = re.sub(r'<voice\s+name="en-GB-standard-A">', '', review_text, flags=re.IGNORECASE)
         review_text = re.sub(r'</voice>', '', review_text, flags=re.IGNORECASE)
+
+        logger.debug(f"Extracted review text: {review_text}")
+        logger.debug(f"Extracted TTS URL: {tts_url}")
+
         return review_text, tts_url
 
     except Exception as e:
@@ -235,7 +243,7 @@ async def submit_url():
             db.session.commit()
 
             review_id = new_review_object.id
-            print(f"New review created with ID: {review_id}") 
+            logger.debug(f"New review created with ID: {review_id}") 
 
             response_data = {
                 'website_screenshot': website_screenshot,
@@ -247,9 +255,11 @@ async def submit_url():
             return jsonify(response_data)
 
         else:
+            logger.error('Failed to capture screenshot.')
             flash('Failed to capture screenshot. Please try again.')
             return redirect(url_for('website_review.review_website'))
 
+    logger.error('Invalid domain URL.')
     flash('Invalid domain URL.')
     return jsonify({'error': 'Invalid domain URL'})
     
@@ -382,10 +392,13 @@ def liked_reviews_details(pk):
 
 @review_website_bp.route('/review/<int:review_id>/tts-url', methods=['GET'])
 def get_review_tts_url(review_id):
+    logger.debug(f"Fetching TTS URL for review ID: {review_id}")
     review = WebsiteReview.query.get(review_id)
     if review:
+        logger.debug(f"TTS URL found: {review.tts_url}")
         return jsonify({"tts_url": review.tts_url})
     else:
+        logger.error(f"Audio not found for review ID: {review_id}")
         return jsonify({"error": "Audio not found"}), 404
 
 
