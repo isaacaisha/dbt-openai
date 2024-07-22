@@ -120,15 +120,15 @@ async def take_screenshot(url):
             wait = WebDriverWait(browser, 60)
             wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
 
-            #total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
-            #browser.set_window_size(1200, total_height)
+            total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
+            browser.set_window_size(1200, total_height)
 
-            # Scroll the page gradually to ensure all parts are rendered
-            total_height = browser.execute_script("return document.body.scrollHeight")
-            viewport_height = 1080
-            for i in range(0, total_height, viewport_height):
-                browser.execute_script(f"window.scrollTo(0, {i});")
-                wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
+            ## Scroll the page gradually to ensure all parts are rendered
+            #total_height = browser.execute_script("return document.body.scrollHeight")
+            #viewport_height = 1080
+            #for i in range(0, total_height, viewport_height):
+            #    browser.execute_script(f"window.scrollTo(0, {i});")
+            #    wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
 
             # Take the screenshot after scrolling
             screenshot = browser.get_screenshot_as_png()
