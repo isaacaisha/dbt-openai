@@ -7,7 +7,7 @@ import os
 import numpy as np
 from scipy.spatial.distance import cosine
 
-from flask import Blueprint, flash, render_template, request, jsonify, redirect, send_file, send_from_directory, url_for
+from flask import Blueprint, Response, flash, render_template, request, jsonify, redirect, send_file, send_from_directory, url_for
 from flask_login import current_user
 from gtts import gTTS
 
@@ -21,7 +21,10 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.app_forms import TextAreaForm
 from app.memory import Memory, db
+import logging
 
+# Get the logger instance
+logger = logging.getLogger(__name__)
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__)
 
@@ -42,7 +45,9 @@ os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
 
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
+    logger.debug("Entering conversation_interface route")
     if not current_user.is_authenticated:
+        logger.warning("Unauthenticated access attempt to conversation_interface")
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
     
@@ -53,16 +58,17 @@ def conversation_interface():
 
     if request.method == "POST" and writing_text_form.validate_on_submit():
         user_input = request.form['writing_text']
+        logger.debug(f"Received user input: {user_input}")
         answer = conversation.predict(input=user_input)
-        # Fetch latest conversations
+        logger.debug(f"Generated answer: {answer}")
         latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
     else:
-        # Fetch latest conversations
         latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
 
     memory_buffer = memory.buffer_as_str
     memory_load = memory.load_memory_variables({})
 
+    logger.debug(f"Rendering template with user input: {user_input}, answer: {answer}, memory buffer: {memory_buffer}, memory load: {memory_load}")
     return render_template('conversation-interface.html', writing_text_form=writing_text_form,
                            user_input=user_input, answer=answer, current_user=current_user,
                            memory_buffer=memory_buffer, memory_load=memory_load,
@@ -71,12 +77,21 @@ def conversation_interface():
 
 @interface_conversation_bp.route('/audio/<int:conversation_id>')
 def serve_audio_from_db(conversation_id):
+    logger.debug(f"Requested audio for conversation ID: {conversation_id}")
     memory = Memory.query.get(conversation_id)
     if memory and memory.audio_datas:
         audio_data = io.BytesIO(memory.audio_datas)
-        return send_file(audio_data, mimetype='audio/mp3', as_attachment=False, download_name=f"audio_{conversation_id}.mp3")
+        logger.debug("Audio data found and served.")
+        return send_file(
+            audio_data,
+            mimetype='audio/mpeg',
+            as_attachment=False,
+            download_name=f"audio_{conversation_id}.mp3"
+        )
     else:
-        return "Audio not found", 404
+        logger.warning(f"Audio not found for conversation ID: {conversation_id}")
+        return Response("Audio not found", status=404)
+
 
 
 @interface_conversation_bp.route("/latest-audio-url", methods=["GET"])
@@ -117,15 +132,13 @@ def generate_conversation_context(user_input, user_conversations):
 
 # Function to handle the response from the language model
 def handle_llm_response(user_input, conversation_context, detected_lang):
-    # Trimming conversation history to fit within the token limits
+    logger.debug(f"Handling LLM response with user_input: {user_input}, conversation_context: {conversation_context}, detected_lang: {detected_lang}")
     if conversation_context and 'previous_conversations' in conversation_context:
-        conversation_context['previous_conversations'] = conversation_context['previous_conversations'][-3:]  # Keep only the 3 latest messages
+        conversation_context['previous_conversations'] = conversation_context['previous_conversations'][-3:]  
 
     if not conversation_context:
-        # Handle new user without previous context
         response = conversation.predict(input=user_input)
     else:
-        # Ensure the context is properly structured and passed to the LLM
         response = conversation.predict(input=json.dumps(conversation_context))
 
     if isinstance(response, str):
@@ -136,22 +149,18 @@ def handle_llm_response(user_input, conversation_context, detected_lang):
         else:
             assistant_reply = None
             
-    # Remove '#' and '*' from the response
     assistant_reply = assistant_reply.replace('#', '').replace('*', '')
 
-    # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply, lang=detected_lang)
-
-    # Create a temporary audio file
     audio_file_path = os.path.join(AUDIO_FOLDER_PATH, 'interface_temp_audio.mp3')
     tts.save(audio_file_path)
 
-    # Read audio file as binary data
     with open(audio_file_path, 'rb') as audio_file:
         audio_data = audio_file.read()
 
     memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
 
+    logger.debug(f"Generated assistant reply: {assistant_reply}, saved audio data, response: {response}")
     return assistant_reply, audio_data, response
 
 
