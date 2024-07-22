@@ -122,7 +122,7 @@
                         </div>
                     </div>
                     <div class="created-at mb-3">
-                        <strong>Created At:</strong> {{ conversation.created_at }}
+                        <strong>Created At:</strong> {{ conversation.created_at.strftime("%Y-%m-%d %H:%M:%S") }}
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-12 text-center">
@@ -157,7 +157,7 @@
                 <hr class="green mb-3">
             
                 <h3 class="history-title">Memory Buffer</h3>
-                <pre class="textarea_details textarea-memory text-info main align-left mb-3" readonly>{{ memory_buffer|safe }}</pre>
+                <div class="textarea_details textarea-memory text-info main align-left mb-3"style="white-space: pre-wrap;" readonly>{{ memory_buffer|safe }}</div>
             
                 <hr class="green mb-5">
                 <hr class="gold mb-3">
