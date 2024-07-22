@@ -12,8 +12,8 @@ $(document).ready(function () {
                                 <b class="user-message">${message.user}</b>
                                 <span class="tcreated-at">${message.date}</span>
                             </div>
-                            <div class="llm-response">
-                                ${message.value}
+                            <div class="llm-response" style="white-space: pre-wrap;">
+${message.value}
                             </div>
                         </div>
                         <hr class='gold mb-3'>

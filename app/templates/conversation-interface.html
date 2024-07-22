@@ -91,10 +91,15 @@
                               placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
                 </div>
 
-                <div id="loading-indicator" style="display:none;" class="mb-3">
-                    <p>Loading...</p>
-                    <img class="loading" src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g" alt="Loading">
+                <!-- Section for loading circle -->
+                <div id="loading-indicator" style="display:none;" class="text-center mb-1">
+                    <p class="">Loading...</p>
+                    <img class="loading"
+                        src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
+                        alt="Loading">
                 </div>
+                
+                <div id="loading-circle" class="load mb-3" style="display: none;"></div>
 
                 <hr class="green mb-3">
 
@@ -127,17 +132,18 @@
             </div>
             
             <!-- Playback button -->
-            <div class="mb-3" style="display: none;" id="playbackButtonContainer">
-                <div class="row justify-content-center">
+            <div style="display: none;" id="playbackButtonContainer">
+                <div class="row justify-content-center mb-3">
                     <div class="col-auto">
                         <button id="playbackButton" type="button" class="btn btn-outline">
                             -¡!¡- PlayBack Audio -¡!¡-
                         </button>
                     </div>
                 </div>
-            </div>
+                
+                <hr class="green mb-5">
 
-            <hr class="green mb-5">
+            </div>
 
         </div>
     </div>
