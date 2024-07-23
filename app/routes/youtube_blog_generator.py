@@ -46,11 +46,13 @@ def generate_blog():
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
-    
+
     if request.method == 'POST':
         try:
             data = request.get_json()
             youtube_link = data.get('link')
+            if not youtube_link:
+                return jsonify({'error': 'No link provided 😭'}), 400
         except (KeyError, TypeError) as e:
             return jsonify({'error': 'Invalid data sent 😭'}), 400
 
@@ -58,7 +60,7 @@ def generate_blog():
 
         if error_message:
             return jsonify({'error': error_message}), 500
-        
+
         return jsonify({'content': new_blog_article.generated_content}), 200
 
     elif request.method == 'GET':
@@ -89,15 +91,27 @@ def blog_details(pk):
     else:
         return redirect(url_for('yt_blog_generator.blog_posts'))
 
+def extract_video_id(link):
+    """ Extract video ID from YouTube link. """
+    if 'youtube.com/watch?v=' in link:
+        return link.split('v=')[-1].split('&')[0]
+    elif 'youtu.be/' in link:
+        return link.split('youtu.be/')[-1].split('?')[0]
+    return None
+
 def youtube_title(link):
-    video_id = link.split('v=')[-1]
+    video_id = extract_video_id(link)
+    if not video_id:
+        return None, "Invalid YouTube link format."
+
     url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
         if 'items' in data and len(data['items']) > 0:
-            return data['items'][0]['snippet']['title']
-    return None
+            return data['items'][0]['snippet']['title'], None
+        return None, "No video data found."
+    return None, "Failed to fetch YouTube video data."
 
 def download_audio(link):
     ydl_opts = {
@@ -129,12 +143,12 @@ def download_audio(link):
         return None, f"Error downloading audio: {str(e)}"
 
 def process_youtube_video(user_id, youtube_link):
-    user = db.session.query(User).get(user_id)  
+    user = db.session.query(User).get(user_id)
 
     # Get title
-    title = youtube_title(youtube_link)
-    if not title:
-        return None, "Failed to extract YouTube title."
+    title, title_error = youtube_title(youtube_link)
+    if title_error:
+        return None, title_error
 
     # Download audio
     audio_file, download_error = download_audio(youtube_link)
@@ -155,7 +169,7 @@ def process_youtube_video(user_id, youtube_link):
 
     # Save blog article into database
     new_blog_article = BlogPost(
-        user_id=user_id, 
+        user_id=user_id,
         youtube_title=title,
         youtube_link=youtube_link,
         generated_content=blog_content,
