@@ -4,29 +4,22 @@ let audio = null;
 
 // Function to fetch TTS URL and play audio
 async function fetchTtsUrl(reviewId) {
-    const url = `/review/${reviewId}/tts-url`;  // Make sure this URL is correctly formed
-    console.log(`Fetching URL: ${url}`);  // Log the URL to verify it
     try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            if (data.tts_url) {
-                console.log(`TTS URL found: ${data.tts_url}`);
-                initializeAudio(data.tts_url);
+        const response = await fetch(`/review/${reviewId}/tts-url`);
+        const data = await response.json();
+        if (response.ok) {
+            const ttsUrl = data.tts_url;
+            if (ttsUrl) {
+                console.log(`TTS URL found: ${ttsUrl}`);
+                initializeAudio(ttsUrl);
             } else {
                 console.error('No TTS URL found in response');
             }
         } else {
-            throw new Error('Unexpected content type. Expected JSON.');
+            console.error(`Error fetching TTS URL: ${data.error}`);
         }
     } catch (error) {
-        console.error(`Fetch error: ${error.message}`, error);
+        console.error(`Fetch error: ${error}`);
     }
 }
 
@@ -60,11 +53,7 @@ function initializeAudio(ttsUrl) {
     document.getElementById('pauseButton').disabled = true;
 }
 
-// Existing DOMContentLoaded listener
 document.addEventListener('DOMContentLoaded', function () {
-    const reviewId = '{{ review_id|safe }}';  // Ensure review_id is correctly passed from Flask template
-    fetchTtsUrl(reviewId);
-
     // Function to handle form submission
     const reviewForm = document.getElementById('reviewForm');
     if (reviewForm) {
@@ -157,7 +146,6 @@ function displayReviewResult(data) {
 
         document.getElementById('updateLike').classList.remove('hidden');
         document.getElementById('reviewResult').classList.remove('hidden');
-        document.getElementById('audioFeedback').classList.remove('hidden');
         document.getElementById('rating_section').classList.remove('hidden');
     }
 }

@@ -87,40 +87,121 @@
 <br>
 
 <script>
+    let audio = null;
+
+    // Function to fetch TTS URL and play audio
+    async function fetchTtsUrl(reviewId) {
+        const url = `/review/${reviewId}/tts-url`;  // Make sure this URL is correctly formed
+        console.log(`Fetching URL: ${url}`);  // Log the URL to verify it
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                if (data.tts_url) {
+                    console.log(`TTS URL found: ${data.tts_url}`);
+                    initializeAudio(data.tts_url);
+                } else {
+                    console.error('No TTS URL found in response');
+                }
+            } else {
+                throw new Error('Unexpected content type. Expected JSON.');
+            }
+        } catch (error) {
+            console.error(`Fetch error: ${error.message}`, error);
+        }
+    }
+
+    // Function to initialize audio and set up button event handlers
+    function initializeAudio(ttsUrl) {
+        if (audio) {
+            audio.pause(); // Stop any previously playing audio
+        }
+
+        audio = new Audio(ttsUrl);
+
+        // Handle play button click
+        document.getElementById('playButton').addEventListener('click', () => {
+            if (audio) {
+                audio.play().catch(error => console.error(`Audio play error: ${error}`));
+                document.getElementById('playButton').disabled = true;
+                document.getElementById('pauseButton').disabled = false;
+            }
+        });
+
+        // Handle pause button click
+        document.getElementById('pauseButton').addEventListener('click', () => {
+            if (audio) {
+                audio.pause();
+                document.getElementById('playButton').disabled = false;
+                document.getElementById('pauseButton').disabled = true;
+            }
+        });
+
+        // Ensure the pause button is disabled initially
+        document.getElementById('pauseButton').disabled = true;
+    }
+
+    // Existing DOMContentLoaded listener
     document.addEventListener('DOMContentLoaded', function () {
-        const reviewId = '{{ review_detail.id|safe }}';  // Ensure review_id is correctly passed from Flask template
+        const reviewId = '{{ review_detail.id }}';  // Ensure review_id is correctly passed from Flask template
         fetchTtsUrl(reviewId);
     });
 
-    async function fetchTtsUrl(reviewId) {
-        try {
-            const response = await fetch(`/review/${reviewId}/tts-url`);
-            const data = await response.json();
+    // Function to toggle like status
+    function toggleLike(review_id) {
+        const likeIcon = document.querySelector(`#likeIcon${review_id}`);
+        const likeMessage = document.querySelector(`#likeMessage${review_id}`);
+        const unlikeMessage = document.querySelector(`#unlikeMessage${review_id}`);
 
-            if (data.tts_url) {
-                const audioSource = document.getElementById('audioSource');
-                if (audioSource) {
-                    audioSource.src = data.tts_url;
+        fetch(`/like/${review_id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ liked: !likeIcon.classList.contains('liked') }) // Toggle liked status
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.liked) {
+                        likeIcon.classList.add('liked');
+                        likeIcon.style.color = 'pink';
+                        likeMessage.classList.remove('hidden');
+                        unlikeMessage.classList.add('hidden');
+                    } else {
+                        likeIcon.classList.remove('liked');
+                        likeIcon.style.color = '';
+                        likeMessage.classList.add('hidden');
+                        unlikeMessage.classList.remove('hidden');
+                    }
+                    setTimeout(() => {
+                        likeMessage.classList.add('hidden');
+                        unlikeMessage.classList.add('hidden');
+                    }, 2000); // Hide the message after 2 seconds
+                    console.log('Like status updated successfully');
+                } else {
+                    console.error(data.message);
                 }
-                const audioElement = document.getElementById('audioElement');
-                if (audioElement) {
-                    audioElement.load();
-                    // audioElement.play();
-                }
-                const audioFeedback = document.getElementById('audioFeedback');
-                if (audioFeedback) {
-                    audioFeedback.classList.remove('hidden');
-                }
-            } else {
-                console.error('No TTS URL found in response');
-            }
-        } catch (error) {
-            console.error('Error fetching TTS URL:', error);
-        }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // Function to scroll down the page
+    function scrollDown() {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
     }
 </script>
-
-<script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
 
 {% endautoescape %}
 {% endblock %}
