@@ -1,4 +1,69 @@
+// WEBSITE-REVIEW.JS
+
+let audio = null;
+
+// Function to fetch TTS URL and play audio
+async function fetchTtsUrl(reviewId) {
+    try {
+        const response = await fetch(`/review/${reviewId}/tts-url`);
+        const data = await response.json();
+        if (response.ok) {
+            const ttsUrl = data.tts_url;
+            if (ttsUrl) {
+                console.log(`TTS URL found: ${ttsUrl}`);
+                initializeAudio(ttsUrl);
+            } else {
+                console.error('No TTS URL found in response');
+            }
+        } else {
+            console.error(`Error fetching TTS URL: ${data.error}`);
+        }
+    } catch (error) {
+        console.error(`Fetch error: ${error}`);
+    }
+}
+
+// Function to initialize audio and set up button event handlers
+function initializeAudio(ttsUrl) {
+    if (audio) {
+        audio.pause(); // Stop any previously playing audio
+    }
+
+    audio = new Audio(ttsUrl);
+
+    // Handle play button click
+    document.getElementById('playButton').addEventListener('click', () => {
+        if (audio) {
+            audio.play().catch(error => console.error(`Audio play error: ${error}`));
+            document.getElementById('playButton').disabled = true;
+            document.getElementById('pauseButton').disabled = false;
+        }
+    });
+
+    // Handle pause button click
+    document.getElementById('pauseButton').addEventListener('click', () => {
+        if (audio) {
+            audio.pause();
+            document.getElementById('playButton').disabled = false;
+            document.getElementById('pauseButton').disabled = true;
+        }
+    });
+
+    // Ensure the pause button is disabled initially
+    document.getElementById('pauseButton').disabled = true;
+}
+
+//// Existing DOMContentLoaded listener
+//document.addEventListener('DOMContentLoaded', function () {
+//    const reviewId = '{{ liked_review_detail.id }}';
+//    fetchTtsUrl(reviewId);
+//});
+
+// Existing DOMContentLoaded listener
 document.addEventListener('DOMContentLoaded', function () {
+    const reviewId = '{{ review_id|safe }}';  // Ensure review_id is correctly passed from Flask template
+    fetchTtsUrl(reviewId);
+
     // Function to handle form submission
     const reviewForm = document.getElementById('reviewForm');
     if (reviewForm) {
@@ -85,16 +150,13 @@ function displayReviewResult(data) {
         `;
 
         if (data.tts_url) {
-            const audioSource = document.getElementById('audioSource');
-            audioSource.src = data.tts_url;
-            const audioElement = document.getElementById('audioElement');
-            audioElement.load();
-
-            document.getElementById('audioFeedback').classList.remove('hidden');
+            // Call fetchTtsUrl instead of directly setting the audio source
+            fetchTtsUrl(data.review_id);
         }
 
         document.getElementById('updateLike').classList.remove('hidden');
         document.getElementById('reviewResult').classList.remove('hidden');
+        document.getElementById('audioFeedback').classList.remove('hidden');
         document.getElementById('rating_section').classList.remove('hidden');
     }
 }

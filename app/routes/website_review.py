@@ -390,18 +390,6 @@ def liked_reviews_details(pk):
         return redirect(url_for('website_review.review_posts'))
 
 
-@review_website_bp.route('/review/<int:review_id>/tts-url', methods=['GET'])
-def get_review_tts_url(review_id):
-    logger.debug(f"Fetching TTS URL for review ID: {review_id}")
-    review = WebsiteReview.query.get(review_id)
-    if review:
-        logger.debug(f"TTS URL found: {review.tts_url}")
-        return jsonify({"tts_url": review.tts_url})
-    else:
-        logger.error(f"Audio not found for review ID: {review_id}")
-        return jsonify({"error": "Audio not found"}), 404
-
-
 # Endpoint to update rating
 @review_website_bp.route('/rate-feedback', methods=['POST'])
 def rate_feedback():
@@ -444,4 +432,20 @@ def update_like(review_id):
             return jsonify({'success': False, 'message': 'Review not found'}), 404
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@review_website_bp.route('/review/<int:review_id>/tts-url', methods=['GET'])
+def get_review_tts_url(review_id):
+    logger.debug(f"Fetching TTS URL for review ID: {review_id}")
+    review = WebsiteReview.query.get(review_id)
+    if review:
+        if review.tts_url:
+            logger.debug(f"TTS URL found: {review.tts_url}")
+            return jsonify({"tts_url": review.tts_url})
+        else:
+            logger.error(f"TTS URL not found for review ID: {review_id}")
+            return jsonify({"error": "TTS URL not found"}), 404
+    else:
+        logger.error(f"Review not found for ID: {review_id}")
+        return jsonify({"error": "Review not found"}), 404
     

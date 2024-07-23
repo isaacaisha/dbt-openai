@@ -58,14 +58,17 @@
                     <img id="screenshotImage" src="{{ liked_review_detail.site_image_url }}" alt="Website Screenshot">
                 </div>
                 <hr class="my-4 mb-3 border-secondary">
-                <!-- Audio Player for TTS -->
+                <!-- Audio Control Section -->
                 <div id="audioFeedback" class="audio-feedback mb-4">
                     <h3 class="text-lg font-bold">Voice Feedback:</h3>
-                    <audio controls id="audioElement">
-                        <source id="audioSource" src="{{ url_for('website_review.get_review_tts_url', review_id=liked_review_detail.id) }}"
-                            type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
+                    <div class="d-flex justify-content-center">
+                        <button id="playButton" class="btn btn-light" title="Play">
+                            <i class="fa-solid fa-circle-play"></i>
+                        </button>
+                        <button id="pauseButton" class="btn btn-light ms-2" title="Pause" disabled>
+                            <i class="fa-solid fa-circle-pause"></i>
+                        </button>
+                    </div>
                 </div>
                 <hr class="my-4 mb-4 border-secondary">
                 <!-- Like Section -->
@@ -103,11 +106,12 @@
                 const audioSource = document.getElementById('audioSource');
                 if (audioSource) {
                     audioSource.src = data.tts_url;
-                }
-                const audioElement = document.getElementById('audioElement');
-                if (audioElement) {
-                    audioElement.load();
-                    // audioElement.play();
+                    const audioElement = document.getElementById('audioElement');
+                    if (audioElement) {
+                        audioElement.load(); // Refresh the audio element
+                        // Uncomment the line below if you want to play it automatically
+                        // audioElement.play(); 
+                    }
                 }
                 const audioFeedback = document.getElementById('audioFeedback');
                 if (audioFeedback) {
