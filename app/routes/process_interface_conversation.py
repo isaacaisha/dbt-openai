@@ -26,7 +26,7 @@ import logging
 # Get the logger instance
 logger = logging.getLogger(__name__)
 
-interface_conversation_bp = Blueprint('conversation_interface', __name__)
+interface_conversation_bp = Blueprint('conversation_interface', __name__, template_folder='templates', static_folder='static')
 
 openai = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
 llm = ChatOpenAI(temperature=0.0, model="gpt-4o")

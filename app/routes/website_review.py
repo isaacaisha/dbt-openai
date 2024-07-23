@@ -439,6 +439,7 @@ def get_review_tts_url(review_id):
     logger.debug(f"Fetching TTS URL for review ID: {review_id}")
     review = WebsiteReview.query.get(review_id)
     if review:
+        logger.debug(f"Review found: {review}")
         if review.tts_url:
             logger.debug(f"TTS URL found: {review.tts_url}")
             return jsonify({"tts_url": review.tts_url})

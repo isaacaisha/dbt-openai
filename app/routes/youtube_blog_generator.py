@@ -1,6 +1,8 @@
 import os
 import yt_dlp
 import assemblyai as aai
+import requests
+
 from dotenv import load_dotenv, find_dotenv
 from flask import Blueprint, flash, render_template, request, jsonify, redirect, url_for
 from datetime import datetime
@@ -14,15 +16,23 @@ from langdetect import detect
 
 load_dotenv(find_dotenv())
 
-generator_yt_blog_bp = Blueprint('yt_blog_generator', __name__)
+# Define base directory relative to the current file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_FOLDER_PATH = os.path.join(BASE_DIR, 'static')
+AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
 
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+# Ensure the directory exists
+os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
+
+generator_yt_blog_bp = Blueprint('yt_blog_generator', __name__, template_folder='templates', static_folder='static')
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-4")
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
 
 @generator_yt_blog_bp.route("/extras-features-home", methods=["GET"])
 def extras_features_home():
@@ -38,7 +48,7 @@ def generate_blog():
         return redirect(url_for('auth.login'))
     
     if request.method == 'POST':
-        try:           
+        try:
             data = request.get_json()
             youtube_link = data.get('link')
         except (KeyError, TypeError) as e:
@@ -80,11 +90,14 @@ def blog_details(pk):
         return redirect(url_for('yt_blog_generator.blog_posts'))
 
 def youtube_title(link):
-    ydl_opts = {}
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info_dict = ydl.extract_info(link, download=False)
-        title = info_dict.get('title', None)
-    return title
+    video_id = link.split('v=')[-1]
+    url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if 'items' in data and len(data['items']) > 0:
+            return data['items'][0]['snippet']['title']
+    return None
 
 def download_audio(link):
     ydl_opts = {
@@ -94,7 +107,7 @@ def download_audio(link):
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
-        'outtmpl': 'static/media/%(title)s.%(ext)s',
+        'outtmpl': os.path.join(AUDIO_FOLDER_PATH, '%(title)s.%(ext)s'),
         'nocheckcertificate': True,
         'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
     }
@@ -110,6 +123,8 @@ def download_audio(link):
             return new_file, None
     except yt_dlp.utils.RegexNotFoundError:
         return None, "Unable to extract metadata from the video"
+    except yt_dlp.utils.DownloadError as e:
+        return None, f"Error downloading audio: {str(e)}"
     except Exception as e:
         return None, f"Error downloading audio: {str(e)}"
 
@@ -118,6 +133,8 @@ def process_youtube_video(user_id, youtube_link):
 
     # Get title
     title = youtube_title(youtube_link)
+    if not title:
+        return None, "Failed to extract YouTube title."
 
     # Download audio
     audio_file, download_error = download_audio(youtube_link)
@@ -125,10 +142,10 @@ def process_youtube_video(user_id, youtube_link):
         return None, download_error
 
     # Get transcript
-    transcription = get_transcription(audio_file)
-    if not transcription:
+    transcription, transcription_error = get_transcription(audio_file)
+    if transcription_error:
         cleanup_files([audio_file])
-        return None, 'Failed to transcribe audio 😭'
+        return None, transcription_error
 
     # Use OpenAI to generate the blog
     blog_content = generate_blog_from_transcription(transcription)
@@ -138,7 +155,7 @@ def process_youtube_video(user_id, youtube_link):
 
     # Save blog article into database
     new_blog_article = BlogPost(
-        user_id=current_user.id, 
+        user_id=user_id, 
         youtube_title=title,
         youtube_link=youtube_link,
         generated_content=blog_content,
@@ -158,13 +175,14 @@ def cleanup_files(file_paths):
 
 def get_transcription(audio_file):
     aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
+    transcription_text = None
     try:
         transcriber = aai.Transcriber()
         transcript = transcriber.transcribe(audio_file)
         transcription_text = transcript.text
     except Exception as e:
-        transcription_text = None
-    return transcription_text
+        return None, str(e)
+    return transcription_text, None
 
 def generate_blog_from_transcription(transcription):
     prompt = f"Based on the following transcript from a YouTube video, " \
@@ -185,5 +203,5 @@ def generate_blog_from_transcription(transcription):
         )
         generated_content = response.choices[0].message.content.strip()
         return generated_content
-    except Exception as e:
+    except OpenAIError as e:
         return None
