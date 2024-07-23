@@ -88,7 +88,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const reviewId = '{{ review_detail.id }}';  // Ensure review_id is correctly passed from Flask template
+        const reviewId = '{{ review_detail.id|safe }}';  // Ensure review_id is correctly passed from Flask template
         fetchTtsUrl(reviewId);
     });
 
