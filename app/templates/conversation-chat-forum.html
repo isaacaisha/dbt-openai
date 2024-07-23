@@ -61,7 +61,7 @@
                 {% endwith %}
 
                 <!-- Include CSRF token -->
-                {{ wtf.form_field(forum_chat_form.csrf_token) }}
+                {{ forum_chat_form.csrf_token }}
 
                 <input type="hidden" id="username" name="username" value="{{ current_user.name }}">
                 <input type="hidden" id="theme_id" name="theme_id" value="{{ theme_details.id }}">

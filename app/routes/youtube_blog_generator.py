@@ -5,6 +5,7 @@ import requests
 
 from dotenv import load_dotenv, find_dotenv
 from flask import Blueprint, flash, render_template, request, jsonify, redirect, url_for
+from flask import current_app
 from datetime import datetime
 from openai import OpenAI, OpenAIError
 from flask_login import current_user
@@ -33,6 +34,17 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
+ASSEMBLYAI_API_KEY = os.getenv('ASSEMBLYAI_API_KEY')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+# Use `current_app.logger` instead of `generator_yt_blog_bp.logger`
+if not YOUTUBE_API_KEY:
+    current_app.logger.error("YOUTUBE_API_KEY environment variable is missing.")
+if not ASSEMBLYAI_API_KEY:
+    current_app.logger.error("ASSEMBLYAI_API_KEY environment variable is missing.")
+if not OPENAI_API_KEY:
+    current_app.logger.error("OPENAI_API_KEY environment variable is missing.")
+
 
 @generator_yt_blog_bp.route("/extras-features-home", methods=["GET"])
 def extras_features_home():
@@ -40,6 +52,8 @@ def extras_features_home():
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
     return render_template('extras-features.html', date=datetime.now().strftime("%a %d %B %Y"))
+
+
 
 @generator_yt_blog_bp.route("/blog/generator", methods=["GET", "POST"])
 def generate_blog():
@@ -50,16 +64,27 @@ def generate_blog():
     if request.method == 'POST':
         try:
             data = request.get_json()
+            if not data:
+                current_app.logger.error("No JSON data received.")
+                return jsonify({'error': 'Invalid data sent 😭'}), 400
+            
             youtube_link = data.get('link')
-        except (KeyError, TypeError) as e:
-            return jsonify({'error': 'Invalid data sent 😭'}), 400
+            if not youtube_link:
+                current_app.logger.error("YouTube link not provided.")
+                return jsonify({'error': 'YouTube link is required.'}), 400
 
-        new_blog_article, error_message = process_youtube_video(current_user.id, youtube_link)
+            current_app.logger.info(f"Processing YouTube link: {youtube_link}")
+            new_blog_article, error_message = process_youtube_video(current_user.id, youtube_link)
 
-        if error_message:
-            return jsonify({'error': error_message}), 500
+            if error_message:
+                current_app.logger.error(f"Error generating blog: {error_message}")
+                return jsonify({'error': error_message}), 500
 
-        return jsonify({'content': new_blog_article.generated_content}), 200
+            return jsonify({'content': new_blog_article.generated_content}), 200
+
+        except Exception as e:
+            current_app.logger.error(f"Unhandled exception in generate_blog: {str(e)}")
+            return jsonify({'error': 'An unexpected error occurred'}), 500
 
     elif request.method == 'GET':
         return render_template('blog-generator.html', date=datetime.now().strftime("%a %d %B %Y"))
@@ -90,13 +115,32 @@ def blog_details(pk):
         return redirect(url_for('yt_blog_generator.blog_posts'))
 
 def youtube_title(link):
-    video_id = link.split('v=')[-1]
-    url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
-    response = requests.get(url)
-    if response.status_code == 200:
+    try:
+        # Extract video ID from different types of YouTube URLs
+        video_id = None
+        if 'v=' in link:
+            video_id = link.split('v=')[-1].split('&')[0]
+        elif 'youtu.be/' in link:
+            video_id = link.split('youtu.be/')[-1].split('?')[0]
+        else:
+            current_app.logger.error(f"Unsupported YouTube URL format: {link}")
+            return None
+        
+        if not video_id:
+            current_app.logger.error(f"Unable to extract video ID from link: {link}")
+            return None
+        
+        url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
+        response = requests.get(url)
+        response.raise_for_status()  # This will raise an HTTPError for bad responses
         data = response.json()
+        
         if 'items' in data and len(data['items']) > 0:
             return data['items'][0]['snippet']['title']
+        else:
+            current_app.logger.error(f"No items found in YouTube API response for link: {link}")
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(f"Error calling YouTube API: {str(e)}")
     return None
 
 def download_audio(link):
@@ -120,12 +164,16 @@ def download_audio(link):
             new_file = base + '.mp3'
             if os.path.exists(audio_file) and not os.path.exists(new_file):
                 os.rename(audio_file, new_file)
+            current_app.logger.info(f"Audio file downloaded and renamed: {new_file}")
             return new_file, None
     except yt_dlp.utils.RegexNotFoundError:
+        current_app.logger.error("Unable to extract metadata from the video")
         return None, "Unable to extract metadata from the video"
     except yt_dlp.utils.DownloadError as e:
+        current_app.logger.error(f"Error downloading audio: {str(e)}")
         return None, f"Error downloading audio: {str(e)}"
     except Exception as e:
+        current_app.logger.error(f"Error downloading audio: {str(e)}")
         return None, f"Error downloading audio: {str(e)}"
 
 def process_youtube_video(user_id, youtube_link):
@@ -204,4 +252,6 @@ def generate_blog_from_transcription(transcription):
         generated_content = response.choices[0].message.content.strip()
         return generated_content
     except OpenAIError as e:
+        current_app.logger.error(f"Error generating blog content: {str(e)}")
         return None
+    

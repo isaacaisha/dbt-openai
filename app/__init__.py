@@ -1,5 +1,6 @@
 # __init__.py
 
+import logging
 import os
 import secrets
 
@@ -35,9 +36,12 @@ def create_app(config=None):
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_PERMANENT'] = True
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-
+    app.config['DEBUG'] = True
     app.config['UPLOAD_FOLDER'] = 'static/assets/images'
 
+    # Ensure logger is set up to capture errors
+    app.logger.setLevel(logging.DEBUG)  
+    
     login_manager = LoginManager()
 
     @login_manager.user_loader

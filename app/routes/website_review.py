@@ -104,6 +104,7 @@ async def take_screenshot(url):
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--disable-gpu")
             options.add_argument("--window-size=1920,1080")
+            options.add_argument("--remote-debugging-port=9222")  # Debugging port
 
             # Set the binary location for Chrome
             options.binary_location = CHROME_BINARY_PATH
@@ -115,16 +116,17 @@ async def take_screenshot(url):
             browser = webdriver.Chrome(service=chrome_service, options=options)
 
             # Set timeouts
-            browser.set_page_load_timeout(60)  # Increase page load timeout
-            browser.set_script_timeout(60)     # Increase script timeout
+            browser.set_page_load_timeout(120)  # Increase page load timeout
+            browser.set_script_timeout(120)     # Increase script timeout
 
             browser.get(url)
 
             # Use explicit wait for the page to load
-            wait = WebDriverWait(browser, 60)
+            wait = WebDriverWait(browser, 120)
             wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
 
-            total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
+            #total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
+            total_height = browser.execute_script("return document.body.scrollHeight")
             browser.set_window_size(1200, total_height)
 
             ## Scroll the page gradually to ensure all parts are rendered
