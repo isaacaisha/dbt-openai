@@ -94,50 +94,50 @@
 
 <script>
     document.getElementById('generateBlogButton').addEventListener('click', async () => {
-        const youtubeLink = document.getElementById('youtubeLink').value;
-        const blogContent = document.getElementById('blogContent');
+            const youtubeLink = document.getElementById('youtubeLink').value;
+            const blogContent = document.getElementById('blogContent');
+            const generateBlogButton = document.getElementById('generateBlogButton');
 
-        if (youtubeLink) {
-            document.getElementById('loading-circle').style.display = 'block';
-            document.getElementById('loading-indicator').style.display = 'block';
+            if (youtubeLink) {
+                generateBlogButton.disabled = true;
+                document.getElementById('loading-circle').style.display = 'block';
+                document.getElementById('loading-indicator').style.display = 'block';
 
-            blogContent.innerHTML = ''; // Clear previous content
+                blogContent.innerHTML = '';
 
-            const endpointUrl = '/blog/generator';
+                try {
+                    const response = await fetch('/blog/generator', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ link: youtubeLink })
+                    });
 
-            try {
-                const response = await fetch(endpointUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ link: youtubeLink })
-                });
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    }
 
-                if (!response.ok) {
-                    // Show error message to the user
-                    throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    const data = await response.json();
+
+                    if (data.error) {
+                        blogContent.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    } else {
+                        blogContent.innerHTML = data.content;
+                    }
+
+                } catch (error) {
+                    console.error("Error occurred:", error);
+                    blogContent.innerHTML = `<div class="alert alert-danger">Something went wrong. Please try again later.</div>`;
+                } finally {
+                    generateBlogButton.disabled = false;
+                    document.getElementById('loading-circle').style.display = 'none';
+                    document.getElementById('loading-indicator').style.display = 'none';
                 }
-
-                const data = await response.json();
-
-                if (data.error) {
-                    blogContent.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
-                } else {
-                    blogContent.innerHTML = data.content;
-                }
-
-            } catch (error) {
-                console.error("Error occurred:", error);
-                blogContent.innerHTML = `<div class="alert alert-danger">Something went wrong. Please try again later.</div>`;
-            } finally {
-                document.getElementById('loading-circle').style.display = 'none';
-                document.getElementById('loading-indicator').style.display = 'none';
+            } else {
+                alert("Please enter a YouTube link.");
             }
-        } else {
-            alert("Please enter a YouTube link.");
-        }
-    });
+        });
 </script>
 
 {% endblock %}
