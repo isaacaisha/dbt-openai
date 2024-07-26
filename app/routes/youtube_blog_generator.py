@@ -3,7 +3,6 @@ import logging
 import yt_dlp
 import assemblyai as aai
 import requests
-
 from dotenv import load_dotenv, find_dotenv
 from requests.exceptions import Timeout
 from flask import Blueprint, flash, render_template, request, jsonify, redirect, url_for
@@ -17,7 +16,7 @@ from langchain.memory import ConversationBufferMemory
 from langdetect import detect
 
 # Set up logger
-logging.basicConfig(level=logging.INFO)  # You can adjust the level as needed
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
@@ -39,6 +38,7 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
+YOUTUBE_COOKIES_PATH = os.getenv('YOUTUBE_COOKIES_PATH')
 ASSEMBLYAI_API_KEY = os.getenv('ASSEMBLYAI_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
@@ -49,9 +49,10 @@ if not ASSEMBLYAI_API_KEY:
     logger.error("ASSEMBLYAI_API_KEY environment variable is missing.")
 if not OPENAI_API_KEY:
     logger.error("OPENAI_API_KEY environment variable is missing.")
-
+    
 
 def fetch_with_timeout(url, data, timeout=120):
+    """Fetch data with a timeout for HTTP requests."""
     try:
         response = requests.post(url, json=data, timeout=timeout)
         response.raise_for_status()
@@ -61,15 +62,19 @@ def fetch_with_timeout(url, data, timeout=120):
     except requests.RequestException as e:
         return {'error': f'An error occurred: {str(e)}'}
     
+
 @generator_yt_blog_bp.route("/extras-features-home", methods=["GET"])
 def extras_features_home():
+    """Render the extras features page."""
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
     return render_template('extras-features.html', date=datetime.now().strftime("%a %d %B %Y"))
 
+
 @generator_yt_blog_bp.route("/blog/generator", methods=["GET", "POST"])
 def generate_blog():
+    """Handle the generation of a blog based on a YouTube link."""
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
@@ -105,8 +110,10 @@ def generate_blog():
     else:
         return jsonify({'error': 'Invalid request method 🤣'}), 405
 
+
 @generator_yt_blog_bp.route("/blog-posts", methods=["GET"])
 def blog_posts():
+    """Render the list of blog posts for the current user."""
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
@@ -115,8 +122,10 @@ def blog_posts():
     blog_articles.reverse()
     return render_template('blog-posts.html', blog_articles=blog_articles, date=datetime.now().strftime("%a %d %B %Y"))
 
+
 @generator_yt_blog_bp.route("/blog-details/<int:pk>", methods=["GET"])
 def blog_details(pk):
+    """Render the details of a specific blog post."""
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
@@ -127,9 +136,10 @@ def blog_details(pk):
     else:
         return redirect(url_for('yt_blog_generator.blog_posts'))
 
+
 def youtube_title(link):
+    """Extract the title of a YouTube video from its link."""
     try:
-        # Extract video ID from different types of YouTube URLs
         video_id = None
         if 'v=' in link:
             video_id = link.split('v=')[-1].split('&')[0]
@@ -145,7 +155,7 @@ def youtube_title(link):
         
         url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
         response = requests.get(url)
-        response.raise_for_status()  # This will raise an HTTPError for bad responses
+        response.raise_for_status()
         data = response.json()
         
         if 'items' in data and len(data['items']) > 0:
@@ -156,7 +166,9 @@ def youtube_title(link):
         logger.error(f"Error calling YouTube API: {str(e)}")
     return None
 
+
 def download_audio(link):
+    """Download audio from a YouTube video."""
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
@@ -167,6 +179,7 @@ def download_audio(link):
         'outtmpl': os.path.join(AUDIO_FOLDER_PATH, '%(title)s.%(ext)s'),
         'nocheckcertificate': True,
         'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'cookiefile': 'youtube_cookies.txt',  # Use the converted cookies file
     }
 
     try:
@@ -188,9 +201,11 @@ def download_audio(link):
     except Exception as e:
         logger.error(f"Error downloading audio: {str(e)}")
         return None, f"Error downloading audio: {str(e)}"
+    
 
 def process_youtube_video(user_id, youtube_link):
-    user = db.session.query(User).get(user_id)  
+    """Process the YouTube video to generate a blog article."""
+    user = db.session.query(User).get(user_id)
 
     # Get title
     title = youtube_title(youtube_link)
@@ -229,12 +244,19 @@ def process_youtube_video(user_id, youtube_link):
 
     return new_blog_article, None
 
+
 def cleanup_files(file_paths):
+    """Remove specified files from the filesystem."""
     for file_path in file_paths:
         if os.path.exists(file_path):
-            os.remove(file_path)
+            try:
+                os.remove(file_path)
+            except OSError as e:
+                logger.error(f"Error removing file {file_path}: {str(e)}")
+
 
 def get_transcription(audio_file):
+    """Transcribe the audio file using AssemblyAI."""
     aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
     transcription_text = None
     try:
@@ -245,7 +267,9 @@ def get_transcription(audio_file):
         return None, str(e)
     return transcription_text, None
 
+
 def generate_blog_from_transcription(transcription):
+    """Generate blog content from the transcription using OpenAI."""
     prompt = f"Based on the following transcript from a YouTube video, " \
              f"write a comprehensive blog article. Write it based on the transcript, " \
              f"but don't make it look like a YouTube video. " \
