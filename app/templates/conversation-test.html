@@ -29,6 +29,17 @@
 {% block content %}
 {% autoescape true %}
 
+<!-- Flash message display -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
 <div class="container content text-center">
 
     <div id="content-container" class="container">
@@ -100,15 +111,13 @@
                     -¡!¡- PlayBack Audio -¡!¡-
                 </button>
             </div>
-            <div class="container">
+            <div class="">
                 <div class="row justify-content-center">
                     <div class="col-auto">
-                        <button class="main text-center mb-3 p-0">
-                            <audio id="response-audio" controls class="submit btn btn-outline-info m-0" style="display: none;">
-                                <source src="" type="audio/mp3">
-                                Your browser does not support the audio element.
-                            </audio>
-                        </button>
+                        <audio id="response-audio" controls class="submit btn btn-outline-info m-0 mb-3" style="display: none; height: 31px;">
+                            <source src="" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@ import json
 import os
 import pytz
 
-from flask import Blueprint, render_template, request, send_file, jsonify, send_from_directory, url_for
+from flask import Blueprint, flash, render_template, request, send_file, jsonify, send_from_directory, url_for
 from flask_login import current_user
 from gtts import gTTS
 from langchain.chains import ConversationChain
@@ -51,23 +51,27 @@ def home_test():
     response = None
     images = IMAGES
 
-    if request.method == "POST" and home_form.validate_on_submit():
-        # Retrieve form data using the correct key
-        user_input = request.form['text_writing']
+    try:
+        if request.method == "POST" and home_form.validate_on_submit():
+            # Retrieve form data using the correct key
+            user_input = request.form['text_writing']
 
-        # Use the LLM to generate a response based on user input
-        response = conversation.predict(input=user_input)
+            # Use the LLM to generate a response based on user input
+            response = conversation.predict(input=user_input)
 
-        print(f"user_input: {user_input}")
-        print(f"response: {response}\n")
+            print(f"user_input: {user_input}")
+            print(f"response: {response}\n")
 
-    memory_buffer = memory.buffer_as_str
-    memory_load = memory.load_memory_variables({})
+        memory_buffer = memory.buffer_as_str
+        memory_load = memory.load_memory_variables({})
 
-    return render_template('conversation-test.html', home_form=home_form, images=images,
-                           current_user=current_user, user_input=user_input, response=response,
-                           memory_buffer=memory_buffer, memory_load=memory_load,
-                           date=datetime.now().strftime("%a %d %B %Y"))
+        return render_template('conversation-test.html', home_form=home_form, images=images,
+                               current_user=current_user, user_input=user_input, response=response,
+                               memory_buffer=memory_buffer, memory_load=memory_load,
+                               date=datetime.now().strftime("%a %d %B %Y"))
+    except Exception as e:
+        print(f"Exception occurred: {e}")
+        return flash("An error occurred. Please try reformulating your question.", "error"), 500
 
 
 @home_conversation_bp.route('/home/answer', methods=['POST'])

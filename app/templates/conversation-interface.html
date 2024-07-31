@@ -27,6 +27,16 @@
 {% autoescape true %}
 
 {% if current_user.is_authenticated: %}
+    <!-- Flash message display -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <div class="container conversations">
         <hr class="crimson mb-3">
 
@@ -124,7 +134,7 @@
             <!-- Audio element for playback -->
             <div class="row justify-content-center">
                 <div class="col-auto">
-                    <audio id="response-audio" controls class="submit btn btn-outline-info mb-3" style="display: none; width: 145px; height: 31px;">
+                    <audio id="response-audio" controls class="submit btn btn-outline-info mb-3" style="display: none; height: 31px;">
                         <source src="" type="audio/mp3">
                         Your browser does not support the audio element.
                     </audio>

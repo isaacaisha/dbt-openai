@@ -55,24 +55,27 @@ def conversation_interface():
     user_input = None
     answer = None
     latest_conversation = []
+    try:
+        if request.method == "POST" and writing_text_form.validate_on_submit():
+            user_input = request.form['writing_text']
+            logger.debug(f"Received user input: {user_input}")
+            answer = conversation.predict(input=user_input)
+            logger.debug(f"Generated answer: {answer}")
+            latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
+        else:
+            latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
 
-    if request.method == "POST" and writing_text_form.validate_on_submit():
-        user_input = request.form['writing_text']
-        logger.debug(f"Received user input: {user_input}")
-        answer = conversation.predict(input=user_input)
-        logger.debug(f"Generated answer: {answer}")
-        latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
-    else:
-        latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
+        memory_buffer = memory.buffer_as_str
+        memory_load = memory.load_memory_variables({})
 
-    memory_buffer = memory.buffer_as_str
-    memory_load = memory.load_memory_variables({})
-
-    logger.debug(f"Rendering template with user input: {user_input}, answer: {answer}, memory buffer: {memory_buffer}, memory load: {memory_load}")
-    return render_template('conversation-interface.html', writing_text_form=writing_text_form,
-                           user_input=user_input, answer=answer, current_user=current_user,
-                           memory_buffer=memory_buffer, memory_load=memory_load,
-                           latest_conversation=latest_conversation, date=datetime.now().strftime("%a %d %B %Y"))
+        logger.debug(f"Rendering template with user input: {user_input}, answer: {answer}, memory buffer: {memory_buffer}, memory load: {memory_load}")
+        return render_template('conversation-interface.html', writing_text_form=writing_text_form,
+                               user_input=user_input, answer=answer, current_user=current_user,
+                               memory_buffer=memory_buffer, memory_load=memory_load,
+                               latest_conversation=latest_conversation, date=datetime.now().strftime("%a %d %B %Y"))
+    except Exception as e:
+        print(f"Exception occurred: {e}")
+        return flash("An error occurred. Please try reformulating your question.", "error"), 500
 
 
 @interface_conversation_bp.route('/audio/<int:conversation_id>')
