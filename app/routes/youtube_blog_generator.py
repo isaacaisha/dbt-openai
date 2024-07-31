@@ -38,7 +38,7 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
-YOUTUBE_COOKIES_PATH = os.getenv('YOUTUBE_COOKIES_PATH')
+#YOUTUBE_COOKIES_PATH = os.getenv('YOUTUBE_COOKIES_PATH')
 ASSEMBLYAI_API_KEY = os.getenv('ASSEMBLYAI_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
@@ -49,7 +49,7 @@ if not ASSEMBLYAI_API_KEY:
     logger.error("ASSEMBLYAI_API_KEY environment variable is missing.")
 if not OPENAI_API_KEY:
     logger.error("OPENAI_API_KEY environment variable is missing.")
-    
+
 
 def fetch_with_timeout(url, data, timeout=120):
     """Fetch data with a timeout for HTTP requests."""
@@ -61,7 +61,7 @@ def fetch_with_timeout(url, data, timeout=120):
         return {'error': 'The request timed out. Please try again.'}
     except requests.RequestException as e:
         return {'error': f'An error occurred: {str(e)}'}
-    
+
 
 @generator_yt_blog_bp.route("/extras-features-home", methods=["GET"])
 def extras_features_home():
@@ -179,7 +179,7 @@ def download_audio(link):
         'outtmpl': os.path.join(AUDIO_FOLDER_PATH, '%(title)s.%(ext)s'),
         'nocheckcertificate': True,
         'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'cookiefile': 'youtube_cookies.txt',  # Use the converted cookies file
+        #'cookiefile': 'youtube_cookies.txt',  # Use the converted cookies file
     }
 
     try:

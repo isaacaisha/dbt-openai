@@ -64,7 +64,6 @@
                 </label>
                 <textarea class="form-control mb-5" id="userInput" name="text_writing"
                           placeholder="¡!¡ T😎 INTERACT, WRITE  HERE ¡!¡" oninput="capitalizeSentences(this)"></textarea>
-                <hr style="display: block; color:yellow">
             </div>
 
             <hr class="gold mb-3">
@@ -90,7 +89,7 @@
         </form>
 
         <hr class="gold mb-5">
-        <hr class="crimson mb-3">
+        <hr id="hrCrimson1" class="crimson mb-3" style="display: none;">
 
         <div class="text-center">
             <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
@@ -115,7 +114,7 @@
             </div>
         </div>
 
-        <hr class="crimson mb-5">
+        <hr id="hrCrimson2" class="crimson mb-5" style="display: none;">
         <hr class="green mb-3">
 
         <div id="carouselExampleCaptions" class="carousel slide carousel-dark mb-3" data-bs-ride="carousel">

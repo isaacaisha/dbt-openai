@@ -17,7 +17,7 @@ from app.app_forms import TextAreaFormIndex
 from app.memory import MemoryTest, db
 
 
-home_conversation_bp = Blueprint('conversation_home', __name__)
+home_conversation_bp = Blueprint('conversation_home', __name__, template_folder='templates', static_folder='static')
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-4o")
 memory = ConversationBufferMemory()
@@ -30,8 +30,13 @@ IMAGES =['siisi.jpg', 'mommy.jpg', 'corazones.jpeg', 'logo_ai.jpg', 'logo0.jpg',
          'q.jpg', 'm.jpg', 'r.jpg', 'l.jpg', 'istock5.jpg',
          ]
 
-STATIC_FOLDER_PATH = '/Users/lesanebyby/PycharmProjects/DBT OpenAI Speech/static'
+# Define base directory relative to the current file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_FOLDER_PATH = os.path.join(BASE_DIR, 'static')
 AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
+
+# Ensure the directory exists
+os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
 
 
 @home_conversation_bp.route("/", methods=["GET", "POST"])

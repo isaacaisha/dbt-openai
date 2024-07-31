@@ -84,10 +84,14 @@ function sendRequest(prompt) {
 
                 // Set the audio source and play
                 var audio = document.getElementById('response-audio');
+                var hrCrimson1 = document.getElementById('hrCrimson1');
+                var hrCrimson2 = document.getElementById('hrCrimson2');
                 //audio.src = "data:audio/mp3;base64," + response.answer_audio;
                 audio.src = response.answer_audio_path;
                 audio.style.display = 'block';
                 playbackButton.classList.remove('hidden');
+                hrCrimson1.style.display = 'block';
+                hrCrimson2.style.display = 'block';
 
                 // // Auto-play the audio when it's ready
                 // audio.oncanplay = function() {
