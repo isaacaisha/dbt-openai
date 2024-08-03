@@ -1,0 +1,154 @@
+<!-- DRAWING-GENERATOR.HTML -->
+
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends 'header.html' %}
+
+{% block title %} Welcom€ to{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
+{% include 'bootstrap/base.html' %}
+<style>
+    /* Responsive image container */
+    .img-container {
+        display: flex;
+        justify-content: center;
+        margin: 0 auto;
+        max-width: 100%;
+    }
+
+    /* Responsive image */
+    .img-container img {
+        max-width: 100%;
+        height: auto;
+        width: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid mb-5">
+    <div class="p-1 rounded-3 jumbotron bg-dark text-light">
+        <div class="container-fluid py-1">
+            <h1 class="">
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon"
+                    class="crown img-fluid mx-auto" width="100" height="100">
+                ·SìįSí·Dbt· OpenAI
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon"
+                    class="crown img-fluid mx-auto" width="100" height="100">
+            </h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+<div class="content text-center">
+    <form id="drawing-form" method="POST">
+        {{ drawing_form.csrf_token }}
+
+        <div id="error-message" class="alert alert-danger mb-3" style="display: none;"></div>
+
+        <hr class="green mb-3">
+        
+        <div class="form-group">
+            <label for="generationType">Select Type of Generation:</label>
+            <select id="generationType" name="generation_type" class="form-control">
+                <option value="generations">Generations</option>
+                <option value="edits">Edits</option>
+                <option value="variations">Variations</option>
+            </select>
+        </div>
+
+        <div id="textarea-container" class="align-left">
+            <label for="userInput" class="label_">Start Writing to Generate a Drawing:<br>(be Specific for a better
+                result)</label>
+            <textarea class="form-control mb-3" id="userInput" name="generate_draw"
+                placeholder="¡!¡ T😎 GENERATE A DRAWING, WRITE  HERE ¡!¡"
+                oninput="capitalizeSentences(this)"></textarea>
+        </div>
+
+        <hr class="green mb-5">
+        <hr class="gold mb-3">
+
+        <div id="loading-indicator" style="display:none;" class="text-center mb-3">
+            <p>Loading...</p>
+            <img class="loading"
+                src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
+                alt="Loading">
+        </div>
+        <div id="loading-circle" class="load mb-3" style="display: none;"></div>
+
+        <div class="text-center">
+            <button id="generateButton" class="mb-3 btn generate-text" type="button">
+                Generate The Drawing 🔥¡!¡<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
+                    class="crown">¡!¡🔥
+            </button>
+        </div>
+
+        <hr class="gold mb-5">
+
+        <div style="height: auto; width: 100%;" class="mb-5">
+            <div id="drawing-result" class="img-container"></div>
+        </div>
+
+    </form>
+
+    <script>
+        document.getElementById('generateButton').addEventListener('click', async function (e) {
+            e.preventDefault();
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const loadingCircle = document.getElementById('loading-circle');
+            loadingIndicator.style.display = 'block';
+            loadingCircle.style.display = 'block';
+
+            let prompt = document.getElementById('userInput').value;
+            let type = document.getElementById('generationType').value;
+
+            let response = await fetch('/drawing-generator', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ generate_draw: prompt, type: type }),
+            });
+            let data = await response.json();
+            if (data.drawing_url) {
+                loadingIndicator.style.display = 'none';
+                loadingCircle.style.display = 'none';
+                document.getElementById('drawing-result').innerHTML = `<img src="${data.drawing_url}" alt="Generated Drawing">`;
+            } else {
+                document.getElementById('error-message').innerText = data.error;
+                document.getElementById('error-message').style.display = 'block';
+            }
+        });
+    </script>
+</div>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer1 %}
+    <div class="container">
+    <hr class="crimson mb-2">
+
+    <div class="text-center">
+        <button type="button" class="btn back-home mb-2">
+            <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
+                -¡!¡- Back To Extras Features -¡!¡-</a>
+        </button>
+    </div>
+
+    <hr class="crimson mb-5">
+
+    <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
+        Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
+    </footer>
+    </div>
+{% endblock %}

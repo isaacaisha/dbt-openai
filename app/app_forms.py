@@ -1,4 +1,4 @@
-# app_forms.py
+# APP_FORMS.PY
 
 from flask import Blueprint
 from flask_wtf import FlaskForm
@@ -87,3 +87,11 @@ class DatabaseForm(FlaskForm):
     database_name = StringField("Database's Name:", validators=[InputRequired()])
     data_id = IntegerField("Data ID:", validators=[InputRequired(), NumberRange(min=1)])
     submit = SubmitField('-¡!¡- DELETE -¡!¡-')
+
+
+class TextAreaDrawingIndex(FlaskForm):
+    generate_draw = TextAreaField(
+        'Start Writing To Generate A Drawing:',
+        [validators.InputRequired(message="Please, first enter a text.")]
+    )
+    submit = SubmitField("Generate The Drawing ¡!¡")

@@ -17,13 +17,14 @@ from app.app_forms import app_form_bp
 from app.memory import memory_bp, User
 
 from app.routes.auth import auth_bp
-from app.routes.convers_functions import conversation_functionality_bp
-from app.routes.youtube_blog_generator import generator_yt_blog_bp
 from app.routes.forum_conversation import conversation_chat_forum_bp
+from app.routes.convers_functions import conversation_functionality_bp
+from app.routes.drawing_generator import generator_drawing_bp
+from app.routes.youtube_blog_generator import generator_yt_blog_bp
 from app.routes.home_process import home_conversation_bp
+from app.routes.process_interface_conversation import interface_conversation_bp
 from app.routes.llm_conversation import llm_conversation_bp
 from app.routes.website_review import review_website_bp
-from app.routes.process_interface_conversation import interface_conversation_bp
 
 
 load_dotenv(find_dotenv())
@@ -85,6 +86,7 @@ def create_app(config=None):
     app.register_blueprint(conversation_chat_forum_bp, name='conversation_chat_forum')
     app.register_blueprint(conversation_functionality_bp, name='conversation_function')
     app.register_blueprint(database_bp, name='database')
+    app.register_blueprint(generator_drawing_bp, name='drawing_generator')
     app.register_blueprint(generator_yt_blog_bp, name='yt_blog_generator')
     app.register_blueprint(home_conversation_bp, name='conversation_home')
     app.register_blueprint(interface_conversation_bp, name='conversation_interface')

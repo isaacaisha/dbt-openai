@@ -126,3 +126,8 @@ class WebsiteReview(db.Model):
     def __repr__(self):
         return f"<WebsiteReview id={self.id}, title='{self.site_url}', tts_url='{self.tts_url}'>"
     
+
+class DrawingDatabase(db.Model):
+    __tablename__ = 'drawing_database'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    pass
