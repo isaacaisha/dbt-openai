@@ -4,7 +4,7 @@
 
 {% extends 'header.html' %}
 
-{% block title %} Welcom€ to{% endblock %}
+{% block title %} Welcome to{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -44,8 +44,6 @@
 </div>
 {% endblock %}
 
-{% block navbar %}{% endblock %}
-
 {% block content %}
 {% autoescape true %}
 
@@ -56,22 +54,27 @@
         <div id="error-message" class="alert alert-danger mb-3" style="display: none;"></div>
 
         <hr class="green mb-3">
-        
-        <div class="form-group">
-            <label for="generationType">Select Type of Generation:</label>
-            <select id="generationType" name="generation_type" class="form-control">
+
+        <div class="form-group align-left mb-5" style="width: 199px; margin: auto;">
+            <label for="generationType" class="label_">Select Type of Generation:</label>
+            <select id="generationType" name="generation_type" class="form-control text-center">
                 <option value="generations">Generations</option>
                 <option value="edits">Edits</option>
                 <option value="variations">Variations</option>
             </select>
         </div>
 
+        <div id="upload-container" class="form-group align-left mb-5"
+            style="display: none; width: 199px; margin: auto;">
+            <label for="imageUpload" class="label_">Upload Image for Edits or Variations:</label>
+            <input type="file" id="imageUpload" name="image_upload" class="form-control">
+        </div>
+
         <div id="textarea-container" class="align-left">
-            <label for="userInput" class="label_">Start Writing to Generate a Drawing:<br>(be Specific for a better
-                result)</label>
-            <textarea class="form-control mb-3" id="userInput" name="generate_draw"
-                placeholder="¡!¡ T😎 GENERATE A DRAWING, WRITE  HERE ¡!¡"
-                oninput="capitalizeSentences(this)"></textarea>
+            <label for="generateDraw" class="label_">
+                Start Writing to Generate a Drawing:<br>(be Specific for a better result)
+            </label>
+            <textarea class="form-control mb-3 align-left" id="generateDraw" name="generate_draw"></textarea>
         </div>
 
         <hr class="green mb-5">
@@ -87,55 +90,94 @@
 
         <div class="text-center">
             <button id="generateButton" class="mb-3 btn generate-text" type="button">
-                Generate The Drawing 🔥¡!¡<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
-                    class="crown">¡!¡🔥
+                Generate The Drawing 🔥¡!¡
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
             </button>
         </div>
 
         <hr class="gold mb-5">
 
         <div style="height: auto; width: 100%;" class="mb-5">
-            <div id="drawing-result" class="img-container"></div>
+            <div id="drawing-result" class="img-container mb-3"></div>
         </div>
 
+        <button id="saveImage" class="nav-link mb-5 btn" style="margin: auto;"></button>
     </form>
 
     <script>
-        document.getElementById('generateButton').addEventListener('click', async function (e) {
-            e.preventDefault();
-            const loadingIndicator = document.getElementById('loading-indicator');
-            const loadingCircle = document.getElementById('loading-circle');
-            loadingIndicator.style.display = 'block';
-            loadingCircle.style.display = 'block';
-
-            let prompt = document.getElementById('userInput').value;
-            let type = document.getElementById('generationType').value;
-
-            let response = await fetch('/drawing-generator', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ generate_draw: prompt, type: type }),
-            });
-            let data = await response.json();
-            if (data.drawing_url) {
-                loadingIndicator.style.display = 'none';
-                loadingCircle.style.display = 'none';
-                document.getElementById('drawing-result').innerHTML = `<img src="${data.drawing_url}" alt="Generated Drawing">`;
+        document.getElementById('generationType').addEventListener('change', (event) => {
+            const uploadContainer = document.getElementById('upload-container');
+            if (event.target.value === 'edits' || event.target.value === 'variations') {
+                uploadContainer.style.display = 'block';
             } else {
-                document.getElementById('error-message').innerText = data.error;
+                uploadContainer.style.display = 'none';
+            }
+        });
+
+        document.getElementById('generateButton').addEventListener('click', async () => {
+            const generateDraw = document.getElementById('generateDraw').value;
+            const generationType = document.getElementById('generationType').value;
+            const fileInput = document.getElementById('imageUpload');
+            let fileData = null;
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                await new Promise(resolve => reader.onloadend = resolve);
+                fileData = reader.result;
+            }
+
+            document.getElementById('loading-indicator').style.display = 'block';
+            document.getElementById('loading-circle').style.display = 'block';
+
+            try {
+                const response = await fetch('/drawing-generator', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ generate_draw: generateDraw, type: generationType, image_data: fileData })
+                });
+
+                const data = await response.json();
+
+                if (data.drawing_url) {
+                    document.getElementById('loading-indicator').style.display = 'none';
+                    document.getElementById('loading-circle').style.display = 'none';
+
+                    document.getElementById('drawing-result').innerHTML = `
+                    <img src="${data.drawing_url}" alt="Generated Drawing" id="generated-image" style="border: 0.1rem solid #AEFAFC;">`;
+
+                    document.getElementById('saveImage').innerHTML = `
+                    <a href="${data.drawing_url}" download="generated_drawing.png" style="color:gold;">
+                        Download Image
+                    </a>`;
+
+                    document.getElementById('error-message').style.display = 'none';
+                } else {
+                    document.getElementById('error-message').innerText = data.error;
+                    document.getElementById('error-message').style.display = 'block';
+                    document.getElementById('loading-indicator').style.display = 'none';
+                    document.getElementById('loading-circle').style.display = 'none';
+                    document.getElementById('saveImage').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error-message').innerText = 'An error occurred. Please try again.';
                 document.getElementById('error-message').style.display = 'block';
+                document.getElementById('saveImage').style.display = 'none';
             }
         });
     </script>
+
 </div>
 
 {% endautoescape %}
 {% endblock %}
 
 {% block footer1 %}
-    <div class="container">
+<div class="container">
     <hr class="crimson mb-2">
 
     <div class="text-center">
@@ -150,5 +192,5 @@
     <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
         Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
     </footer>
-    </div>
+</div>
 {% endblock %}

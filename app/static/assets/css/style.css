@@ -398,6 +398,7 @@ input,
     color: #333;
 }
 
+#generateDraw,
 #userInput,
 #generatedText,
 #final-result-content.form-control.result,
@@ -418,6 +419,7 @@ textarea#message {
     height: 109px;
 }
 
+#generateDraw,
 #content>div.container.text-center>textarea, 
 #content>div.container.conversations>textarea {
     color: #70f8fd !important;
@@ -439,7 +441,8 @@ textarea#message {
     border-top: 1px solid #ccc;
 }
 
-#userInput::placeholder {
+#userInput::placeholder,
+#generateDraw::placeholder {
     text-align: center;
     font-style: italic;
     color: #999;
@@ -475,6 +478,7 @@ textarea#generatedText {
 }
 
 #generateButton,
+#generationType,
 #playbackButton,
 #response-audio,
 #theme_name,
@@ -513,6 +517,7 @@ textarea#writing_text.form-control {
     padding: 0;
 }
 
+#saveImage>a,
 .back-home>a {
     border: 0.1rem solid #9A70F3;
     border-radius: 19%;
