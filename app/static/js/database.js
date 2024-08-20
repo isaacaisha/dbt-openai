@@ -46,6 +46,12 @@ function togglePortfolioReviews() {
     container.style.display = (container.style.display === 'none') ? 'block' : 'none';
 }
 
+// Function to toggle Portfolio reviews container
+function toggleDrawingImages() {
+    var container = document.getElementById('DrawingImagesContainer');
+    container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+}
+
 
 // JavaScript for scrolling down
 function scrollDown() {

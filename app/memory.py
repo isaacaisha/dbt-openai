@@ -1,4 +1,4 @@
-# memory.py
+# MEMORY.PY
 
 from flask import Blueprint
 from sqlalchemy import LargeBinary, func
@@ -130,4 +130,10 @@ class WebsiteReview(db.Model):
 class DrawingDatabase(db.Model):
     __tablename__ = 'drawing_database'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    pass
+    user_name = db.Column(db.String(73), nullable=False)
+    user_prompt = db.Column(db.Text, nullable=False)
+    image_url = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
+
+    def __repr__(self):
+        return f"<DrawingDatabase id={self.id}, user_name='{self.user_name}', prompt='{self.prompt}', image_url='{self.image_url}'>"

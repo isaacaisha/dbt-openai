@@ -45,7 +45,7 @@
     <h6>Users</h6>
     <ul>
         {% for user in users %}
-        <pre class="align-left" id="messages">- User ID: {{ user.id }}<br>- Username: {{ user.name }}<br>- User email: {{ user.email }}<br>- Date: {{ user.created_at}}
+        <pre class="align-left" id="messages">- User ID: {{ user.id }}<br>- Username: {{ user.name }}<br>- User email: {{ user.email }}<br>- Date: {{ user.created_at.strftime('%Y-%m-%d %H:%M:%S')}}
         </pre>
         {% endfor %}
     </ul>
@@ -54,12 +54,12 @@
     <hr class="crimson mb-5">
     <hr class="green mb-3">
 
-    <!-- Add a button to trigger the display of serialized_histories -->
+    <!-- Add a button to trigger the display of memory -->
     <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
         -¡!¡- Show Database Memory -¡!¡-
     </button>
 
-    <!-- Add a div to contain the serialized histories -->
+    <!-- Add a div to contain the serialized memory -->
     <div id="historiesContainer" style="display: none;">
 
 {% for conversation in serialized_conversations %}
@@ -81,12 +81,12 @@
     <hr class="green mb-5">
     <hr class="gold mb-3">
 
-    <!-- Add a button to trigger the display of serialized_histories -->
+    <!-- Add a button to trigger the display of serialized_memory -->
     <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
         -¡!¡- Show Database Memory json -¡!¡-
     </button>
 
-    <!-- Add a div to contain the serialized histories -->
+    <!-- Add a div to contain the serialized memory -->
     <div id="historiesContainerJson" class="mb-3" style="display: none;">
         {% for conversation in serialized_conversations %}
             <pre class="align-left">
@@ -98,12 +98,12 @@
     <hr class="gold mb-5">
     <hr class="crimson mb-3">
 
-    <!-- Add a button to trigger the display of serialized_histories -->
+    <!-- Add a button to trigger the display of themes -->
     <button class="btn btn-primary submit mb-3" id="showThemesButton" onclick="toggleThemes()">
         -¡!¡- Show Database Themes -¡!¡-
     </button>
 
-    <!-- Add a div to contain the serialized histories -->
+    <!-- Add a div to contain the serialized themes -->
     <div id="themesContainer" class="mb-3" style="display: none;">
     <h6>Themes</h6>
     <ul>
@@ -115,12 +115,12 @@
 
     <hr class="crimson mb-3">
 
-    <!-- Add a button to trigger the display of serialized_histories -->
+    <!-- Add a button to trigger the display of serialized_messages -->
     <button class="btn btn-info submit mb-3" id="showMessagesButton" onclick="toggleMessages()">
         -¡!¡- Show Database Messages -¡!¡-
     </button>
 
-    <!-- Add a div to contain the serialized histories -->
+    <!-- Add a div to contain the serialized messages -->
     <div id="messagesContainer" class="mb-3" style="display: none;">
     <h6>Messages</h6>
     <ul>
@@ -134,12 +134,12 @@
     <hr class="crimson mb-5">
     <hr class="green mb-3">
 
-    <!-- Add a button to trigger the display of serialized_histories -->
+    <!-- Add a button to trigger the display of serialized_memory_test -->
     <button class="btn btn-success submit mb-3" id="showHistoriesTestButton" onclick="toggleTestHistories()">
         -¡!¡- Show Database MemoryTest -¡!¡-
     </button>
 
-    <!-- Add a div to contain the serialized histories -->
+    <!-- Add a div to contain the serialized memory_test -->
     <div id="historiesTestContainer" style="display: none;">
     <h6>MemoryTest</h6>
 
@@ -162,12 +162,12 @@
     <hr class="green mb-5">
     <hr class="gold mb-3">
 
-    <!-- Add a button to trigger the display of serialized_histories -->
+    <!-- Add a button to trigger the display of serialized_blog_posts -->
     <button class="btn btn-info submit mb-3" id="showBlogPostsButton" onclick="toggleBlogsPosts()">
         -¡!¡- Show Database Blog Posts -¡!¡-
     </button>
 
-    <!-- Add a div to contain the serialized histories -->
+    <!-- Add a div to contain the serialized blog_posts -->
     <div id="BlogPostsContainer" class="mb-3" style="display: none;">
     <h6>Posts</h6>
     <ul>
@@ -181,12 +181,12 @@
     <hr class="gold mb-5">
     <hr class="crimson mb-3">
 
-    <!-- Add a button to trigger the display of serialized_histories -->
+    <!-- Add a button to trigger the display of serialized_portfolio_reviews -->
     <button class="btn btn-danger submit mb-3" id="showPortfolioReviewButton" onclick="togglePortfolioReviews()">
         -¡!¡- Show Database Porfolio Reviews -¡!¡-
     </button>
 
-    <!-- Add a div to contain the serialized histories -->
+    <!-- Add a div to contain the serialized portfolio_reviews -->
     <div id="PortfolioReviewsContainer" class="mb-3" style="display: none;">
     <h6>Reviews</h6>
     <ul>
@@ -198,6 +198,25 @@
     </div>
 
     <hr class="crimson mb-5">
+    <hr class="green mb-3">
+
+    <!-- Add a button to trigger the display of serialized_drawing_images -->
+    <button class="btn btn-success submit mb-3" id="showDrawingImageButton" onclick="toggleDrawingImages()">
+        -¡!¡- Show Database Drawing Images -¡!¡-
+    </button>
+
+    <!-- Add a div to contain the serialized drawing_images -->
+    <div id="DrawingImagesContainer" class="mb-3" style="display: none;">
+    <h6>Drawings</h6>
+    <ul>
+        {% for drawing in all_drawing_images %}
+        <pre class="align-left" id="messages">- Drawing ID: {{ drawing.id }}<br>- User: {{ drawing.user_name }}<br>- User Prompt: {{ drawing.user_prompt }}<br>- Drawing URL: {{ drawing.image_url|truncate(91) }}<br>- Date: {{ drawing.created_at.strftime('%Y-%m-%d %H:%M:%S')}}
+        </pre>
+        {% endfor %}
+    </ul>
+    </div>
+
+    <hr class="green mb-5">
 
 
     <div class="row">

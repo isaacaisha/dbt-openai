@@ -123,13 +123,22 @@
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 const reader = new FileReader();
+
                 reader.readAsDataURL(file);
-                await new Promise(resolve => reader.onloadend = resolve);
-                fileData = reader.result;
+
+                // Using promise to ensure the file is read before continuing
+                await new Promise((resolve) => {
+                    reader.onloadend = () => {
+                        fileData = reader.result.split(",")[1]; // Extract the Base64 part
+                        resolve();
+                    };
+                });
             }
 
+            // Show loading indicators
             document.getElementById('loading-indicator').style.display = 'block';
             document.getElementById('loading-circle').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
 
             try {
                 const response = await fetch('/drawing-generator', {
@@ -137,35 +146,44 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ generate_draw: generateDraw, type: generationType, image_data: fileData })
+                    body: JSON.stringify({
+                        generate_draw: generateDraw,
+                        type: generationType,
+                        image_data: fileData
+                    })
                 });
 
                 const data = await response.json();
 
+                // Hide loading indicators
+                document.getElementById('loading-indicator').style.display = 'none';
+                document.getElementById('loading-circle').style.display = 'none';
+
                 if (data.drawing_url) {
-                    document.getElementById('loading-indicator').style.display = 'none';
-                    document.getElementById('loading-circle').style.display = 'none';
-
+                    // Display the generated drawing
                     document.getElementById('drawing-result').innerHTML = `
-                    <img src="${data.drawing_url}" alt="Generated Drawing" id="generated-image" style="border: 0.1rem solid #AEFAFC;">`;
+                        <img src="${data.drawing_url}" alt="Generated Drawing" id="generated-image" style="border: 0.1rem solid #AEFAFC;">`;
 
+                    // Provide a download link
                     document.getElementById('saveImage').innerHTML = `
-                    <a href="${data.drawing_url}" download="generated_drawing.png" style="color:gold;">
-                        Download Image
-                    </a>`;
+                        <a href="${data.drawing_url}" download="generated_drawing.png" style="color:gold;">
+                            Download Image
+                        </a>`;
 
+                    // Hide any previous error message
                     document.getElementById('error-message').style.display = 'none';
                 } else {
+                    // Display error message
                     document.getElementById('error-message').innerText = data.error;
                     document.getElementById('error-message').style.display = 'block';
-                    document.getElementById('loading-indicator').style.display = 'none';
-                    document.getElementById('loading-circle').style.display = 'none';
                     document.getElementById('saveImage').style.display = 'none';
                 }
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('error-message').innerText = 'An error occurred. Please try again.';
                 document.getElementById('error-message').style.display = 'block';
+                document.getElementById('loading-indicator').style.display = 'none';
+                document.getElementById('loading-circle').style.display = 'none';
                 document.getElementById('saveImage').style.display = 'none';
             }
         });
