@@ -105,7 +105,10 @@
                 const data = await response.json();
                 if (data.tts_url) {
                     console.log(`TTS URL found: ${data.tts_url}`);
-                    initializeAudio(data.tts_url.replace('http://', 'https://'));
+                    const ttsUrl = data.tts_url.startsWith('http://')
+                        ? data.tts_url.replace('http://', 'https://')
+                        : data.tts_url;
+                    initializeAudio(ttsUrl);  // Initialize audio with the corrected URL
                 } else {
                     console.error('No TTS URL found in response');
                 }

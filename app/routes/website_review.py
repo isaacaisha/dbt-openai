@@ -202,6 +202,9 @@ def get_review(screenshot_url):
                     review_text = item['payload']['message']
                 if 'src' in item['payload']:
                     tts_url = item['payload']['src']
+                    # Ensure the tts_url uses HTTPS
+                    if tts_url.startswith('http://'):
+                        tts_url = tts_url.replace('http://', 'https://')
                 break
               
         # Clean up review text by removing ## and ** characters
