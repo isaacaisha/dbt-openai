@@ -202,9 +202,6 @@ def get_review(screenshot_url):
                     review_text = item['payload']['message']
                 if 'src' in item['payload']:
                     tts_url = item['payload']['src']
-                    # Ensure the tts_url uses HTTPS
-                    if tts_url.startswith('http://'):
-                        tts_url = tts_url.replace('http://', 'https://')
                 break
               
         # Clean up review text by removing ## and ** characters
@@ -231,10 +228,6 @@ async def submit_url():
     domain = request.args.get('domain')
 
     if domain:
-        # Ensure the domain is using HTTPS
-        if not domain.startswith("https://"):
-            domain = "https://" + domain.lstrip("http://")
-            
         website_screenshot = await take_screenshot(domain)
 
         if website_screenshot:

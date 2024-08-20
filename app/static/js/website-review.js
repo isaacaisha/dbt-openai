@@ -11,7 +11,7 @@ async function fetchTtsUrl(reviewId) {
             const ttsUrl = data.tts_url;
             if (ttsUrl) {
                 console.log(`TTS URL found: ${ttsUrl}`);
-                initializeAudio(ttsUrl.replace('http://', 'https://'));
+                initializeAudio(ttsUrl);
             } else {
                 console.error('No TTS URL found in response');
             }
