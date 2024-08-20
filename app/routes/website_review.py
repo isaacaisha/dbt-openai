@@ -228,6 +228,10 @@ async def submit_url():
     domain = request.args.get('domain')
 
     if domain:
+        # Ensure the domain is using HTTPS
+        if not domain.startswith("https://"):
+            domain = "https://" + domain.lstrip("http://")
+            
         website_screenshot = await take_screenshot(domain)
 
         if website_screenshot:
