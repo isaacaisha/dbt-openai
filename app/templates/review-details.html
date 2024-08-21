@@ -95,6 +95,12 @@
 <br>
 
 <script>
+    // Existing DOMContentLoaded listener
+    document.addEventListener('DOMContentLoaded', function () {
+        const reviewId = '{{ review_detail.id }}';  // Ensure review_id is correctly passed from Flask template
+        fetchTtsUrl(reviewId);
+    });
+
     let audio = null;
 
     // Function to fetch TTS URL and play audio
@@ -154,12 +160,6 @@
         // Ensure the pause button is disabled initially
         document.getElementById('pauseButton').disabled = true;
     }
-
-    // Existing DOMContentLoaded listener
-    document.addEventListener('DOMContentLoaded', function () {
-        const reviewId = '{{ review_detail.id }}';  // Ensure review_id is correctly passed from Flask template
-        fetchTtsUrl(reviewId);
-    });
 
     // Function to toggle like status
     function toggleLike(review_id) {
