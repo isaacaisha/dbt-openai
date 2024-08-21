@@ -48,11 +48,28 @@ document.addEventListener('DOMContentLoaded', function () {
                     displayReviewResult(data);
 
                     if (data.website_screenshot) {
-                        document.getElementById('screenshotResult').innerHTML = `
-                            <h3 class="text-lg font-bold">Website Screenshot:</h3>
-                            <img src="${data.website_screenshot}" alt="Website Screenshot" class="mt-2" style="width: 100%; height: auto;" />
-                        `;
-                        document.getElementById('screenshotResult').classList.remove('hidden');
+                        // Load screenshot after form submission and data retrieval
+                        try {
+                            const screenshotImg = new Image();
+                            screenshotImg.src = data.website_screenshot;
+                            screenshotImg.alt = "Website Screenshot";
+                            screenshotImg.className = "mt-2";
+                            screenshotImg.style.width = "100%";
+                            screenshotImg.style.height = "auto";
+                            screenshotImg.onload = function () {
+                                console.log('Screenshot loaded successfully');
+                                document.getElementById('screenshotResult').innerHTML = `
+                                    <h3 class="text-lg font-bold">Website Screenshot:</h3>
+                                `;
+                                document.getElementById('screenshotResult').appendChild(screenshotImg);
+                                document.getElementById('screenshotResult').classList.remove('hidden');
+                            };
+                            screenshotImg.onerror = function () {
+                                console.error('Failed to load screenshot');
+                            };
+                        } catch (error) {
+                            console.error('Error displaying screenshot:', error);
+                        }
                     }
                 } else {
                     throw new Error('Unexpected response type');
