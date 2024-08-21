@@ -50,12 +50,6 @@ cloudinary.config(
 )
 
 
-def enforce_https(url):
-    if url.startswith("http://"):
-        return url.replace("http://", "https://")
-    return url
-
-
 def get_reviews(user_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
     query = WebsiteReview.query
     if user_id is not None:
@@ -211,9 +205,6 @@ def get_review(screenshot_url):
                 if 'src' in item['payload']:
                     tts_url = item['payload']['src']
                 break
-              
-        # Enforce HTTPS for TTS URL
-        tts_url = enforce_https(tts_url)
               
         # Clean up review text by removing ## and ** characters
         review_text = re.sub(r'## |##| \*\*|\*\*', '', review_text)
