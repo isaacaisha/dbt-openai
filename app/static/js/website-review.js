@@ -105,9 +105,30 @@ function displayReviewResult(data) {
             </div>
         `;
 
+        // Ensure audio plays regardless of screenshot status
         if (data.tts_url) {
-            // Call fetchTtsUrl instead of directly setting the audio source
             fetchTtsUrl(data.review_id);
+        }
+
+        // Load screenshot after form submission and data retrieval
+        if (data.website_screenshot) {
+            try {
+                const screenshotImg = new Image();
+                screenshotImg.src = data.website_screenshot;
+                screenshotImg.onload = function () {
+                    console.log('Screenshot loaded successfully');
+                    document.getElementById('screenshotResult').innerHTML = `
+                        <h3 class="text-lg font-bold">Website Screenshot:</h3>
+                    `;
+                    document.getElementById('screenshotResult').appendChild(screenshotImg);
+                    document.getElementById('screenshotResult').classList.remove('hidden');
+                };
+                screenshotImg.onerror = function () {
+                    console.error('Failed to load screenshot');
+                };
+            } catch (error) {
+                console.error('Error displaying screenshot:', error);
+            }
         }
 
         document.getElementById('updateLike').classList.remove('hidden');
