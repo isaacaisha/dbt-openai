@@ -50,6 +50,12 @@ cloudinary.config(
 )
 
 
+def enforce_https(url):
+    if url.startswith("http://"):
+        return url.replace("http://", "https://")
+    return url
+
+
 def get_reviews(user_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
     query = WebsiteReview.query
     if user_id is not None:
@@ -147,10 +153,12 @@ async def take_screenshot(url):
                 screenshot,
                 folder="screenshots",
                 public_id=f"{sanitized_url}.png",
-                resource_type='image'
+                resource_type='image',
+                secure=True  # Ensure the URL is HTTPS
             )
 
-            return upload_response['url']
+            screenshot_url = upload_response['secure_url']  # Use secure_url to enforce HTTPS
+            return screenshot_url
 
         except Exception as e:
             print(f"Error taking screenshot: {str(e)}")
@@ -203,6 +211,9 @@ def get_review(screenshot_url):
                 if 'src' in item['payload']:
                     tts_url = item['payload']['src']
                 break
+              
+        # Enforce HTTPS for TTS URL
+        tts_url = enforce_https(tts_url)
               
         # Clean up review text by removing ## and ** characters
         review_text = re.sub(r'## |##| \*\*|\*\*', '', review_text)
