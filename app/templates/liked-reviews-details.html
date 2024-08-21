@@ -36,7 +36,7 @@
 <br>
 <div class="container footer mx-auto p-2 sm:px-0 custom-input-group mb-5">
     <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
-        <section class="mb-5">
+        <section class="mb-3">
             <div class="p-4 main text-light border-secondary rounded-lg">
                 <h3 class="text-lg font-semibold no-overflow">
                     {%- set domain = liked_review_detail.site_url.split('/')[2] -%}
@@ -75,16 +75,25 @@
                 <div id="updateLike" class="like-button text-center mb-5" data-review_id="{{ liked_review_detail.id }}">
                     <p class="h6">Review ID: {{ liked_review_detail.id }}</p>
                     <i id="likeIcon{{ liked_review_detail.id }}"
-                        class="fa fa-heart fa-2x mb-3 {% if liked_review_detail.liked %}liked{% endif %}"
+                        class="fa fa-heart fa-2x mb-3 {% if liked_review_detail.liked %}liked{% endif %}" 
+                        {% if liked_review_detail.liked %}style="color: pink;" {% endif %}
                         onclick="toggleLike('{{ liked_review_detail.id }}')"></i>
                     <hr class="text-center" style="margin: 0 45%;">
                 </div>
+
                 <div id="likeMessage{{ liked_review_detail.id }}" class="text-center mt-6 mb-5 hidden"
                     style="color:blanchedalmond;">
                     Liked!<br>You can access your liked Reviews from the menu.
                 </div>
                 <div id="unlikeMessage{{ liked_review_detail.id }}" class="text-center mt-6 mb-5 hidden"
-                    style="color:blanchedalmond;">Unliked!</div>
+                    style="color:blanchedalmond;">Unliked!
+                </div>
+                <!-- Delete Section -->
+                <div id="deleteReview" class="text-center">
+                    <button id="deleteButton" class="btn btn-danger" onclick="deleteReview('{{ liked_review_detail.id }}')">
+                        Delete Review
+                    </button>
+                </div>
             </div>
         </section>
     </div>
@@ -215,6 +224,35 @@
             });
     }
 
+    function deleteReview(reviewId) {
+        // Confirmation before deletion
+        if (!confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
+            return;
+        }
+
+        // Fetch request to delete the review
+        fetch(`/delete-review/${reviewId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Review deleted successfully.');
+                    // Redirect to the list of liked reviews
+                    window.location.href = '{{ url_for("website_review.liked_reviews") }}';
+                } else {
+                    alert('Error: ' + (data.error || 'An unexpected error occurred.'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the review. Please try again later.');
+            });
+    }
+
     // Function to scroll down the page
     function scrollDown() {
         window.scrollTo({
@@ -229,6 +267,7 @@
 {% endblock %}
 
 {% block footer1 %}
+<br>
 <div class="text-center">
     <a href="{{ url_for('website_review.liked_reviews') }}" class="btn btn-primary mb-5">
         Back to Generated Review 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"

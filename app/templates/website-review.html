@@ -139,16 +139,18 @@
 {% endblock %}
 
 {% block footer1 %}
-    <hr class="green mb-3">
+    <div class="container text-center">
 
-    <div class="text-center">
+        <hr class="green mb-3">
+
         <button type="button" class="btn back-home mb-3">
             <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
                 -¡!¡- Back To Extras Features -¡!¡-</a>
         </button>
-    </div>
 
-    <hr class="green mb-5">
+        <hr class="green mb-5">
+
+    </div>
 
     <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
         Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>

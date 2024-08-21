@@ -53,9 +53,9 @@
 
         <div id="error-message" class="alert alert-danger mb-3" style="display: none;"></div>
 
-        <hr class="green mb-3">
+        <hr class="green mb-2">
 
-        <div class="form-group align-left mb-5" style="width: 199px; margin: auto;">
+        <div class="form-group align-left mb-3" style="width: 199px; margin: auto;">
             <label for="generationType" class="label_">Select Type of Generation:</label>
             <select id="generationType" name="generation_type" class="form-control text-center">
                 <option value="generations">Generations</option>
@@ -64,20 +64,21 @@
             </select>
         </div>
 
+        <hr class="green mb-5">
+
         <div id="upload-container" class="form-group align-left mb-5"
             style="display: none; width: 199px; margin: auto;">
             <label for="imageUpload" class="label_">Upload Image for Edits or Variations:</label>
             <input type="file" id="imageUpload" name="image_upload" class="form-control">
         </div>
 
-        <div id="textarea-container" class="align-left">
+        <div id="textarea-container" class="align-left mb-5">
             <label for="generateDraw" class="label_">
                 Start Writing to Generate a Drawing:<br>(be Specific for a better result)
             </label>
             <textarea class="form-control mb-3 align-left" id="generateDraw" name="generate_draw"></textarea>
         </div>
 
-        <hr class="green mb-5">
         <hr class="gold mb-3">
 
         <div id="loading-indicator" style="display:none;" class="text-center mb-3">

@@ -712,7 +712,7 @@ span.carousel-control-next-icon {
 #screenshotImage {
     max-width: 100%;
     /* Ensures the image doesn't overflow the container */
-    max-height: 600px;
+    max-height: 991px;
     /* Sets a maximum height to keep the image within a reasonable size */
     height: auto;
     /* Maintains the aspect ratio */
@@ -723,7 +723,7 @@ span.carousel-control-next-icon {
 /* Ensure the image scales properly on smaller screens */
 @media (max-width: 768px) {
     #screenshotImage {
-        max-height: 400px;
+        max-height: 991px;
         /* Adjust the max height for smaller screens */
     }
 }

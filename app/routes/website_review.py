@@ -278,7 +278,6 @@ def review_website():
     website_review = None
     website_screenshot = None
     review_id = None
-    tts_url = None
 
     if review_form.validate_on_submit():
         domain = review_form.domain.data
@@ -288,6 +287,13 @@ def review_website():
     review = WebsiteReview.query.filter_by(user_id=current_user.id).order_by(WebsiteReview.id.desc()).first()
     review_id = review.id + 1 if review else 1
 
+    # Check if the review is None before accessing its attributes
+    if review is not None:
+        # Use the tts_url from the database
+        tts_url = review.tts_url
+    else:
+        tts_url = None  # or handle it appropriately, e.g., set a default URL or log a message
+    
     return render_template("website-review.html", 
                            current_user=current_user, 
                            review_form=review_form,
@@ -335,12 +341,19 @@ def review_details(pk):
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
-    tts_url = None
 
+    # Fetch the review details from the database
     review_detail = WebsiteReview.query.get_or_404(pk)
+
+    # Check if the current user is the owner of the review
     if current_user.id == review_detail.user_id:
-        return render_template('review-details.html', review_detail=review_detail,
-                               tts_url=tts_url, date=datetime.now().strftime("%a %d %B %Y"))
+        # Use the tts_url from the database
+        tts_url = review_detail.tts_url
+
+        return render_template('review-details.html',
+                               review_detail=review_detail,
+                               tts_url=tts_url,
+                               date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return redirect(url_for('website_review.review_posts'))
     
@@ -353,27 +366,33 @@ def liked_reviews():
 
     user_id = current_user.id
 
-    total_reviews = WebsiteReview.query.filter_by(user_id=user_id).count()
-    limit = request.args.get('limit', default=total_reviews, type=int)
-    offset = request.args.get('offset', default=None, type=int)
+    # Fetch the count of liked reviews
+    liked_reviews_count = WebsiteReview.query.filter_by(user_id=user_id, liked=1).count()
+
+    # Get parameters
+    limit = request.args.get('limit', default=None, type=int)
+    offset = request.args.get('offset', default=0, type=int)  # Set default offset to 0 if not provided
     search = request.args.get('search', default=None, type=str)
 
-    # Fetch liked reviews
-    reviews = get_reviews(user_id=user_id, liked_value=1, search=search, order_by_desc=True)
+    # Fetch liked reviews using the get_reviews function
+    reviews = get_reviews(user_id=user_id, liked_value=1, limit=limit, offset=offset, search=search, order_by_desc=True)
+    
     serialized_reviews = [serialize_review(review) for review in reviews]
-
+    
     if not serialized_reviews:
         search_message = f"No liked review found for search term: '{search}'"
         return render_template('liked-reviews.html',
                                current_user=current_user, user_id=user_id,
                                limit=limit, offset=offset, search=search,
                                search_message=search_message,
+                               liked_reviews_count=liked_reviews_count,
                                date=datetime.now().strftime("%a %d %B %Y"))
 
     return render_template('liked-reviews.html',
                            current_user=current_user, owner_id=user_id,
                            limit=limit, offset=offset, search=search,
                            reviews=serialized_reviews,
+                           liked_reviews_count=liked_reviews_count,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -382,12 +401,19 @@ def liked_reviews_details(pk):
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
-    tts_url = None
 
+    # Fetch the liked review details from the database
     liked_review_detail = WebsiteReview.query.get_or_404(pk)
+
+    # Check if the current user is the owner of the liked review details
     if current_user.id == liked_review_detail.user_id:
-        return render_template('liked-reviews-details.html', liked_review_detail=liked_review_detail,
-                               tts_url=tts_url, date=datetime.now().strftime("%a %d %B %Y"))
+        # Use the tts_url from the database
+        tts_url = liked_review_detail.tts_url
+
+        return render_template('liked-reviews-details.html',
+                               liked_review_detail=liked_review_detail,
+                               tts_url=tts_url,
+                               date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return redirect(url_for('website_review.review_posts'))
 
@@ -439,12 +465,20 @@ def update_like(review_id):
 @review_website_bp.route('/review/<int:review_id>/tts-url', methods=['GET'])
 def get_review_tts_url(review_id):
     logger.debug(f"Fetching TTS URL for review ID: {review_id}")
+
+    # Fetch the review by ID
     review = WebsiteReview.query.get(review_id)
+
     if review:
         logger.debug(f"Review found: {review}")
-        if review.tts_url:
-            logger.debug(f"TTS URL found: {review.tts_url}")
-            return jsonify({"tts_url": review.tts_url})
+
+        # Check if the TTS URL exists for the review
+        if (tts_url := review.tts_url):  # `tts_url` assigned here
+            logger.debug(f"TTS URL foundS: {tts_url}")
+
+            # Return the TTS URL as JSON
+            return jsonify({"tts_url": tts_url})
+
         else:
             logger.error(f"TTS URL not found for review ID: {review_id}")
             return jsonify({"error": "TTS URL not found"}), 404
@@ -452,3 +486,17 @@ def get_review_tts_url(review_id):
         logger.error(f"Review not found for ID: {review_id}")
         return jsonify({"error": "Review not found"}), 404
     
+
+@review_website_bp.route('/delete-review/<int:review_id>', methods=['DELETE'])
+def delete_review(review_id):
+    try:
+        review = WebsiteReview.query.get(review_id)
+        if review and review.user_id == current_user.id:
+            db.session.delete(review)
+            db.session.commit()
+            return jsonify({"success": True}), 200
+        else:
+            return jsonify({"error": "Review not found or unauthorized"}), 404
+    except Exception as e:
+        logger.error(f"Error deleting review: {str(e)}")
+        return jsonify({"error": str(e)}), 500
