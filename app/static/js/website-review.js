@@ -64,6 +64,42 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+// Function to disable/enable all buttons and links
+function disableAllButtons(disable) {
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(button => button.disabled = disable);
+
+    const iconLinks = document.querySelectorAll('li > a, a');
+    iconLinks.forEach(iconLink => {
+        iconLink.style.pointerEvents = disable ? 'none' : 'auto';
+        iconLink.style.opacity = disable ? '0.5' : '1';
+    });
+}
+
+// Function to display review result
+function displayReviewResult(data) {
+    if (data.website_review) {
+        document.getElementById('reviewResult').innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-1">
+                    <h3 class="text-lg white font-bold">Website Feedback:</h3>
+                    <textarea readonly class="textarea_details textarea-memory w-full p-2 border border-gray-300" style="min-height: 991px;">${data.website_review}</textarea>
+                </div>
+            </div>
+        `;
+
+        if (data.tts_url) {
+            // Call fetchTtsUrl instead of directly setting the audio source
+            fetchTtsUrl(data.review_id);
+        }
+
+        document.getElementById('updateLike').classList.remove('hidden');
+        document.getElementById('reviewResult').classList.remove('hidden');
+        document.getElementById('audioFeedback').classList.remove('hidden');
+        document.getElementById('rating_section').classList.remove('hidden');
+    }
+}
+
 // Function to fetch TTS URL and play audio
 async function fetchTtsUrl(reviewId) {
     try {
@@ -113,42 +149,6 @@ function initializeAudio(ttsUrl) {
 
     // Ensure the pause button is disabled initially
     document.getElementById('pauseButton').disabled = true;
-}
-
-// Function to disable/enable all buttons and links
-function disableAllButtons(disable) {
-    const allButtons = document.querySelectorAll('button');
-    allButtons.forEach(button => button.disabled = disable);
-
-    const iconLinks = document.querySelectorAll('li > a, a');
-    iconLinks.forEach(iconLink => {
-        iconLink.style.pointerEvents = disable ? 'none' : 'auto';
-        iconLink.style.opacity = disable ? '0.5' : '1';
-    });
-}
-
-// Function to display review result
-function displayReviewResult(data) {
-    if (data.website_review) {
-        document.getElementById('reviewResult').innerHTML = `
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="md:col-span-1">
-                    <h3 class="text-lg white font-bold">Website Feedback:</h3>
-                    <textarea readonly class="textarea_details textarea-memory w-full p-2 border border-gray-300" style="min-height: 991px;">${data.website_review}</textarea>
-                </div>
-            </div>
-        `;
-
-        if (data.tts_url) {
-            // Call fetchTtsUrl instead of directly setting the audio source
-            fetchTtsUrl(data.review_id);
-        }
-
-        document.getElementById('updateLike').classList.remove('hidden');
-        document.getElementById('reviewResult').classList.remove('hidden');
-        document.getElementById('audioFeedback').classList.remove('hidden');
-        document.getElementById('rating_section').classList.remove('hidden');
-    }
 }
 
 // Function to handle errors
