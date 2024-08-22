@@ -79,6 +79,7 @@ def serialize_review(review):
         "feedback": review.feedback,
         "created_at": review.created_at.strftime("%a %d %B %Y %H:%M:%S"),
         "liked": review.liked,
+        "tts_url": review.tts_url
     }
 
 
