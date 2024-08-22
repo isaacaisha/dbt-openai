@@ -46,6 +46,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Display the result or perform any other actions based on the response
                     displayReviewResult(data);
+
+                    // Check for the TTS URL
+                    if (data.tts_url) {
+                        console.log('TTS URL found:', data.tts_url);
+                        initializeAudio(data.tts_url); // Initialize audio with TTS URL
+                    } else {
+                        console.warn('No TTS URL found in the response');
+                    }
                 } else {
                     throw new Error('Unexpected response type');
                 }
