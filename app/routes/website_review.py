@@ -194,8 +194,7 @@ def get_review(screenshot_url):
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()  # Ensure we raise an error for bad responses
         data = response.json()
-        # logger.debug(f"Response from Voiceflow: 🔥🔥🔥{data}🔥🔥🔥")
-        print(f"Response from Voiceflow: 🔥🔥🔥{data}🔥🔥🔥")
+        # logger.debug(f"Response from Voiceflow: {data}")
 
         review_text = ""
         tts_url = ""
@@ -208,16 +207,13 @@ def get_review(screenshot_url):
                     tts_url = item['payload']['src']
                 break
               
-        # # Clean up review text by removing ## and ** characters
-        # review_text = re.sub(r'## |##| \*\*|\*\*', '', review_text)
-        # # Remove <voice name="en-GB-standard-A"> and </voice> tags along with any content between them
-        # review_text = re.sub(r'<voice\s+name="en-GB-standard-A">.*?</voice>', '', review_text, flags=re.IGNORECASE)
-        # # Remove any remaining standalone <voice name="en-GB-standard-A"> and </voice> tags
-        # review_text = re.sub(r'<voice\s+name="en-GB-standard-A">', '', review_text, flags=re.IGNORECASE)
-        # review_text = re.sub(r'</voice>', '', review_text, flags=re.IGNORECASE)
-
-        # # Consider simplifying or temporarily disabling cleanup
-        # review_text = review_text.replace('##', '').replace('**', '')
+        # Clean up review text by removing ## and ** characters
+        review_text = re.sub(r'## |##| \*\*|\*\*', '', review_text)
+        # Remove <voice name="en-GB-standard-A"> and </voice> tags along with any content between them
+        review_text = re.sub(r'<voice\s+name="en-GB-standard-A">.*?</voice>', '', review_text, flags=re.IGNORECASE)
+        # Remove any remaining standalone <voice name="en-GB-standard-A"> and </voice> tags
+        review_text = re.sub(r'<voice\s+name="en-GB-standard-A">', '', review_text, flags=re.IGNORECASE)
+        review_text = re.sub(r'</voice>', '', review_text, flags=re.IGNORECASE)
 
         logger.debug(f"Extracted review text: {review_text}")
         logger.debug(f"Extracted TTS URL: {tts_url}")
