@@ -46,31 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Display the result or perform any other actions based on the response
                     displayReviewResult(data);
-
-                    if (data.website_screenshot) {
-                        // Load screenshot after form submission and data retrieval
-                        try {
-                            const screenshotImg = new Image();
-                            screenshotImg.src = data.website_screenshot;
-                            screenshotImg.alt = "Website Screenshot";
-                            screenshotImg.className = "mt-2";
-                            screenshotImg.style.width = "100%";
-                            screenshotImg.style.height = "auto";
-                            screenshotImg.onload = function () {
-                                console.log('Screenshot loaded successfully');
-                                document.getElementById('screenshotResult').innerHTML = `
-                                    <h3 class="text-lg font-bold">Website Screenshot:</h3>
-                                `;
-                                document.getElementById('screenshotResult').appendChild(screenshotImg);
-                                document.getElementById('screenshotResult').classList.remove('hidden');
-                            };
-                            screenshotImg.onerror = function () {
-                                console.error('Failed to load screenshot');
-                            };
-                        } catch (error) {
-                            console.error('Error displaying screenshot:', error);
-                        }
-                    }
                 } else {
                     throw new Error('Unexpected response type');
                 }
@@ -105,30 +80,14 @@ function displayReviewResult(data) {
             </div>
         `;
 
+        // Load screenshot after form submission and data retrieval
+        if (data.website_screenshot) {
+            loadScreenshot(data.website_screenshot);
+        }
+
         // Ensure audio plays regardless of screenshot status
         if (data.tts_url) {
             fetchTtsUrl(data.review_id);
-        }
-
-        // Load screenshot after form submission and data retrieval
-        if (data.website_screenshot) {
-            try {
-                const screenshotImg = new Image();
-                screenshotImg.src = data.website_screenshot;
-                screenshotImg.onload = function () {
-                    console.log('Screenshot loaded successfully');
-                    document.getElementById('screenshotResult').innerHTML = `
-                        <h3 class="text-lg font-bold">Website Screenshot:</h3>
-                    `;
-                    document.getElementById('screenshotResult').appendChild(screenshotImg);
-                    document.getElementById('screenshotResult').classList.remove('hidden');
-                };
-                screenshotImg.onerror = function () {
-                    console.error('Failed to load screenshot');
-                };
-            } catch (error) {
-                console.error('Error displaying screenshot:', error);
-            }
         }
 
         document.getElementById('updateLike').classList.remove('hidden');
@@ -136,6 +95,27 @@ function displayReviewResult(data) {
         document.getElementById('audioFeedback').classList.remove('hidden');
         document.getElementById('rating_section').classList.remove('hidden');
     }
+}
+
+// Function to load and display the screenshot
+function loadScreenshot(screenshotUrl) {
+    const screenshotImg = new Image();
+    screenshotImg.src = screenshotUrl;
+    screenshotImg.alt = "Website Screenshot";
+    screenshotImg.className = "mt-2";
+    screenshotImg.style.width = "100%";
+    screenshotImg.style.height = "auto";
+    screenshotImg.onload = function () {
+        console.log('Screenshot loaded successfully');
+        document.getElementById('screenshotResult').innerHTML = `
+            <h3 class="text-lg font-bold">Website Screenshot:</h3>
+        `;
+        document.getElementById('screenshotResult').appendChild(screenshotImg);
+        document.getElementById('screenshotResult').classList.remove('hidden');
+    };
+    screenshotImg.onerror = function () {
+        console.error('Failed to load screenshot');
+    };
 }
 
 // Function to fetch TTS URL and play audio

@@ -231,42 +231,40 @@ async def submit_url():
     domain = request.args.get('domain')
 
     if domain:
+        # Attempt to take a screenshot
         website_screenshot = await take_screenshot(domain)
 
-        if website_screenshot:
-            website_review, tts_url = get_review(website_screenshot)
+        # Always attempt to get the review and TTS URL, even if the screenshot failed or is blank
+        website_review, tts_url = get_review(website_screenshot or domain)  # Use domain as fallback if screenshot is None
 
-            new_review_object = WebsiteReview(
-                site_url=domain,
-                site_image_url=website_screenshot,
-                feedback=website_review,
-                tts_url=tts_url,
-                user_id=current_user.id
-            )
+        # Save the new review along with the TTS URL
+        new_review_object = WebsiteReview(
+            site_url=domain,
+            site_image_url=website_screenshot,  # This could be None if the screenshot failed
+            feedback=website_review,
+            tts_url=tts_url,  # Save the TTS URL to the database
+            user_id=current_user.id
+        )
 
-            db.session.add(new_review_object)
-            db.session.commit()
+        db.session.add(new_review_object)
+        db.session.commit()
 
-            review_id = new_review_object.id
-            logger.debug(f"New review created with ID: {review_id}") 
+        review_id = new_review_object.id
+        logger.debug(f"New review created with ID: {review_id}")
 
-            response_data = {
-                'website_screenshot': website_screenshot,
-                'website_review': website_review,
-                'tts_url': tts_url,
-                'review_id': review_id,
-            }
+        response_data = {
+            'website_screenshot': website_screenshot,
+            'website_review': website_review,
+            'tts_url': tts_url,
+            'review_id': review_id,
+        }
 
-            return jsonify(response_data)
+        return jsonify(response_data)
 
-        else:
-            logger.error('Failed to capture screenshot.')
-            flash('Failed to capture screenshot. Please try again.')
-            return redirect(url_for('website_review.review_website'))
-
-    logger.error('Invalid domain URL.')
-    flash('Invalid domain URL.')
-    return jsonify({'error': 'Invalid domain URL'})
+    else:
+        logger.error('Invalid domain URL.')
+        flash('Invalid domain URL.')
+        return jsonify({'error': 'Invalid domain URL'})
     
 
 # Main page route
