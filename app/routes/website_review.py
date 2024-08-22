@@ -207,13 +207,16 @@ def get_review(screenshot_url):
                     tts_url = item['payload']['src']
                 break
               
-        # Clean up review text by removing ## and ** characters
-        review_text = re.sub(r'## |##| \*\*|\*\*', '', review_text)
-        # Remove <voice name="en-GB-standard-A"> and </voice> tags along with any content between them
-        review_text = re.sub(r'<voice\s+name="en-GB-standard-A">.*?</voice>', '', review_text, flags=re.IGNORECASE)
-        # Remove any remaining standalone <voice name="en-GB-standard-A"> and </voice> tags
-        review_text = re.sub(r'<voice\s+name="en-GB-standard-A">', '', review_text, flags=re.IGNORECASE)
-        review_text = re.sub(r'</voice>', '', review_text, flags=re.IGNORECASE)
+        # # Clean up review text by removing ## and ** characters
+        # review_text = re.sub(r'## |##| \*\*|\*\*', '', review_text)
+        # # Remove <voice name="en-GB-standard-A"> and </voice> tags along with any content between them
+        # review_text = re.sub(r'<voice\s+name="en-GB-standard-A">.*?</voice>', '', review_text, flags=re.IGNORECASE)
+        # # Remove any remaining standalone <voice name="en-GB-standard-A"> and </voice> tags
+        # review_text = re.sub(r'<voice\s+name="en-GB-standard-A">', '', review_text, flags=re.IGNORECASE)
+        # review_text = re.sub(r'</voice>', '', review_text, flags=re.IGNORECASE)
+
+        # Consider simplifying or temporarily disabling cleanup
+        review_text = review_text.replace('##', '').replace('**', '')
 
         logger.debug(f"Extracted review text: {review_text}")
         logger.debug(f"Extracted TTS URL: {tts_url}")
