@@ -19,6 +19,7 @@ from datetime import datetime
 
 from app.app_forms import WebsiteReviewForm
 from app.memory import WebsiteReview, User, db
+from gtts import gTTS
 import logging
 
 # Get the logger instance
@@ -95,6 +96,17 @@ def sanitize_url_for_public_id(url):
     return sanitized_url[:120]
 
 
+def generate_tts_audio(text, lang='en'):
+    try:
+        tts = gTTS(text=text, lang=lang)
+        audio_file_path = os.path.join(AUDIO_FOLDER_PATH, f"{sanitize_url_for_public_id(text)}.mp3")
+        tts.save(audio_file_path)
+        return audio_file_path
+    except Exception as e:
+        logger.error(f"Error generating TTS audio: {str(e)}")
+        return None
+    
+    
 # Function to take a screenshot
 async def take_screenshot(url):
     def _screenshot_worker(url):
@@ -162,6 +174,23 @@ async def take_screenshot(url):
     return await asyncio.to_thread(_screenshot_worker, url)
 
 
+def upload_to_cloudinary(audio_file_path):
+    try:
+        # Upload the audio file to Cloudinary
+        upload_response = cloudinary.uploader.upload(
+            audio_file_path,
+            folder="tts_audio",  # Organizing uploads in a specific folder
+            resource_type='video',  # Cloudinary treats audio as video
+            secure=True  # Ensure the URL is HTTPS
+        )
+        
+        # Return the secure URL of the uploaded audio file
+        return upload_response['secure_url']
+    except Exception as e:
+        logger.error(f"Error uploading to Cloudinary: {str(e)}")
+        return None
+
+
 # Function to get review text using Voiceflow API
 def get_review(screenshot_url):
     try:
@@ -206,6 +235,15 @@ def get_review(screenshot_url):
                 if 'src' in item['payload']:
                     tts_url = item['payload']['src']
                 break
+
+        # Use gtts if tts_url is empty
+        if not tts_url:
+            audio_file_path = generate_tts_audio(review_text)
+            if audio_file_path:
+                # Optionally, you can upload the audio to Cloudinary and set tts_url accordingly
+                # Example: upload audio to cloudinary and get the URL
+                tts_url = upload_to_cloudinary(audio_file_path)
+
               
         # Clean up review text by removing ## and ** characters
         review_text = re.sub(r'## |##| \*\*|\*\*', '', review_text)
