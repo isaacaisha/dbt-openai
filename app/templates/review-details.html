@@ -64,6 +64,18 @@
                         </button>
                     </div>
                 </div>
+
+                {% if tts_url %}
+                <div class="text-center">
+                    <audio style="height: 31px;" controls>
+                        <source src="{{ tts_url }}" type="audio/mpeg">
+                        Your browser does not support the audio tag.
+                    </audio>
+                    {% else %}
+                    <p>No audio available for this review.</p>
+                    {% endif %}
+                </div>
+                
                 <hr class="my-4 mb-4 border-secondary">
                 <!-- Like Section -->
                 <div id="updateLike" class="like-button text-center mb-5" data-review_id="{{ review_detail.id }}">

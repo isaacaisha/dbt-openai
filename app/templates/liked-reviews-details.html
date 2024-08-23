@@ -82,19 +82,6 @@
                     {% endif %}
                 </div>
 
-                <div class="audio-player text-center">
-                    {% if tts_url %}
-                    <audio id="audio-player" style="height: 31px;" controls>
-                        <source src="{{ tts_url }}" type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
-                    <br>
-                    <button class="btn btn-info" onclick="playAudio()">Listen to Review</button>
-                    {% else %}
-                    <p>No audio available for this review.</p>
-                    {% endif %}
-                </div>
-
                 <hr class="my-4 mb-4 border-secondary">
                 <!-- Like Section -->
                 <div id="updateLike" class="like-button text-center mb-5" data-review_id="{{ liked_review_detail.id }}">
@@ -124,16 +111,7 @@
     </div>
 </div>
 <br>
-<script>
-    function playAudio() {
-        var audio = document.getElementById('audio-player');
-        if (audio) {
-            audio.play();
-        } else {
-            alert('Audio player not found.');
-        }
-    }
-</script>
+<!-- Scipt content -->
 <script>
     // Existing DOMContentLoaded listener
     document.addEventListener('DOMContentLoaded', function () {
