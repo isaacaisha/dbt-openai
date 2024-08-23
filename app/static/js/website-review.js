@@ -155,6 +155,9 @@ function initializeAudio(ttsUrl) {
 
     audio = new Audio(ttsUrl);
 
+    // Automatically play the audio
+    audio.play().catch(error => console.error(`Audio play error: ${error}`));
+    
     // Handle play button click
     document.getElementById('playButton').addEventListener('click', () => {
         if (audio) {
