@@ -74,7 +74,7 @@
     <!-- Audio Control Section -->
     <div id="audioFeedback" class="audio-feedback mb-4 hidden">
         <h3 class="text-lg font-bold">Voice Feedback:</h3>
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center mb-4">
             <button id="playButton" class="btn btn-light" title="Play">
                 <i class="fa-solid fa-circle-play"></i>
             </button>
@@ -82,17 +82,16 @@
                 <i class="fa-solid fa-circle-pause"></i>
             </button>
         </div>
-    </div>
-    
-    {% if tts_url %}
-    <div class="text-center">
-        <audio style="height: 31px;" controls>
-            <source src="{{ tts_url }}" type="audio/mpeg">
-            Your browser does not support the audio tag.
-        </audio>
-        {% else %}
-        <p>No audio available for this review.</p>
-        {% endif %}
+        {% if tts_url %}
+        <div class="text-center">
+            <audio style="height: 31px;" controls>
+                <source src="{{ tts_url }}" type="audio/mpeg">
+                Your browser does not support the audio tag.
+            </audio>
+            {% else %}
+            <p>No audio available for this review.</p>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Screenshot Section -->
