@@ -49,8 +49,8 @@ def get_all_conversations():
     owner_id = current_user.id
 
     total_conversations = Memory.query.filter_by(owner_id=owner_id).count()
-    limit = request.args.get('limit', default=total_conversations, type=int)
-    offset = request.args.get('offset', default=None, type=int)
+    limit = request.args.get('limit', default=None, type=int)
+    offset = request.args.get('offset', default=0, type=int)
     search = request.args.get('search', default=None, type=str)
 
     conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search)
@@ -69,6 +69,7 @@ def get_all_conversations():
                            current_user=current_user, owner_id=owner_id,
                            limit=limit, offset=offset, search=search,
                            conversations=serialized_conversations,
+                           total_conversations=total_conversations,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -80,8 +81,11 @@ def convers_head_tail():
 
     owner_id = current_user.id
 
+    # Fetch the count of conversations
+    conversations_count = Memory.query.filter_by(owner_id=owner_id).count()
+    
     limit = request.args.get('limit', default=3, type=int)
-    offset = request.args.get('offset', default=None, type=int)
+    offset = request.args.get('offset', default=0, type=int)
     search = request.args.get('search', default=None, type=str)
 
     first_conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search)
@@ -104,6 +108,7 @@ def convers_head_tail():
                            limit=limit, offset=offset, search=search,
                            first_conversations=serialized_first_conversations,
                            last_conversations=serialized_last_conversations,
+                           conversations_count=conversations_count,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
@@ -111,6 +116,9 @@ def convers_head_tail():
 def show_story():
     if current_user.is_authenticated:
         owner_id = current_user.id
+
+        # Fetch the count of conversations
+        conversations_count = Memory.query.filter_by(owner_id=owner_id).count()
 
         limit = request.args.get('limit', default=3, type=int)
         offset = request.args.get('offset', default=None, type=int)
@@ -136,6 +144,7 @@ def show_story():
                                    summary_conversations=summary_conversations,
                                    serialized_memory_load=serialized_memory_load,
                                    limit=limit, offset=offset, search=search,
+                                   conversations_count=conversations_count,
                                    date=datetime.now().strftime("%a %d %B %Y"))
         else:
             search_message = f"No conversations found for search term: '{search}'"
@@ -180,8 +189,11 @@ def liked_conversations():
 
     owner_id = current_user.id
 
-    limit = request.args.get('limit', default=3, type=int)
-    offset = request.args.get('offset', default=None, type=int)
+    # Fetch the count of liked reviews
+    liked_conversations_count = Memory.query.filter_by(owner_id=owner_id, liked=1).count()
+
+    limit = request.args.get('limit', default=None, type=int)
+    offset = request.args.get('offset', default=0, type=int)
     search = request.args.get('search', default=None, type=str)
 
     liked_conversations = get_conversations(owner_id=owner_id, limit=limit, offset=offset, search=search, order_by_desc=True, liked_value=1)
@@ -201,6 +213,7 @@ def liked_conversations():
                            owner_id=owner_id,
                            liked_conversations=serialized_liked_conversations,
                            limit=limit, offset=offset, search=search,
+                           liked_conversations_count=liked_conversations_count,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 

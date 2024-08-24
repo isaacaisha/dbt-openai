@@ -86,8 +86,11 @@
     </form>
 
     <div class="container conversations mb-3">
+        {% if liked_conversations_count %}
+            <h4>Total of <span class="gold1">{{ liked_conversations_count }}</span> Liked Conversations</h4>
+        {% endif %}
         {% if limit %}
-            <h4>Total of <span class="gold1">{{ limit }}</span> Conversations</h4>
+            <h4><span class="gold1">{{ limit }}</span> Liked Conversations Retrieved</h4>
         {% endif %}
         {% if offset %}
             <h4><span class="gold1">{{ offset }}</span> Conversations Skipped</h4>

@@ -51,11 +51,6 @@
             </button>
         </div>
         <br>
-        <div style="position:fixed; margin-left:31%;">
-            <div id="likeMessage" class="alert alert-info" style="display: none;">
-                You can access your liked conversations from the menu.
-            </div>
-        </div>
 
         <form action="{{ url_for('llm_conversation.get_all_conversations') }}" method="GET">
             <div class="form-group align-left">
@@ -84,10 +79,13 @@
                 </div>
             </div>
         </form>
-     
+    
         <div class="container conversations mb-3">
+            {% if total_conversations %}
+                <h4>Total of <span class="gold1">{{ total_conversations }}</span> Conversations</h4>
+            {% endif %}
             {% if limit %}
-                <h4>Total of <span class="gold1">{{ limit }}</span> Conversations</h4>
+                <h4><span class="gold1">{{ limit }}</span> Conversations Retrieved</h4>
             {% endif %}
             {% if offset %}
                 <h4><span class="gold1">{{ offset }}</span> Conversations Skipped</h4>
@@ -139,10 +137,15 @@
             </div>
             <div class="row">
                 <div class="col-md-12 text-center">
-                    <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked
-                        %}style="color: pink;" {% endif %}>
+                    <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked %}
+                        style="color: pink;" {% else %} style="color: lightcyan;" {% endif %}>
                         <i class="fa fa-heart fa-2x"></i>
-                        <hr class="green" style="margin: 0 45%;">
+                        <hr class="green mb-3" style="margin: 0 45%;">
+            
+                        <!-- This div is hidden by default and only shown when the user clicks the like button -->
+                        <div id="likeMessage-{{ conversation.id }}" class="text-center" style="display: none;">
+                            <!-- The content here will be updated dynamically by JavaScript -->
+                        </div>
                     </div>
                 </div>
             </div>

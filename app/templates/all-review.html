@@ -98,8 +98,11 @@
     </form>
 
     <div class="container conversations mb-3">
+        {% if total_reviews %}
+            <h4>Total of <span class="gold1">{{ total_reviews }}</span> Reviews</h4>
+        {% endif %}
         {% if limit %}
-        <h4>Total of <span class="gold1">{{ limit }}</span> Reviews</h4>
+        <h4><span class="gold1">{{ limit }}</span> Reviews Retrieved</h4>
         {% endif %}
         {% if offset %}
         <h4><span class="gold1">{{ offset }}</span> Reviews Skipped</h4>
@@ -144,47 +147,7 @@
     <br>
 
     <hr class="crimson mb-5">
-    <!-- <hr class="green mb-3">
 
-    <!- Add a button to trigger the display of serialized_histories ->
-    <button class="btn btn-success submit mb-3" id="showHistoriesButton" onclick="toggleHistories()">
-        Show Reviews
-    </button>
-
-    <!- Add a div to contain the serialized histories ->
-    <div id="historiesContainer" class="align-left mb-3" style="display: none;">
-{% for review in reviews %}
-<textarea class="form-control mb-3" id="userInput" name="text_writing" readonly>
-- Review ID: {{ review.id }}
-
-- Site URL: {{ review.site_url|safe }}
-
-·SìįSí·Dbt·: {{ review.feedback }}
-
-- Created At: {{ review.created_at }}
-</textarea>
-{% endfor %}
-
-    </div>
-
-    <hr class="green mb-5">
-    <hr class="gold mb-3">
-
-    <!- Add a button to trigger the display of serialized_histories ->
-    <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">
-        Show Conversations json
-    </button>
-
-    <!- Add a div to contain the serialized histories ->
-    <div id="historiesContainerJson" class="align-left mb-3" style="display: none;">
-        {% for review in reviews %}
-        <pre>
-                    {{ review|tojson(indent=4)|safe }}
-                </pre>
-        {% endfor %}
-    </div>
-
-    <hr class="gold mb-5">-->
     {% endif %}
 
 </div>

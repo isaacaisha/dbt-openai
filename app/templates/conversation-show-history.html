@@ -80,8 +80,11 @@
             </form>
         
             <div class="container conversations-details mb-3">
+                {% if conversations_count %}
+                    <h4>Total of <span class="gold1">{{ conversations_count }}</span> Conversations</h4>
+                {% endif %}
                 {% if limit %}
-                    <h4 class="text-center">Total of <span class="gold1">{{ limit }}</span> Conversations</h4>
+                    <h4 class="text-center"><span class="gold1">{{ limit }}</span> Conversations Retrieved</h4>
                 {% endif %}
                 {% if offset %}
                     <h4 class="text-center"><span class="gold1">{{ offset }}</span> Conversations Skipped</h4>
@@ -137,10 +140,15 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12 text-center">
-                            <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked
-                                %}style="color: pink;" {% endif %}>
+                            <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked %}
+                                style="color: pink;" {% else %} style="color: lightcyan;" {% endif %}>
                                 <i class="fa fa-heart fa-2x"></i>
-                                <hr class="green" style="margin: 0 45%;">
+                                <hr class="green mb-3" style="margin: 0 45%;">
+                    
+                                <!-- This div is hidden by default and only shown when the user clicks the like button -->
+                                <div id="likeMessage-{{ conversation.id }}" class="text-center" style="display: none;">
+                                    <!-- The content here will be updated dynamically by JavaScript -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -169,20 +177,26 @@
 
 <!-- Add a div to contain the serialized histories -->
 <div id="historiesContainer" class="mb-3" style="display: none;">
-{% for conversation_ in serialized_memory_load %}
+{% for conversation in serialized_memory_load %}
 <pre class="main align-left mt-4 mb-2">
-<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation_.id }}</span><br>
-<span class="user-message">- {{ conversation_.user_name }}</span>: <span class="user-message">{{ conversation_.user_message|safe }}</span><br>
-<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation_.llm_response }}</span><br>
-"conversation_summary": "{{ conversation_.conversations_summary }}"<br>
-<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation_.created_at }}</span>
+<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation.id }}</span><br>
+<span class="user-message">- {{ conversation.user_name }}</span>: <span class="user-message">{{ conversation.user_message|safe }}</span><br>
+<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation.llm_response }}</span><br>
+"conversation_summary": "{{ conversation.conversations_summary }}"<br>
+<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation.created_at }}</span>
 </pre>
-<div class="like-button text-center mb-5" data-conversation-id="{{ conversation_.id }}" {% if conversation_.liked
-    %}style="color: pink;" {% endif %}>
-    <i class="fa fa-heart fa-2x mb-2"></i>
-    <hr class="text-center" style="margin: 0 45%;">
-    <div id="likeMessage" class="alert alert-info text-center" style="display: none;">
-        You can access your liked conversations from the menu.
+<div class="row">
+    <div class="col-md-12 text-center">
+        <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked %}
+            style="color: pink;" {% else %} style="color: lightcyan;" {% endif %}>
+            <i class="fa fa-heart fa-2x"></i>
+            <hr class="green mb-3" style="margin: 0 45%;">
+
+            <!-- This div is hidden by default and only shown when the user clicks the like button -->
+            <div id="likeMessage-{{ conversation.id }}" class="text-center" style="display: none;">
+                <!-- The content here will be updated dynamically by JavaScript -->
+            </div>
+        </div>
     </div>
 </div>
 {% endfor %}

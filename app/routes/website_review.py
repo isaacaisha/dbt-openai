@@ -352,8 +352,8 @@ def get_all_reviews():
     user_id = current_user.id
 
     total_reviews = WebsiteReview.query.filter_by(user_id=user_id).count()
-    limit = request.args.get('limit', default=total_reviews, type=int)
-    offset = request.args.get('offset', default=None, type=int)
+    limit = request.args.get('limit', default=None, type=int)
+    offset = request.args.get('offset', default=0, type=int)
     search = request.args.get('search', default=None, type=str)
 
     reviews = get_reviews(user_id=user_id, limit=limit, offset=offset, search=search, order_by_desc=True)
@@ -372,6 +372,7 @@ def get_all_reviews():
                            current_user=current_user, owner_id=user_id,
                            limit=limit, offset=offset, search=search,
                            reviews=serialized_reviews,
+                           total_reviews=total_reviews,
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
