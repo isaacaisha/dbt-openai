@@ -146,7 +146,13 @@
 
     <hr class="crimson mb-5">
 
-    <script>const reviewId = '{{ review_id.id }}';</script>
+    <script>
+        // Existing DOMContentLoaded listener
+        document.addEventListener('DOMContentLoaded', function () {
+            const reviewId = '{{ review_id.id }}';  // Ensure review_id is correctly passed from Flask template
+            fetchTtsUrl(reviewId);
+        });
+    </script>
     <script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 
