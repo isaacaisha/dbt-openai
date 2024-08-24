@@ -46,14 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Display the result or perform any other actions based on the response
                     displayReviewResult(data);
-
-                    // Check for the TTS URL
-                    if (data.tts_url) {
-                        console.log('TTS URL found:', data.tts_url);
-                        initializeAudio(data.tts_url); // Initialize audio with TTS URL
-                    } else {
-                        console.warn('No TTS URL found in the response');
-                    }
+                    
                 } else {
                     throw new Error('Unexpected response type');
                 }
@@ -116,7 +109,7 @@ function loadScreenshot(screenshotUrl) {
     screenshotImg.onload = function () {
         console.log('Screenshot loaded successfully');
         document.getElementById('screenshotResult').innerHTML = `
-            <h3 class="text-lg font-bold">Website Screenshot:</h3>
+            <h3 class="text-lg font-bold align-left">Website Screenshot:</h3>
         `;
         document.getElementById('screenshotResult').appendChild(screenshotImg);
         document.getElementById('screenshotResult').classList.remove('hidden');
@@ -176,8 +169,8 @@ function initializeAudio(ttsUrl) {
         }
     });
 
-    // Ensure the pause button is disabled initially
-    document.getElementById('pauseButton').disabled = true;
+    // Ensure the pause button is not disabled initially
+    document.getElementById('pauseButton').disabled = false;
 }
 
 // Function to handle errors
@@ -287,10 +280,29 @@ function toggleLike(review_id) {
         });
 }
 
-// Function to scroll down the page
-function scrollDown() {
-    window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'smooth'
-    });
+// Function to delete review
+function deleteReview(reviewId) {
+    if (!confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
+        return;
+    }
+
+    fetch(`/delete-review/${reviewId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Review deleted successfully.');
+                window.location.href = getAllReviewsUrl; // Redirect after deletion
+            } else {
+                alert('Error: ' + (data.error || 'An unexpected error occurred.'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the review. Please try again later.');
+        });
 }

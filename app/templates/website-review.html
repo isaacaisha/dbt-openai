@@ -66,8 +66,10 @@
     <div id="likeMessage{{ review_id|safe }}" class="text-center mt-6 mb-5 hidden" style="color:blanchedalmond;">
         Liked!<br>You can access your liked Reviews from the menu.
     </div>
-    <div id="unlikeMessage{{ review_id|safe }}" class="text-center mt-6 mb-5 hidden" style="color:blanchedalmond;">Unliked!</div>
-
+    <div id="unlikeMessage{{ review_id|safe }}" class="text-center mt-6 mb-3 hidden" style="color:blanchedalmond;">
+        Unliked!</div>
+    </div>
+    
     <!-- Review Section -->
     <div id="reviewResult" class="mb-3 mt-6 hidden" style="color:#AEFAFC;"></div>
     
@@ -144,6 +146,7 @@
 
     <hr class="crimson mb-5">
 
+    <script>const reviewId = '{{ review_id.id }}';</script>
     <script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 
