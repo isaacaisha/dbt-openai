@@ -27,16 +27,21 @@
 {% autoescape true %}
 
 {% if current_user.is_authenticated: %}
+
     <!-- Flash message display -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <ul class="flashes">
+            <div class="container mt-3">
                 {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% endif %}
     {% endwith %}
+
     <div class="container conversations">
         <hr class="crimson mb-3">
 
@@ -131,16 +136,9 @@
             <!-- Textarea for llm_response -->
             <textarea id="generatedText" class="mb-3 form-control result scroll_conversations" style="display: none;"></textarea>
             
-            <!-- Audio element for playback -->
-            <div class="row justify-content-center">
-                <div class="col-auto">
-                    <audio id="response-audio" controls class="submit btn btn-outline-info mb-3" style="display: none; height: 31px;">
-                        <source src="" type="audio/mp3">
-                        Your browser does not support the audio element.
-                    </audio>
-                </div>
-            </div>
-            
+            <!-- Flash message display -->
+            <div id="flash-message" class="text-center mb-3" style="color: #72e9fc;"></div>
+
             <!-- Playback button -->
             <div style="display: none;" id="playbackButtonContainer">
                 <div class="row justify-content-center mb-3">
@@ -150,8 +148,18 @@
                         </button>
                     </div>
                 </div>
+            
+            <!-- Audio element for playback -->
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <audio id="response-audio" controls class="btn btn-outline-info mb-3" style="display: none; height: 31px;">
+                        <source src="" type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
                 
-                <hr class="green mb-5">
+            <hr class="green mb-5">
 
             </div>
 

@@ -10,6 +10,7 @@ from scipy.spatial.distance import cosine
 from flask import Blueprint, Response, flash, render_template, request, jsonify, redirect, send_file, send_from_directory, url_for
 from flask_login import current_user
 from gtts import gTTS
+from gtts.lang import tts_langs
 
 from langchain.chains import ConversationChain
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
@@ -154,6 +155,14 @@ def handle_llm_response(user_input, conversation_context, detected_lang):
             
     assistant_reply = assistant_reply.replace('#', '').replace('*', '')
 
+    # Initialize an empty flash message
+    flash_message = None
+
+    # Check if the language is supported
+    if detected_lang not in tts_langs():
+        flash_message = f"Language '{detected_lang}' not supported, falling back to English."
+        detected_lang = 'en'  # Fallback to English
+
     tts = gTTS(assistant_reply, lang=detected_lang)
     audio_file_path = os.path.join(AUDIO_FOLDER_PATH, 'interface_temp_audio.mp3')
     tts.save(audio_file_path)
@@ -164,7 +173,7 @@ def handle_llm_response(user_input, conversation_context, detected_lang):
     memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
 
     logger.debug(f"Generated assistant reply: {assistant_reply}, saved audio data, response: {response}")
-    return assistant_reply, audio_data, response
+    return assistant_reply, audio_data, response, flash_message
 
 
 # Function to find the most relevant conversation based on user query
@@ -197,12 +206,13 @@ def interface_answer():
 
             if not embeddings:
                 # Handle new users with no embeddings
-                assistant_reply, audio_data, response = handle_llm_response(user_input, {}, detected_lang)
+                assistant_reply, audio_data, response, flash_message = handle_llm_response(user_input, conversation_context, detected_lang)
                 save_to_database(user_input, response, audio_data)
 
                 return jsonify({
                     "answer_text": assistant_reply,
                     "detected_lang": detected_lang,
+                    "flash_message": flash_message
                 })
 
             index, similarity = find_most_relevant_conversation(user_input, embeddings)
@@ -233,12 +243,13 @@ def interface_answer():
                 owner_id=current_user.id).order_by(Memory.created_at.desc()).limit(3).all()
             conversation_context = generate_conversation_context(user_input, user_conversations)
 
-        assistant_reply, audio_data, response = handle_llm_response(user_input, conversation_context, detected_lang)
+        assistant_reply, audio_data, response, flash_message = handle_llm_response(user_input, conversation_context, detected_lang)
         save_to_database(user_input, response, audio_data)
 
         return jsonify({
             "answer_text": assistant_reply,
             "detected_lang": detected_lang,
+            "flash_message": flash_message
         })
     else:
         return jsonify({"error": "User not authenticated"}), 401

@@ -45,6 +45,12 @@ function sendRequest(prompt) {
                 document.getElementById('response-audio').style.display = 'block';
                 document.getElementById('playbackButtonContainer').style.display = 'block';
 
+                // Check if there's a flash message and display it
+                if (response.flash_message) {
+                    // Update the page with the flash message
+                    document.getElementById('flash-message').textContent = response.flash_message;
+                }
+
                 if (response.answer_text) {
                     smoothScrollToBottomWhileTyping(response.answer_text);
                     const speech = new SpeechSynthesisUtterance(response.answer_text);
@@ -167,20 +173,23 @@ function smoothScrollToBottomWhileTyping(text) {
     typeText();
 }
 
-// Add event listeners on DOMContentLoaded
+// Add an event listener to the form for submitting
 document.addEventListener('DOMContentLoaded', function () {
-    const playbackButton = document.getElementById('playbackButton');
+    // Reference the audio element globally
     const audio = document.getElementById('response-audio');
 
-    // Add event listener to form submit
+    // Add an event listener to the form for submitting
     document.getElementById('prompt-form').addEventListener('submit', function (e) {
         e.preventDefault();
-        const prompt = document.getElementById('userInput').value; // Get text from the textarea
+        var prompt = document.getElementById('userInput').value; // Get text from the textarea
         sendRequest(prompt);
     });
 
-    // Add event listener to playback button
-    playbackButton.addEventListener('click', function () {
+    // Add an event listener to the playback button
+    document.getElementById('playbackButton').addEventListener('click', function () {
+        const playbackButton = document.getElementById('playbackButton');
+
+        // Ensure the correct audio reference is used
         if (audio.paused) {
             audio.play();
             playbackButton.textContent = '-¡!¡- Pause Audio -¡!¡-';
@@ -190,8 +199,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Add event listener to reset button text when audio ends
-    audio.addEventListener('ended', function () {
-        playbackButton.textContent = '-¡!¡- PlayBack Audio -¡!¡-';
+    // Add an event listener to the audio element for playback
+    audio.addEventListener('click', function () {
+        audio.play();
     });
 });

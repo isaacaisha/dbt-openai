@@ -45,6 +45,12 @@ function sendRequest(prompt) {
             if (xhr.status === 200) {
                 var response = JSON.parse(xhr.responseText);
 
+                // Check if there's a flash message and display it
+                if (response.flash_message) {
+                    // Update the page with the flash message
+                    document.getElementById('flash-message').textContent = response.flash_message;
+                }
+
                 // Display the text response in the textarea
                 var textarea = document.getElementById('generatedText');
                 textarea.value = response.answer_text;
@@ -166,6 +172,10 @@ function smoothScrollToBottomWhileTyping(text) {
 
 // Add an event listener to the form for submitting
 document.addEventListener('DOMContentLoaded', function () {
+    // Reference the audio element globally
+    const audio = document.getElementById('response-audio');
+
+    // Add an event listener to the form for submitting
     document.getElementById('prompt-form').addEventListener('submit', function (e) {
         e.preventDefault();
         var prompt = document.getElementById('userInput').value; // Get text from the textarea
@@ -174,19 +184,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add an event listener to the playback button
     document.getElementById('playbackButton').addEventListener('click', function () {
-        // Use the SpeechSynthesis API to read the response aloud
-        var speech = new SpeechSynthesisUtterance(document.getElementById('generatedText').value);
+        const playbackButton = document.getElementById('playbackButton');
 
-        // Use the detected language from the response
-        var detectedLang = document.getElementById('generatedText').dataset.detectedLang;
-        speech.lang = detectedLang || 'es-ES'; // Use detected language
-
-        window.speechSynthesis.speak(speech);
+        // Ensure the correct audio reference is used
+        if (audio.paused) {
+            audio.play();
+            playbackButton.textContent = '-¡!¡- Pause Audio -¡!¡-';
+        } else {
+            audio.pause();
+            playbackButton.textContent = '-¡!¡- PlayBack Audio -¡!¡-';
+        }
     });
 
     // Add an event listener to the audio element for playback
-    document.getElementById('response-audio').addEventListener('click', function () {
-        var audio = document.getElementById('response-audio');
+    audio.addEventListener('click', function () {
         audio.play();
     });
 });

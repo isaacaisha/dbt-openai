@@ -24,7 +24,10 @@
 </div>
 {% endblock %}
 
+<!-- Navbar Info -->
 {% block navbar %}{% endblock %}
+<!-- User Info -->
+{% block userInfo %}{% endblock %}
 
 {% block content %}
 {% autoescape true %}
@@ -32,13 +35,18 @@
 <!-- Flash message display -->
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        <ul class="flashes">
+        <div class="container mt-3">
             {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
     {% endif %}
 {% endwith %}
+
+<div id="flash-message" class="text-center mb-3" style="color: #72e9fc;"></div>
 
 <div class="container content text-center">
 
@@ -111,11 +119,16 @@
                     -¡!¡- PlayBack Audio -¡!¡-
                 </button>
             </div>
-            <div class="">
-                <audio id="response-audio" controls class="submit btn btn-outline-info m-0 mb-3" style="display: none; height: 31px; width: 279px;">
-                    <source src="" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
+
+            <!-- Audio element for playback -->
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <audio id="response-audio" controls class="btn btn-outline-info mb-3"
+                        style="display: none; height: 31px; width: 279px;">
+                        <source src="" type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
             </div>
         </div>
 

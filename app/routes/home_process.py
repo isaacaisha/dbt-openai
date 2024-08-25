@@ -5,6 +5,7 @@ import pytz
 from flask import Blueprint, flash, render_template, request, send_file, jsonify, send_from_directory, url_for
 from flask_login import current_user
 from gtts import gTTS
+from gtts.lang import tts_langs
 from langchain.chains import ConversationChain
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
@@ -95,6 +96,14 @@ def home_answer():
     # Remove '#' and '*' from the response
     assistant_reply = assistant_reply.replace('#', '').replace('*', '')
 
+    # Initialize an empty flash message
+    flash_message = None
+
+    # Check if the language is supported
+    if detected_lang not in tts_langs():
+        flash_message = f"Language '{detected_lang}' not supported, falling back to English."
+        detected_lang = 'en'  # Fallback to English
+
     # Convert the text response to speech using gTTS
     tts = gTTS(assistant_reply, lang=detected_lang)
 
@@ -114,6 +123,7 @@ def home_answer():
         "answer_text": assistant_reply,
         "answer_audio_path": audio_url,
         "detected_lang": detected_lang,
+        "flash_message": flash_message,
     })
 
 
