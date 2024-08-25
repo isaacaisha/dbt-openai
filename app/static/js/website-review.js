@@ -2,6 +2,57 @@
 
 let audio = null;
 
+// Function to fetch TTS URL and play audio
+async function fetchTtsUrl(reviewId) {
+    try {
+        const response = await fetch(`/review/${reviewId}` / tts - url);
+        const data = await response.json();
+        if (response.ok) {
+            const ttsUrl = data.tts_url;
+            if (ttsUrl) {
+                console.log(`TTS URL found: ${ttsUrl}`);
+                initializeAudio(ttsUrl);
+            } else {
+                console.error('No TTS URL found in response');
+            }
+        } else {
+            console.error(`Error fetching TTS URL: ${data.error}`);
+        }
+    } catch (error) {
+        console.error(`Fetch error: ${error}`);
+    }
+}
+
+// Function to initialize audio and set up button event handlers
+function initializeAudio(ttsUrl) {
+    if (audio) {
+        audio.pause(); // Stop any previously playing audio
+    }
+
+    audio = new Audio(ttsUrl);
+
+    // Handle play button click
+    document.getElementById('playButton').addEventListener('click', () => {
+        if (audio) {
+            audio.play().catch(error => console.error(`Audio play error: ${error}`));
+            document.getElementById('playButton').disabled = true;
+            document.getElementById('pauseButton').disabled = false;
+        }
+    });
+
+    // Handle pause button click
+    document.getElementById('pauseButton').addEventListener('click', () => {
+        if (audio) {
+            audio.pause();
+            document.getElementById('playButton').disabled = false;
+            document.getElementById('pauseButton').disabled = true;
+        }
+    });
+
+    // Ensure the pause button is disabled initially
+    document.getElementById('pauseButton').disabled = true;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     // Function to handle form submission
     const reviewForm = document.getElementById('reviewForm');
@@ -46,7 +97,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Display the result or perform any other actions based on the response
                     displayReviewResult(data);
-                    
+
+                    if (data.website_screenshot) {
+                        document.getElementById('screenshotResult').innerHTML = `
+                            <h3 class="text-lg font-bold">Website Screenshot:</h3>
+                            <img src="${data.website_screenshot}" alt="Website Screenshot" class="mt-2" style="width: 100%; height: auto;" />
+                            `;
+                        document.getElementById('screenshotResult').classList.remove('hidden');
+                    }
                 } else {
                     throw new Error('Unexpected response type');
                 }
@@ -79,15 +137,10 @@ function displayReviewResult(data) {
                     <textarea readonly class="textarea_details textarea-memory w-full p-2 border border-gray-300" style="min-height: 991px;">${data.website_review}</textarea>
                 </div>
             </div>
-        `;
+            `;
 
-        // Load screenshot after form submission and data retrieval
-        if (data.website_screenshot) {
-            loadScreenshot(data.website_screenshot);
-        }
-
-        // Ensure audio plays regardless of screenshot status
         if (data.tts_url) {
+            // Call fetchTtsUrl instead of directly setting the audio source
             fetchTtsUrl(data.review_id);
         }
 
@@ -96,81 +149,6 @@ function displayReviewResult(data) {
         document.getElementById('audioFeedback').classList.remove('hidden');
         document.getElementById('rating_section').classList.remove('hidden');
     }
-}
-
-// Function to load and display the screenshot
-function loadScreenshot(screenshotUrl) {
-    const screenshotImg = new Image();
-    screenshotImg.src = screenshotUrl;
-    screenshotImg.alt = "Website Screenshot";
-    screenshotImg.className = "mt-2";
-    screenshotImg.style.width = "100%";
-    screenshotImg.style.height = "auto";
-    screenshotImg.onload = function () {
-        console.log('Screenshot loaded successfully');
-        document.getElementById('screenshotResult').innerHTML = `
-            <h3 class="text-lg font-bold align-left">Website Screenshot:</h3>
-        `;
-        document.getElementById('screenshotResult').appendChild(screenshotImg);
-        document.getElementById('screenshotResult').classList.remove('hidden');
-    };
-    screenshotImg.onerror = function () {
-        console.error('Failed to load screenshot');
-    };
-}
-
-// Function to fetch TTS URL and play audio
-async function fetchTtsUrl(reviewId) {
-    try {
-        const response = await fetch(`/review/${reviewId}/tts-url`);
-        const data = await response.json();
-        if (response.ok) {
-            const ttsUrl = data.tts_url;
-            if (ttsUrl) {
-                console.log(`TTS URL found: ${ttsUrl}`);
-                initializeAudio(ttsUrl);
-            } else {
-                console.error('No TTS URL found in response');
-            }
-        } else {
-            console.error(`Error fetching TTS URL: ${data.error}`);
-        }
-    } catch (error) {
-        console.error(`Fetch error: ${error}`);
-    }
-}
-
-// Function to initialize audio and set up button event handlers
-function initializeAudio(ttsUrl) {
-    if (audio) {
-        audio.pause(); // Stop any previously playing audio
-    }
-
-    audio = new Audio(ttsUrl);
-
-    // Automatically play the audio
-    audio.play().catch(error => console.error(`Audio play error: ${error}`));
-    
-    // Handle play button click
-    document.getElementById('playButton').addEventListener('click', () => {
-        if (audio) {
-            audio.play().catch(error => console.error(`Audio play error: ${error}`));
-            document.getElementById('playButton').disabled = true;
-            document.getElementById('pauseButton').disabled = false;
-        }
-    });
-
-    // Handle pause button click
-    document.getElementById('pauseButton').addEventListener('click', () => {
-        if (audio) {
-            audio.pause();
-            document.getElementById('playButton').disabled = false;
-            document.getElementById('pauseButton').disabled = true;
-        }
-    });
-
-    // Ensure the pause button is not disabled initially
-    document.getElementById('pauseButton').disabled = false;
 }
 
 // Function to handle errors
@@ -278,4 +256,12 @@ function toggleLike(review_id) {
         .catch(error => {
             console.error('Error:', error);
         });
+}
+
+// Function to scroll down the page
+function scrollDown() {
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+    });
 }
