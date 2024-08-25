@@ -179,8 +179,7 @@ async def take_screenshot(url, retries=3):
             return screenshot_url
         logger.warning(f"Attempt {attempt + 1} failed for URL: {url}. Retrying...")
     
-
-    return await asyncio.to_thread(_screenshot_worker, url)
+    return await _screenshot_worker(url)
 
 
 def upload_to_cloudinary(audio_file_path):
@@ -278,7 +277,7 @@ async def submit_url():
     domain = request.args.get('domain')
 
     if domain:
-        # Attempt to take a screenshot
+        # Directly await the screenshot function
         website_screenshot = await take_screenshot(domain)
 
         # Always attempt to get the review and TTS URL, even if the screenshot failed or is blank
@@ -287,9 +286,9 @@ async def submit_url():
         # Save the new review along with the TTS URL
         new_review_object = WebsiteReview(
             site_url=domain,
-            site_image_url=website_screenshot,  # This could be None if the screenshot failed
+            site_image_url=website_screenshot,
             feedback=website_review,
-            tts_url=tts_url,  # Save the TTS URL to the database
+            tts_url=tts_url,
             user_id=current_user.id
         )
 
