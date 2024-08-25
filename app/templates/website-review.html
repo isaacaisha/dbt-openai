@@ -72,6 +72,12 @@
     
     <!-- Review Section -->
     <div id="reviewResult" class="mb-3 mt-6 hidden" style="color:#AEFAFC;"></div>
+
+    <!-- Screenshot Section -->
+    <div id="screenshotResult" class="mb-4 hidden">
+        <h3 class="align-left text-lg font-bold">Website Screenshot:</h3>
+        <img id="screenshotImage" src="{{ website_screenshot }}" alt="Website Screenshot">
+    </div>
     
     <!-- Audio Control Section -->
     <div id="audioFeedback" class="audio-feedback mb-4 hidden">
@@ -94,12 +100,6 @@
             <p>No audio available for this review.</p>
             {% endif %}
         </div>
-    </div>
-
-    <!-- Screenshot Section -->
-    <div id="screenshotResult" class="hidden">
-        <h3 class="align-left text-lg font-bold">Website Screenshot:</h3>
-        <img id="screenshotImage" src="{{ website_screenshot }}" alt="Website Screenshot">
     </div>
 
     <!-- Rating Section -->
@@ -146,7 +146,6 @@
 
     <hr class="crimson mb-5">
 
-    <script>const reviewId = '{{ review_id.id }}';</script>
     <script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 

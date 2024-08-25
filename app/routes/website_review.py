@@ -93,7 +93,7 @@ def sanitize_url_for_public_id(url):
     # Cloudinary allows only alphanumeric characters, underscores, and hyphens in public IDs
     # So we ensure that all other characters are replaced with underscores
     sanitized_url = ''.join(e if e.isalnum() or e in ['_', '-'] else '_' for e in sanitized_url)
-    return sanitized_url[:199]
+    return sanitized_url[:120]
 
 
 def generate_tts_audio(text, lang='en'):
@@ -112,8 +112,7 @@ async def take_screenshot(url):
     def _screenshot_worker(url):
         try:
             options = webdriver.ChromeOptions()
-            options.add_argument("--single-process")
-            # options.add_argument("--headless")
+            options.add_argument("--headless")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--disable-gpu")
@@ -129,26 +128,19 @@ async def take_screenshot(url):
             browser = webdriver.Chrome(service=chrome_service, options=options)
 
             # Set timeouts
-            browser.set_page_load_timeout(199)  # Increase page load timeout
-            browser.set_script_timeout(199)     # Increase script timeout
+            browser.set_page_load_timeout(120)  # Increase page load timeout
+            browser.set_script_timeout(120)     # Increase script timeout
 
             browser.get(url)
 
             # Use explicit wait for the page to load
-            wait = WebDriverWait(browser, 199)
+            wait = WebDriverWait(browser, 120)
             wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
 
             #total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
             total_height = browser.execute_script("return document.body.scrollHeight")
             browser.set_window_size(1200, total_height)
-
-            ## Scroll the page gradually to ensure all parts are rendered
-            #total_height = browser.execute_script("return document.body.scrollHeight")
-            #viewport_height = 1080
-            #for i in range(0, total_height, viewport_height):
-            #    browser.execute_script(f"window.scrollTo(0, {i});")
-            #    wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
-
+            
             # Take the screenshot after scrolling
             screenshot = browser.get_screenshot_as_png()
             browser.quit()
