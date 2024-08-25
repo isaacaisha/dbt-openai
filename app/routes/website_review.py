@@ -156,7 +156,7 @@ async def take_screenshot(url):
                 secure=True  # Ensure the URL is HTTPS
             )
 
-            screenshot_url = upload_response['secure_url']  # Use secure_url to enforce HTTPS
+            screenshot_url = upload_response['url']  # Use secure_url to enforce HTTPS
             return screenshot_url
 
         except Exception as e:
