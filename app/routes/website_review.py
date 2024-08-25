@@ -88,10 +88,12 @@ def serialize_review(review):
 def sanitize_url_for_public_id(url):
     # Encode the URL to handle special characters
     encoded_url = urllib.parse.quote(url, safe='')
-    
     # Replace any remaining unsafe characters
-    sanitized_url = re.sub(r'[^a-zA-Z0-9_.-]', '_', encoded_url)  # Keep alphanumeric characters, underscores, dots, and hyphens
-    return sanitized_url[:199]  # Limit the length to 199 characters
+    sanitized_url = encoded_url.replace('%', '_').replace('.', '_').replace('/', '_').replace(':', '_').replace('-', '_')
+    # Cloudinary allows only alphanumeric characters, underscores, and hyphens in public IDs
+    # So we ensure that all other characters are replaced with underscores
+    sanitized_url = ''.join(e if e.isalnum() or e in ['_', '-'] else '_' for e in sanitized_url)
+    return sanitized_url[:199]
 
 
 def generate_tts_audio(text, lang='en'):
@@ -106,19 +108,16 @@ def generate_tts_audio(text, lang='en'):
     
     
 # Function to take a screenshot
-async def take_screenshot(url, retries=3):
-    async def _screenshot_worker(url):
+async def take_screenshot(url):
+    def _screenshot_worker(url):
         try:
             options = webdriver.ChromeOptions()
-            options.add_argument("--headless")
+            options.add_argument("--single-process")
+            # options.add_argument("--headless")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--disable-gpu")
             options.add_argument("--window-size=1920,1080")
-
-            # Increase the amount of memory available to Chrome
-            options.add_argument("--enable-memory-pressure-threshold")
-            options.add_argument("--disable-software-rasterizer")
 
             # Set the binary location for Chrome
             options.binary_location = CHROME_BINARY_PATH
@@ -130,14 +129,13 @@ async def take_screenshot(url, retries=3):
             browser = webdriver.Chrome(service=chrome_service, options=options)
 
             # Set timeouts
-            browser.set_page_load_timeout(120)  # Increase page load timeout
-            browser.set_script_timeout(120)     # Increase script timeout
+            browser.set_page_load_timeout(199)  # Increase page load timeout
+            browser.set_script_timeout(199)     # Increase script timeout
 
-            # Open the URL
             browser.get(url)
 
             # Use explicit wait for the page to load
-            wait = WebDriverWait(browser, 120)
+            wait = WebDriverWait(browser, 199)
             wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
 
             #total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
@@ -173,13 +171,7 @@ async def take_screenshot(url, retries=3):
             print(f"Error taking screenshot: {str(e)}")
             return None
 
-    for attempt in range(retries):
-        screenshot_url = await _screenshot_worker(url)
-        if screenshot_url:
-            return screenshot_url
-        logger.warning(f"Attempt {attempt + 1} failed for URL: {url}. Retrying...")
-    
-    return await _screenshot_worker(url)
+    return await asyncio.to_thread(_screenshot_worker, url)
 
 
 def upload_to_cloudinary(audio_file_path):
@@ -277,7 +269,7 @@ async def submit_url():
     domain = request.args.get('domain')
 
     if domain:
-        # Directly await the screenshot function
+        # Attempt to take a screenshot
         website_screenshot = await take_screenshot(domain)
 
         # Always attempt to get the review and TTS URL, even if the screenshot failed or is blank
@@ -286,9 +278,9 @@ async def submit_url():
         # Save the new review along with the TTS URL
         new_review_object = WebsiteReview(
             site_url=domain,
-            site_image_url=website_screenshot,
+            site_image_url=website_screenshot,  # This could be None if the screenshot failed
             feedback=website_review,
-            tts_url=tts_url,
+            tts_url=tts_url,  # Save the TTS URL to the database
             user_id=current_user.id
         )
 
