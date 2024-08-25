@@ -109,7 +109,7 @@ function loadScreenshot(screenshotUrl) {
     screenshotImg.onload = function () {
         console.log('Screenshot loaded successfully');
         document.getElementById('screenshotResult').innerHTML = `
-            <h3 class="text-lg font-bold align-left">Website Screenshot:</h3>
+            <h3 class="text-lg font-bold">Website Screenshot:</h3>
         `;
         document.getElementById('screenshotResult').appendChild(screenshotImg);
         document.getElementById('screenshotResult').classList.remove('hidden');
