@@ -164,11 +164,7 @@ async def take_screenshot(url):
                 secure=True  # Ensure the URL is HTTPS
             )
 
-            #screenshot_url = upload_response['secure_url']  # Use secure_url to enforce HTTPS
-
-            # Use .get() to safely retrieve 'secure_url'
-            screenshot_url = upload_response.get('secure_url', None)  # Default to None if 'secure_url' is missing
-            
+            screenshot_url = upload_response['secure_url']  # Use secure_url to enforce HTTPS
             return screenshot_url
 
         except Exception as e:
@@ -274,17 +270,21 @@ async def submit_url():
 
     if domain:
         # Attempt to take a screenshot
-        website_screenshot = await take_screenshot(domain)
+        screenshot_url = await take_screenshot(domain)
+
+        # Check if screenshot_url is None and set a default if necessary
+        if screenshot_url is None:
+            screenshot_url = ""  # Or set a specific default image URL if appropriate
 
         # Always attempt to get the review and TTS URL, even if the screenshot failed or is blank
-        website_review, tts_url = get_review(website_screenshot or domain)  # Use domain as fallback if screenshot is None
+        website_review, tts_url = get_review(screenshot_url or domain)  # Use domain as fallback if screenshot is None
 
         # Save the new review along with the TTS URL
         new_review_object = WebsiteReview(
             site_url=domain,
-            site_image_url=website_screenshot,  # This could be None if the screenshot failed
+            site_image_url=screenshot_url,
             feedback=website_review,
-            tts_url=tts_url,  # Save the TTS URL to the database
+            tts_url=tts_url,
             user_id=current_user.id
         )
 
@@ -295,13 +295,12 @@ async def submit_url():
         logger.debug(f"New review created with ID: {review_id}")
 
         response_data = {
-            'website_screenshot': website_screenshot,
+            'website_screenshot': screenshot_url,
             'website_review': website_review,
             'tts_url': tts_url,
             'review_id': review_id,
         }
 
-        logger.debug(f"Response data being returned: {response_data}")
         return jsonify(response_data)
 
     else:
