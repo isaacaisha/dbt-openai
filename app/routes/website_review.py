@@ -270,21 +270,17 @@ async def submit_url():
 
     if domain:
         # Attempt to take a screenshot
-        screenshot_url = await take_screenshot(domain)
-
-        # Check if screenshot_url is None and set a default if necessary
-        if screenshot_url is None:
-            screenshot_url = ""  # Or set a specific default image URL if appropriate
+        website_screenshot = await take_screenshot(domain)
 
         # Always attempt to get the review and TTS URL, even if the screenshot failed or is blank
-        website_review, tts_url = get_review(screenshot_url or domain)  # Use domain as fallback if screenshot is None
+        website_review, tts_url = get_review(website_screenshot or domain)  # Use domain as fallback if screenshot is None
 
         # Save the new review along with the TTS URL
         new_review_object = WebsiteReview(
             site_url=domain,
-            site_image_url=screenshot_url,
+            site_image_url=website_screenshot,  # This could be None if the screenshot failed
             feedback=website_review,
-            tts_url=tts_url,
+            tts_url=tts_url,  # Save the TTS URL to the database
             user_id=current_user.id
         )
 
@@ -295,7 +291,7 @@ async def submit_url():
         logger.debug(f"New review created with ID: {review_id}")
 
         response_data = {
-            'website_screenshot': screenshot_url,
+            'website_screenshot': website_screenshot,
             'website_review': website_review,
             'tts_url': tts_url,
             'review_id': review_id,
