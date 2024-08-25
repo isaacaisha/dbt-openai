@@ -164,7 +164,11 @@ async def take_screenshot(url):
                 secure=True  # Ensure the URL is HTTPS
             )
 
-            screenshot_url = upload_response['secure_url']  # Use secure_url to enforce HTTPS
+            #screenshot_url = upload_response['secure_url']  # Use secure_url to enforce HTTPS
+
+            # Use .get() to safely retrieve 'secure_url'
+            screenshot_url = upload_response.get('secure_url', None)  # Default to None if 'secure_url' is missing
+            
             return screenshot_url
 
         except Exception as e:
@@ -297,6 +301,7 @@ async def submit_url():
             'review_id': review_id,
         }
 
+        logger.debug(f"Response data being returned: {response_data}")
         return jsonify(response_data)
 
     else:
