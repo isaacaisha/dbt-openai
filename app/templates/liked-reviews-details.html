@@ -112,165 +112,19 @@
 </div>
 
 <br>
+
 <script>
-    let audio = null;
-
-    // Function to fetch TTS URL and play audio
-    async function fetchTtsUrl(reviewId) {
-        const url = `/review/${reviewId}/tts-url`;  // Make sure this URL is correctly formed
-        console.log(`Fetching URL: ${url}`);  // Log the URL to verify it
-        try {
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                const data = await response.json();
-                if (data.tts_url) {
-                    console.log(`TTS URL found: ${data.tts_url}`);
-                    initializeAudio(data.tts_url);
-                } else {
-                    console.error('No TTS URL found in response');
-                }
-            } else {
-                throw new Error('Unexpected content type. Expected JSON.');
-            }
-        } catch (error) {
-            console.error(`Fetch error: ${error.message}`, error);
-        }
-    }
-
-    // Function to initialize audio and set up button event handlers
-    function initializeAudio(ttsUrl) {
-        if (audio) {
-            audio.pause(); // Stop any previously playing audio
-        }
-
-        audio = new Audio(ttsUrl);
-
-        // Handle play button click
-        document.getElementById('playButton').addEventListener('click', () => {
-            if (audio) {
-                audio.play().catch(error => console.error(`Audio play error: ${error}`));
-                document.getElementById('playButton').disabled = true;
-                document.getElementById('pauseButton').disabled = false;
-            }
-        });
-
-        // Handle pause button click
-        document.getElementById('pauseButton').addEventListener('click', () => {
-            if (audio) {
-                audio.pause();
-                document.getElementById('playButton').disabled = false;
-                document.getElementById('pauseButton').disabled = true;
-            }
-        });
-
-        // Ensure the pause button is disabled initially
-        document.getElementById('pauseButton').disabled = true;
-    }
-
     // Existing DOMContentLoaded listener
     document.addEventListener('DOMContentLoaded', function () {
         const reviewId = '{{ liked_review_detail.id }}';  // Ensure review_id is correctly passed from Flask template
         fetchTtsUrl(reviewId);
     });
-
-    // Function to handle errors
-    function handleError(error) {
-        console.error('There has been a problem with your fetch operation:', error);
-
-        // Hide the loader and enable the buttons if needed
-        document.getElementById('loader').style.display = 'none';
-        disableAllButtons(false);
-
-        // Handle specific error conditions
-        if (error.message.includes('Unexpected token')) {
-            alert('There was an error processing your request. Please try again later.');
-        } else {
-            alert('There was a problem with your request. Please try again later.');
-        }
-    }
-
-    // Function to toggle like status
-    function toggleLike(review_id) {
-        const likeIcon = document.querySelector(`#likeIcon${review_id}`);
-        const likeMessage = document.querySelector(`#likeMessage${review_id}`);
-        const unlikeMessage = document.querySelector(`#unlikeMessage${review_id}`);
-
-        fetch(`/like/${review_id}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ liked: !likeIcon.classList.contains('liked') }) // Toggle liked status
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.liked) {
-                        likeIcon.classList.add('liked');
-                        likeIcon.style.color = 'pink';
-                        likeMessage.classList.remove('hidden');
-                        unlikeMessage.classList.add('hidden');
-                    } else {
-                        likeIcon.classList.remove('liked');
-                        likeIcon.style.color = '';
-                        likeMessage.classList.add('hidden');
-                        unlikeMessage.classList.remove('hidden');
-                    }
-                    setTimeout(() => {
-                        likeMessage.classList.add('hidden');
-                        unlikeMessage.classList.add('hidden');
-                    }, 2000); // Hide the message after 2 seconds
-                    console.log('Like status updated successfully');
-                } else {
-                    console.error(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-
-    // Function to delete review
-    function deleteReview(reviewId) {
-        if (!confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
-            return;
-        }
-
-        fetch(`/delete-review/${reviewId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Review deleted successfully.');
-                    window.location.href = "{{ url_for('website_review.liked_reviews') }}"; // Redirect after deletion
-                } else {
-                    alert('Error: ' + (data.error || 'An unexpected error occurred.'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the review. Please try again later.');
-            });
-    }
-
-    // Function to scroll down the page
-    function scrollDown() {
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
-        });
-    }
 </script>
+<script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
+<script>
+    const getAllReviewsUrl = "{{ url_for('website_review.liked_reviews') }}";
+</script>
+<script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 
 {% endautoescape %}
 {% endblock %}
