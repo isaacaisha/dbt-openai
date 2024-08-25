@@ -46,14 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Display the result or perform any other actions based on the response
                     displayReviewResult(data);
-
-                    if (data.website_screenshot) {
-                        document.getElementById('screenshotResult').innerHTML = `
-                            <h3 class="text-lg font-bold">Website Screenshot:</h3>
-                            <img src="${data.website_screenshot}" alt="Website Screenshot" class="mt-2" style="width: 100%; height: auto;" />
-                            ;
-                        document.getElementById('screenshotResult').classList.remove('hidden');
-                    `}
                     
                 } else {
                     throw new Error('Unexpected response type');
@@ -285,32 +277,5 @@ function toggleLike(review_id) {
         })
         .catch(error => {
             console.error('Error:', error);
-        });
-}
-
-// Function to delete review
-function deleteReview(reviewId) {
-    if (!confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
-        return;
-    }
-
-    fetch(`/delete-review/${reviewId}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Review deleted successfully.');
-                window.location.href = getAllReviewsUrl; // Redirect after deletion
-            } else {
-                alert('Error: ' + (data.error || 'An unexpected error occurred.'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while deleting the review. Please try again later.');
         });
 }
