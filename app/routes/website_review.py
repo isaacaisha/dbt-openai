@@ -261,8 +261,6 @@ async def submit_url():
     domain = request.args.get('domain')
 
     if domain:
-        user_id = current_user.id if current_user.is_authenticated else None
-
         # Attempt to take a screenshot
         website_screenshot = await take_screenshot(domain)
 
@@ -289,7 +287,6 @@ async def submit_url():
             'website_review': website_review,
             'tts_url': tts_url,
             'review_id': review_id,
-            'user_id': user_id,
         }
 
         return jsonify(response_data)
