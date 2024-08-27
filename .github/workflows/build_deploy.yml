@@ -63,17 +63,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Wait for Redis to be ready
-        run: |
-          for i in {1..10}; do
-            if redis-cli -h redis ping; then
-              echo "Redis is ready!"
-              break
-            fi
-            echo "Waiting for Redis..."
-            sleep 2
-          done
-
       - name: Run tests with pytest
         run: |
           pip install pytest
