@@ -1,5 +1,4 @@
 import os
-import logging
 from app import create_app
 from asgiref.wsgi import WsgiToAsgi
 
@@ -24,4 +23,4 @@ if __name__ == '__main__':
         # This runs the Flask development server only if the script is executed directly
         app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
     except Exception as e:
-        logging.error(f"Application error: {e}") 
+        print(f"Application error: {e}") 

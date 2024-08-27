@@ -1,16 +1,17 @@
 # __init__.py
 
-import logging
 import os
 import secrets
 
-from datetime import timedelta
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_session import Session
+from redis import Redis
+
 
 from app.database import db, init_app, database_bp
 from app.app_forms import app_form_bp
@@ -34,14 +35,18 @@ def create_app(config=None):
     app = Flask(__name__, template_folder='templates', static_folder='static')
     Bootstrap(app)
 
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_PERMANENT'] = True
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+    # Set up the secret key
+    secret_key = secrets.token_hex(19)
+    app.secret_key = secret_key
+
+    app.config['SESSION_COOKIE_SECURE'] = True  # Only send cookies over HTTPS
+    app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript from accessing the session cookie
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Mitigate CSRF
+    app.config['SESSION_TYPE'] = 'redis'
+    app.config['SESSION_REDIS'] = Redis(host='localhost', port=6379)
     app.config['DEBUG'] = True
     app.config['UPLOAD_FOLDER'] = 'static/assets/images'
-
-    # Ensure logger is set up to capture errors
-    app.logger.setLevel(logging.INFO)  
+    Session(app)
     
     login_manager = LoginManager()
 
@@ -56,9 +61,7 @@ def create_app(config=None):
     except KeyError:
         raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
-    secret_key = secrets.token_hex(19)
-    app.secret_key = secret_key
-
+    # Initialize SQLAlchemy
     if config:
         app.config.update(config)
         init_app(app, app.config['SQLALCHEMY_DATABASE_URI'])
@@ -71,6 +74,7 @@ def create_app(config=None):
     with app.app_context():
         db.create_all()
 
+    # Mail configuration
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
@@ -81,6 +85,7 @@ def create_app(config=None):
 
     mail = Mail(app)
 
+    # Register Blueprints
     app.register_blueprint(app_form_bp, name='forms')
     app.register_blueprint(auth_bp, name='auth')
     app.register_blueprint(conversation_chat_forum_bp, name='conversation_chat_forum')
