@@ -44,10 +44,19 @@ def create_app(config=None):
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Mitigate CSRF
     
     # Set Redis configuration
-    redis_host = os.environ.get('REDIS_HOST', 'localhost')  # Use the service name if available
-    redis_port = int(os.environ.get('REDIS_PORT', 6379))    # Defaults to 6379 if not set
-    app.config['SESSION_TYPE'] = 'redis'
-    app.config['SESSION_REDIS'] = Redis(host=redis_host, port=redis_port, db=0)
+    
+    # Set Redis configuration
+    redis_host = os.environ.get('REDIS_HOST', 'localhost')
+    redis_port = int(os.environ.get('REDIS_PORT', 6379))
+
+    # Attempt to connect to Redis and handle potential errors
+    try:
+        redis_client = Redis(host=redis_host, port=redis_port, db=0)
+        redis_client.ping()  # Test the connection
+        app.config['SESSION_REDIS'] = redis_client
+        app.config['SESSION_TYPE'] = 'redis'
+    except ConnectionError:
+        raise RuntimeError(f"Could not connect to Redis at {redis_host}:{redis_port}. Is it running?")
     
     app.config['DEBUG'] = True
     app.config['UPLOAD_FOLDER'] = 'static/assets/images'
