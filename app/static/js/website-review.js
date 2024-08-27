@@ -88,7 +88,7 @@ function displayReviewResult(data) {
 
         // Ensure audio plays regardless of screenshot status
         if (data.tts_url) {
-            fetchTtsUrl(data.review_id);
+            initializeAudio(data.tts_url);
         }
 
         document.getElementById('updateLike').classList.remove('hidden');
@@ -142,38 +142,37 @@ async function fetchTtsUrl(reviewId) {
 
 // Function to initialize audio and set up button event handlers
 function initializeAudio(ttsUrl) {
-    // Reference the audio element globally
-    const audio = document.getElementById('response-audio');
+    // Use the global audio variable
+    if (!audio) {
+        audio = document.getElementById('response-audio');
+    }
 
     if (audio) {
         audio.pause(); // Stop any previously playing audio
-    }
+        audio.src = ttsUrl; // Set the new TTS URL
+        audio.load(); // Load the new audio source
 
-    // audio = new Audio(ttsUrl);
+        // Automatically play the audio when a new review is generated
+        audio.play().catch(error => console.error(`Audio play error: ${error}`));
 
-    // Automatically play the audio
-    audio.play().catch(error => console.error(`Audio play error: ${error}`));
-    
-    // Handle play button click
-    document.getElementById('playButton').addEventListener('click', () => {
-        if (audio) {
+        // Enable play and pause button handlers
+        document.getElementById('playButton').disabled = false;
+        document.getElementById('pauseButton').disabled = false;
+
+        // Play button event handler
+        document.getElementById('playButton').onclick = () => {
             audio.play().catch(error => console.error(`Audio play error: ${error}`));
             document.getElementById('playButton').disabled = true;
             document.getElementById('pauseButton').disabled = false;
-        }
-    });
+        };
 
-    // Handle pause button click
-    document.getElementById('pauseButton').addEventListener('click', () => {
-        if (audio) {
+        // Pause button event handler
+        document.getElementById('pauseButton').onclick = () => {
             audio.pause();
             document.getElementById('playButton').disabled = false;
             document.getElementById('pauseButton').disabled = true;
-        }
-    });
-
-    // Ensure the pause button is not disabled initially
-    document.getElementById('pauseButton').disabled = false;
+        };
+    }
 }
 
 // Function to handle errors
