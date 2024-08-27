@@ -41,7 +41,7 @@ def create_app(config=None):
     app.config['UPLOAD_FOLDER'] = 'static/assets/images'
 
     # Ensure logger is set up to capture errors
-    app.logger.setLevel(logging.DEBUG)  
+    app.logger.setLevel(logging.INFO)  
     
     login_manager = LoginManager()
 

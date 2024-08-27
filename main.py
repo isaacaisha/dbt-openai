@@ -4,16 +4,6 @@ from app import create_app
 from asgiref.wsgi import WsgiToAsgi
 
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler()
-    ]
-)
-
-
 # Create the WSGI app
 app = create_app()
 

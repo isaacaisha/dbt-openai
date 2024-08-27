@@ -69,10 +69,15 @@
         </div>
         <div class="row">
             <div class="col-md-12 text-center">
-                <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked
-                    %}style="color: pink;" {% endif %}>
+                <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked %}
+                    style="color: pink;" {% else %} style="color: lightcyan;" {% endif %}>
                     <i class="fa fa-heart fa-2x"></i>
-                    <hr class="green" style="margin: 0 45%;">
+                    <hr class="green mb-3" style="margin: 0 45%;">
+        
+                    <!-- This div is hidden by default and only shown when the user clicks the like button -->
+                    <div id="likeMessage-{{ conversation.id }}" class="text-center" style="display: none;">
+                        <!-- The content here will be updated dynamically by JavaScript -->
+                    </div>
                 </div>
             </div>
         </div>
