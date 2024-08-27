@@ -1,8 +1,10 @@
 import os
 import logging
 import yt_dlp
+import whisper
 import assemblyai as aai
 import requests
+
 from dotenv import load_dotenv, find_dotenv
 from requests.exceptions import Timeout
 from flask import Blueprint, flash, render_template, request, jsonify, redirect, url_for
@@ -179,6 +181,7 @@ def download_audio(link):
         'outtmpl': os.path.join(AUDIO_FOLDER_PATH, '%(title)s.%(ext)s'),
         'nocheckcertificate': True,
         'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'rm_cache_dir': True,  # Add this line to remove the cache directory
         #'cookiefile': 'youtube_cookies.txt',  # Use the converted cookies file
     }
 
@@ -255,17 +258,27 @@ def cleanup_files(file_paths):
                 logger.error(f"Error removing file {file_path}: {str(e)}")
 
 
+#def get_transcription(audio_file):
+#    """Transcribe the audio file using AssemblyAI."""
+#    aai.settings.api_key = ASSEMBLYAI_API_KEY # os.getenv('ASSEMBLYAI_API_KEY')
+#    transcription_text = None
+#    try:
+#        transcriber = aai.Transcriber()
+#        transcript = transcriber.transcribe(audio_file)
+#        transcription_text = transcript.text
+#    except Exception as e:
+#        return None, str(e)
+#    return transcription_text, None
+
 def get_transcription(audio_file):
-    """Transcribe the audio file using AssemblyAI."""
-    aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
-    transcription_text = None
+    """Transcribe the audio file using Whisper."""
     try:
-        transcriber = aai.Transcriber()
-        transcript = transcriber.transcribe(audio_file)
-        transcription_text = transcript.text
+        model = whisper.load_model("tiny")  # You can also try "small" or "large" depending on your resources
+        result = model.transcribe(audio_file)
+        transcription_text = result["text"]
+        return transcription_text, None
     except Exception as e:
-        return None, str(e)
-    return transcription_text, None
+        return None, f"Error transcribing audio with Whisper: {str(e)}"
 
 
 def generate_blog_from_transcription(transcription):
