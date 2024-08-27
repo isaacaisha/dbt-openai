@@ -42,8 +42,13 @@ def create_app(config=None):
     app.config['SESSION_COOKIE_SECURE'] = True  # Only send cookies over HTTPS
     app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript from accessing the session cookie
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Mitigate CSRF
+    
+    # Set Redis configuration
+    redis_host = os.environ.get('REDIS_HOST', 'localhost')  # Use the service name if available
+    redis_port = int(os.environ.get('REDIS_PORT', 6379))    # Defaults to 6379 if not set
     app.config['SESSION_TYPE'] = 'redis'
-    app.config['SESSION_REDIS'] = Redis(host='localhost', port=6379)
+    app.config['SESSION_REDIS'] = Redis(host=redis_host, port=redis_port, db=0)
+    
     app.config['DEBUG'] = True
     app.config['UPLOAD_FOLDER'] = 'static/assets/images'
     Session(app)
