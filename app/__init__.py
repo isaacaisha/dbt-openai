@@ -41,7 +41,8 @@ def create_app(config=None):
 
     app.config['SESSION_COOKIE_SECURE'] = True  # Only send cookies over HTTPS
     app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript from accessing the session cookie
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Mitigate CSRF
+    #app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Mitigate CSRF
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Temporarily set to 'None' for testing
     
     # Set Redis configuration
     redis_host = os.environ.get('REDIS_HOST', 'localhost')

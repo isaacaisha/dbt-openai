@@ -39,6 +39,7 @@
     <div class="row text-center">
         <div class="col-lg-8 col-md-10 mx-auto mb-3">
             <form id="reviewForm" method="POST" action="{{ url_for('website_review.review_website') }}">
+                {{ review_form.hidden_tag() }}
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
@@ -46,7 +47,6 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                {{ review_form.csrf_token }}
                 <span class="align-left">{{ wtf.form_field(review_form.domain, autofocus=true) }}</span>
                 {{ wtf.form_field(review_form.submit, class="submit nav-link btn btn-success") }}
             </form>
