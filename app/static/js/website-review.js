@@ -142,11 +142,14 @@ async function fetchTtsUrl(reviewId) {
 
 // Function to initialize audio and set up button event handlers
 function initializeAudio(ttsUrl) {
+    // Reference the audio element globally
+    const audio = document.getElementById('response-audio');
+
     if (audio) {
         audio.pause(); // Stop any previously playing audio
     }
 
-    audio = new Audio(ttsUrl);
+    // audio = new Audio(ttsUrl);
 
     // Automatically play the audio
     audio.play().catch(error => console.error(`Audio play error: ${error}`));
