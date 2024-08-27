@@ -65,7 +65,7 @@ jobs:
 
       - name: Run tests with pytest
         run: |
-          pip install pytest redis
+          pip install redis pytest
           pytest
             
       # - name: Login to Docker Hub
