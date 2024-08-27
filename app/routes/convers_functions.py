@@ -22,7 +22,7 @@ TABLE_MAPPING = {
 
 
 @conversation_functionality_bp.route('/select-conversation-id', methods=['GET', 'POST'])
-def select_conversation():
+async def select_conversation():
     if not current_user.is_authenticated:
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
