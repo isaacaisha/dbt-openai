@@ -44,8 +44,6 @@ def create_app(config=None):
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Mitigate CSRF
     
     # Set Redis configuration
-    
-    # Set Redis configuration
     redis_host = os.environ.get('REDIS_HOST', 'localhost')
     redis_port = int(os.environ.get('REDIS_PORT', 6379))
 
