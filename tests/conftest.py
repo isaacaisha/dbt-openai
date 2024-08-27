@@ -1,4 +1,6 @@
 import pytest
+import redis
+
 from datetime import datetime
 from app import create_app, User
 from app.database import db, user, password, host, port, database
@@ -17,6 +19,18 @@ class TestConfig:
     SERVER_NAME = 'localhost:5000'
     APPLICATION_ROOT = '/'
     PREFERRED_URL_SCHEME = 'http'
+    # Add Redis configuration
+    REDIS_URL = "redis://localhost:6379/0"  # Assuming Redis is running locally
+    # If using Django-Redis for caching
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': REDIS_URL,
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
+        }
+    }
 
 
 @pytest.fixture(scope='module')
@@ -32,6 +46,15 @@ def app():
 @pytest.fixture(scope='module')
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture(scope='module')
+def redis_client():
+    # Initialize Redis client
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    yield r
+    # Optionally flush the DB after the tests
+    r.flushdb()
 
 
 @pytest.fixture

@@ -5,20 +5,20 @@ from tests.conftest import db, create_user, create_conversation, login
 
 # URL: pytest -v -s -x tests/test_convers_func.py
 
-def test_unauthenticated_delete_conversation(client):
+def test_unauthenticated_delete_conversation(client, redis_client):
     with client.application.test_request_context():
         response = client.post(url_for('conversation_function.delete_conversation'), data={'conversation_id': 1})
         assert response.status_code == 302
 
 
-def test_unauthenticated_get_conversation(client):
+def test_unauthenticated_get_conversation(client, redis_client):
     with client.application.test_request_context():
         response = client.get(url_for('conversation_function.get_conversation', conversation_id=1))
         assert response.status_code == 302
 
 
 # Test the select_conversation route
-def test_select_conversation(client, user1):
+def test_select_conversation(client, user1, redis_client):
     with client.application.test_request_context():
         # Log in the user
         login_response = login(client, user1.email, 'password1')
@@ -34,7 +34,7 @@ def test_select_conversation(client, user1):
 
 
 # Test the get_conversation route
-def test_get_conversation(client):
+def test_get_conversation(client, redis_client):
     with client.application.test_request_context():
         # Create a test user
         test_user = create_user('test@example.com', 'testpassword', 'Test User')
@@ -54,7 +54,7 @@ def test_get_conversation(client):
 
 
 # Test the delete_conversation route
-def test_delete_conversation(client):
+def test_delete_conversation(client, redis_client):
     with client.application.test_request_context():
         # Create a test user
         test_user = create_user('delete@example.com', 'deletepassword', 'Delete User')
@@ -71,7 +71,7 @@ def test_delete_conversation(client):
         assert response.location == url_for('conversation_function.delete_conversation')
 
 
-def test_access_conversation_or_delete_not_belonging_to_user(client, user1, user2):
+def test_access_conversation_or_delete_not_belonging_to_user(client, user1, user2, redis_client):
     with client.application.test_request_context():
         # Create a conversation for user1
         conversation = create_conversation(user1, 'Message from user1', 'Response for user1')
