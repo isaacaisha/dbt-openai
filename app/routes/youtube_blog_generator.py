@@ -182,7 +182,7 @@ def download_audio(link):
         'nocheckcertificate': True,
         'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'rm_cache_dir': True,  # Add this line to remove the cache directory
-        #'cookiefile': 'youtube_cookies.txt',  # Use the converted cookies file
+        'cookiefile': 'youtube_cookies.txt',  # Use the cookies file
     }
 
     try:
