@@ -2,7 +2,7 @@ import os
 import logging
 import yt_dlp
 import whisper
-import requests
+import httpx 
 
 from dotenv import load_dotenv, find_dotenv
 from requests.exceptions import Timeout
@@ -40,14 +40,18 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 def fetch_with_timeout(url, data, timeout=120):
     """Fetch data with a timeout for HTTP requests."""
+    client = httpx.Client(http2=False, verify=True, timeout=timeout)
+
     try:
-        response = requests.post(url, json=data, timeout=timeout)
+        response = client.post(url, json=data, timeout=timeout)
         response.raise_for_status()
         return response.json()
-    except Timeout:
+    except httpx.TimeoutException:
         return {'error': 'The request timed out. Please try again.'}
-    except requests.RequestException as e:
+    except httpx.RequestError as e:
         return {'error': f'An error occurred: {str(e)}'}
+    finally:
+        client.close()
 
 
 @generator_yt_blog_bp.route("/extras-features-home", methods=["GET"])
@@ -126,6 +130,8 @@ def blog_details(pk):
 
 def youtube_title(link):
     """Extract the title of a YouTube video from its link."""
+    client = httpx.Client(http2=False, verify=True)  # Instantiate the client
+
     try:
         video_id = None
         if 'v=' in link:
@@ -141,7 +147,7 @@ def youtube_title(link):
             return None
         
         url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
-        response = requests.get(url)
+        response = client.get(url)
         response.raise_for_status()
         data = response.json()
         
@@ -149,8 +155,11 @@ def youtube_title(link):
             return data['items'][0]['snippet']['title']
         else:
             logger.error(f"No items found in YouTube API response for link: {link}")
-    except requests.exceptions.RequestException as e:
+    except httpx.RequestError as e:
         logger.error(f"Error calling YouTube API: {str(e)}")
+    finally:
+        client.close()  # Close the client after use
+
     return None
 
 
@@ -166,8 +175,15 @@ def download_audio(link):
         'outtmpl': os.path.join(AUDIO_FOLDER_PATH, '%(title)s.%(ext)s'),
         'nocheckcertificate': True,
         'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Referer': 'https://www.youtube.com/',
+        'Origin': 'https://www.youtube.com',
+        'Sec-Fetch-Mode': 'navigate',
+
         'rm_cache_dir': True,  # Add this line to remove the cache directory
         'cookiefile': YOUTUBE_COOKIES_PATH,  # Use the cookies file
+        'cookies_from_browser': ('chrome', ),  # Use this option to get cookies directly from Chrome
         'verbose': True,  # Add this line
         'dump_single_json': True,  # Add this line to see the exact responses
     }
