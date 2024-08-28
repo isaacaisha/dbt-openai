@@ -10,10 +10,10 @@ llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='t
 
 
 # Database and Serialization Functions
-def get_conversations(user_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
+def get_conversations(owner_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
     filters = {}
-    if user_id is not None:
-        filters['user_id'] = user_id
+    if owner_id is not None:
+        filters['owner_id'] = owner_id
     if liked_value is not None:
         filters['liked'] = liked_value
     
