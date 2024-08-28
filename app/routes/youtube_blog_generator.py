@@ -2,7 +2,7 @@ import os
 import logging
 import yt_dlp
 import whisper
-import assemblyai as aai
+# import assemblyai as aai
 import requests
 
 from dotenv import load_dotenv, find_dotenv
