@@ -4,6 +4,7 @@ import base64
 import io
 import os
 import traceback
+
 from flask import Blueprint, flash, redirect, render_template, request, jsonify, url_for
 from flask_login import current_user
 from datetime import datetime
@@ -12,6 +13,7 @@ from app.app_forms import TextAreaDrawingIndex
 from app.memory import DrawingDatabase, db
 from PIL import Image
 from openai import OpenAI
+
 
 generator_drawing_bp = Blueprint('drawing_generator', __name__, template_folder='templates', static_folder='static')
 

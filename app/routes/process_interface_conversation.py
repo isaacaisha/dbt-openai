@@ -5,9 +5,11 @@ import json
 import pytz
 import os
 import numpy as np
+import logging
+
 from scipy.spatial.distance import cosine
 
-from flask import Blueprint, Response, flash, render_template, request, jsonify, redirect, send_file, send_from_directory, url_for
+from flask import Blueprint, Response, flash, render_template, request, jsonify, redirect, send_file, url_for
 from flask_login import current_user
 from gtts import gTTS
 from gtts.lang import tts_langs
@@ -22,9 +24,10 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.app_forms import TextAreaForm
 from app.memory import Memory, db
-import logging
 
-# Get the logger instance
+
+# Set up logger with a higher logging level to avoid excessive logs
+logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__, template_folder='templates', static_folder='static')

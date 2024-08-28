@@ -6,11 +6,12 @@ import urllib.parse
 import asyncio
 import cloudinary
 import cloudinary.uploader
-import httpx  # Replace requests with httpx for async support
 
 from dotenv import load_dotenv, find_dotenv
 import requests
+
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -40,7 +41,6 @@ os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
 
 # Fetch paths from environment variables
 CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', '/usr/bin/google-chrome')
-CHROME_DRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', '/usr/local/bin/chromedriver')
 
 
 # Configuration for Cloudinary     
@@ -121,7 +121,7 @@ def upload_to_cloudinary(audio_file_path):
         print(f"Error uploading to Cloudinary: {str(e)}")
         return None
     
-    
+
 # Function to take a screenshot
 async def take_screenshot(url):
     def _screenshot_worker(url):
@@ -137,7 +137,7 @@ async def take_screenshot(url):
             options.binary_location = CHROME_BINARY_PATH
 
             # Create a ChromeDriverService instance
-            chrome_service = ChromeService(executable_path=CHROME_DRIVER_PATH)
+            chrome_service = ChromeService(executable_path=ChromeDriverManager().install())
 
             # Initialize ChromeDriver in the thread
             browser = webdriver.Chrome(service=chrome_service, options=options)

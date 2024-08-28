@@ -10,6 +10,7 @@ from app.app_forms import ThemeChatForm, ForumChatForm
 from app.memory import Theme, Message, db
 from langdetect import detect
 
+
 conversation_chat_forum_bp = Blueprint('conversation_chat_forum', __name__)
 
 llm = ChatOpenAI(temperature=0.0, model="gpt-4o")

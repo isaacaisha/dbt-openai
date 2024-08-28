@@ -35,14 +35,15 @@ def create_app(config=None):
     app = Flask(__name__, template_folder='templates', static_folder='static')
     Bootstrap(app)
 
-    # Set up the secret key
-    secret_key = secrets.token_hex(19)
+    # Secret key for session management
+    secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(19))
     app.secret_key = secret_key
 
     app.config['SESSION_COOKIE_SECURE'] = True  # Only send cookies over HTTPS
     app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript from accessing the session cookie
-    #app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Mitigate CSRF
-    app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Temporarily set to 'None' for testing
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Mitigate CSRF
+    # # Temporarily set to 'None' for testing
+    # app.config['SESSION_COOKIE_SAMESITE'] = 'None'
     
     # Set Redis configuration
     redis_host = os.environ.get('REDIS_HOST', 'localhost')

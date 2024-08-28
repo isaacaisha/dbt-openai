@@ -1,4 +1,5 @@
 import secrets
+
 from flask import Blueprint, current_app, render_template, redirect, url_for, flash, request
 from flask_login import login_user, current_user, logout_user
 from flask_mail import Mail, Message

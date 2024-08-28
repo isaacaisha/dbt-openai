@@ -9,20 +9,28 @@ from app.app_forms import DatabaseForm
 llm_conversation_bp = Blueprint('llm_conversation', __name__, template_folder='templates')
 
 
-def get_conversations(owner_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
-    query = Memory.query
-    if owner_id is not None:
-        query = query.filter_by(owner_id=owner_id)
-    if search is not None:
-        query = query.filter(Memory.user_message.ilike(f"%{search.strip()}%"))
+# Database and Serialization Functions
+def get_conversations(user_id=None, limit=None, offset=None, search=None, order_by_desc=False, liked_value=None):
+    filters = {}
+    if user_id is not None:
+        filters['user_id'] = user_id
     if liked_value is not None:
-        query = query.filter(Memory.liked == liked_value)
+        filters['liked'] = liked_value
+    
+    query = Memory.query.filter_by(**filters)
+    
+    if search:
+        search_term = f"%{search.strip()}%"
+        query = query.filter(Memory.site_url.ilike(search_term))
+    
     if order_by_desc:
         query = query.order_by(Memory.id.desc())
-    if limit is not None:
+    
+    if limit:
         query = query.limit(limit)
-    if offset is not None:
+    if offset:
         query = query.offset(offset)
+    
     return query.all()
 
 

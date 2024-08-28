@@ -146,7 +146,7 @@
 
     <hr class="crimson mb-5">
 
-    <script>const reviewId = '{{ review_id.id }}';</script>
+    <script>const reviewId = '{{ review_id|safe }}';</script>
     <script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 
