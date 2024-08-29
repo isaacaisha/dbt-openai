@@ -1,5 +1,4 @@
 import os
-import logging
 import yt_dlp
 import whisper
 import httpx 
@@ -13,10 +12,6 @@ from datetime import datetime
 from openai import OpenAI, OpenAIError
 from app.memory import BlogPost, User, db
 
-
-# Set up logger
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
 
@@ -74,25 +69,25 @@ def generate_blog():
         try:
             data = request.get_json()
             if not data:
-                logger.error("No JSON data received.")
+                print("No JSON data received.")
                 return jsonify({'error': 'Invalid data sent 😭'}), 400
             
             youtube_link = data.get('link')
             if not youtube_link:
-                logger.error("YouTube link not provided.")
+                print("YouTube link not provided.")
                 return jsonify({'error': 'YouTube link is required.'}), 400
 
-            logger.info(f"Processing YouTube link: {youtube_link}")
+            print(f"Processing YouTube link: {youtube_link}")
             new_blog_article, error_message = process_youtube_video(current_user.id, youtube_link)
 
             if error_message:
-                logger.error(f"Error generating blog: {error_message}")
+                print(f"Error generating blog: {error_message}")
                 return jsonify({'error': error_message}), 500
 
             return jsonify({'content': new_blog_article.generated_content}), 200
 
         except Exception as e:
-            logger.error(f"Unhandled exception in generate_blog: {str(e)}")
+            print(f"Unhandled exception in generate_blog: {str(e)}")
             return jsonify({'error': 'An unexpected error occurred'}), 500
 
     elif request.method == 'GET':
@@ -139,11 +134,11 @@ def youtube_title(link):
         elif 'youtu.be/' in link:
             video_id = link.split('youtu.be/')[-1].split('?')[0]
         else:
-            logger.error(f"Unsupported YouTube URL format: {link}")
+            print(f"Unsupported YouTube URL format: {link}")
             return None
         
         if not video_id:
-            logger.error(f"Unable to extract video ID from link: {link}")
+            print(f"Unable to extract video ID from link: {link}")
             return None
         
         url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
@@ -154,9 +149,9 @@ def youtube_title(link):
         if 'items' in data and len(data['items']) > 0:
             return data['items'][0]['snippet']['title']
         else:
-            logger.error(f"No items found in YouTube API response for link: {link}")
+            print(f"No items found in YouTube API response for link: {link}")
     except httpx.RequestError as e:
-        logger.error(f"Error calling YouTube API: {str(e)}")
+        print(f"Error calling YouTube API: {str(e)}")
     finally:
         client.close()  # Close the client after use
 
@@ -196,16 +191,16 @@ def download_audio(link):
             new_file = base + '.mp3'
             if os.path.exists(audio_file) and not os.path.exists(new_file):
                 os.rename(audio_file, new_file)
-            logger.info(f"Audio file downloaded and renamed: {new_file}")
+            print(f"Audio file downloaded and renamed: {new_file}")
             return new_file, None
     except yt_dlp.utils.RegexNotFoundError:
-        logger.error("Unable to extract metadata from the video")
+        print("Unable to extract metadata from the video")
         return None, "Unable to extract metadata from the video"
     except yt_dlp.utils.DownloadError as e:
-        logger.error(f"Error downloading audio: {str(e)}")
+        print(f"Error downloading audio: {str(e)}")
         return None, f"Error downloading audio: {str(e)}"
     except Exception as e:
-        logger.error(f"Error downloading audio: {str(e)}")
+        print(f"Error downloading audio: {str(e)}")
         return None, f"Error downloading audio: {str(e)}"
 
 
@@ -241,7 +236,7 @@ def generate_blog_from_transcription(transcription):
         generated_content = response.choices[0].message.content.strip()
         return generated_content
     except OpenAIError as e:
-        logger.error(f"Error generating blog content: {str(e)}")
+        print(f"Error generating blog content: {str(e)}")
         return None
     
 
@@ -294,4 +289,4 @@ def cleanup_files(file_paths):
             try:
                 os.remove(file_path)
             except OSError as e:
-                logger.error(f"Error removing file {file_path}: {str(e)}")
+                print(f"Error removing file {file_path}: {str(e)}")

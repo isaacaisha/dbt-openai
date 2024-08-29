@@ -6,9 +6,9 @@ import urllib.parse
 import asyncio
 import cloudinary
 import cloudinary.uploader
+import requests
 
 from dotenv import load_dotenv, find_dotenv
-import requests
 
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager

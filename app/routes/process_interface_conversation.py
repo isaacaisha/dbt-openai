@@ -5,7 +5,6 @@ import json
 import pytz
 import os
 import numpy as np
-import logging
 
 from scipy.spatial.distance import cosine
 
@@ -26,10 +25,6 @@ from app.app_forms import TextAreaForm
 from app.memory import Memory, db
 
 
-# Set up logger with a higher logging level to avoid excessive logs
-logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger(__name__)
-
 interface_conversation_bp = Blueprint('conversation_interface', __name__, template_folder='templates', static_folder='static')
 
 openai = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
@@ -49,9 +44,7 @@ os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
 
 @interface_conversation_bp.route("/conversation-interface", methods=["GET", "POST"])
 def conversation_interface():
-    logger.debug("Entering conversation_interface route")
     if not current_user.is_authenticated:
-        logger.warning("Unauthenticated access attempt to conversation_interface")
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
     
@@ -62,9 +55,7 @@ def conversation_interface():
     try:
         if request.method == "POST" and writing_text_form.validate_on_submit():
             user_input = request.form['writing_text']
-            logger.debug(f"Received user input: {user_input}")
             answer = conversation.predict(input=user_input)
-            logger.debug(f"Generated answer: {answer}")
             latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
         else:
             latest_conversation = Memory.query.filter_by(owner_id=current_user.id).order_by(Memory.created_at.desc()).all()
@@ -72,7 +63,6 @@ def conversation_interface():
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
-        logger.debug(f"Rendering template with user input: {user_input}, answer: {answer}, memory buffer: {memory_buffer}, memory load: {memory_load}")
         return render_template('conversation-interface.html', writing_text_form=writing_text_form,
                                user_input=user_input, answer=answer, current_user=current_user,
                                memory_buffer=memory_buffer, memory_load=memory_load,
@@ -84,11 +74,9 @@ def conversation_interface():
 
 @interface_conversation_bp.route('/audio/<int:conversation_id>')
 def serve_audio_from_db(conversation_id):
-    logger.debug(f"Requested audio for conversation ID: {conversation_id}")
     memory = Memory.query.get(conversation_id)
     if memory and memory.audio_datas:
         audio_data = io.BytesIO(memory.audio_datas)
-        logger.debug("Audio data found and served.")
         return send_file(
             audio_data,
             mimetype='audio/mpeg',
@@ -96,7 +84,6 @@ def serve_audio_from_db(conversation_id):
             download_name=f"audio_{conversation_id}.mp3"
         )
     else:
-        logger.warning(f"Audio not found for conversation ID: {conversation_id}")
         return Response("Audio not found", status=404)
 
 
@@ -139,7 +126,6 @@ def generate_conversation_context(user_input, user_conversations):
 
 # Function to handle the response from the language model
 def handle_llm_response(user_input, conversation_context, detected_lang):
-    logger.debug(f"Handling LLM response with user_input: {user_input}, conversation_context: {conversation_context}, detected_lang: {detected_lang}")
     if conversation_context and 'previous_conversations' in conversation_context:
         conversation_context['previous_conversations'] = conversation_context['previous_conversations'][-3:]  
 
@@ -175,7 +161,6 @@ def handle_llm_response(user_input, conversation_context, detected_lang):
 
     memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
 
-    logger.debug(f"Generated assistant reply: {assistant_reply}, saved audio data, response: {response}")
     return assistant_reply, audio_data, response, flash_message
 
 

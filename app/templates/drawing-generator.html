@@ -1,10 +1,8 @@
 <!-- DRAWING-GENERATOR.HTML -->
 
-{% import "bootstrap/wtf.html" as wtf %}
-
 {% extends 'header.html' %}
 
-{% block title %} Welcome to{% endblock %}
+{% block title %} Drawing Generator {% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -127,16 +125,14 @@
 
                 reader.readAsDataURL(file);
 
-                // Using promise to ensure the file is read before continuing
                 await new Promise((resolve) => {
                     reader.onloadend = () => {
-                        fileData = reader.result.split(",")[1]; // Extract the Base64 part
+                        fileData = reader.result.split(",")[1];
                         resolve();
                     };
                 });
             }
 
-            // Show loading indicators
             document.getElementById('loading-indicator').style.display = 'block';
             document.getElementById('loading-circle').style.display = 'block';
             document.getElementById('error-message').style.display = 'none';
@@ -156,60 +152,28 @@
 
                 const data = await response.json();
 
-                // Hide loading indicators
                 document.getElementById('loading-indicator').style.display = 'none';
                 document.getElementById('loading-circle').style.display = 'none';
 
-                if (data.drawing_url) {
-                    // Display the generated drawing
-                    document.getElementById('drawing-result').innerHTML = `
-                        <img src="${data.drawing_url}" alt="Generated Drawing" id="generated-image" style="border: 0.1rem solid #AEFAFC;">`;
+                if (response.ok) {
+                    const imgContainer = document.getElementById('drawing-result');
+                    imgContainer.innerHTML = `<img class="image_display" src="${data.drawing_url}" />`;
 
-                    // Provide a download link
-                    document.getElementById('saveImage').innerHTML = `
-                        <a href="${data.drawing_url}" download="generated_drawing.png" style="color:gold;">
-                            Download Image
-                        </a>`;
-
-                    // Hide any previous error message
-                    document.getElementById('error-message').style.display = 'none';
+                    const saveButton = document.getElementById('saveImage');
+                    saveButton.style.display = 'block';
+                    saveButton.innerHTML = `<a href="${data.drawing_url}" download="generated_drawing.png">Save Image</a>`;
                 } else {
-                    // Display error message
-                    document.getElementById('error-message').innerText = data.error;
-                    document.getElementById('error-message').style.display = 'block';
-                    document.getElementById('saveImage').style.display = 'none';
+                    throw new Error(data.error || 'An error occurred.');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('error-message').innerText = 'An error occurred. Please try again.';
-                document.getElementById('error-message').style.display = 'block';
                 document.getElementById('loading-indicator').style.display = 'none';
                 document.getElementById('loading-circle').style.display = 'none';
-                document.getElementById('saveImage').style.display = 'none';
+                document.getElementById('error-message').textContent = error.message;
+                document.getElementById('error-message').style.display = 'block';
             }
         });
     </script>
-
 </div>
 
 {% endautoescape %}
-{% endblock %}
-
-{% block footer1 %}
-<div class="container">
-    <hr class="crimson mb-2">
-
-    <div class="text-center">
-        <button type="button" class="btn back-home mb-2">
-            <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
-                -¡!¡- Back To Extras Features -¡!¡-</a>
-        </button>
-    </div>
-
-    <hr class="crimson mb-5">
-
-    <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
-        Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
-    </footer>
-</div>
 {% endblock %}

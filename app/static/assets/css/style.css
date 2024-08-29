@@ -16,6 +16,7 @@ body {
     padding: 0.3rem;
 }
 
+/* title */
 #content>div.container-fluid>div>div>h1,
 #content>div>div.container-fluid>div>div>h1 {
     background-color: #171717;
@@ -96,9 +97,9 @@ body {
 .navbar.nav-home {
     margin-bottom: 0;
 }
-
+/*
 body {
-  overflow-x: hidden; /* Prevent horizontal overflow */
+  overflow-x: hidden; /* Prevent horizontal overflow /
 }*/
 
 .container {

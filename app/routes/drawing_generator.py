@@ -3,6 +3,7 @@
 import base64
 import io
 import os
+import requests
 import traceback
 
 from flask import Blueprint, flash, redirect, render_template, request, jsonify, url_for
@@ -27,6 +28,8 @@ os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
 
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# API Key for DeepAI
+api_key = os.getenv("DEEPAI_API_KEY")
 
 
 @generator_drawing_bp.route("/drawing-generator", methods=["GET", "POST"])
@@ -67,63 +70,73 @@ def drawing_index():
                            date=datetime.now().strftime("%a %d %B %Y"))
 
 
-def fix_base64_padding(base64_str):
-    # Add padding if necessary
-    missing_padding = len(base64_str) % 4
-    if missing_padding:
-        base64_str += '=' * (4 - missing_padding)
-    return base64_str
-
-
 def generate_drawing_from(generate_draw, generation_type, image_data):
     try:
+        response = None  # Initialize the response variable
+        
+        headers = {
+            'api-key': api_key
+        }
+
         if generation_type == 'generations':
             response = client.images.generate(
                 model="dall-e-3",
                 prompt=generate_draw,
                 style="vivid",
             )
-        elif generation_type in ('edits', 'variations'):
+            image_url = response.data[0].url  # Access the URL from the response data
+            print(f"Generated image URL: {image_url}")
+            return image_url
+        
+        elif generation_type == 'edits':
             if not image_data:
-                raise ValueError("image_data is required for 'edits' and 'variations' generation types.")
+                raise ValueError("image_data is required for 'edits' generation type.")
             
-            # Fix padding for base64 image data
             image_data = fix_base64_padding(image_data)
-
-            # Decode base64 image data
             image_bytes = base64.b64decode(image_data)
             print(f"Decoded image bytes length: {len(image_bytes)}")
 
-            image = Image.open(io.BytesIO(image_bytes))
-            print(f"Image opened: Size={image.size}, Mode={image.mode}")
+            # Send request to DeepAI for editing the image
+            response = requests.post(
+                "https://api.deepai.org/api/image-editor",
+                files={'image': image_bytes},
+                data={'text': generate_draw},  # Use the prompt for editing
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                response_data = response.json()
+                image_url = response_data['output_url']  # Access the URL from the response data
+                print(f"Generated image URL: {image_url}")
+                return image_url
+            else:
+                raise ValueError(f"DeepAI API error: {response.text}")
 
-            # Convert image to 'RGBA' format if it's not already
-            if image.mode != 'RGBA':
-                image = image.convert('RGBA')
+        elif generation_type == 'variations':
+            if not image_data:
+                raise ValueError("image_data is required for 'variations' generation type.")
+            
+            image_data = fix_base64_padding(image_data)
+            image_bytes = base64.b64decode(image_data)
+            print(f"Decoded image bytes length: {len(image_bytes)}")
 
-            buffered_image = io.BytesIO()
-            image.save(buffered_image, format="PNG")
-            buffered_image.seek(0)
+            # Send request to DeepAI for creating image variations
+            response = requests.post(
+                "https://api.deepai.org/api/image-variations",
+                files={'image': image_bytes},
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                response_data = response.json()
+                image_url = response_data['output_url']  # Access the URL from the response data
+                print(f"Generated image URL: {image_url}")
+                return image_url
+            else:
+                raise ValueError(f"DeepAI API error: {response.text}")
 
-            if generation_type == 'edits':
-                response = client.images.edit(
-                    image=buffered_image,
-                    prompt=generate_draw,
-                )
-            else:  # generation_type == 'variations'
-                response = client.images.create_variation(
-                    image=buffered_image,
-                )
         else:
             raise ValueError(f"Unknown generation type: {generation_type}")
-
-        # Check the response content
-        if not response.data or len(response.data) == 0:
-            raise ValueError("No image data returned from the API.")
-
-        image_url = response.data[0].url  # Access the URL from the response data
-        print(f"Generated image URL: {image_url}")
-        return image_url
 
     except Exception as e:
         print(f"Exception occurred during drawing generation: {e}")
@@ -131,6 +144,14 @@ def generate_drawing_from(generate_draw, generation_type, image_data):
         traceback.print_exc()  # Print the traceback for debugging
         raise
 
+
+def fix_base64_padding(base64_str):
+    # Add padding if necessary
+    missing_padding = len(base64_str) % 4
+    if missing_padding:
+        base64_str += '=' * (4 - missing_padding)
+    return base64_str
+    
 
 def save_generated_drawing(user_name, user_prompt, image_url):
     try:
