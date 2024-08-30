@@ -58,7 +58,7 @@
             <select id="generationType" name="generation_type" class="form-control text-center">
                 <option value="generations">Generations</option>
                 <option value="edits">Edits</option>
-                <option value="variations">Variations</option>
+                <option value="face-to-sticker">Face To Sticker</option>
             </select>
         </div>
 
@@ -106,7 +106,7 @@
     <script>
         document.getElementById('generationType').addEventListener('change', (event) => {
             const uploadContainer = document.getElementById('upload-container');
-            if (event.target.value === 'edits' || event.target.value === 'variations') {
+            if (event.target.value === 'edits' || event.target.value === 'face-to-sticker') {
                 uploadContainer.style.display = 'block';
             } else {
                 uploadContainer.style.display = 'none';

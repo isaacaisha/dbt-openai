@@ -112,9 +112,9 @@ def generate_drawing_from(generate_draw, generation_type, image_data):
             else:
                 raise ValueError(f"DeepAI API error: {response.text}")
 
-        elif generation_type == 'variations':
+        elif generation_type == 'face-to-sticker':
             if not image_data:
-                raise ValueError("image_data is required for 'variations' generation type.")
+                raise ValueError("image_data is required for 'face-to-sticker' generation type.")
             
             image_data = fix_base64_padding(image_data)
             image_bytes = base64.b64decode(image_data)
@@ -122,7 +122,7 @@ def generate_drawing_from(generate_draw, generation_type, image_data):
 
             # Send request to DeepAI for creating image variations
             response = requests.post(
-                "https://api.deepai.org/api/image-variations",
+                "https://api.deepai.org/api/face-to-sticker",
                 files={'image': image_bytes},
                 headers=headers
             )
