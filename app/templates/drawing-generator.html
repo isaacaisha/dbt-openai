@@ -94,15 +94,18 @@
 
         <hr class="gold mb-3">
 
-        <div id="analyze-upload-container" class="form-group align-left" style="width: 199px; margin: 0 0 0 25%;">
+        <div id="analyze-upload-container" class="form-group align-left" style="width: 229px; margin: auto;">
             <label for="analyzeImageUpload" class="label_">Upload Image for Analysis:</label>
             <input type="file" id="analyzeImageUpload" name="analyze_image_upload" class="form-control" accept="image/*"
                 style="display:none;">
-
         </div>
-        <button id="analyzeButton" class="mb-4 btn analyze-text" type="button">Analyze The Image 🔥¡!¡
-            <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
-        </button>
+
+        <div>
+            <button id="analyzeButton" class="mb-4 btn analyze-text" type="button">Analyze The Image 🔥¡!¡
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
+            </button>
+        </div>
+
         <hr class="gold mb-3">
 
         <div id="analysis-container" style="height: auto; width: 100%;" class="analysis-container mb-5">
