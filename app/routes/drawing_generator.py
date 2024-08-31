@@ -6,14 +6,14 @@ import os
 import requests
 import traceback
 
-from flask import Blueprint, flash, redirect, render_template, request, jsonify, url_for
+from flask import Blueprint, flash, redirect, render_template, request, jsonify, url_for, current_app
 from flask_login import current_user
-from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from app.app_forms import TextAreaDrawingIndex
-from app.memory import DrawingDatabase, db
 from PIL import Image
 from openai import OpenAI
+from app.memory import DrawingDatabase, db
+from datetime import datetime
 
 
 generator_drawing_bp = Blueprint('drawing_generator', __name__, template_folder='templates', static_folder='static')
@@ -23,13 +23,22 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_FOLDER_PATH = os.path.join(BASE_DIR, 'static')
 AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
 
-# Ensure the directory exists
+# Ensure directories exist
+uploaded_images_path = os.path.join(STATIC_FOLDER_PATH, 'uploaded_images')
 os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
 
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # API Key for DeepAI
 api_key = os.getenv("DEEPAI_API_KEY")
+    
+
+def fix_base64_padding(base64_str):
+    # Add padding if necessary
+    missing_padding = len(base64_str) % 4
+    if missing_padding:
+        base64_str += '=' * (4 - missing_padding)
+    return base64_str
 
 
 @generator_drawing_bp.route("/drawing-generator", methods=["GET", "POST"])
@@ -45,7 +54,7 @@ def drawing_index():
         data = request.get_json()
         if not data or 'generate_draw' not in data or 'type' not in data:
             return jsonify({'error': 'Prompt and type are required to generate a drawing.'}), 400
-
+        
         generate_draw = data['generate_draw']
         generation_type = data['type']
         image_data = data.get('image_data')
@@ -145,12 +154,66 @@ def generate_drawing_from(generate_draw, generation_type, image_data):
         raise
 
 
-def fix_base64_padding(base64_str):
-    # Add padding if necessary
-    missing_padding = len(base64_str) % 4
-    if missing_padding:
-        base64_str += '=' * (4 - missing_padding)
-    return base64_str
+def get_image_base64(image_path):
+    """Encode image file to base64."""
+    with Image.open(image_path) as image:
+        buffered = io.BytesIO()
+        image.save(buffered, format="JPEG")  # Assuming image is in a format that PIL can handle
+        return base64.b64encode(buffered.getvalue()).decode('utf-8')
+    
+
+def analyze_image(image_data):
+    """Analyze the image by sending it directly to OpenAI's API."""
+    base64_image = get_image_base64(image_data)
+    
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
+    }
+    
+    payload = {
+        "model": "gpt-4o-mini",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "What’s in this image?"
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                    }
+                ]
+            }
+        ],
+        "max_tokens": 300
+    }
+    
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    return response.json()
+
+
+# Usage in your Flask route
+@generator_drawing_bp.route("/drawing-analyze", methods=["POST"])
+def analyze_drawing():
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'Please login to access this page.'}), 401
+
+    file = request.files.get('analyze_image_upload')
+    if not file:
+        return jsonify({'error': 'No file uploaded.'}), 400
+
+    try:
+        # Convert the uploaded file to base64
+        description = analyze_image(file)
+        return jsonify({'description': description}), 200
+    except Exception as e:
+        current_app.logger.error(f"Error processing image: {e}")
+        return jsonify({'error': 'Failed to process image.'}), 500
     
 
 def save_generated_drawing(user_name, user_prompt, image_url):

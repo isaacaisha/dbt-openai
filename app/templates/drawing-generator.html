@@ -1,23 +1,20 @@
-<!-- DRAWING-GENERATOR.HTML -->
-
 {% extends 'header.html' %}
 
-{% block title %} Drawing Generator {% endblock %}
+{% block title %}Drawing Generator{% endblock %}
 
 {% block head %}
 {{ super() }}
 <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
 {% include 'bootstrap/base.html' %}
 <style>
-    /* Responsive image container */
     .img-container {
         display: flex;
         justify-content: center;
         margin: 0 auto;
         max-width: 100%;
+        width: 100%;
     }
 
-    /* Responsive image */
     .img-container img {
         max-width: 100%;
         height: auto;
@@ -30,7 +27,7 @@
 <div class="container-fluid mb-5">
     <div class="p-1 rounded-3 jumbotron bg-dark text-light">
         <div class="container-fluid py-1">
-            <h1 class="">
+            <h1>
                 <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" alt="Crown Icon"
                     class="crown img-fluid mx-auto" width="100" height="100">
                 ·SìįSí·Dbt· OpenAI
@@ -44,13 +41,11 @@
 
 {% block content %}
 {% autoescape true %}
-
 <div class="content text-center">
     <form id="drawing-form" method="POST">
         {{ drawing_form.csrf_token }}
 
         <div id="error-message" class="alert alert-danger mb-3" style="display: none;"></div>
-
         <hr class="green mb-2">
 
         <div class="form-group align-left mb-3" style="width: 199px; margin: auto;">
@@ -62,19 +57,18 @@
             </select>
         </div>
 
-        <hr class="green mb-5">
-
-        <div id="upload-container" class="form-group align-left mb-5"
+        <div id="upload-container" class="form-group align-left mb-3"
             style="display: none; width: 199px; margin: auto;">
-            <label for="imageUpload" class="label_">Upload Image for Edits or Variations:</label>
-            <input type="file" id="imageUpload" name="image_upload" class="form-control">
+            <label for="imageUpload" class="label_">Upload Image for Edits or Face To Sticker:</label>
+            <input type="file" id="imageUpload" name="image_upload" class="form-control" accept="image/*">
         </div>
 
+        <hr class="green mb-5">
+
         <div id="textarea-container" class="align-left mb-5">
-            <label for="generateDraw" class="label_">
-                Start Writing to Generate a Drawing:<br>(be Specific for a better result)
-            </label>
-            <textarea class="form-control mb-3 align-left" id="generateDraw" name="generate_draw"></textarea>
+            <label for="generateDraw" class="label_">Start Writing to Generate a Drawing:<br>(be Specific for a better
+                result)</label>
+            <textarea class="form-control mb-5 align-left" id="generateDraw" name="generate_draw"></textarea>
         </div>
 
         <hr class="gold mb-3">
@@ -88,84 +82,166 @@
         <div id="loading-circle" class="load mb-3" style="display: none;"></div>
 
         <div class="text-center">
-            <button id="generateButton" class="mb-3 btn generate-text" type="button">
-                Generate The Drawing 🔥¡!¡
-                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
-            </button>
+            <button id="generateButton" class="btn generate-text mb-3" type="button">Generate Drawing 🔥¡!¡
+                <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥</button>
         </div>
 
-        <hr class="gold mb-5">
+        <hr class="gold mb-3">
 
-        <div style="height: auto; width: 100%;" class="mb-5">
-            <div id="drawing-result" class="img-container mb-3"></div>
+        <div class="img-container mb-3" id="user-image-display"></div> <!-- Container for the uploaded image -->
+        <div class="img-container mb-3" id="generated-image-display"></div> <!-- Container for the generated image -->
+        <button id="saveImage" class="nav-link btn mb-3" style="margin: auto;"></button>
+
+        <hr class="gold mb-3">
+
+        <div id="analyze-upload-container" class="form-group align-left" style="width: 199px; margin: 0 0 0 25%;">
+            <label for="analyzeImageUpload" class="label_">Upload Image for Analysis:</label>
+            <input type="file" id="analyzeImageUpload" name="analyze_image_upload" class="form-control" accept="image/*"
+                style="display:none;">
+
         </div>
+        <button id="analyzeButton" class="mb-4 btn analyze-text" type="button">Analyze The Image 🔥¡!¡
+            <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
+        </button>
+        <hr class="gold mb-3">
 
-        <button id="saveImage" class="nav-link mb-5 btn" style="margin: auto;"></button>
+        <div id="analysis-container" style="height: auto; width: 100%;" class="analysis-container mb-5">
+            <div id="uploaded-image-display" class="img-container mb-3"></div>
+            <div id="analysis-result"></div> <!-- To display analysis results -->
+        </div>
     </form>
 
     <script>
-        document.getElementById('generationType').addEventListener('change', (event) => {
+        document.addEventListener('DOMContentLoaded', function () {
+            // Element references
+            const generationTypeElement = document.getElementById('generationType');
             const uploadContainer = document.getElementById('upload-container');
-            if (event.target.value === 'edits' || event.target.value === 'face-to-sticker') {
-                uploadContainer.style.display = 'block';
-            } else {
-                uploadContainer.style.display = 'none';
-            }
-        });
-
-        document.getElementById('generateButton').addEventListener('click', async () => {
-            const generateDraw = document.getElementById('generateDraw').value;
-            const generationType = document.getElementById('generationType').value;
             const fileInput = document.getElementById('imageUpload');
-            let fileData = null;
+            const analyzeFileInput = document.getElementById('analyzeImageUpload');
+            const generateButton = document.getElementById('generateButton');
+            const userImageDisplay = document.getElementById('user-image-display');
+            const generatedImageDisplay = document.getElementById('generated-image-display');
+            const saveButton = document.getElementById('saveImage');
+            const analyzeButton = document.getElementById('analyzeButton');
+            const imageDisplayContainer = document.getElementById('uploaded-image-display');
 
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
+            // Event Listeners
+            setupEventListeners();
 
-                reader.readAsDataURL(file);
+            function setupEventListeners() {
+                setupGenerationTypeChange();
+                setupGenerateButtonClick();
+                setupAnalyzeButtonClick();  // This now directly triggers file input
+            }
 
-                await new Promise((resolve) => {
-                    reader.onloadend = () => {
-                        fileData = reader.result.split(",")[1];
-                        resolve();
-                    };
+            function setupGenerationTypeChange() {
+                generationTypeElement.addEventListener('change', (event) => {
+                    const requiresUpload = ['edits', 'face-to-sticker'].includes(event.target.value);
+                    uploadContainer.style.display = requiresUpload ? 'block' : 'none';
                 });
             }
 
-            document.getElementById('loading-indicator').style.display = 'block';
-            document.getElementById('loading-circle').style.display = 'block';
-            document.getElementById('error-message').style.display = 'none';
+            function setupGenerateButtonClick() {
+                generateButton.addEventListener('click', async () => {
+                    const generateDraw = document.getElementById('generateDraw').value;
+                    const generationType = generationTypeElement.value;
 
-            try {
-                const response = await fetch('/drawing-generator', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        generate_draw: generateDraw,
-                        type: generationType,
-                        image_data: fileData
-                    })
+                    // Check if image upload is necessary and available
+                    if (['edits', 'face-to-sticker'].includes(generationType) && fileInput.files.length === 0) {
+                        alert('Please select an image to upload.');
+                        return;
+                    }
+
+                    let imageDataURL = null;
+                    if (fileInput.files.length > 0) {
+                        const fileReader = new FileReader();
+                        fileReader.readAsDataURL(fileInput.files[0]);
+                        await new Promise(resolve => fileReader.onloadend = resolve);
+                        imageDataURL = fileReader.result.split(',')[1]; // Extract base64 part
+                        userImageDisplay.innerHTML = `<img src="${fileReader.result}" alt="Uploaded Image" class="image_display"/>`;
+                    }
+
+                    generateDrawing(generateDraw, generationType, imageDataURL);
+                });
+            }
+
+            async function generateDrawing(generateDraw, generationType, imageDataURL) {
+                document.getElementById('loading-indicator').style.display = 'block';
+                document.getElementById('loading-circle').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
+
+                try {
+                    const response = await fetch('/drawing-generator', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ generate_draw: generateDraw, type: generationType, image_data: imageDataURL })
+                    });
+                    const data = await response.json();
+
+                    document.getElementById('loading-indicator').style.display = 'none';
+                    document.getElementById('loading-circle').style.display = 'none';
+
+                    if (response.ok) {
+                        generatedImageDisplay.innerHTML = `<img src="${data.drawing_url}" alt="Generated Image" class="image_display mt-3 mb-1" style="max-width: 100%; height: auto;"/>`;
+                        saveButton.innerHTML = `<a href="${data.drawing_url}" download="GeneratedImage.png">Save Image</a>`;
+                        saveButton.style.display = 'block';
+                    } else {
+                        throw new Error(data.error || 'An error occurred.');
+                    }
+                } catch (error) {
+                    handleError(error);
+                }
+            }
+
+            function setupAnalyzeButtonClick() {
+                analyzeButton.addEventListener('click', () => {
+                    analyzeFileInput.click(); // Directly trigger file input
                 });
 
-                const data = await response.json();
+                analyzeFileInput.addEventListener('change', async () => {
+                    if (analyzeFileInput.files.length > 0) {
+                        const formData = new FormData();
+                        formData.append('analyze_image_upload', analyzeFileInput.files[0]);
 
-                document.getElementById('loading-indicator').style.display = 'none';
-                document.getElementById('loading-circle').style.display = 'none';
+                        const reader = new FileReader();
+                        reader.readAsDataURL(analyzeFileInput.files[0]);
 
-                if (response.ok) {
-                    const imgContainer = document.getElementById('drawing-result');
-                    imgContainer.innerHTML = `<img class="image_display" src="${data.drawing_url}" />`;
+                        reader.onload = () => {
+                            imageDisplayContainer.innerHTML = `<img src="${reader.result}" alt="Uploaded Image"/>`;
+                        };
 
-                    const saveButton = document.getElementById('saveImage');
-                    saveButton.style.display = 'block';
-                    saveButton.innerHTML = `<a href="${data.drawing_url}" download="generated_drawing.png">Save Image</a>`;
-                } else {
-                    throw new Error(data.error || 'An error occurred.');
+                        await new Promise(resolve => reader.onloadend = resolve);
+                        analyzeImage(formData);
+                    }
+                });
+            }
+
+            async function analyzeImage(formData) {
+                document.getElementById('loading-indicator').style.display = 'block';
+                document.getElementById('loading-circle').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
+
+                try {
+                    const response = await fetch('/drawing-analyze', { method: 'POST', body: formData });
+                    const data = await response.json();
+
+                    document.getElementById('loading-indicator').style.display = 'none';
+                    document.getElementById('loading-circle').style.display = 'none';
+
+                    if (response.ok) {
+                        const analysisResult = data.description.choices[0].message.content || data;
+                        const analysisContainer = document.getElementById('analysis-result');
+                        analysisContainer.innerHTML = `<textarea class="textarea-memory mt-3">Analysis Result: ${analysisResult}</textarea><hr class="green mt-3">`;
+                    } else {
+                        throw new Error(data.error || 'An error occurred.');
+                    }
+                } catch (error) {
+                    handleError(error);
                 }
-            } catch (error) {
+            }
+
+            function handleError(error) {
+                console.error('Error:', error);
                 document.getElementById('loading-indicator').style.display = 'none';
                 document.getElementById('loading-circle').style.display = 'none';
                 document.getElementById('error-message').textContent = error.message;
@@ -174,6 +250,23 @@
         });
     </script>
 </div>
-
 {% endautoescape %}
+{% endblock %}
+{% block footer1 %}
+<div class="container text-center">
+
+    <hr class="crimson mb-3">
+
+    <button type="button" class="btn back-home mb-3">
+        <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
+            -¡!¡- Back To Extras Features -¡!¡-</a>
+    </button>
+
+    <hr class="crimson mb-5">
+
+</div>
+
+<footer class="footer text-center mx-5 p-3 mt-4 mb-5">
+    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
+</footer>
 {% endblock %}

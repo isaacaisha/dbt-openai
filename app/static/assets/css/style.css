@@ -465,7 +465,9 @@ textarea#generatedText {
 }
 
 #start-button,
-#speechRecognitionButton {
+#speechRecognitionButton,
+#generationType,
+#analyzeImageUploadType {
     background-color: rgb(0, 0, 0, 0.181) !important;
     border: 0.1rem solid #AEFAFC;
     color: #30ABB7;
@@ -473,16 +475,18 @@ textarea#generatedText {
 }
 
 #start-button:hover,
-#speechRecognitionButton:hover {
+#speechRecognitionButton:hover,
+#generationType:hover,
+#analyzeImageUploadType:hover {
     border: 0.1rem solid #73DD7E;
     color: #9A30F3;
 }
 
 #generateButton,
-#generationType,
 #playbackButton,
 #theme_name,
-#generateBlogButton:hover {
+#generateBlogButton:hover,
+#analyzeButton {
     background-color: rgb(0, 0, 0, 0.181) !important;
     /*background-color: #171717;*/
     border: 0.1rem solid #AEFAFC;
@@ -491,7 +495,8 @@ textarea#generatedText {
 
 #generateButton:hover,
 #playbackButton:hover,
-#message {
+#message,
+#analyzeButton:hover {
     border: 0.1rem solid #73DD7E;
     color: #1295FA;
 }

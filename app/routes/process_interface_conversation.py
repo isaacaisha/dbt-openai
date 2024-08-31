@@ -5,7 +5,6 @@ import json
 import pytz
 import os
 import numpy as np
-import logging
 
 from scipy.spatial.distance import cosine
 
@@ -25,9 +24,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.app_forms import TextAreaForm
 from app.memory import Memory, db
 
-
-# Set the logging level to INFO
-logging.basicConfig(level=logging.INFO)
 
 interface_conversation_bp = Blueprint('conversation_interface', __name__, template_folder='templates', static_folder='static')
 
