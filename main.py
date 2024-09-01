@@ -4,8 +4,8 @@ from app import create_app
 from asgiref.wsgi import WsgiToAsgi
 
 
-# Configure logging to log errors only
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+# Configure logging
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Create the WSGI app
 app = create_app()

@@ -110,7 +110,11 @@
 
         <div id="analysis-container" style="height: auto; width: 100%;" class="analysis-container mb-5">
             <div id="uploaded-image-display" class="img-container mb-3"></div>
-            <div id="analysis-result"></div> <!-- To display analysis results -->
+            <div id="analysis-result" class="mb-3"></div> <!-- To display analysis results -->
+            <div id="audio-player-container" class="mb-3" style="display: none;">
+                <audio id="audio-player" controls></audio>
+            </div>
+            <hr class="green mt-3">
         </div>
     </form>
 
@@ -234,7 +238,14 @@
                     if (response.ok) {
                         const analysisResult = data.description.choices[0].message.content || data;
                         const analysisContainer = document.getElementById('analysis-result');
-                        analysisContainer.innerHTML = `<textarea class="textarea-memory mt-3">Analysis Result: ${analysisResult}</textarea><hr class="green mt-3">`;
+                        analysisContainer.innerHTML = `<textarea class="textarea-memory mt-3">Analysis Result: ${analysisResult}</textarea>`;
+                        
+                        if (data.audio_url) {
+                            const audioPlayerContainer = document.getElementById('audio-player-container');
+                            const audioPlayer = document.getElementById('audio-player');
+                            audioPlayer.src = data.audio_url;
+                            audioPlayerContainer.style.display = 'block';
+                        }
                     } else {
                         throw new Error(data.error || 'An error occurred.');
                     }

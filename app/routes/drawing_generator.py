@@ -6,13 +6,14 @@ import os
 import requests
 import traceback
 
-from flask import Blueprint, flash, redirect, render_template, request, jsonify, url_for, current_app
+from flask import Blueprint, flash, redirect, render_template, request, jsonify, url_for
 from flask_login import current_user
 from sqlalchemy.exc import SQLAlchemyError
 from app.app_forms import TextAreaDrawingIndex
 from PIL import Image
 from openai import OpenAI
 from app.memory import DrawingDatabase, db
+from gtts import gTTS
 from datetime import datetime
 
 
@@ -20,12 +21,14 @@ generator_drawing_bp = Blueprint('drawing_generator', __name__, template_folder=
 
 # Define base directory relative to the current file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_FOLDER_PATH = os.path.join(BASE_DIR, 'static')
+
+# Correct the path to point to the static/media directory in the app folder
+STATIC_FOLDER_PATH = os.path.join(BASE_DIR, '..', 'static')  # Go up one level to the app directory
 AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
 
-# Ensure directories exist
-uploaded_images_path = os.path.join(STATIC_FOLDER_PATH, 'uploaded_images')
+# Ensure the media directory exists
 os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
+
 
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -162,6 +165,22 @@ def get_image_base64(image_path):
         return base64.b64encode(buffered.getvalue()).decode('utf-8')
     
 
+def text_to_speech(text, filename):
+    tts = gTTS(text)
+    audio_file_path = os.path.join(AUDIO_FOLDER_PATH, filename)
+    tts.save(audio_file_path)
+
+    # Ensure the file was saved successfully
+    if os.path.exists(audio_file_path):
+        print(f"File successfully saved: {audio_file_path}")
+    else:
+        print(f"Failed to save file: {audio_file_path}")
+
+        raise FileNotFoundError(f"Audio file was not saved to {audio_file_path}")
+    
+    return audio_file_path
+
+
 def analyze_image(image_data):
     """Analyze the image by sending it directly to OpenAI's API."""
     base64_image = get_image_base64(image_data)
@@ -197,7 +216,6 @@ def analyze_image(image_data):
     return response.json()
 
 
-# Usage in your Flask route
 @generator_drawing_bp.route("/drawing-analyze", methods=["POST"])
 def analyze_drawing():
     if not current_user.is_authenticated:
@@ -210,9 +228,26 @@ def analyze_drawing():
     try:
         # Convert the uploaded file to base64
         description = analyze_image(file)
-        return jsonify({'description': description}), 200
+
+        # Extract the analysis text
+        analysis_text = description['choices'][0]['message']['content']
+
+        # Generate the audio file from the analysis text
+        audio_filename = f"image_analysis_audio.mp3"
+        text_to_speech(analysis_text, audio_filename)
+
+        # Create the audio file URL
+        audio_url = url_for('static', filename=f'media/{audio_filename}')
+        print(f"Generated audio URL: {audio_url}")  # Debugging
+
+        # Return the analysis text and audio file URL
+        print(f"'description': {description}, 'audio_url': {audio_url}")
+        return jsonify({'description': description, 'audio_url': audio_url}), 200
+    except FileNotFoundError as e:
+        flash(f"Error: {e}")
+        return jsonify({'error': str(e)}), 500
     except Exception as e:
-        current_app.logger.error(f"Error processing image: {e}")
+        flash(f"Error processing image: {e}")
         return jsonify({'error': 'Failed to process image.'}), 500
     
 
