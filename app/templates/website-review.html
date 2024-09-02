@@ -145,28 +145,18 @@
     </h5>
 
     <hr class="crimson mb-5">
+    <hr class="green mb-3">
+
+    <div class="container text-center">
+        <button type="button" class="btn back-home mb-3">
+            <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="nav-link">-¡!¡- Back Home -¡!¡-</a>
+        </button>
+    </div>
+    
+    <hr class="green mb-5">
 
     <script>const reviewId = '{{ review_id|safe }}';</script>
     <script src="{{ url_for('static', filename='js/website-review.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 
-{% endblock %}
-
-{% block footer1 %}
-    <div class="container text-center">
-
-        <hr class="green mb-3">
-
-        <button type="button" class="btn back-home mb-3">
-            <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
-                -¡!¡- Back To Extras Features -¡!¡-</a>
-        </button>
-
-        <hr class="green mb-5">
-
-    </div>
-
-    <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
-        Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
-    </footer>
 {% endblock %}

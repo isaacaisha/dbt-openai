@@ -48,17 +48,17 @@
 
 <div id="flash-message" class="text-center mb-3" style="color: #72e9fc;"></div>
 
-<div class="container content text-center">
+<div class="content text-center">
 
-    <div id="content-container" class="container">
+    <div id="content-container" class="">
+
+        <div id="error-message" class="alert alert-danger mb-3" style="display: none;"></div>
 
         <hr class="green mb-3">
 
         <form id="prompt-form" method="POST" action="{{ url_for('conversation_home.home_answer') }}">
 
             {{ home_form.csrf_token }}
-
-            <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 
             <!--<hr class="gold mb-3">-->
             
@@ -87,10 +87,14 @@
 
             <hr class="gold mb-3">
 
-            <div id="loading-indicator" style="display:none;" class="text-center mb-3">
-                <p>Loading...</p>
-                <img class="loading" src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g" alt="Loading">
+            <!-- Section for loading circle -->
+            <div id="loading-indicator" style="display:none;" class="text-center mb-1">
+                <p class="">Loading...</p>
+                <img class="loading"
+                    src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
+                    alt="Loading">
             </div>
+            <div id="loading-circle" class="load mb-3" style="display: none;"></div>
 
             <div class="text-center">
                 <button id="generateButton" class="mb-3 btn generate-text" type="submit">
@@ -133,6 +137,91 @@
         </div>
 
         <hr id="hrCrimson2" class="crimson mb-5" style="display: none;">
+        <hr class="gold mb-3">
+
+        <form id="drawing-form" method="POST" action="{{ url_for('conversation_home.home_test') }}" enctype="multipart/form-data">
+            {{ drawing_form.csrf_token }}
+
+            <div id="analyze-upload-container" class="form-group align-left" style="width: 229px; margin: auto;">
+                <label for="analyzeImageUpload" class="label_">Upload Image for Analysis:</label>
+                <input type="file" id="analyzeImageUpload" name="analyze_image_upload" class="form-control" accept="image/*"
+                    style="display:none;">
+            </div>
+
+            <div>
+                <button id="analyzeButton" class="mb-4 btn analyze-text" type="button">Analyze An Image 🔥¡!¡
+                    <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
+                </button>
+            </div>
+
+            <hr class="gold mb-3">
+
+            <!-- Section for loading circle -->
+            <div id="loading-indicator1" style="display:none;" class="text-center mb-1">
+                <p class="">Loading...</p>
+                <img class="loading"
+                    src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
+                    alt="Loading">
+            </div>
+            <div id="loading-circle1" class="load mb-3" style="display: none;"></div>
+
+            <div id="analysis-container" style="height: auto; width: 100%;" class="analysis-container mb-5">
+                <div id="uploaded-image-display" class="img-container mb-3"></div>
+                <div id="analysis-result" class="mb-3"></div> <!-- To display analysis results -->
+                <div id="audio-player-container" class="mb-3" style="display: none;">
+                    <audio id="audio-player" style="height: 31px; width: 279px;" controls></audio>
+                    <hr class="crimson mt-3">
+                </div>
+            </div>
+
+            <hr class="green mb-2">
+
+            <hr id="hrCrimson2" class="crimson mb-5" style="display: none;">
+            <div class="form-group align-left mb-3" style="width: 199px; margin: auto;">
+                <label for="generationType" class="label_">Select Type of Generation:</label>
+                <select id="generationType" name="generation_type" class="form-control text-center">
+                    <option value="generations">Generations</option>
+                    <option value="edits">Edits</option>
+                    <option value="face-to-sticker">Face To Sticker</option>
+                </select>
+            </div>
+
+            <div id="upload-container" class="form-group align-left mb-3" style="display: none; width: 199px; margin: auto;">
+                <label for="imageUpload" class="label_">Upload Image for Edits or Face To Sticker:</label>
+                <input type="file" id="imageUpload" name="image_upload" class="form-control" accept="image/*">
+            </div>
+
+            <hr class="green mb-5">
+
+            <div id="textarea-container" class="align-left mb-5">
+                <label for="generateDraw" class="label_">Start Writing to Generate a Drawing:<br>(be Specific for a better
+                    result)</label>
+                <textarea class="form-control mb-5 align-left" id="generateDraw" name="generate_draw"></textarea>
+            </div>
+
+            <hr class="gold mb-3">
+
+            <div class="text-center">
+                <button id="generateDrawingButton" class="btn generate-text mb-3" type="button">Generate A Drawing 🔥¡!¡
+                    <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥</button>
+            </div>
+
+            <hr class="gold mb-4">
+            
+            <!-- Section for loading circle -->
+            <div id="loading-indicator2" style="display:none;" class="text-center mb-1">
+                <p class="">Loading...</p>
+                <img class="loading"
+                    src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
+                    alt="Loading">
+            </div>
+            <div id="loading-circle2" class="load mb-3" style="display: none;"></div>
+
+            <div class="img-container mb-3" id="user-image-display"></div> <!-- Container for the uploaded image -->
+            <div class="img-container mb-3" id="generated-image-display"></div> <!-- Container for the generated image -->
+            <button id="saveImage" class="nav-link btn mb-5" style="margin: auto;"></button>
+        </form>
+
         <hr class="green mb-3">
 
         <div id="carouselExampleCaptions" class="carousel slide carousel-dark mb-3" data-bs-ride="carousel">
@@ -168,6 +257,7 @@
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/rec-speech.js')}}" defer></script>
     <script src="{{ url_for('static', filename='js/home-speech-request.js')}}" defer></script>
+    <script src="{{ url_for('static', filename='js/drawing-generator.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/popup.js') }}" defer></script>
 
     {% block footer %}{% endblock %}

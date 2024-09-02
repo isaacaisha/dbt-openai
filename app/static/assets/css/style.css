@@ -158,13 +158,7 @@ a:hover {
     font-family: 'Merriweather', sans-serif;
     font-size: 1rem;
 }
-/*
-.artificial-intelligence {
-    color: #9A30F3;
-    font-family: 'Cardo';
-    font-size: 2.71rem;
-}
-*/
+
 .p-1.rounded-3.jumbotron {
     margin: 0;
 }
@@ -486,6 +480,7 @@ textarea#generatedText {
 #playbackButton,
 #theme_name,
 #generateBlogButton:hover,
+#generateDrawingButton,
 #analyzeButton {
     background-color: rgb(0, 0, 0, 0.181) !important;
     /*background-color: #171717;*/
@@ -496,6 +491,7 @@ textarea#generatedText {
 #generateButton:hover,
 #playbackButton:hover,
 #message,
+#generateDrawingButton:hover,
 #analyzeButton:hover {
     border: 0.1rem solid #73DD7E;
     color: #1295FA;
@@ -581,9 +577,9 @@ body hr {
 }
 
 /* fa fa-heart for link: "Conversations Liked -¡!¡- ... -¡!¡- */
-#navbarSupportedContent>ul>li:nth-child(6)>a>i,
+#navbarSupportedContent>ul>li:nth-child(3)>a>i,
 #content>div.container-fluid>div>div>h1>i,
-#navbarSupportedContent>ul>li:nth-child(7)>a>i {
+#navbarSupportedContent>ul>li:nth-child(8)>a>i {
     color: pink;
 }
 
@@ -802,4 +798,18 @@ span.carousel-control-next-icon {
 svg {
     width: 60px;
     height: 60px;
+}
+
+.img-container {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 100%;
+    width: 100%;
+}
+
+.img-container img {
+    max-width: 100%;
+    height: auto;
+    width: auto;
 }

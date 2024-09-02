@@ -42,7 +42,7 @@
 {% block content %}
 {% autoescape true %}
 <div class="content text-center">
-    <form id="drawing-form" method="POST">
+    <form id="drawing-form" method="POST" enctype="multipart/form-data">
         {{ drawing_form.csrf_token }}
 
         <div id="error-message" class="alert alert-danger mb-3" style="display: none;"></div>
@@ -73,24 +73,25 @@
 
         <hr class="gold mb-3">
 
-        <div id="loading-indicator" style="display:none;" class="text-center mb-3">
+        <!-- Section for loading circle -->
+        <div id="loading-indicator2" style="display:none;" class="text-center mb-3">
             <p>Loading...</p>
             <img class="loading"
                 src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
                 alt="Loading">
         </div>
-        <div id="loading-circle" class="load mb-3" style="display: none;"></div>
+        <div id="loading-circle2" class="load mb-3" style="display: none;"></div>
 
         <div class="text-center">
-            <button id="generateButton" class="btn generate-text mb-3" type="button">Generate Drawing 🔥¡!¡
+            <button id="generateDrawingButton" class="btn generate-text mb-3" type="button">Generate A Drawing 🔥¡!¡
                 <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥</button>
         </div>
 
-        <hr class="gold mb-3">
+        <hr class="gold mb-4">
 
         <div class="img-container mb-3" id="user-image-display"></div> <!-- Container for the uploaded image -->
         <div class="img-container mb-3" id="generated-image-display"></div> <!-- Container for the generated image -->
-        <button id="saveImage" class="nav-link btn mb-3" style="margin: auto;"></button>
+        <button id="saveImage" class="nav-link btn mb-5" style="margin: auto;"></button>
 
         <hr class="gold mb-3">
 
@@ -101,12 +102,22 @@
         </div>
 
         <div>
-            <button id="analyzeButton" class="mb-4 btn analyze-text" type="button">Analyze The Image 🔥¡!¡
+            <button id="analyzeButton" class="mb-4 btn analyze-text" type="button">Analyze An Image 🔥¡!¡
                 <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥
             </button>
         </div>
 
         <hr class="gold mb-3">
+
+        <!-- Section for loading circle -->
+        <div id="loading-indicator1" style="display:none;" class="text-center mb-3">
+            <p>Loading...</p>
+            <img class="loading"
+                src="https://media1.giphy.com/media/VseXvvxwowwCc/200w.webp?cid=ecf05e47bx13l0iyjnyo8e0dxaumajijmsz83lk4bl8kow3w&ep=v1_gifs_search&rid=200w.webp&ct=g"
+                alt="Loading">
+        </div>
+        <div id="loading-circle1" class="load mb-3" style="display: none;"></div>
+
 
         <div id="analysis-container" style="height: auto; width: 100%;" class="analysis-container mb-5">
             <div id="uploaded-image-display" class="img-container mb-3"></div>
@@ -117,170 +128,16 @@
             </div>
         </div>
     </form>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Element references
-            const generationTypeElement = document.getElementById('generationType');
-            const uploadContainer = document.getElementById('upload-container');
-            const fileInput = document.getElementById('imageUpload');
-            const analyzeFileInput = document.getElementById('analyzeImageUpload');
-            const generateButton = document.getElementById('generateButton');
-            const userImageDisplay = document.getElementById('user-image-display');
-            const generatedImageDisplay = document.getElementById('generated-image-display');
-            const saveButton = document.getElementById('saveImage');
-            const analyzeButton = document.getElementById('analyzeButton');
-            const imageDisplayContainer = document.getElementById('uploaded-image-display');
-
-            // Event Listeners
-            setupEventListeners();
-
-            function setupEventListeners() {
-                setupGenerationTypeChange();
-                setupGenerateButtonClick();
-                setupAnalyzeButtonClick();  // This now directly triggers file input
-            }
-
-            function setupGenerationTypeChange() {
-                generationTypeElement.addEventListener('change', (event) => {
-                    const requiresUpload = ['edits', 'face-to-sticker'].includes(event.target.value);
-                    uploadContainer.style.display = requiresUpload ? 'block' : 'none';
-                });
-            }
-
-            function setupGenerateButtonClick() {
-                generateButton.addEventListener('click', async () => {
-                    const generateDraw = document.getElementById('generateDraw').value;
-                    const generationType = generationTypeElement.value;
-
-                    // Check if image upload is necessary and available
-                    if (['edits', 'face-to-sticker'].includes(generationType) && fileInput.files.length === 0) {
-                        alert('Please select an image to upload.');
-                        return;
-                    }
-
-                    let imageDataURL = null;
-                    if (fileInput.files.length > 0) {
-                        const fileReader = new FileReader();
-                        fileReader.readAsDataURL(fileInput.files[0]);
-                        await new Promise(resolve => fileReader.onloadend = resolve);
-                        imageDataURL = fileReader.result.split(',')[1]; // Extract base64 part
-                        userImageDisplay.innerHTML = `<img src="${fileReader.result}" alt="Uploaded Image" class="image_display"/>`;
-                    }
-
-                    generateDrawing(generateDraw, generationType, imageDataURL);
-                });
-            }
-
-            async function generateDrawing(generateDraw, generationType, imageDataURL) {
-                document.getElementById('loading-indicator').style.display = 'block';
-                document.getElementById('loading-circle').style.display = 'block';
-                document.getElementById('error-message').style.display = 'none';
-
-                try {
-                    const response = await fetch('/drawing-generator', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ generate_draw: generateDraw, type: generationType, image_data: imageDataURL })
-                    });
-                    const data = await response.json();
-
-                    document.getElementById('loading-indicator').style.display = 'none';
-                    document.getElementById('loading-circle').style.display = 'none';
-
-                    if (response.ok) {
-                        generatedImageDisplay.innerHTML = `<img src="${data.drawing_url}" alt="Generated Image" class="image_display mt-3 mb-1" style="max-width: 100%; height: auto;"/>`;
-                        saveButton.innerHTML = `<a href="${data.drawing_url}" download="GeneratedImage.png">Save Image</a>`;
-                        saveButton.style.display = 'block';
-                    } else {
-                        throw new Error(data.error || 'An error occurred.');
-                    }
-                } catch (error) {
-                    handleError(error);
-                }
-            }
-
-            function setupAnalyzeButtonClick() {
-                analyzeButton.addEventListener('click', () => {
-                    analyzeFileInput.click(); // Directly trigger file input
-                });
-
-                analyzeFileInput.addEventListener('change', async () => {
-                    if (analyzeFileInput.files.length > 0) {
-                        const formData = new FormData();
-                        formData.append('analyze_image_upload', analyzeFileInput.files[0]);
-
-                        const reader = new FileReader();
-                        reader.readAsDataURL(analyzeFileInput.files[0]);
-
-                        reader.onload = () => {
-                            imageDisplayContainer.innerHTML = `<img src="${reader.result}" alt="Uploaded Image"/>`;
-                        };
-
-                        await new Promise(resolve => reader.onloadend = resolve);
-                        analyzeImage(formData);
-                    }
-                });
-            }
-
-            async function analyzeImage(formData) {
-                document.getElementById('loading-indicator').style.display = 'block';
-                document.getElementById('loading-circle').style.display = 'block';
-                document.getElementById('error-message').style.display = 'none';
-
-                try {
-                    const response = await fetch('/drawing-analyze', { method: 'POST', body: formData });
-                    const data = await response.json();
-
-                    document.getElementById('loading-indicator').style.display = 'none';
-                    document.getElementById('loading-circle').style.display = 'none';
-
-                    if (response.ok) {
-                        const analysisResult = data.description.choices[0].message.content || data;
-                        const analysisContainer = document.getElementById('analysis-result');
-                        analysisContainer.innerHTML = `<textarea class="textarea-memory mt-3">Analysis Result: ${analysisResult}</textarea>`;
-                        
-                        if (data.audio_url) {
-                            const audioPlayerContainer = document.getElementById('audio-player-container');
-                            const audioPlayer = document.getElementById('audio-player');
-                            audioPlayer.src = data.audio_url;
-                            audioPlayerContainer.style.display = 'block';
-                        }
-                    } else {
-                        throw new Error(data.error || 'An error occurred.');
-                    }
-                } catch (error) {
-                    handleError(error);
-                }
-            }
-
-            function handleError(error) {
-                console.error('Error:', error);
-                document.getElementById('loading-indicator').style.display = 'none';
-                document.getElementById('loading-circle').style.display = 'none';
-                document.getElementById('error-message').textContent = error.message;
-                document.getElementById('error-message').style.display = 'block';
-            }
-        });
-    </script>
-</div>
-{% endautoescape %}
-{% endblock %}
-{% block footer1 %}
-<div class="container text-center">
-
+    
     <hr class="crimson mb-3">
-
+    
     <button type="button" class="btn back-home mb-3">
-        <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
-            -¡!¡- Back To Extras Features -¡!¡-</a>
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="nav-link">-¡!¡- Back Home -¡!¡-</a>
     </button>
-
+    
     <hr class="crimson mb-5">
 
+    <script src="{{ url_for('static', filename='js/drawing-generator.js') }}" defer></script>
 </div>
-
-<footer class="footer text-center mx-5 p-3 mt-4 mb-5">
-    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
-</footer>
+{% endautoescape %}
 {% endblock %}

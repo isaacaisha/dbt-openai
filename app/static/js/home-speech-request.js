@@ -117,13 +117,17 @@ function sendRequest(prompt) {
 // Function to show the loading indicator
 function showLoading() {
     var loadingIndicator = document.getElementById('loading-indicator');
+    var loadingCircle = document.getElementById('loading-circle');
     loadingIndicator.style.display = 'block';
+    loadingCircle.style.display = 'block';
 }
 
 // Function to hide the loading indicator
 function hideLoading() {
     var loadingIndicator = document.getElementById('loading-indicator');
+    var loadingCircle = document.getElementById('loading-circle');
     loadingIndicator.style.display = 'none';
+    loadingCircle.style.display = 'none';
 }
 
 // Function to smoothly scroll the textarea to the bottom

@@ -85,25 +85,11 @@
               href="{{ url_for('conversation_interface.conversation_interface') }}">Conversation Interface</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('conversation_chat_forum.theme_chat_forum') }}">Chat Forum</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" href="{{ url_for('llm_conversation.get_all_conversations') }}">All Your
               Conversations</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('llm_conversation.show_story') }}">Conversation History</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('llm_conversation.convers_head_tail') }}">Conversation Heads &
-              Tails</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" href="{{ url_for('llm_conversation.liked_conversations') }}">Conversations Liked -¡!¡-
-              <i class="fa fa-heart"></i>-¡!¡-</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('website_review.liked_reviews') }}">Liked Reviews -¡!¡-
               <i class="fa fa-heart"></i>-¡!¡-</a>
           </li>
           <li class="nav-item">
@@ -111,6 +97,18 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('conversation_function.delete_conversation') }}">Delete Conversation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('drawing_generator.drawing_index') }}">Drawing Generator</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('website_review.review_website') }}">Website Review Generator</a>
+          </li><li class="nav-item">
+            <a class="nav-link" href="{{ url_for('website_review.liked_reviews') }}">Liked Reviews -¡!¡-
+              <i class="fa fa-heart"></i>-¡!¡-</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('conversation_chat_forum.theme_chat_forum') }}">Chat Forum</a>
           </li>
           <li class="nav-item">
             <hr class="gold" style="margin: 0 37%;">

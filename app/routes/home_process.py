@@ -1,21 +1,26 @@
+# HOME_PROCESS.PY
+
 import json
 import os
+import base64
 import pytz
 
-from flask import Blueprint, flash, render_template, request, send_file, jsonify, send_from_directory, url_for
-from flask_login import current_user
-from gtts import gTTS
-from gtts.lang import tts_langs
+from flask import Blueprint, flash, render_template, request, jsonify, send_from_directory, url_for
+
 from langchain.chains import ConversationChain
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from langdetect import detect
-from datetime import datetime
+
+from app.routes.utils_drawing import analyze_image, text_to_speech, generate_drawing_from, save_drawing_datas, api_key, client
 
 from sqlalchemy.exc import SQLAlchemyError
-
-from app.app_forms import TextAreaFormIndex
 from app.memory import MemoryTest, db
+from app.app_forms import TextAreaFormIndex, TextAreaDrawingIndex
+
+from gtts import gTTS
+from gtts.lang import tts_langs
+from datetime import datetime
 
 
 home_conversation_bp = Blueprint('conversation_home', __name__, template_folder='templates', static_folder='static')
@@ -48,31 +53,80 @@ def home():
 @home_conversation_bp.route("/conversation-test", methods=["GET", "POST"])
 def home_test():
     home_form = TextAreaFormIndex()
+    drawing_form = TextAreaDrawingIndex()
     user_input = None
     response = None
     images = IMAGES
 
     try:
-        if request.method == "POST" and home_form.validate_on_submit():
-            # Retrieve form data using the correct key
-            user_input = request.form['text_writing']
+        if request.method == "POST":
+            # Handle conversation form submission
+            if home_form.validate_on_submit() and 'text_writing' in request.form:
+                user_input = request.form['text_writing']
+                response = conversation.predict(input=user_input)
+                print(f"user_input: {user_input}")
+                print(f"response: {response}\n")
+                flash("Conversation generated successfully!", "success")
 
-            # Use the LLM to generate a response based on user input
-            response = conversation.predict(input=user_input)
+            # Handle drawing generation and image analysis form submission
+            if drawing_form.validate_on_submit():
+                # Check if the request is for generating a drawing
+                if 'generate_draw' in request.form:
+                    generate_draw = request.form.get('generate_draw')
+                    generation_type = request.form.get('generation_type')
+                    image_data = None
 
-            print(f"user_input: {user_input}")
-            print(f"response: {response}\n")
+                    # If an image is uploaded, get the file and convert it to base64
+                    if 'image_upload' in request.files:
+                        file = request.files['image_upload']
+                        if file and file.filename != '':
+                            image_data = base64.b64encode(file.read()).decode('utf-8')
+
+                    try:
+                        # Generate the drawing
+                        drawing_url = generate_drawing_from(generate_draw, generation_type, image_data, api_key, client)
+                        save_drawing_datas('anonymous', generate_draw, drawing_url)  # Use 'anonymous' or any default name
+                        flash(f"Drawing successfully generated!", "success")
+                        return jsonify({'drawing_url': drawing_url}), 200
+
+                    except Exception as e:
+                        print(f"Exception occurred during drawing generation: {e}")
+                        flash("Failed to generate the drawing. Please try again.", "error")
+
+                # Analyze an image if provided
+                if 'analyze_image_upload' in request.files:
+                    file = request.files['analyze_image_upload']
+                    if file:
+                        description = analyze_image(file)
+                        analysis_text = description['choices'][0]['message']['content']
+
+                        # Generate the audio file from the analysis text
+                        audio_filename = f"image_analysis_audio.mp3"
+                        text_to_speech(analysis_text, audio_filename, AUDIO_FOLDER_PATH)
+
+                        # Create the audio file URL
+                        audio_url = url_for('static', filename=f'media/{audio_filename}')
+                        print(f"Generated audio URL: {audio_url}")
+
+                        # Save the analysis result and audio URL
+                        save_drawing_datas('anonymous', analysis_text, audio_url)
+                        flash(f"Image analysis completed!", "success")
+                        return jsonify({'description': description, 'audio_url': audio_url}), 200
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
 
-        return render_template('conversation-test.html', home_form=home_form, images=images,
-                               current_user=current_user, user_input=user_input, response=response,
+        return render_template('conversation-test.html', home_form=home_form, drawing_form=drawing_form,
+                               images=images, user_input=user_input, response=response,
                                memory_buffer=memory_buffer, memory_load=memory_load,
                                date=datetime.now().strftime("%a %d %B %Y"))
     except Exception as e:
         print(f"Exception occurred: {e}")
-        return flash("An error occurred. Please try reformulating your question.", "error"), 500
+        flash("An error occurred. Please try again.", "error")
+        return render_template('conversation-test.html', home_form=home_form, drawing_form=drawing_form,
+                               images=images, user_input=user_input, response=response,
+                               memory_buffer=memory_buffer, memory_load=memory_load,
+                               date=datetime.now().strftime("%a %d %B %Y")), 500
 
 
 @home_conversation_bp.route('/home/answer', methods=['POST'])

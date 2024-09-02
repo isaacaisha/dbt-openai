@@ -133,7 +133,12 @@ class DrawingDatabase(db.Model):
     user_name = db.Column(db.String(73), nullable=False)
     user_prompt = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.Text, nullable=False)
+    analysis_text = db.Column(db.Text, nullable=True)
+    audio_url = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
 
     def __repr__(self):
-        return f"<DrawingDatabase id={self.id}, user_name='{self.user_name}', prompt='{self.prompt}', image_url='{self.image_url}'>"
+        return (f"<DrawingDatabase id={self.id}, user_name='{self.user_name}', prompt='{self.user_prompt}', "
+                f"image_url='{self.image_url}', analysis_text='{self.analysis_text}', "
+                f"audio_url='{self.audio_url}', created_at='{self.created_at}'>")
+    

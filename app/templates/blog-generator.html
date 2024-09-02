@@ -72,10 +72,8 @@
         </section>
     </div>
 </div>
-<br>
-{% endblock %}
 
-{% block footer1 %}
+<br>
 <hr class="crimson mb-3">
 
 <div class="text-center">
@@ -91,6 +89,7 @@
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
 
+{% endblock %}
 
 <script>
     document.getElementById('generateBlogButton').addEventListener('click', async () => {
@@ -139,5 +138,3 @@
             }
         });
 </script>
-
-{% endblock %}
