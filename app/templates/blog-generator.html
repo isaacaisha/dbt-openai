@@ -69,21 +69,23 @@
                         class="btn btn-custom border-secondary mt-1">Saved Posts</a>
                 </h5>
             </section>
+
+            <hr class="crimson mb-3">
+            
+            <div class="text-center">
+                <button type="button" class="btn back-home mb-3">
+                    <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
+                        -¡!¡- Back To Extras Features -¡!¡-</a>
+                </button>
+            </div>
+            
+            <hr class="crimson mb-5">
+
         </section>
     </div>
 </div>
 
 <br>
-<hr class="crimson mb-3">
-
-<div class="text-center">
-    <button type="button" class="btn back-home mb-3">
-        <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
-            -¡!¡- Back To Extras Features -¡!¡-</a>
-    </button>
-</div>
-
-<hr class="crimson mb-5">
 
 <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
@@ -121,6 +123,21 @@
                         blogContent.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
                     } else {
                         blogContent.innerHTML = data.content;
+                        if (data.audio_url) {
+                            const audioPlayer = `
+                            <hr class="green mt-5">
+                            <h3 class="text-lg font-semibold">Audio Result:</h3>
+                            <div class="row justify-content-center">
+                                <div class="col-auto">
+                                    <audio id="response-audio" controls class="btn btn-outline-info mb-3" style="height: 31px;">
+                                        <source src="${data.audio_url}" type="audio/mp3">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </div>
+                            </div>
+                            <hr class="green mb-5">`;
+                            blogContent.innerHTML += audioPlayer;
+                        }
                     }
 
                 } catch (error) {

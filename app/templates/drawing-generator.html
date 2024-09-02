@@ -6,21 +6,6 @@
 {{ super() }}
 <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon5.ico') }}">
 {% include 'bootstrap/base.html' %}
-<style>
-    .img-container {
-        display: flex;
-        justify-content: center;
-        margin: 0 auto;
-        max-width: 100%;
-        width: 100%;
-    }
-
-    .img-container img {
-        max-width: 100%;
-        height: auto;
-        width: auto;
-    }
-</style>
 {% endblock %}
 
 {% block content1 %}

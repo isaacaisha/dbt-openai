@@ -2,7 +2,7 @@ import secrets
 
 from flask import Blueprint, current_app, render_template, redirect, url_for, flash, request
 from flask_login import login_user, current_user, logout_user
-from flask_mail import Mail, Message
+from flask_mail import Message
 from itsdangerous import BadTimeSignature, SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -10,7 +10,25 @@ from datetime import datetime
 from app.app_forms import LoginForm, PasswordResetForm, PasswordResetRequestForm, RegisterForm
 from app.memory import User, db
 
+
 auth_bp = Blueprint('auth', __name__)
+
+# Generate a secure secret key
+secret_key = secrets.token_hex(16)
+# Initialize the URLSafeTimedSerializer with the secret key
+s = URLSafeTimedSerializer(secret_key)
+
+
+def send_reset_email(user, token):
+    reset_url = url_for('auth.reset_with_token', token=token, _external=True)
+    msg = Message('Password Reset Request', recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{reset_url}
+
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    mail = current_app.extensions['mail']
+    mail.send(msg)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -93,24 +111,6 @@ def logout():
     return redirect(url_for('conversation_home.home'))
 
 
-# Generate a secure secret key
-secret_key = secrets.token_hex(16)
-
-# Initialize the URLSafeTimedSerializer with the secret key
-s = URLSafeTimedSerializer(secret_key)
-
-def send_reset_email(user, token):
-    reset_url = url_for('auth.reset_with_token', token=token, _external=True)
-    msg = Message('Password Reset Request', recipients=[user.email])
-    msg.body = f'''To reset your password, visit the following link:
-{reset_url}
-
-If you did not make this request then simply ignore this email and no changes will be made.
-'''
-    mail = current_app.extensions['mail']
-    mail.send(msg)
-
-
 @auth_bp.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
     if current_user.is_authenticated:
@@ -128,6 +128,7 @@ def reset_password():
         return redirect(url_for('auth.login'))
 
     return render_template('reset_password.html', form=form, date=datetime.now().strftime("%a %d %B %Y"))
+
 
 @auth_bp.route('/reset/<token>', methods=['GET', 'POST'])
 def reset_with_token(token):

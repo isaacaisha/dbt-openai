@@ -13,14 +13,11 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from langdetect import detect
 
-from app.routes.utils_interface import find_most_relevant_conversation, generate_conversation_context, handle_llm_response, save_to_database  
-from app.routes.utils_drawing import analyze_image, text_to_speech, generate_drawing_from, save_drawing_datas, api_key, client
+from app.routes.utils_interface import find_most_relevant_conversation, generate_conversation_context, handle_llm_response, save_to_database 
 
 from app.memory import Memory
 from app.app_forms import TextAreaForm, TextAreaDrawingIndex
 
-from gtts import gTTS
-from gtts.lang import tts_langs
 from datetime import datetime
 
 

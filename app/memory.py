@@ -99,6 +99,7 @@ class BlogPost(db.Model):
     youtube_title = db.Column(db.String(255), nullable=False)
     youtube_link = db.Column(db.String(255), nullable=False)
     generated_content = db.Column(db.Text, nullable=False)
+    audio_data = db.Column(LargeBinary, nullable=True)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=func.now(), nullable=False)
 
     # Define the relationship to the User model

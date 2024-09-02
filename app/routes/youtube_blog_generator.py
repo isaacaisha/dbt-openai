@@ -1,52 +1,21 @@
+# YOUTUBE_BLOG_GENERATOR.PY
+
 import os
-import yt_dlp
-import whisper
-import httpx 
+from io import BytesIO
 
 from dotenv import load_dotenv, find_dotenv
-from requests.exceptions import Timeout
-from flask import Blueprint, flash, render_template, request, jsonify, redirect, url_for
+from flask import Blueprint, flash, make_response, render_template, request, jsonify, redirect, send_file, url_for
 from flask_login import current_user
 
+from app.memory import BlogPost
+from app.routes.utils_youtube_blog import process_youtube_video
+
 from datetime import datetime
-from openai import OpenAI, OpenAIError
-from app.memory import BlogPost, User, db
 
 
 load_dotenv(find_dotenv())
 
-# Define base directory relative to the current file
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_FOLDER_PATH = os.path.join(BASE_DIR, 'static')
-AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
-
-# Ensure the directory exists
-os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
-
 generator_yt_blog_bp = Blueprint('yt_blog_generator', __name__, template_folder='templates', static_folder='static')
-
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-
-YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
-YOUTUBE_COOKIES_PATH = os.getenv('YOUTUBE_COOKIES_PATH')
-ASSEMBLYAI_API_KEY = os.getenv('ASSEMBLYAI_API_KEY')
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
-
-def fetch_with_timeout(url, data, timeout=120):
-    """Fetch data with a timeout for HTTP requests."""
-    client = httpx.Client(http2=False, verify=True, timeout=timeout)
-
-    try:
-        response = client.post(url, json=data, timeout=timeout)
-        response.raise_for_status()
-        return response.json()
-    except httpx.TimeoutException:
-        return {'error': 'The request timed out. Please try again.'}
-    except httpx.RequestError as e:
-        return {'error': f'An error occurred: {str(e)}'}
-    finally:
-        client.close()
 
 
 @generator_yt_blog_bp.route("/extras-features-home", methods=["GET"])
@@ -62,7 +31,7 @@ def extras_features_home():
 def generate_blog():
     """Handle the generation of a blog based on a YouTube link."""
     if not current_user.is_authenticated:
-        flash('😂Please login to access this page.🤣')
+        flash('Please login to access this page.')
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
@@ -82,13 +51,19 @@ def generate_blog():
 
             if error_message:
                 print(f"Error generating blog: {error_message}")
-                return jsonify({'error': error_message}), 500
+                return jsonify({'error': error_message}), 500  # Return a valid tuple
 
-            return jsonify({'content': new_blog_article.generated_content}), 200
+            # Generate audio file URL
+            audio_url = url_for('yt_blog_generator.blog_post_audio', pk=new_blog_article.id, _external=True)
+
+            return jsonify({
+                'content': new_blog_article.generated_content,
+                'audio_url': audio_url
+            }), 200
 
         except Exception as e:
             print(f"Unhandled exception in generate_blog: {str(e)}")
-            return jsonify({'error': 'An unexpected error occurred'}), 500
+            return jsonify({'error': 'An unexpected error occurred'}), 500  # Return a valid tuple
 
     elif request.method == 'GET':
         return render_template('blog-generator.html', date=datetime.now().strftime("%a %d %B %Y"))
@@ -118,175 +93,34 @@ def blog_details(pk):
 
     blog_article_detail = BlogPost.query.get_or_404(pk)
     if current_user.id == blog_article_detail.user_id:
-        return render_template('blog-details.html', blog_article_detail=blog_article_detail, date=datetime.now().strftime("%a %d %B %Y"))
+        audio_url = url_for('yt_blog_generator.blog_post_audio', pk=blog_article_detail.id, _external=True)
+        return render_template('blog-details.html', blog_article_detail=blog_article_detail, 
+                               audio_url=audio_url, date=datetime.now().strftime("%a %d %B %Y"))
     else:
         return redirect(url_for('yt_blog_generator.blog_posts'))
-
-
-def youtube_title(link):
-    """Extract the title of a YouTube video from its link."""
-    client = httpx.Client(http2=False, verify=True)  # Instantiate the client
-
-    try:
-        video_id = None
-        if 'v=' in link:
-            video_id = link.split('v=')[-1].split('&')[0]
-        elif 'youtu.be/' in link:
-            video_id = link.split('youtu.be/')[-1].split('?')[0]
-        else:
-            print(f"Unsupported YouTube URL format: {link}")
-            return None
-        
-        if not video_id:
-            print(f"Unable to extract video ID from link: {link}")
-            return None
-        
-        url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
-        response = client.get(url)
-        response.raise_for_status()
-        data = response.json()
-        
-        if 'items' in data and len(data['items']) > 0:
-            return data['items'][0]['snippet']['title']
-        else:
-            print(f"No items found in YouTube API response for link: {link}")
-    except httpx.RequestError as e:
-        print(f"Error calling YouTube API: {str(e)}")
-    finally:
-        client.close()  # Close the client after use
-
-    return None
-
-
-def download_audio(link):
-    """Download audio from a YouTube video."""
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'outtmpl': os.path.join(AUDIO_FOLDER_PATH, '%(title)s.%(ext)s'),
-        'nocheckcertificate': True,
-        'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Referer': 'https://www.youtube.com/',
-        'Origin': 'https://www.youtube.com',
-        'Sec-Fetch-Mode': 'navigate',
-
-        'rm_cache_dir': True,  # Add this line to remove the cache directory
-        'cookiefile': YOUTUBE_COOKIES_PATH,  # Use the cookies file
-        'cookies_from_browser': ('chrome', ),  # Use this option to get cookies directly from Chrome
-        'verbose': True,  # Add this line
-        'dump_single_json': True,  # Add this line to see the exact responses
-    }
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(link, download=True)
-            audio_file = ydl.prepare_filename(info_dict)
-            base, ext = os.path.splitext(audio_file)
-            new_file = base + '.mp3'
-            if os.path.exists(audio_file) and not os.path.exists(new_file):
-                os.rename(audio_file, new_file)
-            print(f"Audio file downloaded and renamed: {new_file}")
-            return new_file, None
-    except yt_dlp.utils.RegexNotFoundError:
-        print("Unable to extract metadata from the video")
-        return None, "Unable to extract metadata from the video"
-    except yt_dlp.utils.DownloadError as e:
-        print(f"Error downloading audio: {str(e)}")
-        return None, f"Error downloading audio: {str(e)}"
-    except Exception as e:
-        print(f"Error downloading audio: {str(e)}")
-        return None, f"Error downloading audio: {str(e)}"
-
-
-def get_transcription(audio_file):
-    """Transcribe the audio file using Whisper."""
-    try:
-        model = whisper.load_model("tiny")  # You can also try "small" or "large" depending on your resources
-        result = model.transcribe(audio_file)
-        transcription_text = result["text"]
-        return transcription_text, None
-    except Exception as e:
-        return None, f"Error transcribing audio with Whisper: {str(e)}"
-
-
-def generate_blog_from_transcription(transcription):
-    """Generate blog content from the transcription using OpenAI."""
-    prompt = f"Based on the following transcript from a YouTube video, " \
-             f"write a comprehensive blog article. Write it based on the transcript, " \
-             f"but don't make it look like a YouTube video. " \
-             f"Make it look like a proper blog article:\n\n{transcription}\n\nArticle:"
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": prompt}
-            ],
-            max_tokens=1000,
-            n=1,
-            stop=None,
-            temperature=0.7
-        )
-        generated_content = response.choices[0].message.content.strip()
-        return generated_content
-    except OpenAIError as e:
-        print(f"Error generating blog content: {str(e)}")
-        return None
     
 
-def process_youtube_video(user_id, youtube_link):
-    """Process the YouTube video to generate a blog article."""
-    user = db.session.query(User).get(user_id)
+@generator_yt_blog_bp.route("/blog-posts/<int:pk>/audio", methods=["GET"])
+def blog_post_audio(pk):
+    """Serve the audio version of the blog post from the database."""
+    if not current_user.is_authenticated:
+        flash('Please login to access this page.')
+        return redirect(url_for('auth.login'))
 
-    # Get title
-    title = youtube_title(youtube_link)
-    if not title:
-        return None, "Failed to extract YouTube title."
+    # Fetch the blog post by its primary key (ID)
+    blog_article_detail = BlogPost.query.get_or_404(pk)
 
-    # Download audio
-    audio_file, download_error = download_audio(youtube_link)
-    if download_error:
-        return None, download_error
+    if current_user.id != blog_article_detail.user_id:
+        flash("You don't have permission to access this audio.")
+        return redirect(url_for('yt_blog_generator.blog_posts'))
 
-    # Get transcript
-    transcription, transcription_error = get_transcription(audio_file)
-    if transcription_error:
-        cleanup_files([audio_file])
-        return None, transcription_error
+    if not blog_article_detail.audio_data:
+        flash("No audio available for this blog post.")
+        return redirect(url_for('yt_blog_generator.blog_posts'))
 
-    # Use OpenAI to generate the blog
-    blog_content = generate_blog_from_transcription(transcription)
-    if not blog_content:
-        cleanup_files([audio_file])
-        return None, 'Failed to generate blog article 😭'
-
-    # Save blog article into database
-    new_blog_article = BlogPost(
-        user_id=user_id, 
-        youtube_title=title,
-        youtube_link=youtube_link,
-        generated_content=blog_content,
-    )
-    db.session.add(new_blog_article)
-    db.session.commit()
-
-    # Clean up: delete audio file after use
-    cleanup_files([audio_file])
-
-    return new_blog_article, None
-
-
-def cleanup_files(file_paths):
-    """Remove specified files from the filesystem."""
-    for file_path in file_paths:
-        if os.path.exists(file_path):
-            try:
-                os.remove(file_path)
-            except OSError as e:
-                print(f"Error removing file {file_path}: {str(e)}")
+    # Serve the audio data as an MP3 file
+    audio_filename = f"{blog_article_detail.youtube_title}.mp3"
+    response = make_response(blog_article_detail.audio_data)
+    response.headers.set('Content-Type', 'audio/mpeg')
+    response.headers.set('Content-Disposition', 'inline', filename=audio_filename)
+    return response

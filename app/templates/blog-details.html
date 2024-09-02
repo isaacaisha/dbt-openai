@@ -44,17 +44,28 @@
                 <a href="{{blog_article_detail.youtube_link}}" class="llm-response hover:underline" style="max-width: 100%; word-wrap: break-word;">
                     {{blog_article_detail.youtube_link}}
                 </a>
+                <!-- Audio element for playback -->
+                {% if audio_url %}
+                <hr class="green mt-4">
+                <h3 class="text-lg font-semibold mt-3 mt-3">Audio Result:</h3>
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <audio id="response-audio" controls class="btn btn-outline-info mb-3" style="height: 31px;">
+                            <source src="{{ audio_url }}" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <hr class="green mb-5">
+                {% endif %}
             </div>
         </section>
     </div>
 </div>
 <br>
-{% endautoescape %}
-{% endblock %}
 
-{% block footer1 %}
-<div class="text-center">
-    <a href="{{ url_for('yt_blog_generator.generate_blog') }}" class="btn btn-primary mb-3">
+<div class="text-center mt-5 mb-5">
+    <a href="{{ url_for('yt_blog_generator.generate_blog') }}" class="btn btn-primary mb-5">
         AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
             alt="Crown Icon" class="crown">-¡!¡-🔥
     </a>
@@ -63,5 +74,5 @@
 <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
-
+{% endautoescape %}
 {% endblock %}
