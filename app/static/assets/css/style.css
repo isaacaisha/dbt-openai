@@ -813,3 +813,21 @@ svg {
     height: auto;
     width: auto;
 }
+
+/* GOOGLE-LANGUAGE SECTION */
+
+#google_translate_element {
+    background-color: #1a1a1a !important;
+    padding: 10px !important;
+    border-radius: 5px !important;
+}
+
+#google_translate_element .goog-te-gadget {
+    color: white !important;
+}
+
+#google_translate_element select {
+    background-color: #1a1a1a !important;
+    color: white !important;
+    border: none !important;
+}
