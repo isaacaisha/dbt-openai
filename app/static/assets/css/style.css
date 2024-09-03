@@ -820,6 +820,7 @@ svg {
     background-color: #1a1a1a !important;
     padding: 10px !important;
     border-radius: 5px !important;
+    width: 25rem !important;
 }
 
 #google_translate_element .goog-te-gadget {
