@@ -44,7 +44,7 @@ def drawing_index():
             drawing_url = generate_drawing_from(generate_draw, generation_type, image_data, api_key, client)
 
             # Save the generated drawing data to the database
-            save_drawing_datas(user_name, generate_draw, drawing_url)
+            save_drawing_datas(user_name, generate_draw, None, None, drawing_url)
 
             return jsonify({'drawing_url': drawing_url}), 200
         except ValueError as ve:
@@ -83,8 +83,13 @@ def analyze_drawing():
         audio_url = url_for('static', filename=f'media/{audio_filename}')
         print(f"Generated audio URL: {audio_url}")
 
-        # Save the analysis result and audio URL to the database using save_drawing_datas
-        save_drawing_datas(user_name, analysis_text, audio_url)
+        # Since this is an analysis, `user_prompt` might not be relevant
+        # and `image_url` might not be available, so set them to None
+        user_prompt = "Image Analysis"
+        image_url = 'None'  # Replace with the appropriate value if available
+
+        # Save the analysis result and audio URL to the database
+        save_drawing_datas(user_name, user_prompt, analysis_text, audio_url, image_url)
 
         # Return the analysis text and audio file URL
         print(f"'description': {description}, 'audio_url': {audio_url}")

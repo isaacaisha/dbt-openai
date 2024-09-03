@@ -28,7 +28,7 @@
 <div class="text-center mb-5">
     <h1>Reset Password Token</h1>
     <hr class="green mb-3">
-    <form method="POST" action="{{ url_for('auth.reset_with_token', token=token) }}">
+    <form method="POST" action="{{ url_for('auth.reset_with_token', token=token) }}" class="container">
         {{ form.hidden_tag() }}
         <div class="mb-4">{{ form.password.label }} {{ form.password(class_="form-control form-control-lg") }}</div>
         <hr class="gold mb-3">

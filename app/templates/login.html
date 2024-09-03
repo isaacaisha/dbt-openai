@@ -34,7 +34,7 @@
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto content mb-3">
 
-                <form method="POST" action="{{ url_for('auth.login') }}">
+                <form method="POST" action="{{ url_for('auth.login') }}" class="container">
 
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}

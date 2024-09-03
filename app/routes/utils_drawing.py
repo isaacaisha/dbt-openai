@@ -161,11 +161,14 @@ def analyze_image(image_data):
     return response.json()
     
 
-def save_drawing_datas(user_name, user_prompt, image_url):
+def save_drawing_datas(user_name, user_prompt, analysis_text, audio_url, image_url):
+    """Save the drawing data to the database."""
     try:
         new_entry = DrawingDatabase(
             user_name=user_name,
             user_prompt=user_prompt,
+            analysis_text=analysis_text,
+            audio_url=audio_url,
             image_url=image_url,
         )
         db.session.add(new_entry)

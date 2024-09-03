@@ -51,8 +51,8 @@
 
     <div class="row" style="margin-top: -19px;">
         <div class="col-lg-8 col-md-10 mx-auto mb-3">
-            <form id="chat-form" method="POST"
-                action="{{ url_for('conversation_chat_forum.chat_forum', theme_name=theme_name) }}">
+            <form id="chat-form" method="POST" action="{{ url_for('conversation_chat_forum.chat_forum', theme_name=theme_name) }}"
+             class="container">
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}

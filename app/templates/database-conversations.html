@@ -210,7 +210,7 @@
     <h6>Drawings</h6>
     <ul>
         {% for drawing in all_drawing_images %}
-        <pre class="align-left" id="messages">- Drawing ID: {{ drawing.id }}<br>- User: {{ drawing.user_name }}<br>- User Prompt: {{ drawing.user_prompt }}<br>- Drawing URL: {{ drawing.image_url|truncate(91) }}<br>- Date: {{ drawing.created_at.strftime('%Y-%m-%d %H:%M:%S')}}
+        <pre class="align-left" id="messages">- Drawing ID: {{ drawing.id }}<br>- User: {{ drawing.user_name }}<br>- User Prompt: {{ drawing.user_prompt }}<br>- Text Analysis: {{ drawing.analysis_text }}<br>- Drawing Audio URL: {{ drawing.audio_url or 'None' }}<br>- Drawing URL: {{ drawing.image_url|truncate(91) }}<br>- Date: {{ drawing.created_at.strftime('%Y-%m-%d %H:%M:%S')}}
         </pre>
         {% endfor %}
     </ul>
@@ -221,7 +221,7 @@
 
     <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto mb-3">
-            <form method="POST" action="{{ url_for('conversation_function.delete_data') }}">
+            <form method="POST" action="{{ url_for('conversation_function.delete_data') }}" class="container">
 
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
