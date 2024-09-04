@@ -42,7 +42,7 @@
                     </div>
                 {% endfor %}
 
-                <form method="POST" action="{{ url_for('auth.register') }}" class="container">
+                <form method="POST" action="{{ url_for('auth.register') }}" class="container-fluid">
 
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}

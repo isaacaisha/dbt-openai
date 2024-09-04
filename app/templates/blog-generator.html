@@ -30,7 +30,7 @@
 
 {% block content %}
 <br>
-<div class="container footer mx-auto p-2 sm:px-0 custom-input-group mb-5">
+<div class="container-fluid footer mx-auto p-2 sm:px-0 custom-input-group mb-5">
     <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
         <!-- Blog posts section -->
         <section>
@@ -70,22 +70,21 @@
                 </h5>
             </section>
 
-            <hr class="crimson mb-3">
-            
-            <div class="text-center">
-                <button type="button" class="btn back-home mb-3">
-                    <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
-                        -¡!¡- Back To Extras Features -¡!¡-</a>
-                </button>
-            </div>
-            
-            <hr class="crimson mb-5">
-
         </section>
     </div>
 </div>
 
 <br>
+<hr class="crimson mb-3">
+
+<div class="text-center">
+    <button type="button" class="btn back-home mb-3">
+        <a href="{{ url_for('yt_blog_generator.extras_features_home') }}" class="nav-link">
+            -¡!¡- Back To Extras Features -¡!¡-</a>
+    </button>
+</div>
+
+<hr class="crimson mb-5">
 
 <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>

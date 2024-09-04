@@ -80,7 +80,7 @@
             </div>
         </form>
     
-        <div class="container conversations mb-3">
+        <div class="container-fluid conversations mb-3">
             {% if total_conversations %}
                 <h4>Total of <span class="gold1">{{ total_conversations }}</span> Conversations</h4>
             {% endif %}
@@ -159,25 +159,36 @@
             Show Conversations
         </button>
 
-        <!-- Add a div to contain the serialized histories -->
-<div id="historiesContainer" class="align-left mb-3" style="display: none;">
-{% for conversation in conversations %}
-<textarea class="mb-3" id="userInput" readonly>
-"conversation_id": "{{ conversation.id }}"
+        <hr class="green mb-3">
 
-"{{ conversation.user_name }}": "{{ conversation.user_message }}"
+<!-- Add a div to contain the serialized histories -->
+<div id="historiesContainer" class="mb-3" style="display: none;">
+    {% for conversation in conversations %}
+    <pre class="main align-left mt-4 mb-2">
+<span class="conversation_id">- Conversation ID</span>: <span class="conversation_id">{{ conversation.id }}</span><br>
+<span class="user-message">- {{ conversation.user_name }}</span>: <span class="user-message">{{ conversation.user_message|safe }}</span><br>
+<span class="llm-response">·SìįSí·Dbt·</span>: <span class="llm-response">{{ conversation.llm_response }}</span><br>
+"conversation_summary": "{{ conversation.conversations_summary }}"<br>
+<span class="created-at">- Created At</span>: <span class="created-at">{{ conversation.created_at }}</span>
+</pre>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <div class="like-button" data-conversation-id="{{ conversation.id }}" {% if conversation.liked %}
+                style="color: pink;" {% else %} style="color: lightcyan;" {% endif %}>
+                <i class="fa fa-heart fa-2x"></i>
+                <hr class="green mb-3" style="margin: 0 45%;">
 
-"·SìįSí·Dbt·": "{{ conversation.llm_response }}"
+                <!-- This div is hidden by default and only shown when the user clicks the like button -->
+                <div id="likeMessage-{{ conversation.id }}" class="text-center" style="display: none;">
+                    <!-- The content here will be updated dynamically by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
 
-"conversation_summary": "{{ conversation.conversations_summary }}"
-
-"created_at": "{{ conversation.created_at }}"
-</textarea>
-{% endfor %}
-</div>
-
-        <hr class="green mb-5">
-        <hr class="gold mb-3">
+        <hr class="gold mt-5 mb-3">
 
         <!-- Add a button to trigger the display of serialized_histories -->
         <button class="btn btn-warning submit mb-3" id="showHistoriesJsonButton" onclick="toggleHistoriesJson()">

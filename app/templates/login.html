@@ -34,7 +34,7 @@
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto content mb-3">
 
-                <form method="POST" action="{{ url_for('auth.login') }}" class="container">
+                <form method="POST" action="{{ url_for('auth.login') }}" class="container-fluid">
 
                     {% with messages = get_flashed_messages() %}
                         {% if messages %}
@@ -65,7 +65,7 @@
             <hr class="gold mb-3"> 
             
             <button type="button" class="btn back-home mb-3">
-                <a href="{{ url_for('auth.register') }}" class="">-¡!¡- Back Register -¡!¡-</a>
+                <a href="{{ url_for('auth.register') }}" class="">-¡!¡- Back to Register -¡!¡-</a>
             </button>
         </div>
 

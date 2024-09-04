@@ -85,7 +85,7 @@
         </div>
     </form>
 
-    <div class="container conversations mb-3">
+    <div class="container-fluid conversations mb-3">
         {% if liked_conversations_count %}
             <h4>Total of <span class="gold1">{{ liked_conversations_count }}</span> Liked Conversations</h4>
         {% endif %}
@@ -101,6 +101,7 @@
         </h4>
         {% endif %}
     </div>
+    
     {% for conversation in liked_conversations %}
     <div class="container-fluid main mb-4 p-3 border align-left rounded shadow-sm">
         <div class="row mb-3">

@@ -38,7 +38,7 @@
 
     <div class="row text-center">
         <div class="col-lg-8 col-md-10 mx-auto mb-3">
-            <form id="reviewForm" method="POST" action="{{ url_for('website_review.review_website') }}" class="container">
+            <form id="reviewForm" method="POST" action="{{ url_for('website_review.review_website') }}" class="container-fluid">
                 {{ review_form.hidden_tag() }}
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
