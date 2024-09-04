@@ -29,7 +29,14 @@
 {% block content %}
 {% autoescape true %}
 <!-- Main content -->
+<div class="d-flex justify-content-center">
+    <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton"
+        style="position:fixed">
+        ⇩
+    </button>
+</div>
 <br>
+
 <div class="container-fluid footer mx-auto p-2 sm:px-0 custom-input-group mb-5">
     <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
         <section>
@@ -50,7 +57,7 @@
                 <h3 class="text-lg font-semibold mt-3 mt-3">Audio Result:</h3>
                 <div class="row justify-content-center">
                     <div class="col-auto">
-                        <audio id="response-audio" controls class="btn btn-outline-info mb-3" style="height: 31px;">
+                        <audio id="response-audio" controls autoplay class="btn btn-outline-info mb-3" style="height: 31px;">
                             <source src="{{ audio_url }}" type="audio/mp3">
                             Your browser does not support the audio element.
                         </audio>
@@ -65,7 +72,7 @@
 <br>
 
 <div class="text-center mt-5 mb-5">
-    <a href="{{ url_for('yt_blog_generator.generate_blog') }}" class="btn btn-primary mb-5">
+    <a href="{{ url_for('yt_blog_generator.blog_posts') }}" class="btn btn-primary mb-5">
         AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
             alt="Crown Icon" class="crown">-¡!¡-🔥
     </a>
@@ -74,5 +81,7 @@
 <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
+
+<script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 {% endautoescape %}
 {% endblock %}

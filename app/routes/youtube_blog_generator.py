@@ -1,8 +1,6 @@
 # YOUTUBE_BLOG_GENERATOR.PY
 
-import os
-from io import BytesIO
-
+import io
 from dotenv import load_dotenv, find_dotenv
 from flask import Blueprint, flash, make_response, render_template, request, jsonify, redirect, send_file, url_for
 from flask_login import current_user
@@ -102,12 +100,10 @@ def blog_details(pk):
 
 @generator_yt_blog_bp.route("/blog-posts/<int:pk>/audio", methods=["GET"])
 def blog_post_audio(pk):
-    """Serve the audio version of the blog post from the database."""
     if not current_user.is_authenticated:
         flash('Please login to access this page.')
         return redirect(url_for('auth.login'))
 
-    # Fetch the blog post by its primary key (ID)
     blog_article_detail = BlogPost.query.get_or_404(pk)
 
     if current_user.id != blog_article_detail.user_id:
@@ -118,9 +114,10 @@ def blog_post_audio(pk):
         flash("No audio available for this blog post.")
         return redirect(url_for('yt_blog_generator.blog_posts'))
 
-    # Serve the audio data as an MP3 file
-    audio_filename = f"{blog_article_detail.youtube_title}.mp3"
-    response = make_response(blog_article_detail.audio_data)
-    response.headers.set('Content-Type', 'audio/mpeg')
-    response.headers.set('Content-Disposition', 'inline', filename=audio_filename)
-    return response
+    audio_data = io.BytesIO(blog_article_detail.audio_data)
+    return send_file(
+        audio_data,
+        mimetype='audio/mpeg',
+        as_attachment=False,
+        download_name=f"{blog_article_detail.youtube_title}.mp3"
+    )

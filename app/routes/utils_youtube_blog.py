@@ -130,11 +130,11 @@ def download_audio(link):
         return None, f"Error downloading audio: {str(e)}"
 
 
-def get_transcription(audio_file):
+def get_transcription(audio_file_path):
     """Transcribe the audio file using Whisper."""
     try:
         model = whisper.load_model("tiny")  # You can also try "small" or "large" depending on your resources
-        result = model.transcribe(audio_file)
+        result = model.transcribe(audio_file_path)
         transcription_text = result["text"]
         return transcription_text, None
     except Exception as e:
@@ -176,20 +176,20 @@ def process_youtube_video(user_id, youtube_link):
         return None, "Failed to extract YouTube title."
 
     # Download audio
-    audio_file, download_error = download_audio(youtube_link)
+    audio_file_path, download_error = download_audio(youtube_link)
     if download_error:
         return None, download_error
 
     # Get transcript
-    transcription, transcription_error = get_transcription(audio_file)
+    transcription, transcription_error = get_transcription(audio_file_path)
     if transcription_error:
-        cleanup_files([audio_file])
+        cleanup_files([audio_file_path])
         return None, transcription_error
 
     # Use OpenAI to generate the blog
     blog_content = generate_blog_from_transcription(transcription)
     if not blog_content:
-        cleanup_files([audio_file])
+        cleanup_files([audio_file_path])
         return None, 'Failed to generate blog article 😭'
 
     # Detect the language of the blog content
@@ -199,10 +199,12 @@ def process_youtube_video(user_id, youtube_link):
         detected_lang = 'en'  # Default to English if detection fails
 
     # Convert the blog content to speech using gTTS
+    generated_audio_file_path = os.path.join(AUDIO_FOLDER_PATH, 'blog_audio.mp3')
     tts = gTTS(blog_content, lang=detected_lang)
-    audio_data = BytesIO()  # Using BytesIO to save the audio in memory
-    tts.save(audio_data)
-    audio_data.seek(0)  # Rewind the file pointer to the beginning
+    tts.save(generated_audio_file_path)
+
+    with open(generated_audio_file_path, 'rb') as generated_audio_file:
+        audio_data = generated_audio_file.read()
 
     # Save blog article into the database with the audio
     new_blog_article = BlogPost(
@@ -210,13 +212,13 @@ def process_youtube_video(user_id, youtube_link):
         youtube_title=title,
         youtube_link=youtube_link,
         generated_content=blog_content,
-        audio_data=audio_data.read()  # Store the audio data in the database
+        audio_data=audio_data
     )
     db.session.add(new_blog_article)
     db.session.commit()
 
-    # Clean up: delete audio file after use
-    cleanup_files([audio_file])
+    # Clean up: delete both the original downloaded audio file and the generated blog audio file
+    cleanup_files([audio_file_path, generated_audio_file_path])
 
     return new_blog_article, None
 
@@ -227,5 +229,8 @@ def cleanup_files(file_paths):
         if os.path.exists(file_path):
             try:
                 os.remove(file_path)
+                print(f"Removed file: {file_path}")  # Logging
             except OSError as e:
                 print(f"Error removing file {file_path}: {str(e)}")
+        else:
+            print(f"File not found for removal: {file_path}")  # Logging

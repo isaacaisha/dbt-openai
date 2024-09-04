@@ -29,7 +29,14 @@
 {% endblock %}
 
 {% block content %}
+<div class="d-flex justify-content-center">
+    <button class="btn btn-outline-info submit scroll-down text-center" onclick="scrollDown()" id="scrollDownButton"
+        style="position:fixed">
+        ⇩
+    </button>
+</div>
 <br>
+
 <div class="container-fluid footer mx-auto p-2 sm:px-0 custom-input-group mb-5">
     <div class="max-w-3xl mx-auto main p-6 rounded-lg shadow-md card-body border border-secondary">
         <!-- Blog posts section -->
@@ -128,7 +135,7 @@
                             <h3 class="text-lg font-semibold">Audio Result:</h3>
                             <div class="row justify-content-center">
                                 <div class="col-auto">
-                                    <audio id="response-audio" controls class="btn btn-outline-info mb-3" style="height: 31px;">
+                                    <audio id="response-audio" controls autoplay class="btn btn-outline-info mb-3" style="height: 31px;">
                                         <source src="${data.audio_url}" type="audio/mp3">
                                         Your browser does not support the audio element.
                                     </audio>
@@ -153,4 +160,5 @@
         });
 </script>
 
+<script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 {% endblock %}

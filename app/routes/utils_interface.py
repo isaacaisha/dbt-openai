@@ -17,7 +17,6 @@ from langdetect import detect
 
 from sqlalchemy.exc import SQLAlchemyError
 from app.memory import Memory, db
-from app.app_forms import TextAreaForm, TextAreaDrawingIndex
 
 from gtts import gTTS
 from gtts.lang import tts_langs
