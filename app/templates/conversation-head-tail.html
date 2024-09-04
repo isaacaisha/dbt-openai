@@ -303,16 +303,6 @@
 
 <script src="{{ url_for('static', filename='js/like-unlike-convers.js') }}" defer></script>
 <script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-            const audioElements = document.querySelectorAll('audio[id^="response-audio-"]');
 
-            audioElements.forEach(audio => {
-                audio.addEventListener('click', function () {
-                    this.play();
-                });
-            });
-        });
-</script>
 {% endautoescape %}
 {% endblock %}

@@ -127,19 +127,12 @@
     </div>
     <br>
     <hr class="crimson mb-5">
-{% endif %}
+    {% endif %}
 
 </div>
-
-<script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
-
-{% endautoescape %}
-{% endblock %}
-
-{% block footer1 %}
 <div class="text-center">
     <a href="{{ url_for('website_review.review_website') }}" class="btn btn-primary mb-5">
-        AI Website Review Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
+        Review Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
             alt="Crown Icon" class="crown">-¡!¡-🔥
     </a>
 </div>
@@ -147,4 +140,8 @@
 <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
     Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
 </footer>
+
+<script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
+
+{% endautoescape %}
 {% endblock %}

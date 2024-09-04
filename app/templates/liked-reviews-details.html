@@ -113,6 +113,17 @@
 
 <br>
 
+<div class="text-center">
+    <a href="{{ url_for('website_review.liked_reviews') }}" class="btn btn-primary mb-5">
+        Back to Generated Review 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
+            alt="Crown Icon" class="crown">-¡!¡-🔥
+    </a>
+</div>
+
+<footer class="footer text-center mx-5 p-3 mt-4 mb-5">
+    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
+</footer>
+
 <script>
     // Existing DOMContentLoaded listener
     document.addEventListener('DOMContentLoaded', function () {
@@ -127,19 +138,4 @@
 <script src="{{ url_for('static', filename='js/toggle-histories.js') }}" defer></script>
 
 {% endautoescape %}
-{% endblock %}
-
-{% block footer1 %}
-<br>
-<div class="text-center">
-    <a href="{{ url_for('website_review.liked_reviews') }}" class="btn btn-primary mb-5">
-        Back to Generated Review 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
-            alt="Crown Icon" class="crown">-¡!¡-🔥
-    </a>
-</div>
-
-<footer class="footer text-center mx-5 p-3 mt-4 mb-5">
-    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
-</footer>
-
 {% endblock %}

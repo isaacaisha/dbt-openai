@@ -54,18 +54,15 @@
         </div>
     </div>
     <br>
+    <div class="text-center">
+        <a href="{{ url_for('yt_blog_generator.generate_blog') }}" class="btn btn-primary mb-3">
+            AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
+                alt="Crown Icon" class="crown">-¡!¡-🔥
+        </a>
+    </div>
+    
+    <footer class="footer text-center mx-5 p-3 mt-4 mb-5">
+        Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
+    </footer>
 {% endautoescape %}
-{% endblock %}
-
-{% block footer1 %}
-<div class="text-center">
-    <a href="{{ url_for('yt_blog_generator.generate_blog') }}" class="btn btn-primary mb-3">
-        AI Blog Generator 🔥-¡!¡-<img src="{{ url_for('static', filename='assets/images/crown.webp') }}"
-            alt="Crown Icon" class="crown">-¡!¡-🔥
-    </a>
-</div>
-
-<footer class="footer text-center mx-5 p-3 mt-4 mb-5">
-    Powered by <a href="{{ url_for('conversation_interface.conversation_interface') }}">·SìįSí·Dbt·</a>
-</footer>
 {% endblock %}
