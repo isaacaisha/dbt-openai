@@ -59,7 +59,7 @@
     {% block navbar %}
     <nav class="navbar navbar-expand-md navbar-dark">
 
-      <a class="navbar-brand col" href="https://rastas-dreads-blog.herokuapp.com/"aria-label="rastas-dreads-blog" target="_blank">
+      <a class="navbar-brand col" href="https://www.siisi-api.online/docs"aria-label="rastas-dreads-blog" target="_blank">
         SìįSí Dbt
       </a>
 
@@ -130,7 +130,7 @@
     <div class="text-center mb-5">
       {% if current_user.is_authenticated %}
       <div class="text-center">🚀</div>
-      <span class="white">¡!¡ Welcome, {{ current_user.name }} ¡!¡</span>
+      <span class="white">-¡!¡- Welcome, {{ current_user.name }} -¡!¡-</span>
       {% endif %}
     </div>
     {% endblock %}
@@ -145,6 +145,7 @@
     {% block footer1 %}{% endblock %}
     {% block footer %}
     <footer id="footer" class="mt-5">
+      <h6 class="text-center mb-3"><a href="https://www.siisi-api.online/docs" target="_blank" class="api">SìįSí FastAPI</a></h6>
       <!--<div class="text-center mb-3">
         <button id="fastapi-docs" type="button" class="btn fastapi-docs" aria-label="SìįSí FastAPI Documentation">
           <a href="https://www.siisi-api.online/docs" target="_blank" class="white">SìįSíFastAPI</a>

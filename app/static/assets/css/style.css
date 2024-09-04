@@ -197,7 +197,8 @@ body>div.content>div.container>div>div>div>div.mb-3>form>div:nth-child(5) {
 #closePopupButton {
     background-color: #171717;
     border: 0.1rem solid #AEFAFC;
-    border-radius: 100%;
+    border-radius: 19%;
+    font-size: smaller;
     padding: 5px 10px;
 }
 
@@ -294,7 +295,8 @@ textarea#userInput {
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
-.conversations {
+.conversations,
+.api {
     color: #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
     margin-top: 0;
