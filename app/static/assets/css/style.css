@@ -190,16 +190,12 @@ body>div.content>div.container>div>div>div>div.mb-3>form>div:nth-child(5) {
     padding: 1px 5px;
 }
 
-.h6-close-btn {
-    color: #17a2b8;
+#closePopupButton {
+    color: rgb(158, 210, 198);
 }
 
-#closePopupButton {
-    background-color: #171717;
-    border: 0.1rem solid #AEFAFC;
-    border-radius: 19%;
-    font-size: smaller;
-    padding: 5px 10px;
+#closePopupButton:hover {
+    color: rgb(0, 255, 171);
 }
 
 .Dbt {
