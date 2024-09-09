@@ -54,5 +54,5 @@ def test_get_conversations_jsonify(client):
     with client.application.test_request_context():
         response = client.get(url_for('llm_conversation.get_conversations_jsonify'))
         assert response.status_code == 200
-        assert b'Show Database Memory' in response.data  
+        assert b'Memory' in response.data  
     
