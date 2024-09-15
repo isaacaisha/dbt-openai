@@ -31,26 +31,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function setupGenerateButtonClick() {
-        generateButton.addEventListener('click', async () => {
-            const generateDraw = document.getElementById('generateDraw').value;
-            const generationType = generationTypeElement.value;
+        generateButton.addEventListener("click", async (event) => {
+          event.preventDefault(); // Prevent default form submission
 
-            // Check if image upload is necessary and available
-            if (['edits', 'face-to-sticker'].includes(generationType) && fileInput.files.length === 0) {
-                alert('Please select an image to upload.');
-                return;
-            }
+          const generateDraw = document.getElementById("generateDraw").value;
+          const generationType = generationTypeElement.value;
 
-            let imageDataURL = null;
-            if (fileInput.files.length > 0) {
-                const fileReader = new FileReader();
-                fileReader.readAsDataURL(fileInput.files[0]);
-                await new Promise(resolve => fileReader.onloadend = resolve);
-                imageDataURL = fileReader.result.split(',')[1]; // Extract base64 part
-                userImageDisplay.innerHTML = `<img src="${fileReader.result}" alt="Uploaded Image" class="image_display"/>`;
-            }
+          // Check if image upload is necessary and available
+          if (
+            ["edits", "face-to-sticker"].includes(generationType) &&
+            fileInput.files.length === 0
+          ) {
+            alert("Please select an image to upload.");
+            return;
+          }
 
-            generateDrawing(generateDraw, generationType, imageDataURL);
+          let imageDataURL = null;
+          if (fileInput.files.length > 0) {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(fileInput.files[0]);
+            await new Promise((resolve) => (fileReader.onloadend = resolve));
+            imageDataURL = fileReader.result.split(",")[1]; // Extract base64 part
+            userImageDisplay.innerHTML = `<img src="${fileReader.result}" alt="Uploaded Image" class="image_display"/>`;
+          }
+
+          generateDrawing(generateDraw, generationType, imageDataURL);
         });
     }
 
@@ -82,8 +87,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function setupAnalyzeButtonClick() {
-        analyzeButton.addEventListener('click', () => {
-            analyzeFileInput.click(); // Directly trigger file input
+        analyzeButton.addEventListener("click", (event) => {
+          event.preventDefault(); // Prevent default form submission
+          analyzeFileInput.click(); // Directly trigger file input
         });
 
         analyzeFileInput.addEventListener('change', async () => {

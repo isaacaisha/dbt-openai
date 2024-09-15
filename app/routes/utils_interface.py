@@ -36,6 +36,7 @@ AUDIO_FOLDER_PATH = os.path.join(STATIC_FOLDER_PATH, 'media')
 # Ensure the directory exists
 os.makedirs(AUDIO_FOLDER_PATH, exist_ok=True)
 
+
 def generate_conversation_context(user_input, user_conversations):
     # Create a list of JSON strings for each conversation
     conversation_strings = [memory.conversations_summary for memory in user_conversations]
@@ -57,44 +58,62 @@ def generate_conversation_context(user_input, user_conversations):
     return conversation_context
 
 
-# Function to handle the response from the language model
 def handle_llm_response(user_input, conversation_context, detected_lang):
+    detected_lang = detect(user_input) 
+    conversation_context = adjust_conversation_context(conversation_context)
+    response = get_llm_response(user_input, conversation_context)
+    assistant_reply = extract_assistant_reply(response)
+
+    assistant_reply = clean_assistant_reply(assistant_reply)
+    detected_lang, flash_message = handle_language_support(detected_lang)
+    audio_data = generate_audio_data(assistant_reply, detected_lang)
+    
+    memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
+    
+    return assistant_reply, audio_data, response, flash_message
+
+
+def adjust_conversation_context(conversation_context):
     if conversation_context and 'previous_conversations' in conversation_context:
-        conversation_context['previous_conversations'] = conversation_context['previous_conversations'][-3:]  
+        conversation_context['previous_conversations'] = conversation_context['previous_conversations'][-3:]
+    return conversation_context
 
+
+def get_llm_response(user_input, conversation_context):
     if not conversation_context:
-        response = conversation.predict(input=user_input)
-    else:
-        response = conversation.predict(input=json.dumps(conversation_context))
+        return conversation.predict(input=user_input)
+    return conversation.predict(input=json.dumps(conversation_context))
 
+
+def extract_assistant_reply(response):
     if isinstance(response, str):
-        assistant_reply = response
-    else:
-        if isinstance(response, dict) and 'choices' in response:
-            assistant_reply = response['choices'][0]['message']['content']
-        else:
-            assistant_reply = None
-            
-    assistant_reply = assistant_reply.replace('#', '').replace('*', '')
+        return response
+    if isinstance(response, dict) and 'choices' in response:
+        return response['choices'][0]['message']['content']
+    return None
 
-    # Initialize an empty flash message
+
+def clean_assistant_reply(assistant_reply):
+    if assistant_reply:
+        return assistant_reply.replace('#', '').replace('*', '')
+    return assistant_reply
+
+
+def handle_language_support(detected_lang):
     flash_message = None
-
-    # Check if the language is supported
     if detected_lang not in tts_langs():
         flash_message = f"Language '{detected_lang}' not supported, falling back to English."
-        detected_lang = 'en'  # Fallback to English
+        detected_lang = 'en'
+    return detected_lang, flash_message
 
+
+def generate_audio_data(assistant_reply, detected_lang):
     tts = gTTS(assistant_reply, lang=detected_lang)
     audio_file_path = os.path.join(AUDIO_FOLDER_PATH, 'interface_temp_audio.mp3')
     tts.save(audio_file_path)
-
+    
     with open(audio_file_path, 'rb') as audio_file:
-        audio_data = audio_file.read()
-
-    memory_summary.save_context({"input": f"{user_input}"}, {"output": f"{response}"})
-
-    return assistant_reply, audio_data, response, flash_message
+        return audio_file.read()
 
 
 # Function to find the most relevant conversation based on user query

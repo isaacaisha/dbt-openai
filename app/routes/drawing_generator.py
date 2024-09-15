@@ -3,9 +3,9 @@
 import os
 import traceback
 
-from flask import Blueprint, flash, redirect, render_template, request, jsonify, url_for
+from flask import Blueprint, flash, render_template, request, jsonify, url_for
 from flask_login import current_user
-from app.routes.utils_drawing import api_key, client, text_to_speech, analyze_image, generate_drawing_from, save_drawing_datas
+from app.routes.utils_drawing import text_to_speech, analyze_image, generate_drawing_from, save_drawing_datas, api_context, DrawingData
 from app.app_forms import TextAreaDrawingIndex
 from datetime import datetime
 
@@ -33,18 +33,34 @@ def drawing_index():
 
     if request.method == "POST":
         data = request.get_json()
-        if not data or 'generate_draw' not in data or 'type' not in data:
-            return jsonify({'error': 'Prompt and type are required to generate a drawing.'}), 400
+        if not data:
+            return jsonify({'error': 'No data provided.'}), 400
+        
+        if 'generate_draw' not in data:
+            return jsonify({'error': 'The "generate_draw" field is required.'}), 400
+        
+        if 'type' not in data:
+            return jsonify({'error': 'The "type" field is required.'}), 400
+
         
         generate_draw = data['generate_draw']
         generation_type = data['type']
         image_data = data.get('image_data')
 
         try:
-            drawing_url = generate_drawing_from(generate_draw, generation_type, image_data, api_key, client)
+            drawing_url = generate_drawing_from(generate_draw, generation_type, image_data, api_context)
+
+            # Create a DrawingData instance
+            drawing_data = DrawingData(
+                user_name=user_name,
+                user_prompt=generate_draw,
+                analysis_text=None,
+                audio_url=None,
+                image_url=drawing_url
+            )
 
             # Save the generated drawing data to the database
-            save_drawing_datas(user_name, generate_draw, None, None, drawing_url)
+            save_drawing_datas(drawing_data)
 
             return jsonify({'drawing_url': drawing_url}), 200
         except ValueError as ve:
@@ -88,8 +104,17 @@ def analyze_drawing():
         user_prompt = "Image Analysis"
         image_url = 'None'  # Replace with the appropriate value if available
 
+        # Create a DrawingData instance
+        drawing_data = DrawingData(
+            user_name=user_name,
+            user_prompt=user_prompt,
+            analysis_text=analysis_text,
+            audio_url=audio_url,
+            image_url=image_url
+        )
+
         # Save the analysis result and audio URL to the database
-        save_drawing_datas(user_name, user_prompt, analysis_text, audio_url, image_url)
+        save_drawing_datas(drawing_data)
 
         # Return the analysis text and audio file URL
         print(f"'description': {description}, 'audio_url': {audio_url}")

@@ -16,92 +16,6 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// Function to send a POST request to the server
-function sendRequest(prompt) {
-    const csrfToken = getCookie('csrf_token');
-    showLoading();
-    const buttons = ['speechRecognitionButton', 'generateButton', 'playbackButton', 'start-button'];
-    buttons.forEach(id => document.getElementById(id).disabled = true);
-    disableAllButtons(true);
-    interruptButton.disabled = false;
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/interface/answer', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.setRequestHeader('X-CSRFToken', csrfToken);
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            hideLoading();
-            buttons.forEach(id => document.getElementById(id).disabled = false);
-            disableAllButtons(false);
-
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                const textarea = document.getElementById('generatedText');
-                textarea.value = response.answer_text;
-                textarea.dataset.detectedLang = response.detected_lang || 'es-ES';
-                textarea.style.display = response.answer_text ? 'block' : 'none';
-                document.getElementById('response-audio').style.display = 'block';
-                document.getElementById('playbackButtonContainer').style.display = 'block';
-
-                // Check if there's a flash message and display it
-                if (response.flash_message) {
-                    // Update the page with the flash message
-                    document.getElementById('flash-message').textContent = response.flash_message;
-                }
-
-                if (response.answer_text) {
-                    smoothScrollToBottomWhileTyping(response.answer_text);
-                    const speech = new SpeechSynthesisUtterance(response.answer_text);
-                    speech.lang = response.detected_lang || 'es-ES';
-                    speech.onend = () => interruptButton.style.display = 'none';
-                    speech.onboundary = event => {
-                        if (event.name === 'word') {
-                            smoothScrollToBottom();
-                        }
-                    };
-                    window.speechSynthesis.speak(speech);
-                }
-                updateAudioSource();
-                interruptButton.style.display = 'block';
-            } else {
-                interruptButton.style.display = 'none';
-                console.error('Request failed:', xhr.status, xhr.statusText);
-            }
-        }
-    };
-
-    xhr.onerror = function () {
-        hideLoading();
-        buttons.forEach(id => document.getElementById(id).disabled = false);
-        disableAllButtons(false);
-        console.error('Network error');
-    };
-
-    xhr.send('prompt=' + encodeURIComponent(prompt));
-}
-
-// Function to update the audio source
-function updateAudioSource() {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', '/latest-audio-url', true);
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            const response = JSON.parse(xhr.responseText);
-            if (response.audio_url) {
-                const audio = document.getElementById('response-audio');
-                const source = audio.querySelector('source');
-                source.src = response.audio_url;
-                audio.load();
-            }
-        }
-    };
-
-    xhr.send();
-}
-
 // Function to disable/enable all buttons and links
 function disableAllButtons(disable) {
     const allButtons = document.querySelectorAll('button');
@@ -130,13 +44,99 @@ function hideLoading() {
     loadingCircle.style.display = 'none';
 }
 
+// Function to handle errors in the XMLHttpRequest
+function handleRequestError() {
+    hideLoading();
+    disableAllButtons(false);
+    console.error('Network or request error occurred');
+}
+
+// Function to process the response from the server
+function processResponse(responseText) {
+    const response = JSON.parse(responseText);
+    const textarea = document.getElementById('generatedText');
+    textarea.value = response.answer_text;
+    textarea.dataset.detectedLang = response.detected_lang || 'es-ES';
+    textarea.style.display = response.answer_text ? 'block' : 'none';
+    document.getElementById('response-audio').style.display = 'block';
+    document.getElementById('playbackButtonContainer').style.display = 'block';
+
+    if (response.flash_message) {
+        document.getElementById('flash-message').textContent = response.flash_message;
+    }
+
+    if (response.answer_text) {
+        smoothScrollToBottomWhileTyping(response.answer_text);
+        const speech = new SpeechSynthesisUtterance(response.answer_text);
+        speech.lang = response.detected_lang || 'es-ES';
+        speech.onend = () => interruptButton.style.display = 'none';
+        speech.onboundary = event => {
+            if (event.name === 'word') {
+                smoothScrollToBottom();
+            }
+        };
+        window.speechSynthesis.speak(speech);
+    }
+    updateAudioSource();
+    interruptButton.style.display = 'block';
+}
+
+// Function to send a POST request to the server
+function sendRequest(prompt) {
+    const csrfToken = getCookie('csrf_token');
+    showLoading();
+    disableAllButtons(true);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/interface/answer', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('X-CSRFToken', csrfToken);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            hideLoading();
+            disableAllButtons(false);
+
+            if (xhr.status === 200) {
+                processResponse(xhr.responseText);
+            } else {
+                handleRequestError();
+            }
+        }
+    };
+
+    xhr.onerror = handleRequestError;
+
+    xhr.send('prompt=' + encodeURIComponent(prompt));
+}
+
+// Function to update the audio source
+function updateAudioSource() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/latest-audio-url', true);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.audio_url) {
+                const audio = document.getElementById('response-audio');
+                const source = audio.querySelector('source');
+                source.src = response.audio_url;
+                audio.load();
+            }
+        }
+    };
+
+    xhr.send();
+}
+
 // Function to smoothly scroll the textarea to the bottom
 function smoothScrollToBottom() {
     const textarea = document.getElementById('generatedText');
     const start = textarea.scrollTop;
     const end = textarea.scrollHeight;
     const change = end - start;
-    const duration = 1000; // Duration for scrolling
+    const duration = 1000;
     const startTime = performance.now();
 
     function scroll(timestamp) {
@@ -154,42 +154,38 @@ function smoothScrollToBottom() {
 // Function to scroll gradually while text is being typed
 function smoothScrollToBottomWhileTyping(text) {
     const textarea = document.getElementById('generatedText');
-    textarea.value = ''; // Clear the textarea before typing starts
+    textarea.value = '';
     let index = 0;
-    const typingSpeed = 57; // Adjust this value to control typing speed
-    let typingInProgress = true; // Set the typing flag to true
+    const typingSpeed = 57;
+    let typingInProgress = true;
 
     function typeText() {
-        if (!typingInProgress) return; // Exit if typing is interrupted
+        if (!typingInProgress) return;
         if (index < text.length) {
             textarea.value += text[index++];
-            textarea.scrollTop = textarea.scrollHeight; // Scroll to bottom as text is typed
+            textarea.scrollTop = textarea.scrollHeight;
             setTimeout(typeText, typingSpeed);
         } else {
-            smoothScrollToBottom(); // Ensure final scroll to bottom
+            smoothScrollToBottom();
         }
     }
 
     typeText();
 }
 
-// Add an event listener to the form for submitting
+// Add event listeners when the document is ready
 document.addEventListener('DOMContentLoaded', function () {
-    // Reference the audio element globally
     const audio = document.getElementById('response-audio');
 
-    // Add an event listener to the form for submitting
     document.getElementById('prompt-form').addEventListener('submit', function (e) {
         e.preventDefault();
-        var prompt = document.getElementById('userInput').value; // Get text from the textarea
+        const prompt = document.getElementById('userInput').value;
         sendRequest(prompt);
     });
 
-    // Add an event listener to the playback button
     document.getElementById('playbackButton').addEventListener('click', function () {
         const playbackButton = document.getElementById('playbackButton');
 
-        // Ensure the correct audio reference is used
         if (audio.paused) {
             audio.play();
             playbackButton.textContent = '-¡!¡- Pause Audio -¡!¡-';
@@ -199,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Add an event listener to the audio element for playback
     audio.addEventListener('click', function () {
         audio.play();
     });

@@ -27,7 +27,7 @@
 {% block content %}
 {% autoescape true %}
 <div class="content text-center">
-    <form id="drawing-form" method="POST" enctype="multipart/form-data">
+    <form id="drawing-form" method="POST" enctype="multipart/form-data" onsubmit="return false;">
         {{ drawing_form.csrf_token }}
 
         <div id="error-message" class="alert alert-danger mb-3" style="display: none;"></div>
@@ -67,6 +67,7 @@
         </div>
         <div id="loading-circle2" class="load mb-3" style="display: none;"></div>
 
+        <!-- Generate Drawing Button -->
         <div class="text-center">
             <button id="generateDrawingButton" class="btn generate-text mb-3" type="button">Generate A Drawing 🔥¡!¡
                 <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥</button>
@@ -86,6 +87,7 @@
                 style="display:none;">
         </div>
 
+        <!-- Analyze Image Button -->
         <div>
             <button id="analyzeButton" class="mb-4 btn analyze-text" type="button">Analyze An Image 🔥¡!¡
                 <img src="{{ url_for('static', filename='assets/images/crown.webp') }}" class="crown">¡!¡🔥

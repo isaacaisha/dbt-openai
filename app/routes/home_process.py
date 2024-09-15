@@ -12,7 +12,7 @@ from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 from langdetect import detect
 
-from app.routes.utils_drawing import analyze_image, text_to_speech, generate_drawing_from, save_drawing_datas, api_key, client
+from app.routes.utils_drawing import analyze_image, text_to_speech, generate_drawing_from, save_drawing_datas, api_context
 
 from sqlalchemy.exc import SQLAlchemyError
 from app.memory import MemoryTest, db
@@ -50,68 +50,77 @@ def home():
     return render_template('index.html', date=datetime.now().strftime("%a %d %B %Y"))
 
 
+def handle_conversation_submission(home_form):
+    if home_form.validate_on_submit() and 'text_writing' in request.form:
+        user_input = request.form['text_writing']
+        response = conversation.predict(input=user_input)
+        print(f"user_input: {user_input}")
+        print(f"response: {response}\n")
+        flash("Conversation generated successfully!", "success")
+        return user_input, response
+    return None, None
+
+
+def handle_drawing_generation(drawing_form):
+    if drawing_form.validate_on_submit() and 'generate_draw' in request.form:
+        generate_draw = request.form.get('generate_draw')
+        generation_type = request.form.get('generation_type')
+        image_data = get_image_data_from_request()
+
+        try:
+            drawing_url = generate_drawing_from(generate_draw, generation_type, image_data, api_context)
+            save_drawing_datas('anonymous', generate_draw, None, None, drawing_url)  # Using None for analysis and audio
+            flash("Drawing successfully generated!", "success")
+            return jsonify({'drawing_url': drawing_url}), 200
+        except Exception as e:
+            print(f"Exception occurred during drawing generation: {e}")
+            flash("Failed to generate the drawing. Please try again.", "error")
+    return None
+
+
+def handle_image_analysis(drawing_form):
+    if drawing_form.validate_on_submit() and 'analyze_image_upload' in request.files:
+        file = request.files['analyze_image_upload']
+        if file:
+            description = analyze_image(file)
+            analysis_text = description['choices'][0]['message']['content']
+            audio_filename = f"image_analysis_audio.mp3"
+            text_to_speech(analysis_text, audio_filename, AUDIO_FOLDER_PATH)
+
+            audio_url = url_for('static', filename=f'media/{audio_filename}')
+            print(f"Generated audio URL: {audio_url}")
+            save_drawing_datas('anonymous', "Image Analysis", analysis_text, audio_url, None)
+            flash("Image analysis completed!", "success")
+            return jsonify({'description': description, 'audio_url': audio_url}), 200
+    return None
+
+
+def get_image_data_from_request():
+    if 'image_upload' in request.files:
+        file = request.files['image_upload']
+        if file and file.filename != '':
+            return base64.b64encode(file.read()).decode('utf-8')
+    return None
+
+
 @home_conversation_bp.route("/conversation-test", methods=["GET", "POST"])
 def home_test():
     home_form = TextAreaFormIndex()
     drawing_form = TextAreaDrawingIndex()
-    user_input = None
-    response = None
+    user_input, response = None, None
     images = IMAGES
 
     try:
         if request.method == "POST":
-            # Handle conversation form submission
-            if home_form.validate_on_submit() and 'text_writing' in request.form:
-                user_input = request.form['text_writing']
-                response = conversation.predict(input=user_input)
-                print(f"user_input: {user_input}")
-                print(f"response: {response}\n")
-                flash("Conversation generated successfully!", "success")
+            user_input, response = handle_conversation_submission(home_form)
 
-            # Handle drawing generation and image analysis form submission
-            if drawing_form.validate_on_submit():
-                # Check if the request is for generating a drawing
-                if 'generate_draw' in request.form:
-                    generate_draw = request.form.get('generate_draw')
-                    generation_type = request.form.get('generation_type')
-                    image_data = None
+            drawing_response = handle_drawing_generation(drawing_form)
+            if drawing_response:
+                return drawing_response
 
-                    # If an image is uploaded, get the file and convert it to base64
-                    if 'image_upload' in request.files:
-                        file = request.files['image_upload']
-                        if file and file.filename != '':
-                            image_data = base64.b64encode(file.read()).decode('utf-8')
-
-                    try:
-                        # Generate the drawing
-                        drawing_url = generate_drawing_from(generate_draw, generation_type, image_data, api_key, client)
-                        save_drawing_datas('anonymous', generate_draw, drawing_url)  # Use 'anonymous' or any default name
-                        flash(f"Drawing successfully generated!", "success")
-                        return jsonify({'drawing_url': drawing_url}), 200
-
-                    except Exception as e:
-                        print(f"Exception occurred during drawing generation: {e}")
-                        flash("Failed to generate the drawing. Please try again.", "error")
-
-                # Analyze an image if provided
-                if 'analyze_image_upload' in request.files:
-                    file = request.files['analyze_image_upload']
-                    if file:
-                        description = analyze_image(file)
-                        analysis_text = description['choices'][0]['message']['content']
-
-                        # Generate the audio file from the analysis text
-                        audio_filename = f"image_analysis_audio.mp3"
-                        text_to_speech(analysis_text, audio_filename, AUDIO_FOLDER_PATH)
-
-                        # Create the audio file URL
-                        audio_url = url_for('static', filename=f'media/{audio_filename}')
-                        print(f"Generated audio URL: {audio_url}")
-
-                        # Save the analysis result and audio URL
-                        save_drawing_datas('anonymous', analysis_text, audio_url)
-                        flash(f"Image analysis completed!", "success")
-                        return jsonify({'description': description, 'audio_url': audio_url}), 200
+            analysis_response = handle_image_analysis(drawing_form)
+            if analysis_response:
+                return analysis_response
 
         memory_buffer = memory.buffer_as_str
         memory_load = memory.load_memory_variables({})
