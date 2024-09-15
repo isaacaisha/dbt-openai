@@ -83,11 +83,14 @@ def get_all_conversations():
     conversations = get_conversations(filters)
     serialized_conversations = [serialize_conversation(conversation) for conversation in conversations]
 
+    # Calculate the total number of conversations for this user
+    total_conversations = Memory.query.filter_by(owner_id=current_user.id).count()
+
     if not serialized_conversations:
         return render_conversation_template('conversation-all.html', filters, serialized_conversations,
                                             search_message=f"No conversations found for search term: '{filters.search}'")
 
-    return render_conversation_template('conversation-all.html', filters, serialized_conversations)
+    return render_conversation_template('conversation-all.html', filters, serialized_conversations, total_conversations=total_conversations)
 
 
 @llm_conversation_bp.route('/liked-conversations')
@@ -163,6 +166,9 @@ def show_story():
         memory_load = get_conversations(filters)
         serialized_memory_load = [serialize_conversation(memory, last_summary_only=True) for memory in memory_load]
 
+        # Calculate the total number of conversations for this user
+        conversations_count = Memory.query.filter_by(owner_id=current_user.id).count()
+
         if memory_load:
             memory_buffer = f'- {current_user.name}(owner_id:{filters.owner_id}):\n\n'
             memory_buffer += '\n\n'.join(
@@ -178,6 +184,7 @@ def show_story():
                                    memory_load=memory_load, memory_buffer=memory_buffer,
                                    summary_conversations=summary_conversations,
                                    serialized_memory_load=serialized_memory_load,
+                                   conversations_count=conversations_count,
                                    limit=filters.limit, offset=filters.offset, search=filters.search,
                                    date=datetime.now().strftime("%a %d %B %Y"))
         else:
