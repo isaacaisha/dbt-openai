@@ -50,38 +50,43 @@ def fetch_with_timeout(url, data, timeout=120):
 def youtube_title(link):
     """Extract the title of a YouTube video from its link."""
     client = httpx.Client(http2=False, verify=True)  # Instantiate the client
-
     try:
-        video_id = None
-        if 'v=' in link:
-            video_id = link.split('v=')[-1].split('&')[0]
-        elif 'youtu.be/' in link:
-            video_id = link.split('youtu.be/')[-1].split('?')[0]
-        elif 'shorts/' in link:
-            video_id = link.split('shorts/')[-1].split('?')[0]
-        else:
-            print(f"Unsupported YouTube URL format: {link}")
-            return None
-        
+        video_id = extract_video_id(link)
         if not video_id:
             print(f"Unable to extract video ID from link: {link}")
             return None
-        
-        url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
-        response = client.get(url)
-        response.raise_for_status()
-        data = response.json()
-        
-        if 'items' in data and len(data['items']) > 0:
-            return data['items'][0]['snippet']['title']
-        else:
+
+        data = fetch_youtube_data(video_id, client)
+        if not data:
             print(f"No items found in YouTube API response for link: {link}")
+            return None
+
+        return data.get('items', [{}])[0].get('snippet', {}).get('title')
     except httpx.RequestError as e:
         print(f"Error calling YouTube API: {str(e)}")
     finally:
         client.close()  # Close the client after use
 
-    return None
+
+def extract_video_id(link):
+    """Extract the video ID from the YouTube link."""
+    if 'v=' in link:
+        return link.split('v=')[-1].split('&')[0]
+    elif 'youtu.be/' in link:
+        return link.split('youtu.be/')[-1].split('?')[0]
+    elif 'shorts/' in link:
+        return link.split('shorts/')[-1].split('?')[0]
+    else:
+        print(f"Unsupported YouTube URL format: {link}")
+        return None
+
+
+def fetch_youtube_data(video_id, client):
+    """Fetch data from YouTube API using the video ID."""
+    url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={YOUTUBE_API_KEY}'
+    response = client.get(url)
+    response.raise_for_status()
+    return response.json()
 
 
 def download_audio(link):

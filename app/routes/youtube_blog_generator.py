@@ -33,41 +33,44 @@ def generate_blog():
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
-        try:
-            data = request.get_json()
-            if not data:
-                print("No JSON data received.")
-                return jsonify({'error': 'Invalid data sent 😭'}), 400
-            
-            youtube_link = data.get('link')
-            if not youtube_link:
-                print("YouTube link not provided.")
-                return jsonify({'error': 'YouTube link is required.'}), 400
+        return handle_blog_generation_request()
 
-            print(f"Processing YouTube link: {youtube_link}")
-            new_blog_article, error_message = process_youtube_video(current_user.id, youtube_link)
-
-            if error_message:
-                print(f"Error generating blog: {error_message}")
-                return jsonify({'error': error_message}), 500  # Return a valid tuple
-
-            # Generate audio file URL
-            audio_url = url_for('yt_blog_generator.blog_post_audio', pk=new_blog_article.id, _external=True)
-
-            return jsonify({
-                'content': new_blog_article.generated_content,
-                'audio_url': audio_url
-            }), 200
-
-        except Exception as e:
-            print(f"Unhandled exception in generate_blog: {str(e)}")
-            return jsonify({'error': 'An unexpected error occurred'}), 500  # Return a valid tuple
-
-    elif request.method == 'GET':
+    if request.method == 'GET':
         return render_template('blog-generator.html', date=datetime.now().strftime("%a %d %B %Y"))
 
-    else:
-        return jsonify({'error': 'Invalid request method 🤣'}), 405
+    return jsonify({'error': 'Invalid request method 🤣'}), 405
+
+
+def handle_blog_generation_request():
+    """Handle the POST request for generating a blog from a YouTube link."""
+    try:
+        data = request.get_json()
+        if not data:
+            return invalid_data_response("No JSON data received.")
+
+        youtube_link = data.get('link')
+        if not youtube_link:
+            return invalid_data_response("YouTube link not provided.")
+
+        new_blog_article, error_message = process_youtube_video(current_user.id, youtube_link)
+        if error_message:
+            return generate_error_response(error_message)
+
+        audio_url = url_for('yt_blog_generator.blog_post_audio', pk=new_blog_article.id, _external=True)
+        return jsonify({'content': new_blog_article.generated_content, 'audio_url': audio_url}), 200
+
+    except Exception as e:
+        return generate_error_response(f"Unhandled exception in generate_blog: {str(e)}")
+
+
+def invalid_data_response(message):
+    print(message)
+    return jsonify({'error': 'Invalid data sent 😭'}), 400
+
+
+def generate_error_response(message):
+    print(message)
+    return jsonify({'error': message}), 500
 
 
 @generator_yt_blog_bp.route("/blog-posts", methods=["GET"])
