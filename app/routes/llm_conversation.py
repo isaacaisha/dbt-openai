@@ -213,17 +213,22 @@ def get_conversations_jsonify():
         flash('😂Please login to access this page.🤣')
         return redirect(url_for('auth.login'))
 
-    filters = ConversationFilters(owner_id=current_user.id)
-    conversations = get_conversations(filters)
-    serialized_conversations = [serialize_conversation(conversation) for conversation in conversations]
-
-    all_users = User.query.all()
-    all_themes = Theme.query.all()
-    all_messages = Message.query.all()
-
     database_form = DatabaseForm()
 
-    memory_tests = MemoryTest.query.all()
+    # Fetch all Memory conversations and order them by creation date, newest first
+    conversations = Memory.query.order_by(Memory.created_at.desc()).all()
+    serialized_conversations = [serialize_conversation(conversation) for conversation in conversations]
+
+    # Fetch all all_users, all_themes, all_messages..., and order them by creation date, newest first
+    all_users = User.query.order_by(User.created_at.desc()).all()
+    all_themes = Theme.query.order_by(Theme.id.desc()).all()
+    all_messages = Message.query.order_by(Message.date.desc()).all()
+    all_blog_potos = BlogPost.query.order_by(BlogPost.created_at.desc()).all()
+    all_website_reviews = WebsiteReview.query.order_by(WebsiteReview.created_at.desc()).all()
+    all_drawing_images = DrawingDatabase.query.order_by(DrawingDatabase.created_at.desc()).all()
+
+    # Fetch all MemoryTest conversations and order them by creation date, newest first
+    memory_tests = MemoryTest.query.order_by(MemoryTest.created_at.desc()).all()
     serialized_memory_tests = [{
         'id': memory.id,
         'user_message': memory.user_message,
@@ -235,5 +240,5 @@ def get_conversations_jsonify():
     return render_template('database-conversations.html', date=datetime.now().strftime("%a %d %B %Y"),
                            current_user=current_user, serialized_conversations=serialized_conversations,
                            users=all_users, themes=all_themes, messages=all_messages, database_form=database_form,
-                           serialized_memory_tests=serialized_memory_tests, all_blog_potos=BlogPost.query.all(),
-                           all_website_reviews=WebsiteReview.query.all(), all_drawing_images=DrawingDatabase.query.all())
+                           serialized_memory_tests=serialized_memory_tests, all_blog_potos=all_blog_potos,
+                           all_website_reviews=all_website_reviews, all_drawing_images=all_drawing_images)

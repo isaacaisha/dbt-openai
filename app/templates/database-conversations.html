@@ -234,7 +234,7 @@
                 <!-- Include CSRF token -->
                 {{ database_form.csrf_token }}
 
-                <span class="align-left">{{ wtf.form_field(database_form.database_name, autofocus=true) }}</span>
+                <span class="align-left">{{ wtf.form_field(database_form.database_name) }}</span>
                 <span class="align-left">{{ wtf.form_field(database_form.data_id) }}</span>
                 {{ wtf.form_field(database_form.submit, class="submit nav-link btn btn-danger") }}
             </form>
